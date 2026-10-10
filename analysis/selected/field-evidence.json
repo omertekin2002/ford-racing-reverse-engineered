@@ -1,0 +1,102 @@
+[
+  {
+    "va": 5388340,
+    "bytes": "ba58000000",
+    "claim": "Tyre payload allocation size: EDX = 0x58"
+  },
+  {
+    "va": 5388544,
+    "bytes": "d95028",
+    "claim": "RADIUS store at payload + 0x28"
+  },
+  {
+    "va": 5388551,
+    "bytes": "d9583c",
+    "claim": "Reciprocal radius store at payload + 0x3c"
+  },
+  {
+    "va": 5388607,
+    "bytes": "d95818",
+    "claim": "ROAD_MAGIC_GRIP_NUMBER initial store at + 0x18"
+  },
+  {
+    "va": 5388634,
+    "bytes": "d95824",
+    "claim": "TYRE_GRIP_DEPTH store at + 0x24"
+  },
+  {
+    "va": 5388671,
+    "bytes": "d9582c",
+    "claim": "TYRE_PATCH_LENGTH store at + 0x2c"
+  },
+  {
+    "va": 5388713,
+    "bytes": "89424c",
+    "claim": "VERTICAL_LOAD allocation address store at + 0x4c"
+  },
+  {
+    "va": 5388827,
+    "bytes": "d95820",
+    "claim": "WET_MAGIC_GRIP_PERCENTAGE store at + 0x20"
+  },
+  {
+    "va": 5388853,
+    "bytes": "d95830",
+    "claim": "WIDTH store at + 0x30"
+  },
+  {
+    "va": 5388874,
+    "bytes": "d95840",
+    "claim": "ROLLING_RESISTANCE store at + 0x40"
+  },
+  {
+    "va": 5388903,
+    "bytes": "bad0020000",
+    "claim": "SOUND_INFO allocation size: EDX = 0x2d0"
+  },
+  {
+    "va": 5389122,
+    "bytes": "894814",
+    "claim": "INHERIT_TYPE stores record address at + 0x14"
+  },
+  {
+    "va": 5389152,
+    "bytes": "be48030000",
+    "claim": "LATERAL_COMBINED_VALUES allocation size: ESI = 0x348"
+  },
+  {
+    "va": 5389181,
+    "bytes": "894248",
+    "claim": "Lateral allocation address store at + 0x48"
+  },
+  {
+    "va": 5389282,
+    "bytes": "b98c010000",
+    "claim": "LONGITUDINAL_COMBINED_VALUES allocation size: ECX = 0x18c"
+  },
+  {
+    "va": 5389307,
+    "bytes": "894244",
+    "claim": "Longitudinal allocation address store at + 0x44"
+  },
+  {
+    "va": 5389443,
+    "bytes": "d95034",
+    "claim": "MASS store at + 0x34"
+  },
+  {
+    "va": 5389450,
+    "bytes": "d95838",
+    "claim": "Reciprocal mass store at + 0x38"
+  },
+  {
+    "va": 5389488,
+    "bytes": "d9581c",
+    "claim": "OFFROAD_MAGIC_GRIP_NUMBER initial store at + 0x1c"
+  },
+  {
+    "va": 5389542,
+    "bytes": "894250",
+    "claim": "CAMBER_THRUST allocation address store at + 0x50"
+  }
+]

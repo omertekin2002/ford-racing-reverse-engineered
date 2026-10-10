@@ -1,0 +1,13 @@
+{
+  "fresh_install_script_verified": true,
+  "scope": "synthetic toolchain probe, not game behavior",
+  "decompiled_probe_functions": 9,
+  "probe_expression_verified": true,
+  "tool_artifact_checksums_verified": true,
+  "python_dependency_hashes_enforced": true,
+  "java_version": "17.0.12+7",
+  "ghidra_version": "10.3.3",
+  "unshield_version": "1.5.1",
+  "fresh_demo_acquisition_verified": true,
+  "fresh_demo_extraction_verified": true
+}

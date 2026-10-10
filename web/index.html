@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Play the original Ford Racing 3 demo in your browser.">
+  <title>Ford Racing 3 · Browser demo</title>
+  <link rel="stylesheet" href="site.css">
+  <script src="site.js" defer></script>
+</head>
+<body>
+  <header><a href="./" class="wordmark">FORD RACING <b>3</b></a><span class="badge">BROWSER PREVIEW</span></header>
+  <main>
+    <section class="intro">
+      <p class="eyebrow">THE ORIGINAL 2004 DEMO</p>
+      <h1>Take the wheel.</h1>
+      <p class="lede">Classic Ford racing, right in your browser. No installation required.</p>
+      <p class="note">Experimental browser compatibility. A desktop keyboard and a recent Chrome, Edge or Firefox are recommended. The first load may take several minutes.</p>
+    </section>
+    <section class="player" aria-label="Game player">
+      <div class="toolbar">
+        <button id="play" class="primary">Play demo</button>
+        <button id="configure">Game settings</button>
+        <button id="restart" disabled>Restart</button>
+        <button id="fullscreen" disabled>Fullscreen</button>
+        <label class="sound"><input id="sound" type="checkbox"> Sound effects (experimental)</label>
+      </div>
+      <p id="status" role="status" aria-live="polite">Ready when you are. The first download is about 133 MB.</p>
+      <progress id="progress" max="100" value="0" hidden aria-label="Game download progress"></progress>
+      <div id="screen">
+        <div id="placeholder"><span class="track">03</span><p>PRESS PLAY TO START</p></div>
+      </div>
+      <div class="player-footer"><span>Click the game to focus the keyboard. Press Esc to leave fullscreen.</span><button id="log">Download log</button></div>
+    </section>
+    <section class="details">
+      <div><h2>Get on the grid</h2><p>Press Enter to continue past the introduction. Use the arrow keys to select menu items, Enter to confirm and Esc to go back. Select Quick Race to drive the demo’s car and track.</p></div>
+      <div><h2>Take control</h2><p>Arrow keys accelerate, brake and steer. Space is the handbrake, Right Ctrl gives a boost, Enter changes the camera and P pauses. Game settings adjusts detail and language. Save with OK, then press Play demo.</p></div>
+      <div><h2>Keep your settings</h2><p>Game saves and settings stay in this browser on this device. Private browsing or clearing site data may remove them. Music and video streaming are disabled in this preview.</p></div>
+    </section>
+  </main>
+  <footer><span>Ford Racing 3 demo · © 2004 Empire Interactive Europe Ltd.</span><a href="THIRD_PARTY.md">Credits &amp; licenses</a><a href="build.json">Build details</a></footer>
+</body>
+</html>

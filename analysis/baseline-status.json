@@ -1,0 +1,11 @@
+{
+  "program": "fr3.exe",
+  "executable_sha256": "87cc71d881a2723784097108ce2923fe8d0384ea6a8b03fad3e95c5cda52e8b3",
+  "language": "x86:LE:32:default",
+  "compiler_spec": "windows",
+  "functions": 4922,
+  "thunks": 152,
+  "decompiled": 4770,
+  "failures": [],
+  "limit": "Decompiler success does not verify function boundaries or semantics. In particular, the reported Watcom register ABI is not modeled by this Windows baseline."
+}

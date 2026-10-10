@@ -1,0 +1,276 @@
+[
+  {
+    "entry_va": "00409b80",
+    "label": "fr3_load_directx_libraries",
+    "signature": "undefined fr3_load_directx_libraries()",
+    "return_storage": "AL:1",
+    "parameter_storage": [],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "0040ba30",
+    "label": "fr3_load_compressed_resource",
+    "signature": "undefined fr3_load_compressed_resource()",
+    "return_storage": "AL:1",
+    "parameter_storage": [],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "00423b20",
+    "label": "fr3_build_pcg_view",
+    "signature": "void fr3_build_pcg_view(void * collection)",
+    "return_storage": "\u003cVOID\u003e",
+    "parameter_storage": [
+      "collection:EAX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "0042e610",
+    "label": "fr3_read_integer",
+    "signature": "int fr3_read_integer(void * reader)",
+    "return_storage": "EAX:4",
+    "parameter_storage": [
+      "reader:EAX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "0042e680",
+    "label": "fr3_read_float",
+    "signature": "float fr3_read_float(void * reader)",
+    "return_storage": "ST0:10",
+    "parameter_storage": [
+      "reader:EAX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "0042d380",
+    "label": "fr3_ascii_read_integer",
+    "signature": "int fr3_ascii_read_integer(void * reader)",
+    "return_storage": "EAX:4",
+    "parameter_storage": [
+      "reader:EAX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "0042d430",
+    "label": "fr3_ascii_read_float",
+    "signature": "float fr3_ascii_read_float(void * reader)",
+    "return_storage": "ST0:10",
+    "parameter_storage": [
+      "reader:EAX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "0042db90",
+    "label": "fr3_binary_read_integer",
+    "signature": "int fr3_binary_read_integer(void * reader)",
+    "return_storage": "EAX:4",
+    "parameter_storage": [
+      "reader:EAX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "0042dbd0",
+    "label": "fr3_binary_read_float",
+    "signature": "float fr3_binary_read_float(void * reader)",
+    "return_storage": "ST0:10",
+    "parameter_storage": [
+      "reader:EAX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "0042e530",
+    "label": "fr3_next_tag",
+    "signature": "int fr3_next_tag(void * reader, int mode)",
+    "return_storage": "EAX:4",
+    "parameter_storage": [
+      "reader:EAX:4",
+      "mode:EDX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "0042e7c0",
+    "label": "fr3_read_string",
+    "signature": "undefined4 fr3_read_string(void * reader, void * destination, int limit)",
+    "return_storage": "EAX:4",
+    "parameter_storage": [
+      "reader:EAX:4",
+      "destination:EDX:4",
+      "limit:EBX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "0042e820",
+    "label": "fr3_read_enum",
+    "signature": "int fr3_read_enum(void * reader, void * table, int count)",
+    "return_storage": "EAX:4",
+    "parameter_storage": [
+      "reader:EAX:4",
+      "table:EDX:4",
+      "count:EBX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "005227f0",
+    "label": "fr3_load_engine_database",
+    "signature": "void fr3_load_engine_database(void)",
+    "return_storage": "\u003cVOID\u003e",
+    "parameter_storage": [],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "00523220",
+    "label": "fr3_load_gearbox_database",
+    "signature": "void fr3_load_gearbox_database(void)",
+    "return_storage": "\u003cVOID\u003e",
+    "parameter_storage": [],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "00523820",
+    "label": "fr3_load_tyre_database",
+    "signature": "void fr3_load_tyre_database(void)",
+    "return_storage": "\u003cVOID\u003e",
+    "parameter_storage": [],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "00522c80",
+    "label": "fr3_copy_engine_record",
+    "signature": "void fr3_copy_engine_record(void * destination, void * source)",
+    "return_storage": "\u003cVOID\u003e",
+    "parameter_storage": [
+      "destination:EAX:4",
+      "source:EDX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "00523470",
+    "label": "fr3_copy_gearbox_record",
+    "signature": "void fr3_copy_gearbox_record(void * destination, void * source)",
+    "return_storage": "\u003cVOID\u003e",
+    "parameter_storage": [
+      "destination:EAX:4",
+      "source:EDX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "00524090",
+    "label": "fr3_copy_tyre_scalar_fields",
+    "signature": "void fr3_copy_tyre_scalar_fields(void * destination, void * source)",
+    "return_storage": "\u003cVOID\u003e",
+    "parameter_storage": [
+      "destination:EAX:4",
+      "source:EDX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "00523dc0",
+    "label": "fr3_free_tyre_tables",
+    "signature": "void fr3_free_tyre_tables(void * record)",
+    "return_storage": "\u003cVOID\u003e",
+    "parameter_storage": [
+      "record:EAX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "00523e50",
+    "label": "fr3_get_tyre_vertical_load",
+    "signature": "void * fr3_get_tyre_vertical_load(void * record)",
+    "return_storage": "EAX:4",
+    "parameter_storage": [
+      "record:EAX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "00523e70",
+    "label": "fr3_get_tyre_camber_thrust",
+    "signature": "void * fr3_get_tyre_camber_thrust(void * record)",
+    "return_storage": "EAX:4",
+    "parameter_storage": [
+      "record:EAX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "00523e90",
+    "label": "fr3_get_tyre_longitudinal_table",
+    "signature": "void * fr3_get_tyre_longitudinal_table(void * record)",
+    "return_storage": "EAX:4",
+    "parameter_storage": [
+      "record:EAX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "00523eb0",
+    "label": "fr3_get_tyre_lateral_table",
+    "signature": "void * fr3_get_tyre_lateral_table(void * record)",
+    "return_storage": "EAX:4",
+    "parameter_storage": [
+      "record:EAX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "00523f10",
+    "label": "fr3_get_tyre_sound_info",
+    "signature": "void * fr3_get_tyre_sound_info(void * record)",
+    "return_storage": "EAX:4",
+    "parameter_storage": [
+      "record:EAX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  },
+  {
+    "entry_va": "00523ed0",
+    "label": "fr3_get_tyre_sound_values",
+    "signature": "void * fr3_get_tyre_sound_values(void * record, int index)",
+    "return_storage": "EAX:4",
+    "parameter_storage": [
+      "record:EAX:4",
+      "index:EDX:4"
+    ],
+    "decompiled": true,
+    "error": ""
+  }
+]

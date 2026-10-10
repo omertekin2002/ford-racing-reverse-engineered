@@ -1,0 +1,32 @@
+{
+  "verified_utc": "2026-10-10T11:41:11.997030+00:00",
+  "archive_sha256": "4bf96967022195519817d91f143c5e1c62e5879a95dd70f5a1cd00ba89b1f84c",
+  "executable_sha256": "87cc71d881a2723784097108ce2923fe8d0384ea6a8b03fad3e95c5cda52e8b3",
+  "game_files_verified": 773,
+  "tag_entries_verified": 363,
+  "resources_decoded_verified": 146,
+  "decoded_bytes_verified": 56325649,
+  "pcg_collections_verified": 62,
+  "pcg_entries_verified": 654,
+  "field_instruction_sites_verified": 20,
+  "tyre_ascii_table_dimensions": {
+    "LONGITUDINAL_COMBINED_VALUES": {
+      "rows": 9,
+      "columns": 11
+    },
+    "LATERAL_COMBINED_VALUES": {
+      "rows": 10,
+      "columns": 21
+    }
+  },
+  "baseline_functions": 4922,
+  "baseline_decompiled": 4770,
+  "baseline_decompiler_failures": [],
+  "annotated_functions_verified": 25,
+  "snapshot_import_verified": true,
+  "c_layout_assertions_passed": true,
+  "annotated_snapshot_sha256": "c1cd1aefde2e053a524b679c2f469269de13d9f208ab1aff8f7eae762099a477",
+  "baseline_c_sha256": "5bf71c6c37d64063244a8e0c747c2f5d8828e6a810e6ea26874fe3e9bf73b9ce",
+  "executed_during_static_verification": false,
+  "limit": "This check verifies static bytes and formats. See docs/release-validation.md for separate Wine runtime testing."
+}

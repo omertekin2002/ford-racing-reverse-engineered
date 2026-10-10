@@ -1,0 +1,79 @@
+name: Browser demo and GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - web/**
+      - scripts/**
+      - analysis/game-file-manifest.json
+      - .github/workflows/pages.yml
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: Deploy after enabling Settings → Pages → GitHub Actions
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      FR3_WEB_TOOLS: ${{ github.workspace }}/.web-tools
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore verified tools and demo downloads
+        uses: actions/cache@v4
+        with:
+          path: |
+            .web-tools
+            inputs/fordracing3demo.zip
+          key: fr3-web-v2-${{ runner.os }}-${{ hashFiles('scripts/setup_web_tools.py', 'scripts/build_web.py') }}
+      - name: Install CAB extraction tool
+        run: sudo apt-get update && sudo apt-get install -y unshield
+      - name: Prepare pinned compiler and emulator
+        run: python3 scripts/setup_web_tools.py
+      - name: Acquire and verify the public demo
+        run: python3 scripts/acquire_demo.py inputs --unshield unshield
+      - name: Compile and build the static site
+        run: python3 scripts/build_web.py --jobs 2
+      - name: Verify packaged assets and project-page paths
+        run: python3 scripts/verify_web.py artifacts/web
+      - name: Upload downloadable browser build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ford-racing-3-browser-preview
+          path: artifacts/web
+          include-hidden-files: true
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: artifacts/web
+
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Deploy static game
+        id: deployment
+        uses: actions/deploy-pages@v4

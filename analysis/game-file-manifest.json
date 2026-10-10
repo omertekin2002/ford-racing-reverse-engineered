@@ -1,0 +1,3867 @@
+[
+  {
+    "path": "3DDATA/CARS/04LIGHT/3dmodels.TXT",
+    "size": 7157,
+    "sha256": "b744445c490b7752589ddba58323b3522497dce65b92c61ed813c33e144a69f6"
+  },
+  {
+    "path": "3DDATA/CARS/04LIGHT/3dobjdb.BIN",
+    "size": 3956,
+    "sha256": "0881f9991366c8dec802d36ce63e72ee227998d1fd8f926a4045c8c016937a73"
+  },
+  {
+    "path": "3DDATA/CARS/04LIGHT/3dobjs.XBX",
+    "size": 10367,
+    "sha256": "13131c6488283e779555ff5a847e660b1ec2f18fbca55a942ef3731e743c9ea3"
+  },
+  {
+    "path": "3DDATA/CARS/04LIGHT/3dobjsp.XBX",
+    "size": 106569,
+    "sha256": "e42bbf0941580071dde237cfd7b344fa7487cf99e492069736531f1670515374"
+  },
+  {
+    "path": "3DDATA/CARS/04LIGHT/bininfo.BIN",
+    "size": 492,
+    "sha256": "0999e71516a3240e378e0d86d58e4829e770a1ac106a391843cb1bb27989b307"
+  },
+  {
+    "path": "3DDATA/CARS/04LIGHT/textures.DXT",
+    "size": 195686,
+    "sha256": "7faa7f0c142ff34d600ccedceb3bb4a0ceff7936f0b5332ea12cffce1c88c0a3"
+  },
+  {
+    "path": "3DDATA/CARS/05MUST/3dmodels.TXT",
+    "size": 7052,
+    "sha256": "4c33b9c91f913b9c7a75a6c5c5b62e11ade2e1eecf984792f0f74da4d93b321e"
+  },
+  {
+    "path": "3DDATA/CARS/05MUST/3dobjdb.BIN",
+    "size": 3524,
+    "sha256": "41c4a3223bc4f84c4b4916510eace683811be217671c0b7beda9bd9d36f1d1f6"
+  },
+  {
+    "path": "3DDATA/CARS/05MUST/3dobjs.XBX",
+    "size": 10139,
+    "sha256": "691e58cfa450c8259a3e7f55991d9857ff2fd9e72c7aa9c2106b6619d635ec87"
+  },
+  {
+    "path": "3DDATA/CARS/05MUST/3dobjsp.XBX",
+    "size": 114577,
+    "sha256": "b118fc5b561dc0226dcc6595b77fcd0d8395113fee209f75fcab516311bba8e6"
+  },
+  {
+    "path": "3DDATA/CARS/05MUST/bininfo.BIN",
+    "size": 490,
+    "sha256": "c19c05eb74820f4a4d035a05c89208f2cfbf14d18ef352e81f814d7032bf795c"
+  },
+  {
+    "path": "3DDATA/CARS/05MUST/textures.DXT",
+    "size": 167524,
+    "sha256": "9e562f4f3d8e622839b40843aa405af0608edff7b25b1a4b6390a4eaf3bbb994"
+  },
+  {
+    "path": "3DDATA/CARS/46CONV/3dmodels.TXT",
+    "size": 7120,
+    "sha256": "2578a3ff8f078ddef2a6c68dd30ebb6110dc21640daf60902d0256259c9eb3f8"
+  },
+  {
+    "path": "3DDATA/CARS/46CONV/3dobjdb.BIN",
+    "size": 3652,
+    "sha256": "37b5d54dac38b62a5748b2d713d75b37748c229264c4686a7c9b4d7481f2522d"
+  },
+  {
+    "path": "3DDATA/CARS/46CONV/3dobjs.XBX",
+    "size": 9713,
+    "sha256": "58df038b133a07cec2b271691e7f50bf1194d93c9a0835893f9f46347c9f6cf9"
+  },
+  {
+    "path": "3DDATA/CARS/46CONV/3dobjsp.XBX",
+    "size": 98734,
+    "sha256": "6b93ebb891d0faffad02fe48cfe8d622e2d8cb987721ec460b67d16cc43d301e"
+  },
+  {
+    "path": "3DDATA/CARS/46CONV/bininfo.BIN",
+    "size": 443,
+    "sha256": "945897528023860cc1c54ad2f7d077a8b5a91b712820657d1caa31d3f03692a3"
+  },
+  {
+    "path": "3DDATA/CARS/46CONV/textures.DXT",
+    "size": 236979,
+    "sha256": "502ded46673c31a9c1ae1c2d0ce033719586959c5f49c90e1c31230e53d4275a"
+  },
+  {
+    "path": "3DDATA/CARS/66FAIR/3dmodels.TXT",
+    "size": 7055,
+    "sha256": "f2c5e04cb3d757b8d2607dec7d3e41261c598a06d3d69f0c8cc97e8b9b348c9f"
+  },
+  {
+    "path": "3DDATA/CARS/66FAIR/3dobjdb.BIN",
+    "size": 4180,
+    "sha256": "31d5d79a9d1623ea63831e562663b0b1ae3f2a9bfe0dc81e65a016c854f801a6"
+  },
+  {
+    "path": "3DDATA/CARS/66FAIR/3dobjs.XBX",
+    "size": 10667,
+    "sha256": "ab7f8754b9bde13ea4ef0d057ae28ad86fef048d206c3fbfb72416aaba98c035"
+  },
+  {
+    "path": "3DDATA/CARS/66FAIR/3dobjsp.XBX",
+    "size": 102919,
+    "sha256": "ea3fb062f7ae1d4d60a2b553bc138afda42a8cf068a00f652b17c7004b4ae288"
+  },
+  {
+    "path": "3DDATA/CARS/66FAIR/bininfo.BIN",
+    "size": 490,
+    "sha256": "cb781d30df7f69086e5bd2d3eb8156f6fc923698ae6ba8c18350fb34e812fed3"
+  },
+  {
+    "path": "3DDATA/CARS/66FAIR/textures.DXT",
+    "size": 211149,
+    "sha256": "a6e73050ad5ddfe729037b4e9949ef1de02b5f9932d2f2a562c6e2182200bebe"
+  },
+  {
+    "path": "3DDATA/CARS/66TBIRD/3dmodels.TXT",
+    "size": 7052,
+    "sha256": "1fd3b5bd8c1e58ca5a379b5a918773c29603f48e2689ed6cef14a8887efb0104"
+  },
+  {
+    "path": "3DDATA/CARS/66TBIRD/3dobjdb.BIN",
+    "size": 4040,
+    "sha256": "05256bde90ae428c2abe74208b0432a7e2d2345f4dfa674f2999a983e0a55815"
+  },
+  {
+    "path": "3DDATA/CARS/66TBIRD/3dobjs.XBX",
+    "size": 10557,
+    "sha256": "3cad8a901693157a74c2e29f39a132956bbeb297cf4a59464b384216f98ee1b0"
+  },
+  {
+    "path": "3DDATA/CARS/66TBIRD/3dobjsp.XBX",
+    "size": 110197,
+    "sha256": "625a61b966f739aa44cb84dd6e13e1aed7ebf014c999d262c3f32ef7302cea46"
+  },
+  {
+    "path": "3DDATA/CARS/66TBIRD/bininfo.BIN",
+    "size": 492,
+    "sha256": "9637609d7ce8de1279b8993e6a0dfc0f7576c4a168aa6fd0330fdbe62fb9d78d"
+  },
+  {
+    "path": "3DDATA/CARS/66TBIRD/textures.DXT",
+    "size": 201587,
+    "sha256": "0416235a147dc794e31f02dcb0b7868d8c97e7516b9938a037112f9437a1b1de"
+  },
+  {
+    "path": "3DDATA/CARS/72RANCH/3dmodels.TXT",
+    "size": 7053,
+    "sha256": "fabc7cbb72738d474e0195a4a61ddbeb0439f6b86f11bf7ae7528062896a1e73"
+  },
+  {
+    "path": "3DDATA/CARS/72RANCH/3dobjdb.BIN",
+    "size": 4012,
+    "sha256": "8890c778ea99a65812ee3aa668496f4c31434612ea62dc37234f31606d939563"
+  },
+  {
+    "path": "3DDATA/CARS/72RANCH/3dobjs.XBX",
+    "size": 9830,
+    "sha256": "13a260096270f358f00ac514af889ce98d28727252e9e43a93c794e8e80b197d"
+  },
+  {
+    "path": "3DDATA/CARS/72RANCH/3dobjsp.XBX",
+    "size": 98564,
+    "sha256": "71e3ee5510dfa58108632ba1d97eaceddb9e1fbd092387732f8351498af4aa44"
+  },
+  {
+    "path": "3DDATA/CARS/72RANCH/bininfo.BIN",
+    "size": 492,
+    "sha256": "b39ca4a156a27772b2cd82d793c53a9efb2a222bcc0236fd08513923d0aa1caa"
+  },
+  {
+    "path": "3DDATA/CARS/72RANCH/textures.DXT",
+    "size": 193011,
+    "sha256": "96f69b21e6a5f809461f77182c18c2c8cd2eac1fe1e86e48252f81515a5cacd7"
+  },
+  {
+    "path": "3DDATA/CARS/78CAP/3dmodels.TXT",
+    "size": 7357,
+    "sha256": "78a0de11923d52214af9630649e9511605cd88f9c873c34d3c688327b3986969"
+  },
+  {
+    "path": "3DDATA/CARS/78CAP/3dobjdb.BIN",
+    "size": 4292,
+    "sha256": "eab5d650cac50d884df52b49e8fb243ae25d2e0551d8e5c787716762b97cc4ff"
+  },
+  {
+    "path": "3DDATA/CARS/78CAP/3dobjs.XBX",
+    "size": 9850,
+    "sha256": "a28c895ab1f73d145fff82ea0b746b281ec0da3a681e1a0e6ba3db851d568be9"
+  },
+  {
+    "path": "3DDATA/CARS/78CAP/3dobjsp.XBX",
+    "size": 113219,
+    "sha256": "6d5f54a31cc2324e44f76e3197b55b7202f0f1007b2a612ace8f9912d3a61983"
+  },
+  {
+    "path": "3DDATA/CARS/78CAP/bininfo.BIN",
+    "size": 488,
+    "sha256": "9b230553fe95021c4859b4d29fd68f6e376fc137f49296166cbcfa4ea61af614"
+  },
+  {
+    "path": "3DDATA/CARS/78CAP/textures.DXT",
+    "size": 172940,
+    "sha256": "789a7c7d334b02d843d10faf034ab4e7c63887af9d9b4a1fd61214adbdbf9ed9"
+  },
+  {
+    "path": "3DDATA/CARS/92ESCRS/3dmodels.TXT",
+    "size": 7045,
+    "sha256": "0e36a1893ed9d84457b6f96c4ada910dd52da2dbe5d0b13d9fef7e7b1a187d89"
+  },
+  {
+    "path": "3DDATA/CARS/92ESCRS/3dobjdb.BIN",
+    "size": 4012,
+    "sha256": "2a476f34d650cf58ed7029d756d1ff9af0e8b0e19499fae41e08de7e7004dae6"
+  },
+  {
+    "path": "3DDATA/CARS/92ESCRS/3dobjs.XBX",
+    "size": 10483,
+    "sha256": "66160b06a8f51d9c4d845d0ee1257d639d94ea6d3e688ad3da78e2c98cc7fe7b"
+  },
+  {
+    "path": "3DDATA/CARS/92ESCRS/3dobjsp.XBX",
+    "size": 107774,
+    "sha256": "2fee44aaa486483cd48c4f78ba2413027d94f90b7f74b7d6af95f8a731a6f49a"
+  },
+  {
+    "path": "3DDATA/CARS/92ESCRS/bininfo.BIN",
+    "size": 492,
+    "sha256": "1090c2cc54bee8c0a590ac5ef7145c0f655fd28493616c41bf96bdafdfc38b92"
+  },
+  {
+    "path": "3DDATA/CARS/92ESCRS/textures.DXT",
+    "size": 167199,
+    "sha256": "e06df015f6846e6f30906fcc7f85cb3f3f160e8f514a21339e9c47ccaefbb4be"
+  },
+  {
+    "path": "3DDATA/CARS/CAPRS26/3dmodels.TXT",
+    "size": 7045,
+    "sha256": "30105aa2f74ad2c6b231b9cbecea3227da61d80bff1dae7e4273e8b3bd069f35"
+  },
+  {
+    "path": "3DDATA/CARS/CAPRS26/3dobjdb.BIN",
+    "size": 4040,
+    "sha256": "f299f3ce01097979f1054c1b79f48d23886c015304b54c2103dc33e9c8ba0915"
+  },
+  {
+    "path": "3DDATA/CARS/CAPRS26/3dobjs.XBX",
+    "size": 8885,
+    "sha256": "65cb51b12ac75526d4d81778635eb2b05b35bbeb619f6637d6c48e851da770ef"
+  },
+  {
+    "path": "3DDATA/CARS/CAPRS26/3dobjsp.XBX",
+    "size": 106173,
+    "sha256": "068bb9f749f7697bda9cc3042416b7d62cec01e43d3af74981e2c48eeab3c98d"
+  },
+  {
+    "path": "3DDATA/CARS/CAPRS26/bininfo.BIN",
+    "size": 492,
+    "sha256": "5c17c2ef87954c8275d460bfbfcc98b3ad19eafff3f320b192dac163597fa64b"
+  },
+  {
+    "path": "3DDATA/CARS/CAPRS26/textures.DXT",
+    "size": 172848,
+    "sha256": "025d7e59ced21a8d157d75f6982c976ea92fcc7e56df0aba03c28ad3706cb4b9"
+  },
+  {
+    "path": "3DDATA/CARS/COBRA/3dmodels.TXT",
+    "size": 7356,
+    "sha256": "47fea7021f75c02418f16b5ae2c2cc3614ef182165d930be26c947c136d94302"
+  },
+  {
+    "path": "3DDATA/CARS/COBRA/3dobjdb.BIN",
+    "size": 3884,
+    "sha256": "0cb8a7d8a10932388e7d2260645d12c76ea8a00dda73f3ec350410a709858188"
+  },
+  {
+    "path": "3DDATA/CARS/COBRA/3dobjs.XBX",
+    "size": 9529,
+    "sha256": "dae27e44c6063db07110842e157c9e5a0ad07ab0d7c26df33d3a6e20dd3114d9"
+  },
+  {
+    "path": "3DDATA/CARS/COBRA/3dobjsp.XBX",
+    "size": 89919,
+    "sha256": "9f9fc3e177dc0b7a439a98646777f259706b9652a70696d31e10f802c25e600e"
+  },
+  {
+    "path": "3DDATA/CARS/COBRA/bininfo.BIN",
+    "size": 488,
+    "sha256": "e573f112dfbf2d0bafd33cf9c8f7052736d8a42921620bb25788b86c9a001e4d"
+  },
+  {
+    "path": "3DDATA/CARS/COBRA/textures.DXT",
+    "size": 138446,
+    "sha256": "433edf98f89ebd6a533e67226c2104515d981301a34552c1c11fb49a325c353b"
+  },
+  {
+    "path": "3DDATA/CARS/CROWNV/3dmodels.TXT",
+    "size": 7358,
+    "sha256": "2aad09c766ba298eeebcd701bf9b8e2a17a9f2c252ceb93df3a28d4c6a6490d2"
+  },
+  {
+    "path": "3DDATA/CARS/CROWNV/3dobjdb.BIN",
+    "size": 4044,
+    "sha256": "6f6d74526143bbe5a838b9e0c50fe38c24d0477d748db5d290dfc8406914ceaf"
+  },
+  {
+    "path": "3DDATA/CARS/CROWNV/3dobjs.XBX",
+    "size": 9140,
+    "sha256": "0e57787bf08548d6409e3e5efb0b5a5a54b37a5229961cdab3af0253048a660f"
+  },
+  {
+    "path": "3DDATA/CARS/CROWNV/3dobjsp.XBX",
+    "size": 89653,
+    "sha256": "2020baff5eddd2e4be4cbbde0fe34fc878cde73fbef247c94e3f60e6e9ffd237"
+  },
+  {
+    "path": "3DDATA/CARS/CROWNV/bininfo.BIN",
+    "size": 478,
+    "sha256": "a2391280ed8acd6002583859bcfd7e9ccf7b5e4b3cdc82614e71d03bc058d0b2"
+  },
+  {
+    "path": "3DDATA/CARS/CROWNV/textures.DXT",
+    "size": 167915,
+    "sha256": "a121ceb54ce014833bb0fc698e472f66c4858163810b266d9103cc0dfed4d1d1"
+  },
+  {
+    "path": "3DDATA/CARS/FALCON/3dmodels.TXT",
+    "size": 7052,
+    "sha256": "bc09c0463f976d85f775b03f2519ec46307d8548662717b45a5ae66019d2c1a9"
+  },
+  {
+    "path": "3DDATA/CARS/FALCON/3dobjdb.BIN",
+    "size": 4264,
+    "sha256": "b10642f8f191c03ca26bbe2060becf7b74e91bdb8fbbd99fdff854259c6af3b3"
+  },
+  {
+    "path": "3DDATA/CARS/FALCON/3dobjs.XBX",
+    "size": 10760,
+    "sha256": "8157d1f75fc6453030ae493c0b32df23a80c3cbf3935176fa5d28fd89c04a75d"
+  },
+  {
+    "path": "3DDATA/CARS/FALCON/3dobjsp.XBX",
+    "size": 111633,
+    "sha256": "8c2e331f964db0d8fb27927c768742dd5b5f52441ca97530bfa808022dd730e0"
+  },
+  {
+    "path": "3DDATA/CARS/FALCON/bininfo.BIN",
+    "size": 490,
+    "sha256": "2bf2dd20c9aecc7fb3dc4bf07d0cf5bd13210b18af8fa17bd1c5ad21769b4c02"
+  },
+  {
+    "path": "3DDATA/CARS/FALCON/textures.DXT",
+    "size": 161774,
+    "sha256": "a9517321312005b87a562ed325e00c6899ed81d864a6fe729c13298bc5facaf3"
+  },
+  {
+    "path": "3DDATA/CARS/FOCUSSVT/3dmodels.TXT",
+    "size": 7356,
+    "sha256": "2f9d3710664d9e872e8eca0d5e0ab7b445f18aeaa271a4d75b5980fb14b8177c"
+  },
+  {
+    "path": "3DDATA/CARS/FOCUSSVT/3dobjdb.BIN",
+    "size": 4148,
+    "sha256": "a2e26b541569b909fe1b966e05b6b164be01042e4860f5535ac9be10c0f24e33"
+  },
+  {
+    "path": "3DDATA/CARS/FOCUSSVT/3dobjs.XBX",
+    "size": 10669,
+    "sha256": "222b89a00ac848c10b283b370e763700ae81afef1ac356b46f29551f8b827683"
+  },
+  {
+    "path": "3DDATA/CARS/FOCUSSVT/3dobjsp.XBX",
+    "size": 106057,
+    "sha256": "0684f2fcb3de699df5009733c824409461e5f07e18ad90eea0c2adc4c17802ae"
+  },
+  {
+    "path": "3DDATA/CARS/FOCUSSVT/bininfo.BIN",
+    "size": 494,
+    "sha256": "57a1394fba67c69de01ec123834106990b5016cfccf33c9527b230112578e83b"
+  },
+  {
+    "path": "3DDATA/CARS/FOCUSSVT/textures.DXT",
+    "size": 175690,
+    "sha256": "18a6f89be18e572884afbb61caf8cbb5ed62651baf7f032abd7bab2dad2aca9a"
+  },
+  {
+    "path": "3DDATA/CARS/FORDGT/3dmodels.TXT",
+    "size": 7711,
+    "sha256": "d81d9e50a35f9ff427892fea7a58d5dd545547cd685c18e75dd2423a00b3fb74"
+  },
+  {
+    "path": "3DDATA/CARS/FORDGT/3dobjdb.BIN",
+    "size": 4860,
+    "sha256": "c0ecff319909ca002b94827c42c8b092ccb1babaeb3ecc4465e7c6f2b781f807"
+  },
+  {
+    "path": "3DDATA/CARS/FORDGT/3dobjs.XBX",
+    "size": 11477,
+    "sha256": "7e6cdcca2616542b5a6210743dc58445118d2ffe0bcc703592dbab7d3ad6b278"
+  },
+  {
+    "path": "3DDATA/CARS/FORDGT/3dobjsp.XBX",
+    "size": 112125,
+    "sha256": "a7629ca2892fde21811aa4382c5ea958fb46f65e2f07564d261a9153b888194e"
+  },
+  {
+    "path": "3DDATA/CARS/FORDGT/bininfo.BIN",
+    "size": 646,
+    "sha256": "28cfc77447c38b957746d7d2627290e8a283ebe1cb2dd693b4df7e767c0428ee"
+  },
+  {
+    "path": "3DDATA/CARS/FORDGT/textures.DXT",
+    "size": 187069,
+    "sha256": "62aa1ad4933747909f8c78787621fd5681241fc9f49071f38215760b3e0ae5a4"
+  },
+  {
+    "path": "3DDATA/CARS/FR100/3dmodels.TXT",
+    "size": 5661,
+    "sha256": "989b88e2710ab028d09dcf3058c0f3a63889d10628eee4203468f9578d001e76"
+  },
+  {
+    "path": "3DDATA/CARS/FR100/3dobjdb.BIN",
+    "size": 3864,
+    "sha256": "8835dfe6a20a10295889a1bcb434dfb6870bd5fc4a7c4d8669e19e161f8aa59d"
+  },
+  {
+    "path": "3DDATA/CARS/FR100/3dobjs.XBX",
+    "size": 9667,
+    "sha256": "1efc8e07a9dd7097e86fef2f23cecb2c926a9eae84e05c15e290bac86014a720"
+  },
+  {
+    "path": "3DDATA/CARS/FR100/3dobjsp.XBX",
+    "size": 78602,
+    "sha256": "00785bfdef3a3df80468b15ef920a39fa56281f498101fc25e3d73bc0acdc1bf"
+  },
+  {
+    "path": "3DDATA/CARS/FR100/bininfo.BIN",
+    "size": 443,
+    "sha256": "969105f50743aea51aaff30c1e4de1beec964de4f2afe20ddebac8e7da6ee8c9"
+  },
+  {
+    "path": "3DDATA/CARS/FR100/textures.DXT",
+    "size": 36430,
+    "sha256": "00d39b06f83dd00886005b1046944e88df4eed062d6f912b2738ab2eddbb3cd0"
+  },
+  {
+    "path": "3DDATA/CARS/GT90/3dmodels.TXT",
+    "size": 7728,
+    "sha256": "1471a2f8e2994ad5621c4ff45cc76d63c1f9f04ec6edac1f08082041237d793b"
+  },
+  {
+    "path": "3DDATA/CARS/GT90/3dobjdb.BIN",
+    "size": 5252,
+    "sha256": "a6b358e1abdf4e74b0c6de48b6ab6bc75a59c592f5d5ca2ac951c44a572a1344"
+  },
+  {
+    "path": "3DDATA/CARS/GT90/3dobjs.XBX",
+    "size": 10017,
+    "sha256": "7eba1b216ce756182f6917cf4205af127d5b332b017f1d23ffe29803536092f2"
+  },
+  {
+    "path": "3DDATA/CARS/GT90/3dobjsp.XBX",
+    "size": 102461,
+    "sha256": "82a6b7b51b1a2f6ff46437b53be2d1d889e4a28fa07fad83bfff40387e6bf0e1"
+  },
+  {
+    "path": "3DDATA/CARS/GT90/bininfo.BIN",
+    "size": 667,
+    "sha256": "805e14cf41260dc9c8125bc339469eb4d01f455be682e46062d1c487d86931d7"
+  },
+  {
+    "path": "3DDATA/CARS/GT90/textures.DXT",
+    "size": 226320,
+    "sha256": "5e8e71c20c1e6c36704818f2cff3bcc6ae62cddc05f8963a9f62fb91261c27ab"
+  },
+  {
+    "path": "3DDATA/CARS/INDIGO/3dmodels.TXT",
+    "size": 8204,
+    "sha256": "2288f5e6c45add8c91adf2ab97954687866d2c6e7dab016601ec0f83bdaf4f3f"
+  },
+  {
+    "path": "3DDATA/CARS/INDIGO/3dobjdb.BIN",
+    "size": 4592,
+    "sha256": "147a35f91d3cb22f66664f8592facfdc76b2781804b8488692425812d92104ae"
+  },
+  {
+    "path": "3DDATA/CARS/INDIGO/3dobjs.XBX",
+    "size": 11731,
+    "sha256": "1b0fb8c0fcee5389da51d4a9aeec63d44f8cd3553ecf2a39e097a61cb9fc8c6f"
+  },
+  {
+    "path": "3DDATA/CARS/INDIGO/3dobjsp.XBX",
+    "size": 115290,
+    "sha256": "8d49ba6b11c7d55543ca03119cd1bbccf2cd4078a6d67e4a00f2e9c92dc4017f"
+  },
+  {
+    "path": "3DDATA/CARS/INDIGO/bininfo.BIN",
+    "size": 725,
+    "sha256": "38d7e705de7f52dc28bb0cae440d1e91b30a5f0af0b2dfc1388e77755f1f7d87"
+  },
+  {
+    "path": "3DDATA/CARS/INDIGO/textures.DXT",
+    "size": 326090,
+    "sha256": "69200426e75ac43937417c2ace25da311b4c127fac87a9831f0979bdbfdcf633"
+  },
+  {
+    "path": "3DDATA/CARS/MACH1S/3dmodels.TXT",
+    "size": 5682,
+    "sha256": "f0f22a0207db3509ef897f63f674b85009ebf7ea32e999ab7e7cea105035da83"
+  },
+  {
+    "path": "3DDATA/CARS/MACH1S/3dobjdb.BIN",
+    "size": 2872,
+    "sha256": "fb586649cbb3b416b0eacd98e1cb217bb698165476929240eba887110cc2dcf9"
+  },
+  {
+    "path": "3DDATA/CARS/MACH1S/3dobjs.XBX",
+    "size": 7628,
+    "sha256": "72d6c59e2ee45a813250e1a9b664f21cfc93feb2e5fc9cf125fd3855c81d47b7"
+  },
+  {
+    "path": "3DDATA/CARS/MACH1S/3dobjsp.XBX",
+    "size": 59641,
+    "sha256": "b5d986c47ad9f9930e083aa8581eb40a229583a338f775a6f1857ba39df671f2"
+  },
+  {
+    "path": "3DDATA/CARS/MACH1S/bininfo.BIN",
+    "size": 445,
+    "sha256": "257ebd5be5771377bcba8ab9e3e8673c9e986b72ec83eb7d93e03d237342e988"
+  },
+  {
+    "path": "3DDATA/CARS/MACH1S/textures.DXT",
+    "size": 58150,
+    "sha256": "d2f162cf8859ab9cdee182931d5d21e844bfc1b23a68dcdfd01a65d46182dffd"
+  },
+  {
+    "path": "3DDATA/CARS/MONDEO/3dmodels.TXT",
+    "size": 7044,
+    "sha256": "d86aea9167d2847678c3080a784c9dc6f1adf45e4e8d0fb61da72028f4ab908d"
+  },
+  {
+    "path": "3DDATA/CARS/MONDEO/3dobjdb.BIN",
+    "size": 3272,
+    "sha256": "bb63b4303f082268ecc80913f64feed93e7c9e85d05c4df5b8ce1b66cc0c87fa"
+  },
+  {
+    "path": "3DDATA/CARS/MONDEO/3dobjs.XBX",
+    "size": 11218,
+    "sha256": "d76bbbb22e9aec00085f4d6b822f0e72258641ef5234ea4d8ec4f4d14d3827f8"
+  },
+  {
+    "path": "3DDATA/CARS/MONDEO/3dobjsp.XBX",
+    "size": 112020,
+    "sha256": "6281f67fd36e3cfc94e1cde54281157d915904ee6dc9bc0a0d82c81aa88f890a"
+  },
+  {
+    "path": "3DDATA/CARS/MONDEO/bininfo.BIN",
+    "size": 490,
+    "sha256": "ee24809e5070d0221f21360671a60cfc58fc2208853f74b40b796a26b39d31ce"
+  },
+  {
+    "path": "3DDATA/CARS/MONDEO/textures.DXT",
+    "size": 187905,
+    "sha256": "3114289b012b1d4d4597e4e49811886907d0e7c84268f201e077b77ff78e55e9"
+  },
+  {
+    "path": "3DDATA/CARS/MUST68B/3dmodels.TXT",
+    "size": 5814,
+    "sha256": "b5e9d050b4371ff3bf76e1d1b5253abe3bb9656cff68bd50f18916a3ad750fba"
+  },
+  {
+    "path": "3DDATA/CARS/MUST68B/3dobjdb.BIN",
+    "size": 4432,
+    "sha256": "1273acbd9918f5eb86e57f496658bda30535d42254e8af0234a9bc6b56cb72e4"
+  },
+  {
+    "path": "3DDATA/CARS/MUST68B/3dobjs.XBX",
+    "size": 9505,
+    "sha256": "978991d5f0e16354b5b43cbda84ed5beadb0083357edfdc641d805e0df287943"
+  },
+  {
+    "path": "3DDATA/CARS/MUST68B/3dobjsp.XBX",
+    "size": 90883,
+    "sha256": "2cd4264612c5af1450d794c6363b4e49d1303e1c2741801a2db0fc17b9af6929"
+  },
+  {
+    "path": "3DDATA/CARS/MUST68B/bininfo.BIN",
+    "size": 492,
+    "sha256": "1e25109f2d41292671a5e11888e2682f6ae4311ba5b37c1d5f3dbe8f1e36cc58"
+  },
+  {
+    "path": "3DDATA/CARS/MUST68B/textures.DXT",
+    "size": 43333,
+    "sha256": "4182ec230162081f94c18f26c37c3553a6c7fe4f9513f1c180fb31dcfa91a56f"
+  },
+  {
+    "path": "3DDATA/CARS/MUSTGTR/3dmodels.TXT",
+    "size": 6068,
+    "sha256": "5f050f603979a4049cab678289aaa229d74a3382507db6be6bffc4a94fe97acf"
+  },
+  {
+    "path": "3DDATA/CARS/MUSTGTR/3dobjdb.BIN",
+    "size": 3864,
+    "sha256": "d5bb3caad213ad98fe768450b6d93ad8407295739ae784c2faae963f390539d4"
+  },
+  {
+    "path": "3DDATA/CARS/MUSTGTR/3dobjs.XBX",
+    "size": 10245,
+    "sha256": "11dfa05f8370e2f0f8783dd38f6b900b57611f5752bed55109afe16df33429f4"
+  },
+  {
+    "path": "3DDATA/CARS/MUSTGTR/3dobjsp.XBX",
+    "size": 117744,
+    "sha256": "2f4780e109b19975ec80c0ef31c0e3395bafbd419abc7f6a4c16ffaa3b4a0653"
+  },
+  {
+    "path": "3DDATA/CARS/MUSTGTR/bininfo.BIN",
+    "size": 657,
+    "sha256": "69530d85f9702ba414f1aff0af9dbd2ba669b70a387d9db96056c84a6265d0d9"
+  },
+  {
+    "path": "3DDATA/CARS/MUSTGTR/textures.DXT",
+    "size": 54390,
+    "sha256": "7dc265311711031b15f99ecb5f25bf433b4a0b404d09619d4af572ebce4344bb"
+  },
+  {
+    "path": "3DDATA/CARS/POWERST/3dmodels.TXT",
+    "size": 7053,
+    "sha256": "d5c54a6b794e21857d1f6452efa20f548b5047003295bab1d99e3a70619af170"
+  },
+  {
+    "path": "3DDATA/CARS/POWERST/3dobjdb.BIN",
+    "size": 4292,
+    "sha256": "b4d372b3a956f9c48c3c290f0e001557019b76adf76136adfe86bc22c393b5a8"
+  },
+  {
+    "path": "3DDATA/CARS/POWERST/3dobjs.XBX",
+    "size": 9969,
+    "sha256": "767b874d954c60b1ee9c068096e84dcc928e767c7934a30df2dd2a1a7dde8f29"
+  },
+  {
+    "path": "3DDATA/CARS/POWERST/3dobjsp.XBX",
+    "size": 109891,
+    "sha256": "882317b3b6cca804afca5cecd8e6a64300aa34d12fc80c48e56bd84af587989e"
+  },
+  {
+    "path": "3DDATA/CARS/POWERST/bininfo.BIN",
+    "size": 492,
+    "sha256": "3071f47b12a82f0cab26ee19acdb90974c5b87b689ab2cfd419feab518dfcd59"
+  },
+  {
+    "path": "3DDATA/CARS/POWERST/textures.DXT",
+    "size": 226085,
+    "sha256": "4b462e4f720f627ee746801571bceb373595e966a30e7dbc9c904535bdd07cfa"
+  },
+  {
+    "path": "3DDATA/CARS/PUMA_AL/3dmodels.TXT",
+    "size": 5877,
+    "sha256": "04f72132aca33f13571dcdf263e99b9cbeecb4f23eb876e132474193fbfdf838"
+  },
+  {
+    "path": "3DDATA/CARS/PUMA_AL/3dobjdb.BIN",
+    "size": 3420,
+    "sha256": "87188cb3d6cf3675dc68878de95f3f2eb22fa48f7d3f7c4885cb3444cb0245fd"
+  },
+  {
+    "path": "3DDATA/CARS/PUMA_AL/3dobjs.XBX",
+    "size": 9964,
+    "sha256": "d9109e9ee55bd761950da9c39eb93ede25db9904f77bef0c62e3e764c7acdd88"
+  },
+  {
+    "path": "3DDATA/CARS/PUMA_AL/3dobjsp.XBX",
+    "size": 99367,
+    "sha256": "6ca3cc1502a0e953840306073ac644d4ec59bed656489ad05bb3cd50f6656c99"
+  },
+  {
+    "path": "3DDATA/CARS/PUMA_AL/bininfo.BIN",
+    "size": 564,
+    "sha256": "1afc98f00ff3cb5c0964e009f34e49a0514eea7638e8d480672343c17321dd27"
+  },
+  {
+    "path": "3DDATA/CARS/PUMA_AL/textures.DXT",
+    "size": 48359,
+    "sha256": "7d631223da36318d18332f3a810d95b0d70de5e94e022462b700428b90d5df81"
+  },
+  {
+    "path": "3DDATA/CARS/RS500/3dmodels.TXT",
+    "size": 7047,
+    "sha256": "2698675625c4f3d740fb1e4253234b9dd907f9ec8cdfa588a9556b41b57bb4ff"
+  },
+  {
+    "path": "3DDATA/CARS/RS500/3dobjdb.BIN",
+    "size": 4180,
+    "sha256": "a2fa0d7abb0458c0b21273d994a47377aa5d064e33101cedd935f5b91f384c8d"
+  },
+  {
+    "path": "3DDATA/CARS/RS500/3dobjs.XBX",
+    "size": 10135,
+    "sha256": "963d3415473746d382b612a0c34fbaa6fd0078fcd0a20d7f99cc501b2b0fa313"
+  },
+  {
+    "path": "3DDATA/CARS/RS500/3dobjsp.XBX",
+    "size": 115997,
+    "sha256": "2fd0e05d657d1a7e60a5fbf12fdf7730578da556bde85b2acd2359a43ce74b93"
+  },
+  {
+    "path": "3DDATA/CARS/RS500/bininfo.BIN",
+    "size": 488,
+    "sha256": "30b394748da9a65c116a28e85e8c40a6978bbdb839c8ed9fe2a19ea848801e14"
+  },
+  {
+    "path": "3DDATA/CARS/RS500/textures.DXT",
+    "size": 159315,
+    "sha256": "55e4ec19276f195409cfcfdb19964f4d143249833e2b0828a563d5ce7701aed2"
+  },
+  {
+    "path": "3DDATA/CARS/TBIRD2/3dmodels.TXT",
+    "size": 7357,
+    "sha256": "a848193781afe1349127f88ba5e50f90a5afd8af427b83099830367815507b3a"
+  },
+  {
+    "path": "3DDATA/CARS/TBIRD2/3dobjdb.BIN",
+    "size": 4272,
+    "sha256": "924f5ccc14cf71e8475e609e7bc58ff82edb8f13854ab2c8f0bf81a6fd6d3a93"
+  },
+  {
+    "path": "3DDATA/CARS/TBIRD2/3dobjs.XBX",
+    "size": 10871,
+    "sha256": "2c5c06b9d038cd56a2f4df131dd3fe6c93c662cd97a913535bfaf083e7633e2f"
+  },
+  {
+    "path": "3DDATA/CARS/TBIRD2/3dobjsp.XBX",
+    "size": 116823,
+    "sha256": "4aa9179c17e4a8278c6471e5a8e214845002c46a74796312dd9a7919668b0006"
+  },
+  {
+    "path": "3DDATA/CARS/TBIRD2/bininfo.BIN",
+    "size": 490,
+    "sha256": "a743653cdb8b9e592594d3810af7bd83623b140eae9f26034ced5ce9b6dfa748"
+  },
+  {
+    "path": "3DDATA/CARS/TBIRD2/textures.DXT",
+    "size": 210495,
+    "sha256": "d3fb8449f7c9a7a98c0f2a6161dfe98766ed5486720586ac655509584cd090f3"
+  },
+  {
+    "path": "3DDATA/DEBUG/3dmodels.TXT",
+    "size": 5240,
+    "sha256": "96d761387db240d707acec5a76c33c661fcf14d3726b36155bacbd91f887c56c"
+  },
+  {
+    "path": "3DDATA/DEBUG/3dobjdb.BIN",
+    "size": 688,
+    "sha256": "589080dae778d0ac70e389393236a9764913428ccb3f14519dd0f779f36f602e"
+  },
+  {
+    "path": "3DDATA/DEBUG/3dobjs.XBX",
+    "size": 678,
+    "sha256": "db122574fcf1374bbae2b78552da162fca27219a47e5b32913127dd621cea2b9"
+  },
+  {
+    "path": "3DDATA/DEBUG/3dobjsp.XBX",
+    "size": 1476,
+    "sha256": "7daedc8f32a0c01a5cc719ea31af5d8ef4953397b063c53f46d1e1678b191318"
+  },
+  {
+    "path": "3DDATA/DEBUG/bininfo.BIN",
+    "size": 136,
+    "sha256": "3dfbe3f510eca1e67e9af758c8dc3fce89ac7417a2dd466fb178ca6d4b3650de"
+  },
+  {
+    "path": "3DDATA/DEBUG/textures.DXT",
+    "size": 1757,
+    "sha256": "235d540ac616341ef1ff95f6c377045caeb0e2a0e611b080a2de24c015d3dea8"
+  },
+  {
+    "path": "3DDATA/MISC/3dmodels.TXT",
+    "size": 10894,
+    "sha256": "d58d369614fc058411c84492246a7f27fe335c9a087c54e8e1eac955b412b6e2"
+  },
+  {
+    "path": "3DDATA/MISC/3dobjdb.BIN",
+    "size": 39212,
+    "sha256": "7bf38a02c7241cf84f8d25fb0b9cf20b0d019df673847e73077a143e328e8558"
+  },
+  {
+    "path": "3DDATA/MISC/3dobjs.XBX",
+    "size": 4156,
+    "sha256": "30c172002011e1390a247ab479bdb39bf74bb2d4740ba235689a5f5ed465da1d"
+  },
+  {
+    "path": "3DDATA/MISC/3dobjsp.XBX",
+    "size": 25132,
+    "sha256": "0664866d3c7733df4890234e5829854e1562d40eed8f14e856f002202d3b487d"
+  },
+  {
+    "path": "3DDATA/MISC/bininfo.BIN",
+    "size": 1500,
+    "sha256": "a856eb4f6ac703832a948cc2b6bd6cff85e36970b504203cd40785b7eed5a77c"
+  },
+  {
+    "path": "3DDATA/MISC/textures.DXT",
+    "size": 83673,
+    "sha256": "8829238a66994e13883aaca6e4354446d50df10de06777d1f0b43f4e4bf0707a"
+  },
+  {
+    "path": "3DDATA/TRACKS/CONFIGS/engaf.cfg",
+    "size": 752,
+    "sha256": "fab882fc1b9d2f0ad7544b86ada099c6a083550c12d230bdf66aa72c48873ab2"
+  },
+  {
+    "path": "3DDATA/TRACKS/ENGAF/3dmodels.TXT",
+    "size": 18746,
+    "sha256": "76d9f575ac75d8260d0c59acd8c0625caf0f6369f21eefb8957cadd8311f1108"
+  },
+  {
+    "path": "3DDATA/TRACKS/ENGAF/3dobjdb.BIN",
+    "size": 127108,
+    "sha256": "0ac275b3f2938ef8ce3bbc69b33dfdc7652f7b477872aad6a83a3cb3d3891d25"
+  },
+  {
+    "path": "3DDATA/TRACKS/ENGAF/3dobjs.XBX",
+    "size": 79175,
+    "sha256": "c93af86b7f8148175a84e49cacb35aa1d92cb4a35f83231cfa0b5ec08fec6780"
+  },
+  {
+    "path": "3DDATA/TRACKS/ENGAF/3dobjsp.XBX",
+    "size": 985430,
+    "sha256": "5a21b703667735a3500fd9307afad1f730da4740c661b84f65b4707e3ce69876"
+  },
+  {
+    "path": "3DDATA/TRACKS/ENGAF/bininfo.BIN",
+    "size": 11970,
+    "sha256": "ec944fef3f926aa4d200015a278f296f97e59bf14aa4a998e65e741a81c0b322"
+  },
+  {
+    "path": "3DDATA/TRACKS/ENGAF/textures.DXT",
+    "size": 1116533,
+    "sha256": "f78da93c900983667cb46536d59cc0a05986f11bdd14ba5193184a2a7f5b3412"
+  },
+  {
+    "path": "CONFIG/cfg_logo.dll",
+    "size": 188416,
+    "sha256": "d6d25c4d11dab8624e588f434c931235b8841514e8646615bbdc270d5eca392b"
+  },
+  {
+    "path": "CONFIG/str_cze.dll",
+    "size": 23552,
+    "sha256": "ddcf0dc23144e291869d0ed3c76c5a36fb4d2e948b8a779f2f7e163be5ab04e3"
+  },
+  {
+    "path": "CONFIG/str_eng.dll",
+    "size": 23552,
+    "sha256": "94e5546e0c79819a47482b63a9fd8fbde8b599bfdb3f91380a33ccd3220139d1"
+  },
+  {
+    "path": "CONFIG/str_fre.dll",
+    "size": 23552,
+    "sha256": "b10672ba5802f640229a8dbeedd142bc6fd88fdbbeb2baaf730a027ce14a475c"
+  },
+  {
+    "path": "CONFIG/str_ger.dll",
+    "size": 23552,
+    "sha256": "2d0b8a7bbc64b2bb0c54f111ca216462698fdcd9a4cfcf975c8046b23709e905"
+  },
+  {
+    "path": "CONFIG/str_ita.dll",
+    "size": 23552,
+    "sha256": "7c88ca9d11d65ae598882a82b1c2e0c8ba4bccbc52dfc30682c5775dbbecf1ff"
+  },
+  {
+    "path": "CONFIG/str_pol.dll",
+    "size": 24064,
+    "sha256": "100c1a1b402a64dcf9daa9c6ff062975f7601fff16885ab2333da63458ef4d5b"
+  },
+  {
+    "path": "CONFIG/str_por.dll",
+    "size": 24064,
+    "sha256": "ca853376a3d483b50de5826c6680da8aae2c165c850bd3da755c8332faada8cf"
+  },
+  {
+    "path": "CONFIG/str_rus.dll",
+    "size": 23552,
+    "sha256": "51e52e8283a38b2df015453db2f1ff93203ede9bd0e82d5a666ea2ae351895aa"
+  },
+  {
+    "path": "CONFIG/str_spa.dll",
+    "size": 24064,
+    "sha256": "62c82ba658710e0ed798f9c852badd8be08a5ec8b736f395c563a4a5dbb25c0d"
+  },
+  {
+    "path": "CONFIG/syscfg.exe",
+    "size": 512000,
+    "sha256": "d29cff444a3e4106240a28e022daab4ab8fee74c44d9ab89dc9cf06c66065bfe"
+  },
+  {
+    "path": "CONFIG/uscfgdmo.exe",
+    "size": 417792,
+    "sha256": "ec7891d104180c609ebdc006ab296bb7840a87eeca67969fff5917b73a1afddf"
+  },
+  {
+    "path": "DATA/ASCII/AI_DFLT.DAT",
+    "size": 34533,
+    "sha256": "73bf116fbe70825659ec9567ccdd5c3ec5e71ee77475e01c25a6021b7a25f18e"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/ALASAF.DAT",
+    "size": 8155,
+    "sha256": "9f873fd3985beaf93fdb1f04624a936b996dd4648d8e2d952cf3f253db0a4d05"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/ALASBF.DAT",
+    "size": 8155,
+    "sha256": "9f873fd3985beaf93fdb1f04624a936b996dd4648d8e2d952cf3f253db0a4d05"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/ALASCF.DAT",
+    "size": 8443,
+    "sha256": "38fb1dc68082414cad9781c9c616d91155201ec324581fcd3930f49b56020ca5"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/ENGAF.DAT",
+    "size": 11539,
+    "sha256": "9d172a58876f4969f530c6f633fe2c418f3407585d7d3b2b2403c737ff2da564"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/ENGAR.DAT",
+    "size": 12592,
+    "sha256": "a391f6c4b1817888cc4f17ffc5df2312774dab9ccfacce378bbf71c11a66a7b9"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/ENGBF.DAT",
+    "size": 12459,
+    "sha256": "2bbff5520aa7ad0db5d274a308e1f4d92cf0104ae1ccc72f707ab1f0f2e38864"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/ENGBR.DAT",
+    "size": 15933,
+    "sha256": "e2d30db549ea9f639e8819b613cd1abcca47ed1281de641dfb114fc95e547b98"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/ENGCF.DAT",
+    "size": 12493,
+    "sha256": "06e27467f8909cdacd3169c63862edb842efb01d741ee9cd5dba915b446ace42"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/ENGCR.DAT",
+    "size": 13882,
+    "sha256": "0380946c6f18a9582b0eedd9d1a6a65480d4dc21a3274943dbf983ddafe37b44"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/JAPAF.DAT",
+    "size": 13992,
+    "sha256": "df8ea0405a6f1515c8c5afed7933b26fbbbf0097a99a1e7fbb8c81a027f5853a"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/JAPAR.DAT",
+    "size": 12590,
+    "sha256": "67e0e3085e9855e52ff1d5ebd63b8e56c166a7da24ab3f6d798dc4a9b94e061c"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/JAPBF.DAT",
+    "size": 16158,
+    "sha256": "032a2bc4eade2eb3e08b9acc038b74b43e54fe93f55aa3507d4d702bca054512"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/JAPBR.DAT",
+    "size": 14647,
+    "sha256": "808d13fe126c8860e561c0a747ee571cd3db63894bca5058f127e112157ffb58"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/JAPCF.DAT",
+    "size": 16119,
+    "sha256": "3b32581aacd21b34f9cc48eafc6c2d3780d7fac444b391d745bbe2045a252fec"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/JAPCR.DAT",
+    "size": 13208,
+    "sha256": "6427a124908270490f2eae72bc2f01feaa7a2a4f3e1e621a2871981cc0304d67"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/OVAL1F.DAT",
+    "size": 8531,
+    "sha256": "9ebe429e5f298f646faf75c23410321638ad506458fdb6ff595e6c99c487879f"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/OVAL2F.DAT",
+    "size": 11739,
+    "sha256": "d7f6fa7ed24492441fb8866e98dc2cd8759790e3627e022d669eb3e24970c383"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/PACAF.DAT",
+    "size": 8155,
+    "sha256": "9f873fd3985beaf93fdb1f04624a936b996dd4648d8e2d952cf3f253db0a4d05"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/PACBF.DAT",
+    "size": 8155,
+    "sha256": "9f873fd3985beaf93fdb1f04624a936b996dd4648d8e2d952cf3f253db0a4d05"
+  },
+  {
+    "path": "DATA/ASCII/BONUS/PACCF.DAT",
+    "size": 8155,
+    "sha256": "9f873fd3985beaf93fdb1f04624a936b996dd4648d8e2d952cf3f253db0a4d05"
+  },
+  {
+    "path": "DATA/ASCII/CAMERAS/CAMERAS.DAT",
+    "size": 11770,
+    "sha256": "503af7b3e2097f45e4c29ced5c59531fb573eb924159b77cf87a1bfafcc9ee73"
+  },
+  {
+    "path": "DATA/ASCII/CAMERAS/CA_ALL.DAT",
+    "size": 867,
+    "sha256": "3424b7e7d3b2929ffd9c7f757b86a14c7b7e1943315c2ef848e7af989d84eafa"
+  },
+  {
+    "path": "DATA/ASCII/CAMERAS/CA_DEBUG.DAT",
+    "size": 13545,
+    "sha256": "4e741927fe342c3857860929146f415879ec170e2275e37d6a4a2a2f8faef01e"
+  },
+  {
+    "path": "DATA/ASCII/CAMERAS/CA_VPORT.DAT",
+    "size": 1978,
+    "sha256": "662af10888d8a2d60fd82f13c7797d9b4a3d2404c4bc52ecd59eac91abe283cb"
+  },
+  {
+    "path": "DATA/ASCII/CARS/BODYDATA.DAT",
+    "size": 171261,
+    "sha256": "ab0283f6c6873c1d1f37f1671d283adf115ff41acae44147572f55862c18df5a"
+  },
+  {
+    "path": "DATA/ASCII/CARS/BRAKDATA.DAT",
+    "size": 9954,
+    "sha256": "d693a9bb01c7c937978f63c9a7a8439429f27b30e567cc6588cb3350539bf681"
+  },
+  {
+    "path": "DATA/ASCII/CARS/CARDATA.DAT",
+    "size": 103854,
+    "sha256": "57abd89d5b6ab2b2db72aef1995715fda9f3d6606701abb79b32e32a3c97f233"
+  },
+  {
+    "path": "DATA/ASCII/CARS/CARDATA.OLD",
+    "size": 43446,
+    "sha256": "9d2cfc58435119e6ce336159fb99fe2e82fddcafc848efc4c0187b8134d2a45f"
+  },
+  {
+    "path": "DATA/ASCII/CARS/CARSETUP.DAT",
+    "size": 91932,
+    "sha256": "097106eea101b7e5686f5f494c288ef168c99613c4639b21e3b8f6154fa9cfc0"
+  },
+  {
+    "path": "DATA/ASCII/CARS/CTRLDATA.DAT",
+    "size": 13309,
+    "sha256": "163c1cd0bb4be1036d4a9f370021302b8a9de457a3acec0ed408515a68831b01"
+  },
+  {
+    "path": "DATA/ASCII/CARS/ENGDATA.DAT",
+    "size": 66260,
+    "sha256": "ec3d07b55f5e69b824acf91c15ea639afa18debdee0482faa131d2049b0380f8"
+  },
+  {
+    "path": "DATA/ASCII/CARS/GEARDATA.DAT",
+    "size": 18041,
+    "sha256": "acd2ff72464b4070a10432cf7698a5d950b21d5a4b252c2fed46d098b6fc7cea"
+  },
+  {
+    "path": "DATA/ASCII/CARS/MATDATA.DAT",
+    "size": 3691,
+    "sha256": "0c62201662e066cd0319ad72a75cef824db179f87588a9e4de23bfe68d411368"
+  },
+  {
+    "path": "DATA/ASCII/CARS/OVERDATA.DAT",
+    "size": 11190,
+    "sha256": "29bf5856df827c4ed289cb60da75a924acdf49c44ba2429e8074136d09557f36"
+  },
+  {
+    "path": "DATA/ASCII/CARS/TYREDATA.DAT",
+    "size": 63594,
+    "sha256": "2eb7b24b4a6869d0551c66caebd77799423082e815f07756a3cc8c30cc41af95"
+  },
+  {
+    "path": "DATA/ASCII/COMP.DAT",
+    "size": 15149,
+    "sha256": "18ffb446c4dc2a99bc1e734ac5edf4f98be1e420ca99037003cf9449e0971813"
+  },
+  {
+    "path": "DATA/ASCII/CONES/ENGAF.DAT",
+    "size": 1682,
+    "sha256": "9ede99c00f9703b09e782d27d8455d520bec2030702e7227346cd5a4a014de37"
+  },
+  {
+    "path": "DATA/ASCII/CONES/ENGBF.DAT",
+    "size": 1682,
+    "sha256": "9ede99c00f9703b09e782d27d8455d520bec2030702e7227346cd5a4a014de37"
+  },
+  {
+    "path": "DATA/ASCII/CONES/ENGCF.DAT",
+    "size": 1682,
+    "sha256": "9ede99c00f9703b09e782d27d8455d520bec2030702e7227346cd5a4a014de37"
+  },
+  {
+    "path": "DATA/ASCII/CONES/JAPAF.DAT",
+    "size": 1682,
+    "sha256": "9ede99c00f9703b09e782d27d8455d520bec2030702e7227346cd5a4a014de37"
+  },
+  {
+    "path": "DATA/ASCII/CONES/JAPBF.DAT",
+    "size": 27942,
+    "sha256": "5e1190c7450ef782a1346ad21f00f141c69a014856b3ee67c699ad3f2dbeca06"
+  },
+  {
+    "path": "DATA/ASCII/CONES/JAPCF.DAT",
+    "size": 1352,
+    "sha256": "c7f529b92e22b67ce5cc5a1a12fda5f205592adccf1341a6f866171d1f493ecc"
+  },
+  {
+    "path": "DATA/ASCII/CONES/OVAL1F.DAT",
+    "size": 1628,
+    "sha256": "e6173098b042992ca3fb4509f2bc8d3865e8a1dede58070614d17c6711dde415"
+  },
+  {
+    "path": "DATA/ASCII/CONES/OVAL2F.DAT",
+    "size": 1630,
+    "sha256": "5761adf37f03356d7d6a1b9a1e204c5abff82c71055306a3fa5040fa27345987"
+  },
+  {
+    "path": "DATA/ASCII/CONES/PACAF.DAT",
+    "size": 1686,
+    "sha256": "e3595be656c12235c506ed33130a66e486b60921a5bbc6c0439285984a92ab0b"
+  },
+  {
+    "path": "DATA/ASCII/CTRLLERS/CTRLLERS.CDB",
+    "size": 3109,
+    "sha256": "6b8e18d1e8bbcc6e2c228f2975c6e44cf94db9ffeef4bcbc6e4f15c0b86ea5be"
+  },
+  {
+    "path": "DATA/ASCII/DIFFMULT/SECONDS.DAT",
+    "size": 1375,
+    "sha256": "7217714341363648954e9b4fc73f98666d754dff36622f07e898d11be07da2b8"
+  },
+  {
+    "path": "DATA/ASCII/DIFFMULT/SKILLS.DAT",
+    "size": 1394,
+    "sha256": "a7cbbd4182c34f7d9688564f7b964a6875352716ea0518d764d00a080d8168dc"
+  },
+  {
+    "path": "DATA/ASCII/DIFFMULT/TIMEATTA.DAT",
+    "size": 1365,
+    "sha256": "0ca4d8fd5c6568075160ad5119995c848f8a07d2373f47072f878f54302bb06e"
+  },
+  {
+    "path": "DATA/ASCII/ENGSND.DAT",
+    "size": 64707,
+    "sha256": "d4c602dd5d3c60779ad802e992bb29c0137bcd84cab38ecffc4e7db8d5a81c09"
+  },
+  {
+    "path": "DATA/ASCII/GAMEDATA.DAT",
+    "size": 5204,
+    "sha256": "97558fcf053f3df7e649d82c7708285003419466f80d50da31e9a28585c95951"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/49COUPE.DAT",
+    "size": 1693,
+    "sha256": "f0b967490cdeafbb94e3b84bc2b42dc9c350b7080e538212a3a47330c3bdd1b4"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/AM_1.DAT",
+    "size": 1614,
+    "sha256": "cae28714a63299587616ea9ab7d017475c7b8d86a45b1b97e9fdfeab0019a8e1"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/AM_2.DAT",
+    "size": 1632,
+    "sha256": "9d79213317e78c42392a3d38017ffdc8597badf6599e523bb9f4068769364a09"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/AM_3.DAT",
+    "size": 1619,
+    "sha256": "0a5baf70b1217bdd23081779d1027b4be231b2c44b04b03f697457bb1f481c78"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/AM_4.DAT",
+    "size": 1621,
+    "sha256": "1df7d39e8415fc12c245e339b1cb81a5abba45b38ab18f423d1c2b328213397f"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/AM_5.DAT",
+    "size": 1625,
+    "sha256": "efd45bdb05676c88fd1e1b213f95e2ce9484699abc9e983320cce07b68a68c9d"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/AM_6.DAT",
+    "size": 1604,
+    "sha256": "5ce5373886fa9e450c28faf30f07a9580f867052a31198e35aff27cb8cb9ce4e"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/COBRA.DAT",
+    "size": 1338,
+    "sha256": "228b9dbded7f85ea51efefa37e29a16569f8d4d8b4c4e2023b0c6feca6b1841b"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/EXPLORER.DAT",
+    "size": 1567,
+    "sha256": "52681950597054a321724b5e31c61cb1494b9602b026ed8205d03bf5c691b645"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/F100_56.DAT",
+    "size": 1597,
+    "sha256": "25473f0a5b9095287b3887909fca31af33baeccd492a11b51b145d546e8b3a73"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/F150_04.DAT",
+    "size": 1584,
+    "sha256": "bed4edd8e42e654cb04a03c519d95fcc6e6754c4f8a6477d3183d1cfcf1ae7b3"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/F1_1948.DAT",
+    "size": 1677,
+    "sha256": "65aabc26286d72bfbcd99a24147823a372e0fe0379746a8597823d28615f39d4"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/FALC73.DAT",
+    "size": 1699,
+    "sha256": "af37b2001aff4170e01a456d4730aab2565a66d65c81f468f22e11ac28979626"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/FLANE66.DAT",
+    "size": 1344,
+    "sha256": "9fe74f017027b9f3c578d01a426e6d77ffb6b91b079039cb09473ae113e7ad48"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/FOCUSSVT.DAT",
+    "size": 1342,
+    "sha256": "1d9bac7b7936f72533b9f9e3ef5f43fc814fa628a8cec881aede95f866455059"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/FR100.DAT",
+    "size": 1342,
+    "sha256": "d6f90041c4f545e12f0b1a578a77dfdc39c1e11a1d75ce9439c0f401eb62c1e0"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/FR500.DAT",
+    "size": 1585,
+    "sha256": "5d0dc9dc8803aa48d5a1b1694d98f8d23e59308e82fc7757f0b209059110b664"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/GTORINO.DAT",
+    "size": 1344,
+    "sha256": "25df684f910afb6b84a6fc471749e5936895640eea7de8f58891dd3ee0c19a40"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/INDIGO.DAT",
+    "size": 1607,
+    "sha256": "79a3d268ffdc12a964959ba1e6a5e409e5ba15def71d947fc9536cb87fb3a090"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/LIGHT.DAT",
+    "size": 1350,
+    "sha256": "85df47632403f7313da3972cdf30824034a1a82790ec0f747d04264c69ca994b"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/LIGHT04.DAT",
+    "size": 1620,
+    "sha256": "c52d8abfe4ef664294b5c32f108bb3795881913bea01e71536619131093f1012"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/MACH1_A.DAT",
+    "size": 1633,
+    "sha256": "6dea8458366a184e264b6259c8e2f1b4e97dc66b74e99c356c038a18e5764757"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/MACH1_S.DAT",
+    "size": 1596,
+    "sha256": "75e668ddb0d801daaaef44f42efbd8cb12e95d2684371e6b16a82e0d471934bb"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/MACH3.DAT",
+    "size": 1659,
+    "sha256": "7470b4cc3e90086b7c3f49d66e20825f1b2666f0db13dd1a02eef3d47bebdb39"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/MODELA.DAT",
+    "size": 1603,
+    "sha256": "5d53047e060037cb8f1efe8ed058f3c74220b88c17393e4b1233518a500e45a7"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/MUST05.DAT",
+    "size": 1345,
+    "sha256": "22a83af809dabda0c0ae88c06c0dc0536d101634b4e675d8beb9bcfa13da369b"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/MUST68B.DAT",
+    "size": 1348,
+    "sha256": "86fc45a2c35896a8068a06b86d5b2a493e25bd6e6b946c5ffc176acbb1574ee6"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/MUSTGTR.DAT",
+    "size": 1577,
+    "sha256": "4b57d2df67fbd31627b7435c012fbb64f482b4b4cdd88e22f1a4c799e92590b5"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/POWER.DAT",
+    "size": 1588,
+    "sha256": "057a653773fee49c0607d2b3298f86b91073eaa66b1909dd28a90cb5b2e9f3d8"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/QRACE_1.DAT",
+    "size": 1658,
+    "sha256": "3479d872bb0d75b5b0a1d294c483788eff88600f56df21858ab3028f19a7fc43"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/QRACE_2.DAT",
+    "size": 1663,
+    "sha256": "688faba4f53f8117292b3b11a3f5994e50446755aaf42482de6c298527c8fc1f"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/QRACE_3.DAT",
+    "size": 1645,
+    "sha256": "3da80acbbee1e6f6b9b8c8d63ac606887a14b502cac77565bc9108e448b22d08"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/QRACE_4.DAT",
+    "size": 1635,
+    "sha256": "91e88abb87f15ccf19f52af69a7adf1c12d94d2ad844b3f9bef468f4394662e0"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/QRACE_5.DAT",
+    "size": 1656,
+    "sha256": "68ae6e50837dfffabe38b049eb9e7b5f7b8aded3cc68fd4313724345b5cedf59"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/QRACE_6.DAT",
+    "size": 1652,
+    "sha256": "82d784f55c9cd7ff75ce3a49b9975d5806508a5a9153bf418a6e4d47cca69ef9"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/RANCH72.DAT",
+    "size": 1604,
+    "sha256": "e69995bf8fc62dca0c9751584917965f6418560568ddc5f1303945176935cff0"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/RULES.DAT",
+    "size": 9882,
+    "sha256": "92b1d487ed54d9f831a687ef0f3ff113ad9baf401daae1319166416e27bb905b"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/TBIRD02.DAT",
+    "size": 1620,
+    "sha256": "b2c07e49b91181a51c66f407b2f5bc179735fdb7bfb23c587106a01f7e1b21dd"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/TBIRD55.DAT",
+    "size": 1629,
+    "sha256": "84deeb8dfe42b47a06216f923a737278af90718915c6cab25f93d2b470abcfe4"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/TBIRD66.DAT",
+    "size": 1347,
+    "sha256": "60d1ab97382c45dc7ca92d26536a5fa3df0dd9c8cf9ad00f34b7529099710de3"
+  },
+  {
+    "path": "DATA/ASCII/GAMEPLAY/TBIRDMOV.DAT",
+    "size": 1622,
+    "sha256": "cffecfb42e1bd44863a2a0244b932e24b18a1347f2615cc0d7c9bb46e2b42cc5"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/ENGAF.DAT",
+    "size": 6133,
+    "sha256": "d48bcbd9f1e25098fc048763e6a2a50566de31c303954ad9cf9a0857a3604e9e"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/ENGAR.DAT",
+    "size": 6554,
+    "sha256": "d1e605d1d98650f01d23ebf40e69b586cfdc730565c828c84190d39a6b22dcfc"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/ENGBF.DAT",
+    "size": 7697,
+    "sha256": "2a81c2cb7f14177767a00574100484ab890618082995c0ffcf22b54832f1695d"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/ENGBR.DAT",
+    "size": 7287,
+    "sha256": "3f5b876a84f93d4595551e3df561be3afeac878dc2e49abdb62abe44e165fd39"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/ENGCF.DAT",
+    "size": 6658,
+    "sha256": "b52648601b272b0b2cf7d4c33772ad7da00e6b8a5458ed545ebb328bec0adfc9"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/ENGCR.DAT",
+    "size": 6555,
+    "sha256": "469ca606d068afa605d68d02c9932aae41ce825ceb896338e71abd7028673347"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/JAPAF.DAT",
+    "size": 6760,
+    "sha256": "f844e1c91dad9471633c227f6d822a52bca64ac3fda2cf4c7b4812a3aa7dc743"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/JAPAR.DAT",
+    "size": 6758,
+    "sha256": "5e8489bb059281c07a54643e9eea3c6944646077b1b35d48b74d24e88a84de1b"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/JAPBF.DAT",
+    "size": 6345,
+    "sha256": "8518d9c3651ad76f628805e63bb7d2e30563983469ee06802635cf8989194da9"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/JAPBR.DAT",
+    "size": 7284,
+    "sha256": "5afa1cc92479d557bc18f726d4396f88ad7cbaee3685e8cda6254e477b912014"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/JAPCF.DAT",
+    "size": 8445,
+    "sha256": "4287b843dcd496b32c866d18cb08f3c7391ad2a61446939f6ac6ed6a36eb8dad"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/JAPCR.DAT",
+    "size": 7810,
+    "sha256": "cd33f82bd09487f5a0c24bbc427318473c7cffc91b680f52ab86255ef530b97c"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/OVAL1F.DAT",
+    "size": 3840,
+    "sha256": "b8650795f44d0f158a0a2277055148c96b23297c9e25af4bf83b3b3ffe284718"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/OVAL2F.DAT",
+    "size": 5400,
+    "sha256": "2e114bc07f0a0e7ad196f02d290165e3374ef6247b742a4808d1718327b5ad84"
+  },
+  {
+    "path": "DATA/ASCII/GATE/MAIN/PACAF.DAT",
+    "size": 6640,
+    "sha256": "2a7aa95062c2afd48919f48084f2c4ac4749075f63c23f24e808d69ed828f79e"
+  },
+  {
+    "path": "DATA/ASCII/REWARD/REWARD.DAT",
+    "size": 22652,
+    "sha256": "ad728fe5be198d33f602da99bf71dabf5f42f4b81bf8ae1ee5747df4e24f3854"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASAF/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASAF/REVERB.DAT",
+    "size": 916,
+    "sha256": "fd5b6e153c86ac9edb35fc87d4c4f34236b0cde29b60a8a0023498d36f8bb688"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASAF/STATIC.DAT",
+    "size": 1375,
+    "sha256": "3a4908a4d81784494d698c98eadb2a7e4d533f886d49160dafae64a46a5e1d3d"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASAR/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASAR/REVERB.DAT",
+    "size": 916,
+    "sha256": "c5393497e7f7f0dff18160a89d6cd8d3ce0c1f63132e0eed11075a5840ca6525"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASAR/STATIC.DAT",
+    "size": 1375,
+    "sha256": "86fffd862cc0362f5a641815594e36880aabe545e1c737963724042c3fbb4f06"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASBF/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASBF/REVERB.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASBF/STATIC.DAT",
+    "size": 1757,
+    "sha256": "d319b2718df046d09bbc920873ab8c2705a3735182adf97e1d69d20e26a08f19"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASBR/ANIMATED.DAT",
+    "size": 911,
+    "sha256": "7ae7b82312776497699aec8bcb9aef73cdc34d3f3bcf49acb9676f5b43e34d4a"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASBR/REVERB.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASBR/STATIC.DAT",
+    "size": 1742,
+    "sha256": "45c0de7a55b15cb5090f233e6b6cac5dd616504c4e2eabbc192fc70eee068a6f"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASCF/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASCF/REVERB.DAT",
+    "size": 855,
+    "sha256": "65d1528e7c23a95da92e4a495544c4e3df5ab640d1a50ed0067fffa72fbccc7f"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASCF/STATIC.DAT",
+    "size": 2445,
+    "sha256": "d096b4018ab9b5da8b5785981a89e19a73d87fbc9290b3bb628e6e20d1ebad3d"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASCR/ANIMATED.DAT",
+    "size": 790,
+    "sha256": "d32369505950bccc3490c7b07d17da6fd10d3d4aa396cb10fc568b953e9b0e73"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASCR/REVERB.DAT",
+    "size": 855,
+    "sha256": "eb2d17fa9a3d56bdc22c64e0a52db69bff1ec5eb847bb0ab86989b08da593d67"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ALASKA/ALASCR/STATIC.DAT",
+    "size": 2443,
+    "sha256": "3f0f97f8b49f9c6273a21b81f6c12983ee52ea279871af1ac8cbc8413062f418"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGAF/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGAF/REVERB.DAT",
+    "size": 854,
+    "sha256": "81786cda992f9ecc58d32de2558159398d8f3482490547546113dfcc5feaaecd"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGAF/STATIC.DAT",
+    "size": 1518,
+    "sha256": "008ec7ac946fb4f23c60bf5f97144f740889406fbddb1ad574b9101a9bef0254"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGAR/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGAR/REVERB.DAT",
+    "size": 854,
+    "sha256": "39479ddea28b177adead3cef03c093b0250a18f8e090b0954b38680108888f16"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGAR/STATIC.DAT",
+    "size": 1516,
+    "sha256": "f234fb40896eeac28dc8b14109374cdeb12d9d6c7b96a4751318f421bb3bb4db"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGBF/ANIMATED.DAT",
+    "size": 1242,
+    "sha256": "c33724d7bd9a13fb31137d472a9ba71c96d9aa2ac028854dfd0cdfcd3b095929"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGBF/REVERB.DAT",
+    "size": 917,
+    "sha256": "21a765607942ed7bebb0a6b1e9da280684ec529dd4895fcb095866195cc0c71f"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGBF/STATIC.DAT",
+    "size": 1639,
+    "sha256": "4e8d2552d3f2f6b8fc200c7e339aaa5382ec253bf74071c912cc9eb8cc748035"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGBR/ANIMATED.DAT",
+    "size": 1242,
+    "sha256": "c33724d7bd9a13fb31137d472a9ba71c96d9aa2ac028854dfd0cdfcd3b095929"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGBR/REVERB.DAT",
+    "size": 917,
+    "sha256": "b8bf7bda91f6e9ad5d6449fec50676330a1afea790dad5e9087fd9912174bf8d"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGBR/STATIC.DAT",
+    "size": 1516,
+    "sha256": "3eb03dc85d9054ce0a836c1ccae25cc476472a68a8b65949645c54e46d2014d6"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGCF/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGCF/REVERB.DAT",
+    "size": 1046,
+    "sha256": "1dacfa713b91676a4081bbf2355afc9e3db67801e31fa630dadcda44faa7b048"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGCF/STATIC.DAT",
+    "size": 1406,
+    "sha256": "6af1b92aeef9c4c792bb6a7ef75c0ad6608b78fc68d232cc483252fdfb4590df"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGCR/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGCR/REVERB.DAT",
+    "size": 1046,
+    "sha256": "56a406e0f8e73a24326f1310621380485e42828cc6fec0d939e72177a628675b"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/ENGLAND/ENGCR/STATIC.DAT",
+    "size": 1278,
+    "sha256": "83cb509442abf22e9bcf85702406873c4e81dc3c1c39e4855076ee89cae5ab36"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPAF/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPAF/REVERB.DAT",
+    "size": 1216,
+    "sha256": "ff87010c7c0bf7fe8c616c0cf0035ef2d98e3b4cdc304720da1efb60b6b71a1e"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPAF/STATIC.DAT",
+    "size": 1276,
+    "sha256": "34cbb7dd3ccd10d7c88c747389b96c7b3d2f5e9cd265e7b870846be2651aea1d"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPAR/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPAR/REVERB.DAT",
+    "size": 1034,
+    "sha256": "a361f1f87da1eed40fa1080e044ad6e74e2bfbb01f9037e8277b96b52c4b6f4e"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPAR/STATIC.DAT",
+    "size": 912,
+    "sha256": "bca844942088dfced9ec632774038cbd2c4df58f9b575f6c1e08372352eeb474"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPBF/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPBF/REVERB.DAT",
+    "size": 1099,
+    "sha256": "919d25e860c12bb8f55d7969b0f5e4a7d1f89d154b8ab255e090c5da3dae7f53"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPBF/STATIC.DAT",
+    "size": 2002,
+    "sha256": "66d1884197d0517d5b3561957a3d8d7a9cc47f029bb18f46e535fe2647be47ae"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPBR/ANIM.DAT",
+    "size": 794,
+    "sha256": "26d36e483e7119775aad2ad68e77252a5d7f18b648b7e801c885c036f0376564"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPBR/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPBR/REVERB.DAT",
+    "size": 1098,
+    "sha256": "0eab8440835d7c1fe72e08d2eee892d0cab2d354c3e87d0193f4b6f7c9f0bc6b"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPBR/STATIC.DAT",
+    "size": 1876,
+    "sha256": "04818c8a57be7cb40c1c01d216b871900d383c4a2894387102a860e6e9805b13"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPCF/ANIMATED.DAT",
+    "size": 1200,
+    "sha256": "9208a192270a1498d3be673b7f4c3e4fd8d35ddb99788f145809a637946eaa3a"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPCF/REVERB.DAT",
+    "size": 919,
+    "sha256": "8fae893c07c2d0e2483da103ba6fad2b44f888d3ed95e03af152fdca3630fd9b"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPCF/STATIC.DAT",
+    "size": 1040,
+    "sha256": "d6e53d432cf0e4cf6c690f412e708e63513462e0fb60476d8c74c6918aed2a40"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPCR/ANIMATED.DAT",
+    "size": 1200,
+    "sha256": "9208a192270a1498d3be673b7f4c3e4fd8d35ddb99788f145809a637946eaa3a"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPCR/REVERB.DAT",
+    "size": 918,
+    "sha256": "57ce72476707ed6fbe12d55ebdbb0fc76fb46453b1063f0627309c9deba5290b"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/JAPAN/JAPCR/STATIC.DAT",
+    "size": 1040,
+    "sha256": "592e90216b0933681b005d836b51c78e5c015c70e1e17bf905ce949a03d32bcb"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/OVAL/OVAL1F/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/OVAL/OVAL1F/REVERB.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/OVAL/OVAL1F/STATIC.DAT",
+    "size": 4164,
+    "sha256": "69b5a6baba2dec427b90a33c71e732dbecc39794782b992cf9bc5ae3c88e9ae0"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/OVAL/OVAL2F/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/OVAL/OVAL2F/REVERB.DAT",
+    "size": 855,
+    "sha256": "644eccb0accfd33bc0b870b77094d0662e97842ab184fbe6301ce7f8c0521807"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/OVAL/OVAL2F/STATIC.DAT",
+    "size": 4397,
+    "sha256": "389ff7c86c51c5f4d9c749f521cbdcc51a441b440f0c2ed7a79e1c2971fe1984"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACAF/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACAF/REVERB.DAT",
+    "size": 796,
+    "sha256": "333950c9fc9ddde59b07cd367fee86ddae3a87b9e5572eaf64074e8d8ef20fba"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACAF/STATIC.DAT",
+    "size": 2667,
+    "sha256": "4eaaa5ce67db556011975fe3948d25db8d80c0492ff75223de65c9cf293a2b7c"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACAR/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACAR/REVERB.DAT",
+    "size": 796,
+    "sha256": "333950c9fc9ddde59b07cd367fee86ddae3a87b9e5572eaf64074e8d8ef20fba"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACAR/STATIC.DAT",
+    "size": 3017,
+    "sha256": "8cb4b37e9724bc00869e29c3c03fafb0c446ff706a9c3dc1509807351e941504"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACBF/ANIMATED.DAT",
+    "size": 911,
+    "sha256": "7ae7b82312776497699aec8bcb9aef73cdc34d3f3bcf49acb9676f5b43e34d4a"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACBF/REVERB.DAT",
+    "size": 980,
+    "sha256": "1304323ba945468b92b64b62df4fea82183a82b7c3dbe2f7d939c1c3e3823018"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACBF/STATIC.DAT",
+    "size": 2660,
+    "sha256": "eac6ead998532672c86f79caf6cac1d2fecf0375728010035ba571ead15f4088"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACBR/ANIMATED.DAT",
+    "size": 911,
+    "sha256": "7ae7b82312776497699aec8bcb9aef73cdc34d3f3bcf49acb9676f5b43e34d4a"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACBR/REVERB.DAT",
+    "size": 980,
+    "sha256": "2d5cd99796996aa4709d281df76758f4ccfff6acc9ad2edb011d6e6559dddee8"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACBR/STATIC.DAT",
+    "size": 2658,
+    "sha256": "addc2b7d75c1bd8bfbad9afc5c65d8835eb1a4922a0cce8ae61a20614f6ec0c6"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACCF/ANIMATED.DAT",
+    "size": 790,
+    "sha256": "d32369505950bccc3490c7b07d17da6fd10d3d4aa396cb10fc568b953e9b0e73"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACCF/REVERB.DAT",
+    "size": 856,
+    "sha256": "b4965c4e057e45ee05d72ef44d27187fc08b6f6045cd2344384fa47774db2420"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACCF/STATIC.DAT",
+    "size": 2073,
+    "sha256": "729779b1fcf3d0e38490029d67b2c1a65807a090cac18cb6d50da1d384cd9128"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACCR/ANIMATED.DAT",
+    "size": 788,
+    "sha256": "d53069d95a8e1792e2faaea36d5b10f2e1ebd3a353091053d7fbe48e7f790fbf"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACCR/REVERB.DAT",
+    "size": 856,
+    "sha256": "036d6683ef197817af592566eb61c93037979c868391ecc216ff0f9c95dff073"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/PACIFIC/PACCR/STATIC.DAT",
+    "size": 2305,
+    "sha256": "92f1b186e9eb6736677bd832017a9ee76e2bd78ead5c63187680a015df4b7618"
+  },
+  {
+    "path": "DATA/ASCII/SOUND/SND_TRKS.DAT",
+    "size": 194,
+    "sha256": "2dc2dbb0c34d8f53872ef9f8a22e2a082286f75cf5fb59ca8ccf072cc28c218b"
+  },
+  {
+    "path": "DATA/ASCII/SPEECH.DAT",
+    "size": 5861,
+    "sha256": "91118f9fbd8eaf720cd7b7fa42a736ebe7f871fb82f382437d4e7cf220d066ba"
+  },
+  {
+    "path": "DATA/ASCII/SURFACE.DAT",
+    "size": 19176,
+    "sha256": "c1bdf7d69e29904cd224f21ab4072570c93da07f7eaba664da38cc8eb66cb49f"
+  },
+  {
+    "path": "DATA/ASCII/TIME/TIME.DAT",
+    "size": 19390,
+    "sha256": "06c7d681cbd3839483563555739b7c093beeb4187f4f424ae3869d9de6482c14"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/ALASAF.DAT",
+    "size": 42319,
+    "sha256": "61705c8f209fe40f54400193a4f8c9053812ca0eea788f2184c1d5c86d064f60"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/ALASAR.DAT",
+    "size": 43480,
+    "sha256": "23f571a1a644e734e5e26a228f838ef9b0477abff406131ffd2d7f38303a1832"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/ALASBF.DAT",
+    "size": 28900,
+    "sha256": "434ae1c3d430c58d0b37f7387ddf9834b3b27bbf305be8192deb7071dd2e919d"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/ALASBR.DAT",
+    "size": 29953,
+    "sha256": "5e4cf34e43aadd65db0f197da7ea9399973af4eee369cb96e52ae173bb3cce03"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/ALASCF.DAT",
+    "size": 39410,
+    "sha256": "a98f26ecefcebac7c15fae69403f1a24437c81138534545ce3204927bad1a63d"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/ALASCR.DAT",
+    "size": 35820,
+    "sha256": "518b12b487027b568041865c1dbea921c2ba531f7649d5533d8c518f7f0f5de8"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/ENGAF.DAT",
+    "size": 31131,
+    "sha256": "2afbbc3ecfe2dab1f69d91c42f1ccfee10bfe0e7e70f53d5e67aff818ef92cde"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/ENGAR.DAT",
+    "size": 28702,
+    "sha256": "94928c2cb6d07c0c27baefd68b04542119017786f0c2a118750afd5472239b00"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/ENGBF.DAT",
+    "size": 35991,
+    "sha256": "c2575d4f3f2d5ee262a6e931b1990b912e2b4eac3374eba2adb9b5068e51e981"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/ENGBR.DAT",
+    "size": 40147,
+    "sha256": "62af751273ca2c5dbc54253bb86560f20e5fc1d25e98bace38719026236ff358"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/ENGCF.DAT",
+    "size": 31942,
+    "sha256": "88c6ab569d4e620773b9ce3842684651560b346a9f53a177100d5136f48c5806"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/ENGCR.DAT",
+    "size": 32706,
+    "sha256": "fe445d37a6690a75e83267e9c129794f14b1080eb27ccb4066b6b6e9ef38a7f3"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/JAPAF.DAT",
+    "size": 41627,
+    "sha256": "f3e8d8e46b8aa4cc288994e758838f0e091bcf23cbdb78c6eedb79f75ae9c0ee"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/JAPAR.DAT",
+    "size": 33801,
+    "sha256": "165810ed12a3edde251dd373d04f0c54e6cc85239d5a8aa4880410bf6dd68a9f"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/JAPBF.DAT",
+    "size": 44217,
+    "sha256": "3e1b9f791d0ea6fc4a50fc520f8451c64487bf61840ef3d418867143ef44bebe"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/JAPBR.DAT",
+    "size": 46724,
+    "sha256": "8e6bcec491e65c3a7fb5ed0410fbf7e52a339270dd89de3ebcfd82b7297a6cdd"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/JAPCF.DAT",
+    "size": 35950,
+    "sha256": "a2e38c47fd20d7bff3746ee00e21c7e71bf26886c9d6025862858a81767a5f32"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/JAPCR.DAT",
+    "size": 36708,
+    "sha256": "bb6090473aa32fb2f031a99f1ae0da38e6b429c4a323d93fff31bdfddef803c9"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/OVAL1.DAT",
+    "size": 12871,
+    "sha256": "4c82d7afb7ab0caf880993c2de0d4bbec0d22f84b097508ea7669230425f68f1"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/OVAL1F.DAT",
+    "size": 12875,
+    "sha256": "a70727802fb308c44e5daaa2259b6956ebb1c940a7bed0687faea8ed2d5fd9bb"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/OVAL2.DAT",
+    "size": 27995,
+    "sha256": "cc761bda75dc1b830ff93f55717c9b453afa31488b62af5b5bae46c1b5fb373e"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/OVAL2F.DAT",
+    "size": 34689,
+    "sha256": "36a4914805b2363c0b381642d0092c2cd88dd6380095d217b9296682bcba3c11"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/PACAF.DAT",
+    "size": 29316,
+    "sha256": "b484dc7f733511dd4e6bf3d2afc42c6ae92c8b9f5504477728b6bc8ab4b23358"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/PACAR.DAT",
+    "size": 35164,
+    "sha256": "e085d1ec5cf2d27974a74f0f5210de1a6aaa2d9860ee166a261a2e18b205a0d7"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/PACBF.DAT",
+    "size": 41061,
+    "sha256": "b6e46db649e407b75cafaace9dc481917f2f206d5c18b67e59989d4268ebaae9"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/PACBR.DAT",
+    "size": 47616,
+    "sha256": "cc1bf47cf8a3cbf75fee4cc656d3cecd1d164bee18def5d95001e9cc4229097e"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/PACCF.DAT",
+    "size": 34659,
+    "sha256": "8fc47eec39473492fb6b0f75e96f65eed39871d4a9354f0208dded28c204ca07"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS/PACCR.DAT",
+    "size": 36288,
+    "sha256": "8860f33185ea63224fe857f52b1306ab5dc6f83870177f6afa0e74dd59073ad5"
+  },
+  {
+    "path": "DATA/ASCII/TRACKS.DAT",
+    "size": 18293,
+    "sha256": "cf4e29c6e1e1d7da0a9362e316d30f3b1228bca5b639a776ff1e584711bd5171"
+  },
+  {
+    "path": "DATA/ASCII/TRK_PART.TPE",
+    "size": 7882,
+    "sha256": "ec0fb4246ced51c43d4ad48fa12b43cdf2dab04858a488ef54d44a1af27c7c39"
+  },
+  {
+    "path": "DATA/ASCII/TUNING/AIMOD.DAT",
+    "size": 8954,
+    "sha256": "9b7af0fcea1013afe20c3ea2ab11928d3df0229916d616be65ed6af34fda624d"
+  },
+  {
+    "path": "DATA/ASCII/TUNING/DRMOD.DAT",
+    "size": 9328,
+    "sha256": "b63e746524785ea494a679c46eb84b4c8b8e0b9a629d1f2f5d4024a463ba07de"
+  },
+  {
+    "path": "DATA/ASCII/TUNING/DRTIME.DAT",
+    "size": 9258,
+    "sha256": "106c57ad037305b634ae99fd25bdbd09ead0cb3b0d3181577e308185b37997e2"
+  },
+  {
+    "path": "DATA/ASCII/TUNING/OTLIMIT.DAT",
+    "size": 8222,
+    "sha256": "f8dc77d546c29d2cdb92861d5358c2e60237985ca06981ad14395670a8b54511"
+  },
+  {
+    "path": "DATA/ASCII/TUNING/OTMOD.DAT",
+    "size": 9024,
+    "sha256": "f884f839bf886a778455ade340820024f9fde1ee8e94ee2a3aec8f76642e100e"
+  },
+  {
+    "path": "DATA/ASCII/TUNING/OTSPC1.DAT",
+    "size": 9189,
+    "sha256": "fbe2c53083c7ec6780cfe14f51494ca894e33a4a536c74efaca2d3f0c6f61388"
+  },
+  {
+    "path": "DATA/ASCII/TUNING/OTSPC2.DAT",
+    "size": 9179,
+    "sha256": "b9a81c3db35e4619d5de0ef87f54465334bbf1b327b2b431d939f03cba4470c3"
+  },
+  {
+    "path": "DATA/ASCII/TUNING/OT_TIME.DAT",
+    "size": 9520,
+    "sha256": "5230273a6779f76e3bd1e19d76c92478b7be0814f340d619326f81bed31d692d"
+  },
+  {
+    "path": "DATA/ASCII/TUNING/RLMOD.DAT",
+    "size": 9040,
+    "sha256": "2ad4b26f2fa8f50b0b3528f545a46ab58da8b48e8d77440d0c9b0bb7cf902621"
+  },
+  {
+    "path": "DATA/ASCII/TUNING/SECONDS.DAT",
+    "size": 8018,
+    "sha256": "fe667b5fd5a96021832c6788ad8802f40132beefe1ffcde74df6cd9698fcc096"
+  },
+  {
+    "path": "DATA/ASCII/TUNING/SKILLS.DAT",
+    "size": 8013,
+    "sha256": "c209cb787de841cd329232a19f74fcbb2b8ea37a38d58c4352bf4a2f805455a4"
+  },
+  {
+    "path": "DATA/ASCII/UNLOCK/UNLOCK.DAT",
+    "size": 2820,
+    "sha256": "41e5fa4e5d0bdd3388d97df7b5b2ce0f6f8ef46feccd19b474cd2e7d01c04c29"
+  },
+  {
+    "path": "DATA/ASCII/VARMOD/VARMOD.DAT",
+    "size": 286,
+    "sha256": "29373c7126a3c5d9847ee240aa142d11a284235fff98f87604b7a057065e5768"
+  },
+  {
+    "path": "DATA/ASCII/VARMOD/VMOD_LOG.DAT",
+    "size": 292,
+    "sha256": "ae74e6ae822863caf879bde7e92220dd9634c198b231c94c6a4e2e861efb6a82"
+  },
+  {
+    "path": "DATA/ASCII/VIBRATE/PC.DAT",
+    "size": 1939,
+    "sha256": "655010ef1ff42624eefcc81097c48fee5ec4fb68c9ddc5ac3911200d99da0718"
+  },
+  {
+    "path": "DATA/ASCII/VIBRATE/PS2.DAT",
+    "size": 2132,
+    "sha256": "432cb1ed3a69ea332ad7390cd4e847f2986e9031c2ba3fa54774c342c003c118"
+  },
+  {
+    "path": "DATA/ASCII/VIBRATE/XBOX.DAT",
+    "size": 2244,
+    "sha256": "d786f2dd86df5cc13820630e1e581a118c39ff72e6cb41f4036a6df5eaa7a6a6"
+  },
+  {
+    "path": "DATA/ASCII/VOLUMES.DAT",
+    "size": 5001,
+    "sha256": "8c50e369a864a913149ef1fb7104ee1c146d486d65469ce46d90f59d182bfc3b"
+  },
+  {
+    "path": "DATA/ASCII/WORLD.DAT",
+    "size": 1816,
+    "sha256": "28ec163dbef83e0f790d7489ca0f521571f32cebaf0e6a121af94962c46d0081"
+  },
+  {
+    "path": "EFFECTS/BK_SMOKE.PSE",
+    "size": 1404,
+    "sha256": "531991548ba27b7c01f81953347c37b3976356e830a62ab0e99ecdd092dd5e10"
+  },
+  {
+    "path": "EFFECTS/BOF_FBOT.PSE",
+    "size": 1538,
+    "sha256": "935c589f94c400c3f7e4132d229efa20b3273c615bb928cde88023a202f5a05b"
+  },
+  {
+    "path": "EFFECTS/BOF_FINS.PSE",
+    "size": 1443,
+    "sha256": "a91230f7f612a27e559724a8b50b9810207e5629f60af4611b6aae87319ff0cb"
+  },
+  {
+    "path": "EFFECTS/BOF_FTOP.PSE",
+    "size": 1536,
+    "sha256": "d51c34526e04170798aac10eebf4caa5b414df80a90d50b362ef418f2b02b7df"
+  },
+  {
+    "path": "EFFECTS/BOF_SINS.PSE",
+    "size": 1415,
+    "sha256": "815fab05caf326687e255cba83385325bf5b2197e738af6b19bd2171bb3774ac"
+  },
+  {
+    "path": "EFFECTS/BOF_SMKE.PSE",
+    "size": 1454,
+    "sha256": "5fb7b49f2e095a3b9d8b2dbec4db22eb701a69c903745974da275342f4e817aa"
+  },
+  {
+    "path": "EFFECTS/BOOST.PSE",
+    "size": 1417,
+    "sha256": "88b4710ad3f3d03bc99f901e3a3ceada8c1891c7d7f0a3d9ab493ff6d05128fe"
+  },
+  {
+    "path": "EFFECTS/CSMOKE.PSE",
+    "size": 1373,
+    "sha256": "be7cf7d9b98d8b76f9eed5f528e11f3f3326fb402b22d7671cbd4cd30947f19a"
+  },
+  {
+    "path": "EFFECTS/DUST.PSE",
+    "size": 1480,
+    "sha256": "486f96acd6b2d0aac995078cfdf6ef0d13e2f362c3b369bd0112972a47468b66"
+  },
+  {
+    "path": "EFFECTS/DUST_LOW.PSE",
+    "size": 1484,
+    "sha256": "d5a518da7e071bd6344a7f2ed510d7e03db600fa15bb777af9d7f74715ce0e07"
+  },
+  {
+    "path": "EFFECTS/EXHAUST.PSE",
+    "size": 1397,
+    "sha256": "5cc1b535d9dc081e93eb37a5019a196e49bca23f82e8a2bb9c36a166823e1c2b"
+  },
+  {
+    "path": "EFFECTS/FIRE.PSE",
+    "size": 1476,
+    "sha256": "8661382d90104423ec069a793ce75a7359ca6054f41db93a6fd1e63afb68d2d4"
+  },
+  {
+    "path": "EFFECTS/FIRE_SM.PSE",
+    "size": 1482,
+    "sha256": "3ae3bf766437a00d8968258b6fcbf6d430a3a9fc97c779fdf3617ec5e6250501"
+  },
+  {
+    "path": "EFFECTS/GRASS.PSE",
+    "size": 1494,
+    "sha256": "9e76510a01ba1d706b8124d054f485309da378017ca2110ed6ab564b1cc580a6"
+  },
+  {
+    "path": "EFFECTS/GRAVEL.PSE",
+    "size": 1543,
+    "sha256": "6b41798c63ae52c96d3e420254eeea2af0bc1c56d9d3e1fe17f610a596d07de5"
+  },
+  {
+    "path": "EFFECTS/HSMOKE.PSE",
+    "size": 1354,
+    "sha256": "dfe1b7c5e9631cc6e07d2fb4dfa329741515e5ed871c29bb03918835e1a5a7c8"
+  },
+  {
+    "path": "EFFECTS/INCLUDE.INC",
+    "size": 1559,
+    "sha256": "8bc2b9b274ef72234baf1b75f77f943e5e697a0a9eea0b6f9ddbe9629db2c2f1"
+  },
+  {
+    "path": "EFFECTS/MIST.PSE",
+    "size": 1407,
+    "sha256": "3d04b31810698ee65e6f63290bda82bec01af37fba7b7d3122c089d606519304"
+  },
+  {
+    "path": "EFFECTS/MOLTERN.PSE",
+    "size": 1395,
+    "sha256": "a82e820006c1ec44c3e3d3ce446b70d8a8d50e48a74304bfd2bbd19233fdeba6"
+  },
+  {
+    "path": "EFFECTS/MUD.PSE",
+    "size": 1389,
+    "sha256": "94238d0fe3405acfcd7d4777f880822c6b80cb610583715ba8e2869bfc51095b"
+  },
+  {
+    "path": "EFFECTS/MUD_LOW.PSE",
+    "size": 1388,
+    "sha256": "cfa9b90b55a1e65f5d80781c373cdb6306410c8d2d053401cd4175bbbdcefa96"
+  },
+  {
+    "path": "EFFECTS/RUBBER.PSE",
+    "size": 1385,
+    "sha256": "3cc55cb4ab7d53d991e79b91c7ad7fe7f1e1f4c008cab6e4c57783ee30026b46"
+  },
+  {
+    "path": "EFFECTS/SAND.PSE",
+    "size": 1454,
+    "sha256": "c27b4b6f232636632ca73e8246be6b5ab09987127509b02de9d1c330d6cbb637"
+  },
+  {
+    "path": "EFFECTS/SAND_LOW.PSE",
+    "size": 1445,
+    "sha256": "55a71abf44f711a7e1c0b7f6739df1baa56f7362eb508c4dec928b6fc7da845b"
+  },
+  {
+    "path": "EFFECTS/SNOW.PSE",
+    "size": 1383,
+    "sha256": "257d35c936594323e8664cabc839b602af99d71b35bf611d8592ac1fe6d19b38"
+  },
+  {
+    "path": "EFFECTS/SNOW_LOW.PSE",
+    "size": 1378,
+    "sha256": "494e9c8664389a490f8330fc979bebd155be590e0ff93b6b66864568ce10f899"
+  },
+  {
+    "path": "EFFECTS/SPARK.PSE",
+    "size": 1393,
+    "sha256": "3280e36c3ee70f19de8f3857abe8a77f91aed6fd47bb6de95a9ffa4c14337fb8"
+  },
+  {
+    "path": "EFFECTS/SPRAY.PSE",
+    "size": 1350,
+    "sha256": "aca87d3f8137c3e70681e91737d8ed6cbeb1504778cc7ddf0f292bd128c97107"
+  },
+  {
+    "path": "EFFECTS/STREAM.PSE",
+    "size": 1369,
+    "sha256": "0af5c02b6cb43de7b210f95cf7f04a75e15f6f22afc279c0bc14e5b71491981e"
+  },
+  {
+    "path": "EFFECTS/TYRE.PSE",
+    "size": 1408,
+    "sha256": "c47b428ab8966958ca11c83ec6fccdf7d91e4e4593d4673346719e69d093ec60"
+  },
+  {
+    "path": "FONTS/fontbase.dat",
+    "size": 1032,
+    "sha256": "70e06e4bd7c1a4388e3dea2de8aa639a3ef6694ddf9be118a6915b59f5940228"
+  },
+  {
+    "path": "FONTS/fontdata.dat",
+    "size": 218623,
+    "sha256": "2cc06f9b48c9d737079bb23dace936676133cee2be04b5cb59992341d31032a7"
+  },
+  {
+    "path": "GRAPHICS/BOOT/graphics.pcg",
+    "size": 197779,
+    "sha256": "fee3b61bff32da611c92dde154953cc00797283869781e8c47213b6010f5aaaf"
+  },
+  {
+    "path": "GRAPHICS/DEMOEXIT/graphics.pcg",
+    "size": 139719,
+    "sha256": "0111c46eb2cc0b9d520487aeca4578aea644d60859c5f73c885a9291aaed2f1d"
+  },
+  {
+    "path": "GRAPHICS/GAME/BKGNDS/NET/graphics.pcg",
+    "size": 449254,
+    "sha256": "b9a662a7dd596fe87b3544641c015d1b9cceb4f7b0fd517265bc782fe7f50a64"
+  },
+  {
+    "path": "GRAPHICS/GAME/BKGNDS/graphics.pcg",
+    "size": 1212690,
+    "sha256": "2af17da1d317beeab8fe5c178c17dfe921a2409bd423a6ac20a546f7c207e7f2"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD1/graphics.pcg",
+    "size": 4499,
+    "sha256": "915a732c6686b5c766bd9c5986a9062577d76700f4ee39b74f5a522a28969ca7"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD10/graphics.pcg",
+    "size": 9199,
+    "sha256": "b18e5ee5f3beb1f817b44e0c2804e341099ad0b703fa50e6ad04b0359cb94435"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD11/graphics.pcg",
+    "size": 9218,
+    "sha256": "bd774675fd2bd109bdb6d38a28665c7612026f66429620ed2b0423256aa97aa9"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD12/graphics.pcg",
+    "size": 4486,
+    "sha256": "22c8a8f3d9a32a891b5f40360d50dc7be5010715d73ea6daec1e0f7ecdf5800f"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD13/graphics.pcg",
+    "size": 9019,
+    "sha256": "b60aed181d4b70391378161cc18a13be6b7a4e684253a578373b1bb48d98a0f6"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD14/graphics.pcg",
+    "size": 9199,
+    "sha256": "b18e5ee5f3beb1f817b44e0c2804e341099ad0b703fa50e6ad04b0359cb94435"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD15/graphics.pcg",
+    "size": 4529,
+    "sha256": "c776d2bd364d2773b1cba55832fdaf45b5057adfaf70e191409932a1fa603761"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD16/graphics.pcg",
+    "size": 9320,
+    "sha256": "3ca34aabf0156edfe5f680810afeae8afd82867764b406ed8024f603aad4d369"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD17/graphics.pcg",
+    "size": 9019,
+    "sha256": "b60aed181d4b70391378161cc18a13be6b7a4e684253a578373b1bb48d98a0f6"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD18/graphics.pcg",
+    "size": 4625,
+    "sha256": "c5a9844b98fc6c12da6d8d001ddbc75a39654ef907096c63423efc0775c3ff49"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD19/graphics.pcg",
+    "size": 9177,
+    "sha256": "61e0abb7f2a1c7d322ad1f578f330cfaf2c833e388c4ca5fbe74d506df5ae1b1"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD2/graphics.pcg",
+    "size": 9192,
+    "sha256": "90baf71560653395ea4f21471544310d8d61363f058353085ad5ab2005804f6b"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD20/graphics.pcg",
+    "size": 9320,
+    "sha256": "3ca34aabf0156edfe5f680810afeae8afd82867764b406ed8024f603aad4d369"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD21/graphics.pcg",
+    "size": 4353,
+    "sha256": "9633972fedf7a9f9a751fddd5298a82a121b49a17679d4e5b31180235b39023d"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD22/graphics.pcg",
+    "size": 4407,
+    "sha256": "21a794df79c87f033ee4b758ecc0aa96ff411ae85cc00e35bf0bca53a6d8385f"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD23/graphics.pcg",
+    "size": 9198,
+    "sha256": "950825e39d3d8e2faf4a6573806661c79a0d72ba62e72d00bf80beae7bff8523"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD24/graphics.pcg",
+    "size": 4506,
+    "sha256": "c99cc9aff75f417b8916382572b814f511f40427644b56d91bcc42c8d8cbc577"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD3/graphics.pcg",
+    "size": 4580,
+    "sha256": "1cce8b1b5452bba6cd8b2f87f07e8e3ec66eb0879227a322df7d9372173897d8"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD4/graphics.pcg",
+    "size": 9236,
+    "sha256": "024fdbab41ce6ade799d780a9da168bc97d14b97ef3cda41b9fd620cfc4f67fa"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD5/graphics.pcg",
+    "size": 9178,
+    "sha256": "28b065bee0e3a7177b7365bed45c8e5acb47f5e8e52e518f59eeb782a2681ac6"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD6/graphics.pcg",
+    "size": 4664,
+    "sha256": "0ba906f6b5e0948964cf27ea977240e82fbf75edbc81f98c80832591cbb90968"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD7/graphics.pcg",
+    "size": 9217,
+    "sha256": "7a83d98aaa42d8d278106cf7f9a5f18c237fcb06b34b5ec2c98d89e1c43bbdc3"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD8/graphics.pcg",
+    "size": 9236,
+    "sha256": "024fdbab41ce6ade799d780a9da168bc97d14b97ef3cda41b9fd620cfc4f67fa"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD9/graphics.pcg",
+    "size": 4796,
+    "sha256": "b027bcd7c72c923473ae7a8871d20e5c7f460fe7201029f5a881e41f7d41f408"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/graphics.pcg",
+    "size": 4050,
+    "sha256": "6b5b6d1f8b0946316de023299e98a473adb0b1f114496c6536c4ca8ebf445354"
+  },
+  {
+    "path": "GRAPHICS/GAME/CMPICON/graphics.pcg",
+    "size": 9140,
+    "sha256": "abeef32de9b70633ec9b01c1f28998c5fa11a178773485dc2eaafc5a514dafc5"
+  },
+  {
+    "path": "GRAPHICS/GAME/COMMON/MODEICON/graphics.pcg",
+    "size": 14271,
+    "sha256": "3052c8be5888f06237205bb8e45076f4bd47d5e71eff0cf2c6c924975852f861"
+  },
+  {
+    "path": "GRAPHICS/GAME/COMMON/PC/graphics.pcg",
+    "size": 486,
+    "sha256": "5b1ec9f482a9554318c9e76b578e2d425589d497a695275291cc3c8969329d06"
+  },
+  {
+    "path": "GRAPHICS/GAME/COMMON/PS/graphics.pcg",
+    "size": 809,
+    "sha256": "c0d07a12f32363a88f6a8c7eb62aee401673244edcd12a6ae72d5c47ccfc3046"
+  },
+  {
+    "path": "GRAPHICS/GAME/COMMON/XB/graphics.pcg",
+    "size": 575,
+    "sha256": "4f55f3e06334bf507a12c16854ab1d55770b37cc8a356828fafdd1fd6ab8f1cc"
+  },
+  {
+    "path": "GRAPHICS/GAME/COMMON/graphics.pcg",
+    "size": 53183,
+    "sha256": "7324ed6734cfaf36de272a1f850de4fe21e539e1c0292f57cbd6ad33662d8b1a"
+  },
+  {
+    "path": "GRAPHICS/GAME/CTRLICON/PS/graphics.pcg",
+    "size": 7590,
+    "sha256": "f9bfc31f80e872cacab4bb0c63c39f9fb2b4f22700a82e4ab9ce69464a157a99"
+  },
+  {
+    "path": "GRAPHICS/GAME/CTRLICON/XB/graphics.pcg",
+    "size": 9274,
+    "sha256": "ecb03cc3308baa8ccbf023ba3afe3cb6cc3a96ddc923d1e775a53e096ad8a8ac"
+  },
+  {
+    "path": "GRAPHICS/GAME/CUPS/graphics.pcg",
+    "size": 14557,
+    "sha256": "fcc351a0ce42eb2869b23636ebc1fe76ca95c16e201dec2a4b2825e2ce75dbd8"
+  },
+  {
+    "path": "GRAPHICS/GAME/MATRIX/graphics.pcg",
+    "size": 763315,
+    "sha256": "41f62c08795657767c7d8db315c2478096b1f083894f53d04dd14ac9ff15ed53"
+  },
+  {
+    "path": "GRAPHICS/GAME/NET/graphics.pcg",
+    "size": 2402,
+    "sha256": "990375b3096602492eda82634c5d5e97ddea1f81bd0df2b9fc23f299600dffdb"
+  },
+  {
+    "path": "GRAPHICS/GAME/OPTIONS/graphics.pcg",
+    "size": 751,
+    "sha256": "0bbca042a19246ff8d1489ff13e10d0d7fd37632547b4aea8ae3acc1e03c8b8f"
+  },
+  {
+    "path": "GRAPHICS/GAME/RIBBONS/graphics.pcg",
+    "size": 48113,
+    "sha256": "92243fd11793be5cde6b02471ebeead07a5e8e298d31bc6f705ceb3817f051cd"
+  },
+  {
+    "path": "GRAPHICS/GAME/SHIELDS/graphics.pcg",
+    "size": 12379,
+    "sha256": "cc3b12c5623345ad82f1b04be30f3f161443752bf1869562b78631ff9fad1066"
+  },
+  {
+    "path": "GRAPHICS/GAME/TOKENS/graphics.pcg",
+    "size": 8319,
+    "sha256": "46a65efc2819f6b110d5e2c87336195e13497bc227a3fe0c9a30f059d7ea08d7"
+  },
+  {
+    "path": "GRAPHICS/GAME/TRACKS/graphics.pcg",
+    "size": 141676,
+    "sha256": "cddcda3fcfb63f79fc5e81c07a1e67b9e6b8766505c9d994d202b71a335a07e7"
+  },
+  {
+    "path": "GRAPHICS/GAME/TROPHIES/graphics.pcg",
+    "size": 16145,
+    "sha256": "636ef453b7de9ce2607792dc39bdc3d1090e98b3eed2c9fe2904fb685a8d3edc"
+  },
+  {
+    "path": "GRAPHICS/GAME/TROPHY/graphics.pcg",
+    "size": 13133,
+    "sha256": "7cb9696de87af2743822178ea7d77e09bb81ef8463595c7afaf6a444f85ffa92"
+  },
+  {
+    "path": "GRAPHICS/GAME/graphics.pcg",
+    "size": 99847,
+    "sha256": "4c5b5d6552a4a69e9adff8c7fdea1f588a1e4ad11ec3805e29f5454e6a034d90"
+  },
+  {
+    "path": "GRAPHICS/HUD/ATTRACT/graphics.pcg",
+    "size": 3813,
+    "sha256": "7546812191a698ef0f9b14ee4f9e646bdb8aeec96a9a090ab65f157ba098b2a7"
+  },
+  {
+    "path": "GRAPHICS/HUD/GENERIC/graphics.pcg",
+    "size": 9506,
+    "sha256": "85ea3caa7d083cb407f272eb4b5e52af56ae1d52b0b2826fc6b5a676b4351aed"
+  },
+  {
+    "path": "GRAPHICS/HUD/KPH/graphics.pcg",
+    "size": 9932,
+    "sha256": "19dc1e82fdaff63f860e7ac1ee0ff8d36218986e5ec47814d4c226829af0405a"
+  },
+  {
+    "path": "GRAPHICS/HUD/MPH/graphics.pcg",
+    "size": 11623,
+    "sha256": "9eff46a3d76a8c857987ac2875a04ca393c65d1b2306ce17c09f769d93c5b606"
+  },
+  {
+    "path": "GRAPHICS/HUD/NUMBERS/graphics.pcg",
+    "size": 1930,
+    "sha256": "84d60f5f351676519e6df85e87c4a3fc41ce388ef733b356044e5cab00c04552"
+  },
+  {
+    "path": "GRAPHICS/HUD/PANEL/graphics.pcg",
+    "size": 1230,
+    "sha256": "e99652125ab097f49e59fbd60c70a05bee9da49a9dfb07497a1a0b8834a150c6"
+  },
+  {
+    "path": "GRAPHICS/HUD/REV/graphics.pcg",
+    "size": 30158,
+    "sha256": "a1aae9b10c070433c561897dbe648956d1ae5e9de45f19b9b6222ccbfe0538e6"
+  },
+  {
+    "path": "GRAPHICS/HUD/REVM/graphics.pcg",
+    "size": 7182,
+    "sha256": "6204d6a1167b730c2967f6d58dde455fd568eb7342a4de3f144810c5f0486754"
+  },
+  {
+    "path": "GRAPHICS/ICONS/fr2.ICO",
+    "size": 3638,
+    "sha256": "ef46dbe5843425180c4d7bd8e080db2f830f4a964b262babfd7232f91b25f4d8"
+  },
+  {
+    "path": "GRAPHICS/ICONS/uninst.ico",
+    "size": 3638,
+    "sha256": "e3eab38cadbea2461cf4939bb2369b1e70195eb9324141d0f3900add26f1415a"
+  },
+  {
+    "path": "GRAPHICS/ICONS/webicon.ico",
+    "size": 10134,
+    "sha256": "3367eae5463a519df226412bc8c24d2a8b1b93d435f76feac61546f7a2490add"
+  },
+  {
+    "path": "GRAPHICS/LOADING/PC/ENGLISH/graphics.pcg",
+    "size": 8069,
+    "sha256": "2baf3f4a6245394447936777273be208105f82a199b172cbaf224b1080d2c151"
+  },
+  {
+    "path": "GRAPHICS/LOADING/PC/FRENCH/graphics.pcg",
+    "size": 8526,
+    "sha256": "8125d058c6e6cdf936a7ac59e1072a719710fa49441d8637211c2bc59df2d320"
+  },
+  {
+    "path": "GRAPHICS/LOADING/PC/GERMAN/graphics.pcg",
+    "size": 8856,
+    "sha256": "7a8aaa32dbbae7166ca784f8b6f5ad54a62784ae5f80288eab56d38692dd7d09"
+  },
+  {
+    "path": "GRAPHICS/LOADING/PC/ITALIAN/graphics.pcg",
+    "size": 8863,
+    "sha256": "a249fcc8220fd272fe654bb3f24cab842a63c54e210c5b0f3d3a5e25dbb41a1b"
+  },
+  {
+    "path": "GRAPHICS/LOADING/PC/SPANISH/graphics.pcg",
+    "size": 9071,
+    "sha256": "aab751d02b35364ffd97a80b5fbda0199f1782cab51955340feb8d0f2448fad1"
+  },
+  {
+    "path": "GRAPHICS/LOADING/graphics.pcg",
+    "size": 85903,
+    "sha256": "56a09a01207a6e1f1d3add14c2e19a1440f9be8c04789e2d9549e422a92be603"
+  },
+  {
+    "path": "ICONS/XBICONEU.ICO",
+    "size": 4096,
+    "sha256": "18f9edac9abdd0c2ee82f4e770fa191a7e99ff166413c93877d55c688628860b"
+  },
+  {
+    "path": "ICONS/XBICONUS.ICO",
+    "size": 4096,
+    "sha256": "18f9edac9abdd0c2ee82f4e770fa191a7e99ff166413c93877d55c688628860b"
+  },
+  {
+    "path": "ICONS/psicon.ico",
+    "size": 14210,
+    "sha256": "623cb9184863dc79dbd08d6726ea7d49d225b614f298c7db4259298277084444"
+  },
+  {
+    "path": "ICONS/xbsave.ico",
+    "size": 4096,
+    "sha256": "fec6ab8da4fb9e92e5c2e39c11b7a0d787150e804e58faf218852fde2c985c39"
+  },
+  {
+    "path": "LANGUAGE/TLATE_CZ.DAT",
+    "size": 168292,
+    "sha256": "73457b87585dea590f0dc01a847f148bad478fca653fd0a642e6ec5de2fcd600"
+  },
+  {
+    "path": "LANGUAGE/TLATE_EN.DAT",
+    "size": 193822,
+    "sha256": "e277e7abd47e3cb98adfb256be5474bfc507dbbedb0a0705585f8cd9cd3f97f3"
+  },
+  {
+    "path": "LANGUAGE/TLATE_FR.DAT",
+    "size": 201584,
+    "sha256": "8c468f8a0866d95850ebfaeffb7a8cb40e31f8e2c8bcf8f52be9063f1b90e644"
+  },
+  {
+    "path": "LANGUAGE/TLATE_GR.DAT",
+    "size": 207770,
+    "sha256": "d67d4588ba23aec0cd18265063a3a0699ea3e6f6b32c2cbcebf4231730685167"
+  },
+  {
+    "path": "LANGUAGE/TLATE_HN.DAT",
+    "size": 160312,
+    "sha256": "28511cd2412d45c1caf5ce8e0ae9fa67daac5fac34e08f202e57ecf807e1b8b9"
+  },
+  {
+    "path": "LANGUAGE/TLATE_IT.DAT",
+    "size": 202840,
+    "sha256": "81b501097b1dafa307a3c79f33bc65926ab6ac867f842e28bfc8c062408d8c57"
+  },
+  {
+    "path": "LANGUAGE/TLATE_PL.DAT",
+    "size": 160264,
+    "sha256": "1b4a87d6fad783a04f7a66c0e3b29cdea9c28564924a4788819d639d6c6db66b"
+  },
+  {
+    "path": "LANGUAGE/TLATE_RM.DAT",
+    "size": 160310,
+    "sha256": "b8497c288d9f2c1d075b44f07a1687faebf24e80c58268c62c358b4899fd1833"
+  },
+  {
+    "path": "LANGUAGE/TLATE_RU.DAT",
+    "size": 167294,
+    "sha256": "66246fe83776abd2226bb3be83cb2885b36709318a377f35a44626b665b12db8"
+  },
+  {
+    "path": "LANGUAGE/TLATE_SP.DAT",
+    "size": 204388,
+    "sha256": "fc022b6daff706af730f71aea56d275f5077b5d692baac1f097ca2907c41045f"
+  },
+  {
+    "path": "LANGUAGE/TLATE_TK.DAT",
+    "size": 160308,
+    "sha256": "c32a1cf584604856f8efd5a172ffd419a0d7d2ee072e177259179e17838d9430"
+  },
+  {
+    "path": "LANGUAGE/TLATE_US.DAT",
+    "size": 193794,
+    "sha256": "c84e6d67bca25b455bed39311ddc3ea026fce8ae36b09711231e314b3a346c41"
+  },
+  {
+    "path": "MANUALS/english.pdf",
+    "size": 171627,
+    "sha256": "5e435c3adc1328f56a1275552124c99eaa7a79f5fb932d7e6c235f832c2fe6eb"
+  },
+  {
+    "path": "MANUALS/french.pdf",
+    "size": 181106,
+    "sha256": "282297a1a058dddf7c69687566475a49b307a8e85d9b4aa0c288a7ff8295c9dc"
+  },
+  {
+    "path": "MANUALS/german.pdf",
+    "size": 182045,
+    "sha256": "dec528b695f2237f572d221d57ca71d20ca1849205abafe4469cdbe5007b2cb1"
+  },
+  {
+    "path": "MANUALS/italian.pdf",
+    "size": 218093,
+    "sha256": "ff00ebb911ef01107d0df73590f4eb14dc9aaf6c034cf85605b65382a1223b62"
+  },
+  {
+    "path": "MANUALS/spanish.pdf",
+    "size": 245202,
+    "sha256": "00217ffce1d9785bf5db39bb43195cda53f0c9f9e51316d9dd4eaa484748646f"
+  },
+  {
+    "path": "PSHADERS/EFFECTS/blur.pso",
+    "size": 132,
+    "sha256": "c61ce3795cacd45220250b1b6b4d028635ec31e067adfc6b8e702e64eae5339f"
+  },
+  {
+    "path": "PSHADERS/UNLIT/base.pso",
+    "size": 160,
+    "sha256": "ce01c4dce3dbe210f4ca512c81d38192458934d8928c5cb1b8570f4202f376fc"
+  },
+  {
+    "path": "PSHADERS/UNLIT/baseenv.pso",
+    "size": 220,
+    "sha256": "bb479a17f6d7df423c1fb59439d2d4ab8bc5eea10f0cfe204c36e83bd6791a9f"
+  },
+  {
+    "path": "PSHADERS/UNLIT/bspecenv.pso",
+    "size": 352,
+    "sha256": "5abe05de7d82b3357b04cd38a159536d36cb1f35e3fe42e409d0465b0efc8d5b"
+  },
+  {
+    "path": "PSHADERS/UNLIT/env.pso",
+    "size": 160,
+    "sha256": "82ef5a1c1213f3d1332336d3780cfe5fd7b2111988dbc5dad7dc93103a8dd9ae"
+  },
+  {
+    "path": "PSHADERS/UNLIT/passcol.pso",
+    "size": 128,
+    "sha256": "15ea7e3204edda980fcc28c0e3cb5e52b60acfa6b18db7eeec06db16c08c03e4"
+  },
+  {
+    "path": "PSHADERS/UNLIT/passtex.pso",
+    "size": 144,
+    "sha256": "419f9a4ef0cee56d7881527b92bd6b43e58b589fd72690c51fe8f471c34e0854"
+  },
+  {
+    "path": "PSHADERS/UNLIT/specenv.pso",
+    "size": 304,
+    "sha256": "15c6c2804a69c216573844c7dc5e1c901fd6d01cc3ab2dc3db20adb8b1ffe97b"
+  },
+  {
+    "path": "README/ENGLISH.TXT",
+    "size": 8487,
+    "sha256": "6f67cd02b5ab73f5483e724182f7a2819c6423f792801d72014195fda7555fce"
+  },
+  {
+    "path": "README/FRENCH.TXT",
+    "size": 10756,
+    "sha256": "acd07ba5b6f65182adf3d23febb85fda5c7a316f16fea4e8e3b80c8c9076c12b"
+  },
+  {
+    "path": "README/GERMAN.TXT",
+    "size": 10366,
+    "sha256": "5ed114e23b6fd1e04bd46f5f7a0eee8d3b4245545dfdefa2420f98da6b502b1d"
+  },
+  {
+    "path": "README/ITALIAN.TXT",
+    "size": 9856,
+    "sha256": "cdde980bfa443d3982c7ce3ec2edf6ef2303b093f8052472d019f9cc84878dd0"
+  },
+  {
+    "path": "README/SPANISH.TXT",
+    "size": 9940,
+    "sha256": "43cb89dc078d0b3ab67b058232a61d6e1d922123faa0f5e9056dbbee029d8001"
+  },
+  {
+    "path": "README/US.TXT",
+    "size": 8816,
+    "sha256": "9857f8ef0d27203d9e01afe1f737c2949cecb30572eb9fb626c539627e65ec91"
+  },
+  {
+    "path": "SHADERS/ENVMAP/BASE_ENV.vso",
+    "size": 672,
+    "sha256": "f56b563f5f38fa5c12692250df0afbe4e95849b82c25672af536eb8dfbc1e132"
+  },
+  {
+    "path": "SHADERS/ENVMAP/BSPECENV.vso",
+    "size": 644,
+    "sha256": "230e66e717804a9c2cd8981a676177bef3d248bc99662ad2106030dcabd45fa7"
+  },
+  {
+    "path": "SHADERS/ENVMAP/ENV_ONLY.vso",
+    "size": 436,
+    "sha256": "3b8474babc2d7171457dea4e61c173e35e01aa99b774c5f2f6a259d06f857de2"
+  },
+  {
+    "path": "SHADERS/PRELIT/T1.vso",
+    "size": 132,
+    "sha256": "8e7a42b88ef2f74c3a78c1ff13f18a2593dffb642e7aab61080055fe365ad843"
+  },
+  {
+    "path": "SHADERS/PRELIT/T2.vso",
+    "size": 156,
+    "sha256": "d0188a1b53a3604449db791de76ec64a06f0c2b46fb86c05c63c767c53abaaec"
+  },
+  {
+    "path": "SHADERS/PRELIT/T2SHAD.vso",
+    "size": 132,
+    "sha256": "e9ad4315f679456c165400a1169be17fed5bdc3a822159a1c01d7721d44341da"
+  },
+  {
+    "path": "SHADERS/PRELIT/T2n3DARK.vso",
+    "size": 132,
+    "sha256": "e9ad4315f679456c165400a1169be17fed5bdc3a822159a1c01d7721d44341da"
+  },
+  {
+    "path": "SHADERS/PRELIT/T3.vso",
+    "size": 180,
+    "sha256": "bc853c15f33ec2ed764b83d5d4969bc11041ecfd5902a1ef28f31ac96b11953a"
+  },
+  {
+    "path": "SHADERS/PRELIT/T3NODARK.vso",
+    "size": 156,
+    "sha256": "dfaa0e9efe98a361e84da77e913246f5517d2da085bf17ceffebbfdb37f4f2a6"
+  },
+  {
+    "path": "SHADERS/PRELIT/T3SHAD.vso",
+    "size": 132,
+    "sha256": "239f334587fa1fa49c90d07e6bc1456bc83084d39fba802c1a76d82dba04f003"
+  },
+  {
+    "path": "SHADERS/PRELIT/refl.vso",
+    "size": 120,
+    "sha256": "4058451b226060422babe42769b4084aeabc4fbde0666a73772048d88c3362cd"
+  },
+  {
+    "path": "SHADERS/PRELIT/spec.vso",
+    "size": 120,
+    "sha256": "4058451b226060422babe42769b4084aeabc4fbde0666a73772048d88c3362cd"
+  },
+  {
+    "path": "SHADERS/PRELIT/spec1.vso",
+    "size": 120,
+    "sha256": "4058451b226060422babe42769b4084aeabc4fbde0666a73772048d88c3362cd"
+  },
+  {
+    "path": "SHADERS/PRELIT/spec2.vso",
+    "size": 120,
+    "sha256": "4058451b226060422babe42769b4084aeabc4fbde0666a73772048d88c3362cd"
+  },
+  {
+    "path": "SHADERS/PRELIT/spec3.vso",
+    "size": 120,
+    "sha256": "4058451b226060422babe42769b4084aeabc4fbde0666a73772048d88c3362cd"
+  },
+  {
+    "path": "SHADERS/PRELIT/t1_tt.vso",
+    "size": 176,
+    "sha256": "bf32c3356809274d3e1f228b8d04f99a21a137fb2aa9a52b28b5dc264ae5541f"
+  },
+  {
+    "path": "SHADERS/SHADOW/SHADOW.vso",
+    "size": 268,
+    "sha256": "ffe9915bed8f78c5a0025b01be092210d7c79c7afd5b94f1920ec896e0acde08"
+  },
+  {
+    "path": "SHADERS/SHADOW/shad_1t.vso",
+    "size": 188,
+    "sha256": "bba1a9658d10acf23e36628ba2685d5c4da1bcc832db7145ea39d7a1245c4c9f"
+  },
+  {
+    "path": "SHADERS/SHADOW/shad_2t.vso",
+    "size": 252,
+    "sha256": "3d8c6a32edba3ce1a67a9ab1db7e146ddb3a7697df60aaeb8f757170b002a943"
+  },
+  {
+    "path": "SHADERS/SHADOW/shad_3t.vso",
+    "size": 316,
+    "sha256": "40d3ae06534500cd57b62e4bb0ebf5c3619eb4fa35c2fba9a8c4f7dfcc33c62a"
+  },
+  {
+    "path": "SHADERS/SKINNED/basic.vso",
+    "size": 580,
+    "sha256": "7b947550020a36468850cee331e07263f5f68798a9818c4f8da20515fa145d14"
+  },
+  {
+    "path": "SHADERS/UNLIT/BASE.vso",
+    "size": 200,
+    "sha256": "cd9ce6cca97f09cc24ccd74422aa7dda5bddc3026ced8942a359dfa70d4ea02c"
+  },
+  {
+    "path": "SHADERS/UNLIT/BASESPEC.vso",
+    "size": 376,
+    "sha256": "ce001af2c7aa2d53a64788f9d9212386131c9afdbb6e57815540a753d067c73f"
+  },
+  {
+    "path": "SHADERS/UNLIT/SPEC.vso",
+    "size": 236,
+    "sha256": "0aa4f6e419866316511ff8891f8d7ac7f1120fede40eb33a26e9eafea1368b40"
+  },
+  {
+    "path": "SHADERS/UNLIT/TT_BASE.vso",
+    "size": 244,
+    "sha256": "3740dad33a341f2cff3f50c74171013bdcab23f1ca8a4dba91d784c2ef5e3a16"
+  },
+  {
+    "path": "SHADERS/UNLIT/TT_LUM.vso",
+    "size": 164,
+    "sha256": "2571392389532a8a9edc6115f413f5789bda60b3f93a390676138aa2589f2920"
+  },
+  {
+    "path": "SHADERS/UNLIT/luminous.vso",
+    "size": 120,
+    "sha256": "175070382ffe6734f260a8a90977b252d8bdcfd4897a2d5485dadc5599f62e74"
+  },
+  {
+    "path": "SHADERS/vsa.exe",
+    "size": 200704,
+    "sha256": "31907a95dbceb38f3c69c76ea3ce9e97c096e62c3051224039c3150aeb858473"
+  },
+  {
+    "path": "SND/ENGINE1.SPC",
+    "size": 305254,
+    "sha256": "a0918421b13a4590dd9cd67de68b7e3a9da3058ec9dc7997424ac24b8f24a752"
+  },
+  {
+    "path": "SND/ENGINE2.SPC",
+    "size": 430180,
+    "sha256": "fd53cd7a183271ccc071dd28b45cd45033bc736e04177a2a308338ab4c1b7ebf"
+  },
+  {
+    "path": "SND/ENGINE3.SPC",
+    "size": 464050,
+    "sha256": "e191ffc2e146dcacdb4cfd110030108a3e433ee404d6bb0d7ad1e56e1f97a219"
+  },
+  {
+    "path": "SND/ENGINE4.SPC",
+    "size": 284922,
+    "sha256": "69eff21c0b53fd216a95756e57d12ef8b5b37c34d9d1761faa616a0fa86599b8"
+  },
+  {
+    "path": "SND/ENGINE5.SPC",
+    "size": 448774,
+    "sha256": "8c3e6a19d65e42a18bf13305ff7d96def052763d998ba84f506823ec24f4330b"
+  },
+  {
+    "path": "SND/ENGINE6.SPC",
+    "size": 338708,
+    "sha256": "5341f18e6e995680dfcdb8c7bcc058f6d2550ac72ceb794729279635481ac88e"
+  },
+  {
+    "path": "SND/ENGINE7.SPC",
+    "size": 480134,
+    "sha256": "0411ac6cec9b66d5918cae442da13246ab9b4407dc0465b5a753746aa9e4d532"
+  },
+  {
+    "path": "SND/ENGINE8.SPC",
+    "size": 289002,
+    "sha256": "649dbcc41594a57c3747eee3b8319abb81b05087f500a8cc5840c230978daffa"
+  },
+  {
+    "path": "SND/ENGINE9.SPC",
+    "size": 332080,
+    "sha256": "901000d4e464c37a750584b5154ea57a280932ca2c3ca211a6bef19a1bccf1e8"
+  },
+  {
+    "path": "SND/GEN_ENG.SPC",
+    "size": 194132,
+    "sha256": "e9183e55ae3fff8dac6898c79f93db19eb1fa9d2f62f92f915e1472df040307f"
+  },
+  {
+    "path": "SND/MODELA.SPC",
+    "size": 904518,
+    "sha256": "2223ba3ae2c3771b6e480f4ce223b6c48fc3ecd9f72bfa163379283ce1cb3cfb"
+  },
+  {
+    "path": "SND/MODELT.SPC",
+    "size": 971906,
+    "sha256": "e385a4eecdc97b343afb82f9619fa6a11ca4234e8df6f3b9fbee7fbc0e5b6777"
+  },
+  {
+    "path": "SND/MUSIC/FRONTEND/FRONTEND.MPC",
+    "size": 68,
+    "sha256": "2e0d1a3fd8841ce63141f5560ae361a3ed3261409936ace60d5f08f9560d8a0f"
+  },
+  {
+    "path": "SND/MUSIC/FRONTEND/MFVAPOUR.WMA",
+    "size": 1753830,
+    "sha256": "9bba19543b872db8d191c4a60b2172c9f99557b417540eef0426308ef222af8b"
+  },
+  {
+    "path": "SND/MUSIC/INGAME/ingame.mpc",
+    "size": 68,
+    "sha256": "4e716f2d49d3f84f258d4c38ca4586334cd1def291d6bb5d04b65f9db332beb6"
+  },
+  {
+    "path": "SND/MUSIC/INGAME/pstrack1.wma",
+    "size": 1723810,
+    "sha256": "caee1c6e046fba5004194b83c31151458ec9f599f66b0d02ea177b3ad72bafbf"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/boo02.wav",
+    "size": 32090,
+    "sha256": "19b120ebb655ba2b28a3c1f07a05aad676c2354ed32efb8312173acbd0cb10c5"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/boo03.wav",
+    "size": 23642,
+    "sha256": "79e1e1e6c81cc6bc4e546aecbeadb531073b426a6121861640f70f3992e00316"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/english.vpc",
+    "size": 29060,
+    "sha256": "a752a45f24e9d74c7fd84b95de9c64fff1ab6b31f0b0a8b4aaa144d288f3e5f4"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/eol11.wav",
+    "size": 24026,
+    "sha256": "e9dc346b1e42278d34cae668510f0ae59b878d4814f5332e85fc3acc212d344f"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/eor02.wav",
+    "size": 26202,
+    "sha256": "5d991c0d93dd02523a36797efbb41154f6f695d7bddf79266d0513b5b0437859"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/eor03.wav",
+    "size": 28762,
+    "sha256": "2523b19b75456ad668dda25ae96f65166e104f3765b50f94a1755ace6bd4fa8d"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/eor14.wav",
+    "size": 17754,
+    "sha256": "08d0950e0a46e25dc61aa11301e13f119cae854d2f6cfa53a59d813af3f2be0d"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/main02.wav",
+    "size": 20058,
+    "sha256": "84e38d9fafd9f3babf085a5254498eacc2c06d9135aa92a86eb46137dbffc970"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/main06.wav",
+    "size": 17498,
+    "sha256": "ed781bbde22444b0dabf6ced5660e6aeb7c16ef01719d75bfa6cadd2dba35f54"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/main07.wav",
+    "size": 25434,
+    "sha256": "eb9252d6bce111cbc07910c7219315f2a0bea2a1be7b43d73df7bbd05f817dc7"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/main08.wav",
+    "size": 14298,
+    "sha256": "fca926b28c2416b760841089bdb7311c055ce6fdf44ebadd6bb4fba7db63c4cd"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/main24.wav",
+    "size": 13658,
+    "sha256": "6cdb986e26e6d04e120aa94eda9dcb764a589495995b85476682063486bbdf5e"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/main25.wav",
+    "size": 16346,
+    "sha256": "7a469334ea5d97d0a12dd02901ad39af78a6f87ef168ab618b11bf1b44ee9258"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/main26.wav",
+    "size": 12762,
+    "sha256": "35ea5fe13c3d00c5eca4006cc29aa229c6521331c18b96999e6b010ecdf57ff3"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/main27.wav",
+    "size": 17242,
+    "sha256": "4e6d2de86ddee06fdad80197e3f2ce3b4f3a9a0793dcef2cd586aee52b6f4168"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/main28.wav",
+    "size": 15706,
+    "sha256": "925a7839b95ddebd62d9893f6748909fea4105b7635cc3ca1004b5799da97623"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/main29.wav",
+    "size": 19930,
+    "sha256": "9a777c3616c37b4570e1c228ae3b8ed86e340709679b20288c2f8ab4b86aa6bf"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/main30.wav",
+    "size": 21082,
+    "sha256": "8f58f58946d4ad5532d1112ac6c0b610172a8bc497d4315eefc3d6951980152a"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/rs01.wav",
+    "size": 16218,
+    "sha256": "2ca36ea800ed573644a833f696b373da302752fb7110aa424ab76df62b109411"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/rs02.wav",
+    "size": 15066,
+    "sha256": "36ee95f8ec2317512666aae032dc29c1f6f23887c800825206b9eb84e40744b1"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/rs03.wav",
+    "size": 15066,
+    "sha256": "5c354884e58f47475eb37ae232e43aaa97a1a7c4542ab04df09d674791fb1bd8"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/rs04.wav",
+    "size": 13018,
+    "sha256": "bcc398bc39cb097d3e391931f9ddcb2666feb8d2a42aa6408cb4a6f4e4a89773"
+  },
+  {
+    "path": "SND/SPEECH/ENGLISH/sta04.wav",
+    "size": 46810,
+    "sha256": "c0f4bb0c2ac59d420a27a754552c926bcebc31533f06408898ec63a4a66c1fa8"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/boo02.wav",
+    "size": 36058,
+    "sha256": "5e0bbee3caa13ce6da3a4b2cc9dbb1d7e3ad5004ebba33ded9031ba6fad00ddc"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/boo03.wav",
+    "size": 26586,
+    "sha256": "21de9b737463c73310c1d15f3558a3de048a5494f98e615d60f3cfd91bd223ba"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/eol11.wav",
+    "size": 28506,
+    "sha256": "e18a22b5d6a9e3d1a7b623e12ea7ba12e0d63ab413e94f63396b21cd46226a3a"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/eor02.wav",
+    "size": 32474,
+    "sha256": "48af85642374122bb7bd5c8d692442c94a887bd792be6e74b176a2228ca7b1dd"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/eor03.wav",
+    "size": 25050,
+    "sha256": "a282565ca719ef2054292c318e81fe08dfaaa07d4650a74db0f018a06bfd19c0"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/eor14.wav",
+    "size": 17498,
+    "sha256": "ea39328defdc250b71946eb0f5ad8bf03f475dffb0b772aefc9d79b707fb6695"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/german.vpc",
+    "size": 29060,
+    "sha256": "5b09929186d25911adb0ce69c41c3cd9d0337e9bf15a36cd69766853f39802b3"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/main02.wav",
+    "size": 24410,
+    "sha256": "81a9b50360def2a88003b903a4fb792d6138530826ce58f47c94f7e3481c0473"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/main06.wav",
+    "size": 20954,
+    "sha256": "2dd6b0fffedb1646946b92cc2f9d1f882ab0978e99ddce2f5786276c5fce0172"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/main07.wav",
+    "size": 28890,
+    "sha256": "983dd14d11d6c4615b8e66ecd1f37c9dee9612ecca0cdf666ef4fc862c2294bc"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/main08.wav",
+    "size": 16602,
+    "sha256": "6ed7e9b51f043f0adafbb04f4aa771c48ff6a6b2a90afc13deead23a47200726"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/main24.wav",
+    "size": 15834,
+    "sha256": "36572e6fbedd727af4968c8b51ad0233f59fc0e409d061a6b2ba5ef36a518284"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/main25.wav",
+    "size": 17754,
+    "sha256": "7b34a14873bf2e267047515b55b43750c09f4af8dbf3279e8759915ab70ba3f4"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/main26.wav",
+    "size": 13914,
+    "sha256": "98e851d197c670b5f637de8a1d0966a07be69812da3271a6aa0faa00a508f385"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/main27.wav",
+    "size": 18010,
+    "sha256": "615134d00d96b0c34b2f8cfa0e9895f9f12aef370ede948bea07652eeef26f5d"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/main28.wav",
+    "size": 15962,
+    "sha256": "674608b9c851edf7cf119bf212fb1a96d91b826a6119541b16035c78fff6a797"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/main29.wav",
+    "size": 24666,
+    "sha256": "2257d581b35cfae73a624dcfbeea3db51526e2796e23993123e4d646abd01f0e"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/main30.wav",
+    "size": 23258,
+    "sha256": "f32b48a6c103c1c2c13bdd1829a01fdde053ac3265ff5f3e949b2501e9e0bb7e"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/rs01.wav",
+    "size": 15066,
+    "sha256": "01f5d249ea66319a0a0143dced0b5d206056037737a36a510426430055535ff2"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/rs02.wav",
+    "size": 17242,
+    "sha256": "fd6ad5a85159cd1716697e8507e356680cadbb683b15d74b2b56e62e9b938688"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/rs03.wav",
+    "size": 14042,
+    "sha256": "4b0457318a2f98fd70bab2717363ea685a10ad338017952cf566a4b077f79b5b"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/rs04.wav",
+    "size": 22618,
+    "sha256": "06c47eaf7fec12b6ae36dbd6a04d228955b5477e4f6f3eec11a6dd8e5f3cee3d"
+  },
+  {
+    "path": "SND/SPEECH/GERMAN/sta04.wav",
+    "size": 52058,
+    "sha256": "91ac0a1f9d11aceaff1c42b690dd65d5ce6703eeb3bea2add7c030e3e5653134"
+  },
+  {
+    "path": "SND/SPEECHXX.VPC",
+    "size": 14724,
+    "sha256": "a57bb80df33693bb6e4459c9cb48463f2b43fe596bbad6a08aaa0c0a1ce8a183"
+  },
+  {
+    "path": "SND/TRACK/ENGLAND/ENGAF/ANIMATED/ANIMATED.SPC",
+    "size": 23414,
+    "sha256": "833c8c3ef055de8f590f0edbe509bf1c877a01145322273460053f6584dc6547"
+  },
+  {
+    "path": "SND/TRACK/ENGLAND/ENGAF/STATIC/STATIC.SPC",
+    "size": 398254,
+    "sha256": "7e38e38713341cfa6733b70120a354ecfbeb2b4ec651bd62e1b64a743984dfd8"
+  },
+  {
+    "path": "SND/TYRES.SPC",
+    "size": 1154878,
+    "sha256": "6c56287af4650a98b02b705df4b3d6557aac6f7a8cc0bcca14a88944a1426394"
+  },
+  {
+    "path": "SND/misc.spc",
+    "size": 709504,
+    "sha256": "a67a66b36655b1990dfb198420749fc04a5751c1c46c4597969d2a55ae351c7e"
+  },
+  {
+    "path": "SND/speech.vpc",
+    "size": 14724,
+    "sha256": "4389f64aecabe5cea8ea5b76360552f72781022245fdb0241e78f1bce750024e"
+  },
+  {
+    "path": "SND/ui.spc",
+    "size": 485018,
+    "sha256": "891fac97823dc37cfedaf08cf1714f611d53c16933e5432b7412738440adfcdc"
+  },
+  {
+    "path": "UI/3DDEBUG/CAMDISP.UI",
+    "size": 2250,
+    "sha256": "3e5fc3f97c70fd0ddd989b58948713b1950d239abab3e71cdce01594d77ed3c9"
+  },
+  {
+    "path": "UI/AUDIO.UI",
+    "size": 24761,
+    "sha256": "7592f9e1ad1e58999371ad967424431fe5ff3e6d06d681ae766484b91b7ed088"
+  },
+  {
+    "path": "UI/BACKICON.UI",
+    "size": 502,
+    "sha256": "fc14ad2854c81f0c7edc528dfeee45dae6c780fc97273d67bf22de835942fc0c"
+  },
+  {
+    "path": "UI/CALIB.UI",
+    "size": 17013,
+    "sha256": "e43dd2c801881d33fd33ee6191eda8421116567a1a91e3704911cb30cea5c68b"
+  },
+  {
+    "path": "UI/CAR.UI",
+    "size": 16364,
+    "sha256": "41e08a23240b4970ce62f7bb9490d4b6e4a985945c7264daeb795a89845a2df1"
+  },
+  {
+    "path": "UI/CHALL.UI",
+    "size": 10722,
+    "sha256": "01233a6258befa64e8dcfea7328dccba9eb259f90ddc31e27568b58bf09f461e"
+  },
+  {
+    "path": "UI/CMODE.UI",
+    "size": 14792,
+    "sha256": "3d6fb51fccf70f4fc4a5ee3daa5a1291e0651e572e05bff33062cf189725a17e"
+  },
+  {
+    "path": "UI/CMPDS.UI",
+    "size": 12011,
+    "sha256": "a8def128c90994baaa5385987bc771eee17c028c2543e8bc673ef97417d4fa9b"
+  },
+  {
+    "path": "UI/CMPIN.UI",
+    "size": 121,
+    "sha256": "97331a23d99bcc2e8f86abed0c5792e796d583be0e3076161b090898783f6c6c"
+  },
+  {
+    "path": "UI/CMPR.UI",
+    "size": 5338,
+    "sha256": "813d625e5e93cee6ed9fd49d534c241a7582b3e63f3d851f65732160dcf3b628"
+  },
+  {
+    "path": "UI/CMPSL.UI",
+    "size": 5402,
+    "sha256": "e9d89378265529ce597d1d38daa4407cc2836a1557ea477c4c30ab1c0098da49"
+  },
+  {
+    "path": "UI/COMMON.UI",
+    "size": 4579,
+    "sha256": "77adb21d3bbf81636c0009fa1a620ce7f3975d6939a89f461609c79bae7e6409"
+  },
+  {
+    "path": "UI/COMOBJ/COMOBJ.UI",
+    "size": 10148,
+    "sha256": "a9f4e3509b0a8b6a64c45fc3325d42fd76a75de7e51c7e82ff065f652ff2f9a9"
+  },
+  {
+    "path": "UI/COMOBJ/XBLIVE.UI",
+    "size": 2689,
+    "sha256": "370b92d739279523dbe312d0bc02874ee7b08749ad25863149a6c48343aff678"
+  },
+  {
+    "path": "UI/CONTINUE.UI",
+    "size": 1321,
+    "sha256": "3bf0e293d4ab4aeefbd8e6ccd7119f41d91c70d357f8fd788f279a2f338f4df7"
+  },
+  {
+    "path": "UI/CRED.UI",
+    "size": 2040,
+    "sha256": "b5f6ae9c861eb90bcac2891b569cfd09ea8827e9a6fba930f5f9936531cf5c4a"
+  },
+  {
+    "path": "UI/CSET.UI",
+    "size": 12494,
+    "sha256": "34d1d5cd2ca1dedeb148e12362bce4e94474765385aad6aeca363a2bc7a0ba47"
+  },
+  {
+    "path": "UI/CTRLS.UI",
+    "size": 7063,
+    "sha256": "ba3d0309cd519327c3621e8a6c72c50c353076ca1ed78840576753453e975fcf"
+  },
+  {
+    "path": "UI/DHSC.UI",
+    "size": 9502,
+    "sha256": "2957c7611b9b2946cf75fc0c1ec9705fd9f3604c48a23bed4b4292a04e54f5b6"
+  },
+  {
+    "path": "UI/DISP.UI",
+    "size": 12104,
+    "sha256": "f0490e1497f3e072b128061a95963ae4af506d2943339d596ef069e9711e4aaf"
+  },
+  {
+    "path": "UI/DRDET.UI",
+    "size": 2559,
+    "sha256": "75d930c25df0451d4dbd6fca622a2fefab69bea241384b63d43b885f87471f3d"
+  },
+  {
+    "path": "UI/DRIVR.UI",
+    "size": 1722,
+    "sha256": "275cece36843b4b6acc8cc009627ac91436200178c3057d429bafc5905a5c437"
+  },
+  {
+    "path": "UI/DRRAT.UI",
+    "size": 6883,
+    "sha256": "1687334d3e260851fb19c2c3d7d420b74e758808bc8a6a0ef1dce9a7991daa9e"
+  },
+  {
+    "path": "UI/DRSEL.UI",
+    "size": 5152,
+    "sha256": "ec4843635e3e698cb16d8f3622c436fece604d939a257a7182c1566623a3dd03"
+  },
+  {
+    "path": "UI/ENDC.UI",
+    "size": 5833,
+    "sha256": "19b2d9f7d20f4345929105f17186f7f803ba0da6e74b0e878c54a3eade34c988"
+  },
+  {
+    "path": "UI/ENDFC.UI",
+    "size": 311,
+    "sha256": "8333c258040ec52021542271302675f5e7a52c88bcd7c5bfdc5c1be8e7c72ac4"
+  },
+  {
+    "path": "UI/ERND.UI",
+    "size": 3042,
+    "sha256": "3a41b78228c23c6a996e6c73c96cb67775314ee7b62f6d5c9be4c9cab624b448"
+  },
+  {
+    "path": "UI/FILE.UI",
+    "size": 1485,
+    "sha256": "01b0345d272bf799b9d479021959ae3ced2af30bc2f70e7ed993f73f9cfb1eb7"
+  },
+  {
+    "path": "UI/FORD.UI",
+    "size": 4436,
+    "sha256": "520e4b9243f2804db7044d46ec50324d5e67ae607198428b9ab66940cb6c6f74"
+  },
+  {
+    "path": "UI/FORDBAR.UI",
+    "size": 1165,
+    "sha256": "0999a7fc6485172c8100d7c66da3a399f72caaf9fdd08d7d520be58ea552e855"
+  },
+  {
+    "path": "UI/FREQ.UI",
+    "size": 4155,
+    "sha256": "ca79b19b2ba552c660c6f3cfd448cb55442f84698c7b3940b8f0c6a1763b3c20"
+  },
+  {
+    "path": "UI/GAMEF.UI",
+    "size": 5723,
+    "sha256": "4ef2675f62ff6f2af086cbbdd923cec6411230fc9e55888a15897b8120d71134"
+  },
+  {
+    "path": "UI/GAMEFMLT.UI",
+    "size": 5354,
+    "sha256": "d3b7491e59565a66c8a2ded6700dfbb5a78d9a7194438e46d7532f55417742ee"
+  },
+  {
+    "path": "UI/GMOPT.UI",
+    "size": 8553,
+    "sha256": "ad7260fbd4127eb0e86dbff91d2cabe5fdb028dde9f8e8767372725bb7e945c6"
+  },
+  {
+    "path": "UI/GRAPHICS.UI",
+    "size": 15973,
+    "sha256": "195c2ac5d569787b5c86f78d7c2e559d02f2f000e417c7ba96afe1f06cc48868"
+  },
+  {
+    "path": "UI/HIGH.UI",
+    "size": 11921,
+    "sha256": "4e2a7ba5d0ea6e9c4a5b80ffe3ce54717b3e475bf83b3c2be8ddd93f64b74bf3"
+  },
+  {
+    "path": "UI/IGXICON.UI",
+    "size": 943,
+    "sha256": "1bf45f43b214d50498718bb73dbd563300e61b730ba72c2ef59b4d2dc6c949a8"
+  },
+  {
+    "path": "UI/INFST.UI",
+    "size": 1760,
+    "sha256": "1101a1a50b2b1fc87cb702877bf9f28a6e5ff17121b82a8b181aae4b29e89659"
+  },
+  {
+    "path": "UI/INSTR.UI",
+    "size": 5943,
+    "sha256": "3a03898253a16b86b0a360345a5555c94e978ed180c152325a765d13518cecf4"
+  },
+  {
+    "path": "UI/KEYBD.UI",
+    "size": 5460,
+    "sha256": "37e0805c5b989ba0ff4f8408bccc6b5b06652bf626d0d1e4647e06a78fb5ee7b"
+  },
+  {
+    "path": "UI/LANG.UI",
+    "size": 2251,
+    "sha256": "5cb8ccb1611ac39e05a708fc0f63f4ed6b52e790d98d20a436789a9b108fdc44"
+  },
+  {
+    "path": "UI/MENUBAR.UI",
+    "size": 1669,
+    "sha256": "44b4d2e6cdcd04cf3d4ebb84a6033caa0324ca37772fd5778fc520f4734c9383"
+  },
+  {
+    "path": "UI/MULTI.UI",
+    "size": 2429,
+    "sha256": "dd8876eed33f7dc0e8d6412f162790cf6231fedb7178b7341430104f3939bbae"
+  },
+  {
+    "path": "UI/NETBKG.UI",
+    "size": 2869,
+    "sha256": "43f0cbdc0038648d5a1db0c37ea477820c9e6e8fc834fef03777e37f9b64e962"
+  },
+  {
+    "path": "UI/NTCRE.UI",
+    "size": 13994,
+    "sha256": "02851ecff4212a210b7d6bc638cd477c96eff7c56427fb849f192f9990cd33ea"
+  },
+  {
+    "path": "UI/NTGLI.UI",
+    "size": 8757,
+    "sha256": "c0ee930558aa4d7f833cda948923ea59c85e228500fab7eff299b21b819e86c0"
+  },
+  {
+    "path": "UI/NTGMS.UI",
+    "size": 5580,
+    "sha256": "92ca399b4e5df1e1c377ea89d79003496e5450210b607bff3c8662a239c31466"
+  },
+  {
+    "path": "UI/NTGSE.UI",
+    "size": 4676,
+    "sha256": "55e69a4185452ebd50827538e5f99e2c154ef94fe2e1370e4b1ad6e03f190df3"
+  },
+  {
+    "path": "UI/NTLOB.UI",
+    "size": 7866,
+    "sha256": "5c482c91abc683e2a3543390a8b92c7b83ba560fc610044f9872dbdafe9c15d8"
+  },
+  {
+    "path": "UI/NTMEN.UI",
+    "size": 5357,
+    "sha256": "67a16c2f05aeda519fdef8fa1757caf9bb1174fea4942cd6516417af9c69d3dd"
+  },
+  {
+    "path": "UI/NTQM.UI",
+    "size": 4336,
+    "sha256": "aa4cf01ca6ba5cb57d57d265735e96ff344b17aedf661d6eb0632cde8bbb2bba"
+  },
+  {
+    "path": "UI/NTSEA.UI",
+    "size": 16072,
+    "sha256": "aebdc0bd9d0f60cb4ff94c0568193c583060e5c640f816f3f075ffca937c56af"
+  },
+  {
+    "path": "UI/NTSER.UI",
+    "size": 1097,
+    "sha256": "063bf99a73bb7b6e0f639ee6de16fb4ee924afa00cef8150b028e39913f1e59b"
+  },
+  {
+    "path": "UI/OPTS.UI",
+    "size": 5398,
+    "sha256": "dc3723bf1422beb550e99df38fc66c2aa17075469b385a7150db314f5d57468e"
+  },
+  {
+    "path": "UI/PAUSE.UI",
+    "size": 5679,
+    "sha256": "c63ab943e60ad70c9c7e54b683e3d84c313d3733d0035fb5a5726f8f7852b300"
+  },
+  {
+    "path": "UI/PCCON.UI",
+    "size": 9613,
+    "sha256": "60df1e9cfe2ba244994b9bca8645fe679f05d52bf0b319a691dc375f3f7c5da8"
+  },
+  {
+    "path": "UI/PC_CSET.UI",
+    "size": 2807,
+    "sha256": "7457dc5c86b89deae16f003434df2c05b96339a560847a31ad0c913899ae9c44"
+  },
+  {
+    "path": "UI/PC_CTRLS.UI",
+    "size": 1525,
+    "sha256": "9df876cfbb26709206b79dcd524e6ed29f498dfaaf6e0d1f69a7cef668986746"
+  },
+  {
+    "path": "UI/PLAYR.UI",
+    "size": 2090,
+    "sha256": "37abb944f3b6bb70d313fc710c77824317adb64952baeed0b98ae764137d2c64"
+  },
+  {
+    "path": "UI/POSN.UI",
+    "size": 4517,
+    "sha256": "e607d7636e56fec5d8a9e1712f7119f1b5fd24fb728c8b8ab3caa6fbace9ee4d"
+  },
+  {
+    "path": "UI/PSCON.UI",
+    "size": 10523,
+    "sha256": "c84a96670bf13e3269a5bf57f7cc8c7ae0a46b95ea3e3c7ba05ac44c1930115d"
+  },
+  {
+    "path": "UI/PS_CSET.UI",
+    "size": 3559,
+    "sha256": "f48ca320d312c65e5ad2529c933a05f99d80141ee9a3d53cd9ea5ea5e26c39ad"
+  },
+  {
+    "path": "UI/PS_CTRLS.UI",
+    "size": 2847,
+    "sha256": "7284772dfd47717e8acc071b84c8cc21de03426dac3939701f74a911da919964"
+  },
+  {
+    "path": "UI/RCEND.UI",
+    "size": 3913,
+    "sha256": "a991e8dfbb08c2a50b84e79fb9bf542cf18eb2b42074ef34f1d3e0829b03b779"
+  },
+  {
+    "path": "UI/RCRES.UI",
+    "size": 7186,
+    "sha256": "6ec3a00ad062d55998baff20f4ba9d6cfd8cc3a7ad6d419c80ebbac5ada0b009"
+  },
+  {
+    "path": "UI/REWRD.UI",
+    "size": 5019,
+    "sha256": "278281898350588849ccc3af339800180d4e5373ba57cd9eaa73e3dba85073f4"
+  },
+  {
+    "path": "UI/RNDIN.UI",
+    "size": 123,
+    "sha256": "3fa802980d96d2937c137a11a11ae22b286171d188899e96c2e8a9af1e0cfbca"
+  },
+  {
+    "path": "UI/ROPT.UI",
+    "size": 12938,
+    "sha256": "8c89df0d173762d5736bed0f8d38678950d60976295432133d2976c61d5a8abe"
+  },
+  {
+    "path": "UI/SERVR.UI",
+    "size": 2366,
+    "sha256": "85c1d1e8e17b3a851f27a1612020bda8e9c6defcf54f9e35ed1bd09be4850c51"
+  },
+  {
+    "path": "UI/START.UI",
+    "size": 651,
+    "sha256": "0ca0917de8a6b145500574abc17da954533219a2df4c1aac07c321068765d4f4"
+  },
+  {
+    "path": "UI/STATE.UI",
+    "size": 6860,
+    "sha256": "50996213233599f809760893fd830059088e93a13ec9c2a1a8dd6140493b5411"
+  },
+  {
+    "path": "UI/STATS.UI",
+    "size": 6002,
+    "sha256": "dd26df072692e66a65fc0e34aab55a324ab2b42599f2825586a430b79a32732e"
+  },
+  {
+    "path": "UI/STD_OBJS.UI",
+    "size": 4,
+    "sha256": "dba5166ad9db9ba648c1032ebbd34dcd0d085b50023b839ef5c68ca1db93a563"
+  },
+  {
+    "path": "UI/TRACK.UI",
+    "size": 13440,
+    "sha256": "3a474ebdb58a754a3dbe3d354b9320f7164403f37c87e0c4bca2b726d5d52b1e"
+  },
+  {
+    "path": "UI/TROPH.UI",
+    "size": 6912,
+    "sha256": "55cf46326b9434ea573b476a3a03db2be55a3ea856c5426e9f6af41c84f967bc"
+  },
+  {
+    "path": "UI/WHEEL.UI",
+    "size": 14300,
+    "sha256": "7afa8079f32c09ca3a6ee63c178c403ee736a0b379a7216754406401cd5d56c5"
+  },
+  {
+    "path": "UI/XBACC.UI",
+    "size": 2706,
+    "sha256": "e0c6b92634b215c960a84684ca4ac2939268e48695d77d0104bccfdfc5119b8f"
+  },
+  {
+    "path": "UI/XBFOP.UI",
+    "size": 5142,
+    "sha256": "29b36787c0445712dc17f1ba7b834f7e0fba859d6f69037d3a5a0ed47ad988a5"
+  },
+  {
+    "path": "UI/XBFRN.UI",
+    "size": 4938,
+    "sha256": "b360b818654eb1dee794bccfd603981b2dcd27448787cedc0196c68454ffc297"
+  },
+  {
+    "path": "UI/XBLFBK.UI",
+    "size": 4566,
+    "sha256": "e575d80527f7bac3b77a997187509650e5d3bc23dc7dab9a5eb3bde10a3aa9ae"
+  },
+  {
+    "path": "UI/XBMEN.UI",
+    "size": 3747,
+    "sha256": "1346de8f1a043c3500abf666d4c470727cb82af9936e051175c17acd5dd1192d"
+  },
+  {
+    "path": "UI/XBMSG.UI",
+    "size": 9730,
+    "sha256": "70851864cbc280010437dce2aeb4fdf85a553a5037a4d5ef0d59174506edabba"
+  },
+  {
+    "path": "UI/XBOPT.UI",
+    "size": 7350,
+    "sha256": "cdf4ec21bc0daa000f6840d3457985c78a1308b40b2ec32f314feaaa16267227"
+  },
+  {
+    "path": "UI/XBORA.UI",
+    "size": 6788,
+    "sha256": "c19b8e0783e838cbcb6663133e81bc6256c6a3f1257f0cd6a95157871f8e70f3"
+  },
+  {
+    "path": "UI/XBPAS.UI",
+    "size": 3409,
+    "sha256": "e271eb486baa7e376d07948a0358c7faca6ebfff56b27682320fdbe0472130dc"
+  },
+  {
+    "path": "UI/XBPLR.UI",
+    "size": 16420,
+    "sha256": "2dab5c42bcdb3059e13b941c48578ac7be36d164e65f550269249a71f2068100"
+  },
+  {
+    "path": "UI/XBSET.UI",
+    "size": 8098,
+    "sha256": "839bf04c31a4c1ddd0e1488524c7309b5c212e738d2305cfe37bf707889b45f9"
+  },
+  {
+    "path": "UI/XBTAB.UI",
+    "size": 12699,
+    "sha256": "84a11f108725fba60494975a89db55707c20b1d01871d81917fffbd1814460fe"
+  },
+  {
+    "path": "UI/XBVCE.UI",
+    "size": 2569,
+    "sha256": "43d0747d3b11aa36383eab9a091002596a53e735f0b22cd6ad02bb3a8c445b19"
+  },
+  {
+    "path": "UI/XB_CSET.UI",
+    "size": 2807,
+    "sha256": "7457dc5c86b89deae16f003434df2c05b96339a560847a31ad0c913899ae9c44"
+  },
+  {
+    "path": "UI/XB_CTRLS.UI",
+    "size": 1524,
+    "sha256": "0803937f3959958e9a2d18f5d2822ab2e0df5c2cc7f3ba1560790e053694cfb7"
+  },
+  {
+    "path": "UI/XGMOPT.UI",
+    "size": 12173,
+    "sha256": "bb5d94f6cc9a3df3a9b151545f231f84cb3dc7bfd110f23be11c879163550999"
+  },
+  {
+    "path": "VSHADERS/PRELIT/pretrans.vso",
+    "size": 180,
+    "sha256": "907a8e7db54fc432db9556fcd6ace1c5493a343ff8ecebf8dfb1fb2cf20a185f"
+  },
+  {
+    "path": "VSHADERS/PRELIT/refl.vso",
+    "size": 120,
+    "sha256": "4058451b226060422babe42769b4084aeabc4fbde0666a73772048d88c3362cd"
+  },
+  {
+    "path": "VSHADERS/PRELIT/spec1.vso",
+    "size": 120,
+    "sha256": "4058451b226060422babe42769b4084aeabc4fbde0666a73772048d88c3362cd"
+  },
+  {
+    "path": "VSHADERS/PRELIT/t1.vso",
+    "size": 132,
+    "sha256": "8e7a42b88ef2f74c3a78c1ff13f18a2593dffb642e7aab61080055fe365ad843"
+  },
+  {
+    "path": "VSHADERS/PRELIT/t1_tt.vso",
+    "size": 176,
+    "sha256": "bf32c3356809274d3e1f228b8d04f99a21a137fb2aa9a52b28b5dc264ae5541f"
+  },
+  {
+    "path": "VSHADERS/PRELIT/t2.vso",
+    "size": 156,
+    "sha256": "d0188a1b53a3604449db791de76ec64a06f0c2b46fb86c05c63c767c53abaaec"
+  },
+  {
+    "path": "VSHADERS/PRELIT/t3.vso",
+    "size": 180,
+    "sha256": "bc853c15f33ec2ed764b83d5d4969bc11041ecfd5902a1ef28f31ac96b11953a"
+  },
+  {
+    "path": "VSHADERS/PRELIT/t3nodark.vso",
+    "size": 156,
+    "sha256": "dfaa0e9efe98a361e84da77e913246f5517d2da085bf17ceffebbfdb37f4f2a6"
+  },
+  {
+    "path": "VSHADERS/SHADOW/shad_1t.vso",
+    "size": 188,
+    "sha256": "bba1a9658d10acf23e36628ba2685d5c4da1bcc832db7145ea39d7a1245c4c9f"
+  },
+  {
+    "path": "VSHADERS/SHADOW/shad_2t.vso",
+    "size": 252,
+    "sha256": "a8ca61399351967d26d0bf2275b1d5305f5eceb6e12d45ceac8bf9795fa838ab"
+  },
+  {
+    "path": "VSHADERS/SHADOW/shadow.vso",
+    "size": 268,
+    "sha256": "ffe9915bed8f78c5a0025b01be092210d7c79c7afd5b94f1920ec896e0acde08"
+  },
+  {
+    "path": "VSHADERS/SKINNED/PRELIT/t1.vso",
+    "size": 372,
+    "sha256": "be94cea45d496b67059b8a18e99035ec686000cf20d4bf7607c72d0e46527d17"
+  },
+  {
+    "path": "VSHADERS/SKINNED/PRELIT/t1_tt.vso",
+    "size": 416,
+    "sha256": "3a297fafa20f1ea040426ad1c626b81c4cbb2200da489ac766c37ec2be9a47c3"
+  },
+  {
+    "path": "VSHADERS/SKINNED/UNLIT/basic.vso",
+    "size": 580,
+    "sha256": "7b947550020a36468850cee331e07263f5f68798a9818c4f8da20515fa145d14"
+  },
+  {
+    "path": "VSHADERS/SKINNED/UNLIT/luminous.vso",
+    "size": 372,
+    "sha256": "c40829c878fe185d273a2cab193cd4799a182596e9e92530e5fa945c80d6dc49"
+  },
+  {
+    "path": "VSHADERS/TEST/norm.vso",
+    "size": 60,
+    "sha256": "de99bfc093a5b08ee8e60dc0032a4d4f85afa452776366754a6351d65bd53d9c"
+  },
+  {
+    "path": "VSHADERS/TEST/spec.vso",
+    "size": 512,
+    "sha256": "27df0948238abcc0ba0d818a30c9d52bd03ee77b994b84df83a4649d79175e7a"
+  },
+  {
+    "path": "VSHADERS/TEST/test.vso",
+    "size": 328,
+    "sha256": "7eb4b3159ef3a81e5b9c9b4f0bd766ca9a69c2326852d4e1cf2fa36db93d1a72"
+  },
+  {
+    "path": "VSHADERS/UNLIT/aspecenv.vso",
+    "size": 732,
+    "sha256": "6dbf485fef476dcb145cd5744241eb0602a4f7ae4ae52ec9fe85b2753dd2907d"
+  },
+  {
+    "path": "VSHADERS/UNLIT/base.vso",
+    "size": 200,
+    "sha256": "cd9ce6cca97f09cc24ccd74422aa7dda5bddc3026ced8942a359dfa70d4ea02c"
+  },
+  {
+    "path": "VSHADERS/UNLIT/bspecenv.vso",
+    "size": 796,
+    "sha256": "895689742bbd74c2ab69f00af2eb9f75da7bf214cd3e344c4f840be5be24010d"
+  },
+  {
+    "path": "VSHADERS/UNLIT/luminous.vso",
+    "size": 120,
+    "sha256": "175070382ffe6734f260a8a90977b252d8bdcfd4897a2d5485dadc5599f62e74"
+  },
+  {
+    "path": "VSHADERS/UNLIT/specenv.vso",
+    "size": 784,
+    "sha256": "94b7bdfb883766a2e255f3c475e8876339d4123314b77e856911a1e4edc3d88c"
+  },
+  {
+    "path": "VSHADERS/UNLIT/tt_base.vso",
+    "size": 244,
+    "sha256": "3740dad33a341f2cff3f50c74171013bdcab23f1ca8a4dba91d784c2ef5e3a16"
+  },
+  {
+    "path": "VSHADERS/UNLIT/tt_lum.vso",
+    "size": 164,
+    "sha256": "2571392389532a8a9edc6115f413f5789bda60b3f93a390676138aa2589f2920"
+  },
+  {
+    "path": "fr3.exe",
+    "size": 1782784,
+    "sha256": "87cc71d881a2723784097108ce2923fe8d0384ea6a8b03fad3e95c5cda52e8b3"
+  },
+  {
+    "path": "getkey.dll",
+    "size": 139264,
+    "sha256": "3b2372c3022f4b09b8d23213b283a349fd05d7719d3b21648f3266b7bf5b086f"
+  },
+  {
+    "path": "launch.png",
+    "size": 54205,
+    "sha256": "912531916c4e8ba4a16397ed31feef386267e1d52d237f2992dc402c13f39908"
+  },
+  {
+    "path": "moviesys.dll",
+    "size": 122880,
+    "sha256": "07edd1a8d6ac66b8cc5a349837c8286dc16263b640770f0130f8302d8d972151"
+  },
+  {
+    "path": "msvcr70.dll",
+    "size": 344064,
+    "sha256": "f68e4cdbc879423ea47d763a6768567f5f8063924f13a74239750c13fa8d168a"
+  }
+]

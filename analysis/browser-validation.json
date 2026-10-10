@@ -1,0 +1,76 @@
+{
+  "recorded_utc": "2026-10-10T17:46:16.757752+00:00",
+  "game": "original Ford Racing 3 Windows demo",
+  "browser": "Chromium 154",
+  "platform": "Linux",
+  "graphics": "ANGLE Mesa llvmpipe LLVM 19.1.7, OpenGL 4.5",
+  "runtime_target": "jit",
+  "boxedwine_revision": "65467424603484756a73308412f40b906d28b650",
+  "emscripten": "5.0.7",
+  "runtime_assets": {
+    "boxedwine.js": {
+      "bytes": 320148,
+      "sha256": "391a388aa3fc9a4d756ec1f299e70b79a308c2637397593073a1f20fc38d7333"
+    },
+    "boxedwine.wasm": {
+      "bytes": 4183965,
+      "sha256": "90f55d289b8b06eb749578969768ba8c4a1c207650f7d6862763327946ba8fc6"
+    },
+    "wine11.zip": {
+      "bytes": 99456246,
+      "sha256": "3365e31caaf6a1fc832a0a7c4812592d25410b9f5c9536277131388c8e103a49"
+    },
+    "fr3.zip": {
+      "bytes": 28510586,
+      "sha256": "42284011ee3359c5aec029cb11fd0e3843ce9d19b7f9f20f3406da92e2784eeb"
+    }
+  },
+  "launch_arguments": "640 nomusic nostream nosound",
+  "wine_d3d_config": "webgl=1,webgl_glsl_es=1,csmt=0",
+  "checks": {
+    "original_game_files": 773,
+    "asset_hashes": "passed",
+    "relative_project_page_urls": "passed",
+    "service_worker_isolation": "passed in page and iframe on a plain static HTTP server",
+    "menu": "observed",
+    "quick_race": "observed",
+    "acceleration": "car moved; speed indicator 013",
+    "steering": "heading and position changed after Arrow Up/Right input",
+    "pause": "P opened pause menu; Enter resumed",
+    "release_browser": "passed: pristine release runtime reached menu, Quick Race and pause; acceleration/steering changed car position and heading",
+    "keyboard_blur": "passed: switching focus released held Arrow Up through emulator input",
+    "indexeddb_persistence": "passed: test file survived replacing the game iframe with settings; test file removed after verification",
+    "settings": "original CONFIG/syscfg.exe launched in CONFIG working directory and rendered its dialog",
+    "syntax": "JavaScript, Python and workflow checks passed",
+    "fullscreen": "passed: fullscreen opens player and Escape exits via final launcher"
+  },
+  "evidence": [
+    "artifacts/browser-test/playable/accelerating.png",
+    "artifacts/browser-test/playable/engine-pause.png",
+    "artifacts/browser-test/playable/steering.png",
+    "artifacts/browser-test/playable/engine-keys.json",
+    "artifacts/browser-test/release/after-canvas-click.png",
+    "artifacts/browser-test/release/steering.png",
+    "artifacts/browser-test/release/paused.png",
+    "artifacts/browser-test/release/keys.json",
+    "artifacts/browser-test/release/blur-release.json",
+    "artifacts/browser-test/release/settings-rendered.png"
+  ],
+  "limitations": [
+    "software graphics was slow",
+    "no physical GPU test",
+    "Firefox and Safari unrun",
+    "audio unverified",
+    "full race completion unverified",
+    "gamepads and mobile input unimplemented",
+    "GitHub Pages not enabled or deployed"
+  ],
+  "multithreaded_jit": "black frames observed; optional debug build, not release default",
+  "package": {
+    "path": "artifacts/ford-racing-3-browser-preview.zip",
+    "bytes": 150876480,
+    "sha256": "be612d9ac23236f0c3b29e558d7a45cae52d04feea79bcd500c47fb603c95cb1",
+    "zip_crc": "passed"
+  },
+  "completed_utc": "2026-10-10T17:56:24.430237+00:00"
+}

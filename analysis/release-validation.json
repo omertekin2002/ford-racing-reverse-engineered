@@ -1,0 +1,53 @@
+{
+  "verified_utc": "2026-10-10T11:53:50.235529+00:00",
+  "release_version": "0.1.0-preview",
+  "package_type": "Wine compatibility preview",
+  "native_source_port": false,
+  "original_demo_files_verified": 773,
+  "linux": {
+    "runtime": "Wine 11.0 WoW64",
+    "host_execution": "blocked: cloud kernel rejects IA32 ELF and Wine WoW64 startup",
+    "vm": "QEMU 10.0.13, Debian 6.12.107 amd64 with IA32 emulation, Xvfb and Mesa 25.0.7 llvmpipe",
+    "packaged_launcher_started": true,
+    "writable_game_copy_created": true,
+    "title_and_animated_race_scene_rendered": true,
+    "tested_game_arguments": [
+      "800",
+      "nomusic",
+      "nostream"
+    ],
+    "audible_playback_tested": false,
+    "full_interactive_race_tested": false,
+    "input_smoke_test": "Window focus and held X11 keys exercised; full driving session remains unverified",
+    "earlier_loading_failure": "Missing media/audio dependencies caused errors; recorded packaged test uses nomusic and nostream",
+    "configuration_launcher_opened": true,
+    "repeat_launch_preserves_user_files": true,
+    "preliminary_package_extraction_hashes_verified": 4757,
+    "final_archive_hashes_verified": 4758
+  },
+  "macos": {
+    "runtime": "Wine 11.0_1 x86_64",
+    "packaged": true,
+    "runtime_tested": false,
+    "signed": false,
+    "notarized": false,
+    "symlinks_preserved": 67
+  },
+  "evidence_image_sha256": {
+    "main-menu2.png": "5195b4733c1d59313312034bcf9481e2755125f01ebd03947ac793b183f5997e",
+    "release-ready.png": "43d3154e684320b9a72bf0927da407e5e5b8c444b428f02f17cf7d209c400cb6",
+    "release-menu.png": "3fa5c5f277a9007dcd64912d21825151776827270eaeb65e6e7a474cb4f97edb",
+    "menu.png": "4cb2488325b031acdce0275f002fef7e46bb1201efdf6bf678f4be53fffbbf45",
+    "choices.png": "2c96224ad2c0928c240eb46cd29005280dff17cd68d7d5fe47b239d8e2e17588",
+    "main-menu.png": "cd24737a52832bb1154bd8860c04b3f39d8e02a614d1a2b1d3b9639b44e295c2",
+    "desktop.png": "f3c6f7a5d03a33f1370c856e2bc282fcaa5fa10d14007a0c3049d57ddeef2296",
+    "nomusic.png": "fe53907ef870b6932738733c1bbde82a7a9c795d5232a514b3ce0ccb6013e7aa",
+    "current.png": "ba002eb00c41bb41e20f2007fcef16587df016f9b9b57434df06db58ab7bbdb2",
+    "desktop2.png": "b8bb4991a59b9c06ba4da2b7a15e62a5ff24db4d43b7ed18d971e82f8514ffd7",
+    "release-start.png": "b8bb4991a59b9c06ba4da2b7a15e62a5ff24db4d43b7ed18d971e82f8514ffd7",
+    "release-after-enter.png": "850e5fb14d5bb17d8d74f9b3848bbcf4eccfcc07166ce7f5988c215d0c65e598",
+    "release-input.png": "c67452256aafc9b492ad4151eeb59f13b8713e9330653945c50d8b7fde59bbc9",
+    "release-config.png": "e74060378ac6e58c4ea45b52774008545499d070a47ff07b76dd5d7f2f8c7699",
+    "release-input2.png": "0c53958ad0d16fa5402fd2319d7da0f2fa64fb222387107905b2aed696f2dbf2"
+  }
+}

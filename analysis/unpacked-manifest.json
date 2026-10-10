@@ -1,0 +1,1024 @@
+[
+  {
+    "path": "3DDATA/CARS/04LIGHT/3dobjs.XBX",
+    "input_size": 10367,
+    "decoded_size": 43120,
+    "input_sha256": "13131c6488283e779555ff5a847e660b1ec2f18fbca55a942ef3731e743c9ea3",
+    "decoded_sha256": "d5b0c111a1e96dbb461946f9eccc27bd0092afef6ebaa419ca89667375464f93"
+  },
+  {
+    "path": "3DDATA/CARS/04LIGHT/3dobjsp.XBX",
+    "input_size": 106569,
+    "decoded_size": 245228,
+    "input_sha256": "e42bbf0941580071dde237cfd7b344fa7487cf99e492069736531f1670515374",
+    "decoded_sha256": "8483eb223772c4771e395ae41a0f4d0eea824a3854a85366b7bfed96a5e092f4"
+  },
+  {
+    "path": "3DDATA/CARS/04LIGHT/textures.DXT",
+    "input_size": 195686,
+    "decoded_size": 528313,
+    "input_sha256": "7faa7f0c142ff34d600ccedceb3bb4a0ceff7936f0b5332ea12cffce1c88c0a3",
+    "decoded_sha256": "a3baf9885df78ab23d0dd5c806e2eb4ec06ec86713396c0d597ccc786f72244f"
+  },
+  {
+    "path": "3DDATA/CARS/05MUST/3dobjs.XBX",
+    "input_size": 10139,
+    "decoded_size": 40420,
+    "input_sha256": "691e58cfa450c8259a3e7f55991d9857ff2fd9e72c7aa9c2106b6619d635ec87",
+    "decoded_sha256": "0049bc45306c843e1fc7e1fd9ba05efa648e24cf1ad1eb5be57c9bb4d49b534f"
+  },
+  {
+    "path": "3DDATA/CARS/05MUST/3dobjsp.XBX",
+    "input_size": 114577,
+    "decoded_size": 243196,
+    "input_sha256": "b118fc5b561dc0226dcc6595b77fcd0d8395113fee209f75fcab516311bba8e6",
+    "decoded_sha256": "6cd5dadd8dd10dcc05fa1ca46abc306c97da189349e64fde7c458e72be49a9bb"
+  },
+  {
+    "path": "3DDATA/CARS/05MUST/textures.DXT",
+    "input_size": 167524,
+    "decoded_size": 523119,
+    "input_sha256": "9e562f4f3d8e622839b40843aa405af0608edff7b25b1a4b6390a4eaf3bbb994",
+    "decoded_sha256": "737355e5a66568e750aca5f68e01a944a55102dbd0f0ea04386aceab3ecac043"
+  },
+  {
+    "path": "3DDATA/CARS/46CONV/3dobjs.XBX",
+    "input_size": 9713,
+    "decoded_size": 34212,
+    "input_sha256": "58df038b133a07cec2b271691e7f50bf1194d93c9a0835893f9f46347c9f6cf9",
+    "decoded_sha256": "cd776f3b3b723940f236f47c8cdc90d3ebabaa447699bf377df01d035d77f531"
+  },
+  {
+    "path": "3DDATA/CARS/46CONV/3dobjsp.XBX",
+    "input_size": 98734,
+    "decoded_size": 189712,
+    "input_sha256": "6b93ebb891d0faffad02fe48cfe8d622e2d8cb987721ec460b67d16cc43d301e",
+    "decoded_sha256": "202511043b87c02c6d092ee127b917110292ebc30f7cafe372df003063c44f51"
+  },
+  {
+    "path": "3DDATA/CARS/46CONV/textures.DXT",
+    "input_size": 236979,
+    "decoded_size": 525890,
+    "input_sha256": "502ded46673c31a9c1ae1c2d0ce033719586959c5f49c90e1c31230e53d4275a",
+    "decoded_sha256": "e62f72695e0de40c12fa981585457644d9be0ab9e869bea3e8ca18df1c521e57"
+  },
+  {
+    "path": "3DDATA/CARS/66FAIR/3dobjs.XBX",
+    "input_size": 10667,
+    "decoded_size": 40792,
+    "input_sha256": "ab7f8754b9bde13ea4ef0d057ae28ad86fef048d206c3fbfb72416aaba98c035",
+    "decoded_sha256": "4d8ca0489ad15908358b73723b2c3e4cd4727bf4a532bb35b183df0f2867be5a"
+  },
+  {
+    "path": "3DDATA/CARS/66FAIR/3dobjsp.XBX",
+    "input_size": 102919,
+    "decoded_size": 225880,
+    "input_sha256": "ea3fb062f7ae1d4d60a2b553bc138afda42a8cf068a00f652b17c7004b4ae288",
+    "decoded_sha256": "f1beb07c9256550778e84b3690082c338623f6e548818217532fd3b01759f037"
+  },
+  {
+    "path": "3DDATA/CARS/66FAIR/textures.DXT",
+    "input_size": 211149,
+    "decoded_size": 534383,
+    "input_sha256": "a6e73050ad5ddfe729037b4e9949ef1de02b5f9932d2f2a562c6e2182200bebe",
+    "decoded_sha256": "b4d0e039c7d3f898accb6d6f9030edb06977fe83a60a49b40beb4ace8236b45a"
+  },
+  {
+    "path": "3DDATA/CARS/66TBIRD/3dobjs.XBX",
+    "input_size": 10557,
+    "decoded_size": 37792,
+    "input_sha256": "3cad8a901693157a74c2e29f39a132956bbeb297cf4a59464b384216f98ee1b0",
+    "decoded_sha256": "215899f82e6b0f59542e14bd23e4bf0dc94d6c3dab29148ee9ac22f5f3191cb2"
+  },
+  {
+    "path": "3DDATA/CARS/66TBIRD/3dobjsp.XBX",
+    "input_size": 110197,
+    "decoded_size": 205856,
+    "input_sha256": "625a61b966f739aa44cb84dd6e13e1aed7ebf014c999d262c3f32ef7302cea46",
+    "decoded_sha256": "724396d856cc093867c7883c027f30edf2db5148219eda048952e43801f1a07d"
+  },
+  {
+    "path": "3DDATA/CARS/66TBIRD/textures.DXT",
+    "input_size": 201587,
+    "decoded_size": 528257,
+    "input_sha256": "0416235a147dc794e31f02dcb0b7868d8c97e7516b9938a037112f9437a1b1de",
+    "decoded_sha256": "969b2c36aee6c93a77834d45e930c79bf3af5602b602b0bd53e2f128901209d1"
+  },
+  {
+    "path": "3DDATA/CARS/72RANCH/3dobjs.XBX",
+    "input_size": 9830,
+    "decoded_size": 38112,
+    "input_sha256": "13a260096270f358f00ac514af889ce98d28727252e9e43a93c794e8e80b197d",
+    "decoded_sha256": "48fccd28f4ca6d590929c203b93d0ca8314f3f3e3c92b6a82d096551d59f3296"
+  },
+  {
+    "path": "3DDATA/CARS/72RANCH/3dobjsp.XBX",
+    "input_size": 98564,
+    "decoded_size": 216388,
+    "input_sha256": "71e3ee5510dfa58108632ba1d97eaceddb9e1fbd092387732f8351498af4aa44",
+    "decoded_sha256": "976068e602cfcc27c5e977c2702e35ea08e91030bc473dd596e6253a54bf244b"
+  },
+  {
+    "path": "3DDATA/CARS/72RANCH/textures.DXT",
+    "input_size": 193011,
+    "decoded_size": 525185,
+    "input_sha256": "96f69b21e6a5f809461f77182c18c2c8cd2eac1fe1e86e48252f81515a5cacd7",
+    "decoded_sha256": "7a8547e519b26edfb49d8e5d33e4da3359246c8a4c149d8c5b56b533f06ec696"
+  },
+  {
+    "path": "3DDATA/CARS/78CAP/3dobjs.XBX",
+    "input_size": 9850,
+    "decoded_size": 39984,
+    "input_sha256": "a28c895ab1f73d145fff82ea0b746b281ec0da3a681e1a0e6ba3db851d568be9",
+    "decoded_sha256": "243c74dc592e257e5db51a0b6ff0e0df573464893bf6511af86335ab529320ee"
+  },
+  {
+    "path": "3DDATA/CARS/78CAP/3dobjsp.XBX",
+    "input_size": 113219,
+    "decoded_size": 232604,
+    "input_sha256": "6d5f54a31cc2324e44f76e3197b55b7202f0f1007b2a612ace8f9912d3a61983",
+    "decoded_sha256": "c942dfd4ce55fcbec129220dda554043e25c235886043be67de98df204697fab"
+  },
+  {
+    "path": "3DDATA/CARS/78CAP/textures.DXT",
+    "input_size": 172940,
+    "decoded_size": 535551,
+    "input_sha256": "789a7c7d334b02d843d10faf034ab4e7c63887af9d9b4a1fd61214adbdbf9ed9",
+    "decoded_sha256": "e43f896d6fc182a2b6b5fb11263cb61614d76c318787662be52adf79d08fe9e6"
+  },
+  {
+    "path": "3DDATA/CARS/92ESCRS/3dobjs.XBX",
+    "input_size": 10483,
+    "decoded_size": 38054,
+    "input_sha256": "66160b06a8f51d9c4d845d0ee1257d639d94ea6d3e688ad3da78e2c98cc7fe7b",
+    "decoded_sha256": "c97574917f7585c5724a74e93b03216137fe2debbb82d3281e4a04f0d960af32"
+  },
+  {
+    "path": "3DDATA/CARS/92ESCRS/3dobjsp.XBX",
+    "input_size": 107774,
+    "decoded_size": 206204,
+    "input_sha256": "2fee44aaa486483cd48c4f78ba2413027d94f90b7f74b7d6af95f8a731a6f49a",
+    "decoded_sha256": "f49d2aa3c9066cef85a55107e997c58a9ec2ade133f7c990739b47f411ee14f1"
+  },
+  {
+    "path": "3DDATA/CARS/92ESCRS/textures.DXT",
+    "input_size": 167199,
+    "decoded_size": 523135,
+    "input_sha256": "e06df015f6846e6f30906fcc7f85cb3f3f160e8f514a21339e9c47ccaefbb4be",
+    "decoded_sha256": "05bd2cfed96671c98ab936932a7b60c8ef8429d0096047e0f0c617cac735b51a"
+  },
+  {
+    "path": "3DDATA/CARS/CAPRS26/3dobjs.XBX",
+    "input_size": 8885,
+    "decoded_size": 39100,
+    "input_sha256": "65cb51b12ac75526d4d81778635eb2b05b35bbeb619f6637d6c48e851da770ef",
+    "decoded_sha256": "3d6c110b167d10c4cb89e9b25ab702b2c77af3c135e78481d5a4c627e9d1ec88"
+  },
+  {
+    "path": "3DDATA/CARS/CAPRS26/3dobjsp.XBX",
+    "input_size": 106173,
+    "decoded_size": 232932,
+    "input_sha256": "068bb9f749f7697bda9cc3042416b7d62cec01e43d3af74981e2c48eeab3c98d",
+    "decoded_sha256": "a2bf4130b5a5c231fdd3646800f2caf6c7cd8542c041820df699f7b78c5b1579"
+  },
+  {
+    "path": "3DDATA/CARS/CAPRS26/textures.DXT",
+    "input_size": 172848,
+    "decoded_size": 523137,
+    "input_sha256": "025d7e59ced21a8d157d75f6982c976ea92fcc7e56df0aba03c28ad3706cb4b9",
+    "decoded_sha256": "a8a8a85a6e1b41940527a0db80bb3dcf71050f255f3a3de27bd964c86adffea3"
+  },
+  {
+    "path": "3DDATA/CARS/COBRA/3dobjs.XBX",
+    "input_size": 9529,
+    "decoded_size": 36886,
+    "input_sha256": "dae27e44c6063db07110842e157c9e5a0ad07ab0d7c26df33d3a6e20dd3114d9",
+    "decoded_sha256": "c24df5e5066d7d9a026f7ba6d796ee0584f64e3297549ded424ed6599dd7553b"
+  },
+  {
+    "path": "3DDATA/CARS/COBRA/3dobjsp.XBX",
+    "input_size": 89919,
+    "decoded_size": 212192,
+    "input_sha256": "9f9fc3e177dc0b7a439a98646777f259706b9652a70696d31e10f802c25e600e",
+    "decoded_sha256": "9e4899f9390da68f2b2d413d9f014033ef10851d01125d2e8786f48772996978"
+  },
+  {
+    "path": "3DDATA/CARS/COBRA/textures.DXT",
+    "input_size": 138446,
+    "decoded_size": 574771,
+    "input_sha256": "433edf98f89ebd6a533e67226c2104515d981301a34552c1c11fb49a325c353b",
+    "decoded_sha256": "b1a520daeeb9e17a881d8f1fe6c0ffce974dd8b83bbb7190d0614690a42095b7"
+  },
+  {
+    "path": "3DDATA/CARS/CROWNV/3dobjs.XBX",
+    "input_size": 9140,
+    "decoded_size": 39622,
+    "input_sha256": "0e57787bf08548d6409e3e5efb0b5a5a54b37a5229961cdab3af0253048a660f",
+    "decoded_sha256": "70c7067552382ec3e53de05989883eaf7d4f219aadc3543b131a8682295def29"
+  },
+  {
+    "path": "3DDATA/CARS/CROWNV/3dobjsp.XBX",
+    "input_size": 89653,
+    "decoded_size": 222028,
+    "input_sha256": "2020baff5eddd2e4be4cbbde0fe34fc878cde73fbef247c94e3f60e6e9ffd237",
+    "decoded_sha256": "7bf656b2ee45c1e8cd152cbf90a939527f5dd3ca164cfd56e6c10a354e8566b2"
+  },
+  {
+    "path": "3DDATA/CARS/CROWNV/textures.DXT",
+    "input_size": 167915,
+    "decoded_size": 573756,
+    "input_sha256": "a121ceb54ce014833bb0fc698e472f66c4858163810b266d9103cc0dfed4d1d1",
+    "decoded_sha256": "0dce6f477d37d83b0d27e99e954d5ca914f7fb73f91f760b80058bc2d06539ec"
+  },
+  {
+    "path": "3DDATA/CARS/FALCON/3dobjs.XBX",
+    "input_size": 10760,
+    "decoded_size": 41336,
+    "input_sha256": "8157d1f75fc6453030ae493c0b32df23a80c3cbf3935176fa5d28fd89c04a75d",
+    "decoded_sha256": "04fdaf8a8a3e74384b4cfecead3fed40b99b333c01fc03dfb63061fe8f81e133"
+  },
+  {
+    "path": "3DDATA/CARS/FALCON/3dobjsp.XBX",
+    "input_size": 111633,
+    "decoded_size": 229356,
+    "input_sha256": "8c2e331f964db0d8fb27927c768742dd5b5f52441ca97530bfa808022dd730e0",
+    "decoded_sha256": "bdabaabcf113f200e688a534ae8e2c4517f7d3753f80a422ebbd6a5d0e113a5d"
+  },
+  {
+    "path": "3DDATA/CARS/FALCON/textures.DXT",
+    "input_size": 161774,
+    "decoded_size": 526191,
+    "input_sha256": "a9517321312005b87a562ed325e00c6899ed81d864a6fe729c13298bc5facaf3",
+    "decoded_sha256": "52e40c8356c693f012d885255fe0b357aec1f4d74c3d489a57ed23f2a24e2a3f"
+  },
+  {
+    "path": "3DDATA/CARS/FOCUSSVT/3dobjs.XBX",
+    "input_size": 10669,
+    "decoded_size": 41038,
+    "input_sha256": "222b89a00ac848c10b283b370e763700ae81afef1ac356b46f29551f8b827683",
+    "decoded_sha256": "eeb513ec303f1882da8028e5287bc6dab3177c671baaa6d0e08177267c1ecbbe"
+  },
+  {
+    "path": "3DDATA/CARS/FOCUSSVT/3dobjsp.XBX",
+    "input_size": 106057,
+    "decoded_size": 229828,
+    "input_sha256": "0684f2fcb3de699df5009733c824409461e5f07e18ad90eea0c2adc4c17802ae",
+    "decoded_sha256": "c4c72a01691efae5e48a64c613edfab0d64b472b3c50a387bad0549ca99481a3"
+  },
+  {
+    "path": "3DDATA/CARS/FOCUSSVT/textures.DXT",
+    "input_size": 175690,
+    "decoded_size": 536955,
+    "input_sha256": "18a6f89be18e572884afbb61caf8cbb5ed62651baf7f032abd7bab2dad2aca9a",
+    "decoded_sha256": "753af0ab4835e34e81a31f34d61c8bf70d3fa59059f8e1958826771fe6dcdd67"
+  },
+  {
+    "path": "3DDATA/CARS/FORDGT/3dobjs.XBX",
+    "input_size": 11477,
+    "decoded_size": 45108,
+    "input_sha256": "7e6cdcca2616542b5a6210743dc58445118d2ffe0bcc703592dbab7d3ad6b278",
+    "decoded_sha256": "129f17981fc644e8fe8e15b114e786a6dd50be2022411b5c78e2f3f455b7766e"
+  },
+  {
+    "path": "3DDATA/CARS/FORDGT/3dobjsp.XBX",
+    "input_size": 112125,
+    "decoded_size": 241032,
+    "input_sha256": "a7629ca2892fde21811aa4382c5ea958fb46f65e2f07564d261a9153b888194e",
+    "decoded_sha256": "7f2d87c93c00300dc76f5dc021f24e688eb319664d61fe3bc691eb7c9affa4d4"
+  },
+  {
+    "path": "3DDATA/CARS/FORDGT/textures.DXT",
+    "input_size": 187069,
+    "decoded_size": 567747,
+    "input_sha256": "62aa1ad4933747909f8c78787621fd5681241fc9f49071f38215760b3e0ae5a4",
+    "decoded_sha256": "e47fa32e23de991dff731f07b7e53a183b6ab1304e441ad50bb1f4a21051c815"
+  },
+  {
+    "path": "3DDATA/CARS/FR100/3dobjs.XBX",
+    "input_size": 9667,
+    "decoded_size": 33090,
+    "input_sha256": "1efc8e07a9dd7097e86fef2f23cecb2c926a9eae84e05c15e290bac86014a720",
+    "decoded_sha256": "a43e57ffcc0f7b1f8622d683483619c6db40f5bb0d3724390180180a9e78e925"
+  },
+  {
+    "path": "3DDATA/CARS/FR100/3dobjsp.XBX",
+    "input_size": 78602,
+    "decoded_size": 161872,
+    "input_sha256": "00785bfdef3a3df80468b15ef920a39fa56281f498101fc25e3d73bc0acdc1bf",
+    "decoded_sha256": "6b395a493b431e75386361ec723f4a8dea8095a72ee8119c7a01186bb8b42ee5"
+  },
+  {
+    "path": "3DDATA/CARS/FR100/textures.DXT",
+    "input_size": 36430,
+    "decoded_size": 181842,
+    "input_sha256": "00d39b06f83dd00886005b1046944e88df4eed062d6f912b2738ab2eddbb3cd0",
+    "decoded_sha256": "4943b3e06a451f70b92488dbb05a800100dc98ea9ec70b9f62a90788e097d8e0"
+  },
+  {
+    "path": "3DDATA/CARS/GT90/3dobjs.XBX",
+    "input_size": 10017,
+    "decoded_size": 42326,
+    "input_sha256": "7eba1b216ce756182f6917cf4205af127d5b332b017f1d23ffe29803536092f2",
+    "decoded_sha256": "b31685a3dbb5d66fdec723385b6f07eb5b7c54b88f0c3dccf73bc76862828ea2"
+  },
+  {
+    "path": "3DDATA/CARS/GT90/3dobjsp.XBX",
+    "input_size": 102461,
+    "decoded_size": 226588,
+    "input_sha256": "82a6b7b51b1a2f6ff46437b53be2d1d889e4a28fa07fad83bfff40387e6bf0e1",
+    "decoded_sha256": "8aa66d15dc149a4c2e0fa6283b0ba4e798763deb7054bec2cc7746847aac09eb"
+  },
+  {
+    "path": "3DDATA/CARS/GT90/textures.DXT",
+    "input_size": 226320,
+    "decoded_size": 561557,
+    "input_sha256": "5e8e71c20c1e6c36704818f2cff3bcc6ae62cddc05f8963a9f62fb91261c27ab",
+    "decoded_sha256": "c19baab830157192806e95f6e7a61b5430fa314ec81b4eeb5da6b44a4df2cd90"
+  },
+  {
+    "path": "3DDATA/CARS/INDIGO/3dobjs.XBX",
+    "input_size": 11731,
+    "decoded_size": 45768,
+    "input_sha256": "1b0fb8c0fcee5389da51d4a9aeec63d44f8cd3553ecf2a39e097a61cb9fc8c6f",
+    "decoded_sha256": "34320b1d9d4f6975e11b97d302492513674a1b5fa8ff8772eadc1658882d3076"
+  },
+  {
+    "path": "3DDATA/CARS/INDIGO/3dobjsp.XBX",
+    "input_size": 115290,
+    "decoded_size": 248004,
+    "input_sha256": "8d49ba6b11c7d55543ca03119cd1bbccf2cd4078a6d67e4a00f2e9c92dc4017f",
+    "decoded_sha256": "7c55570fb5652664b36df87165cf92e2ce1b3363266ebdc5088baab204b28745"
+  },
+  {
+    "path": "3DDATA/CARS/INDIGO/textures.DXT",
+    "input_size": 326090,
+    "decoded_size": 569003,
+    "input_sha256": "69200426e75ac43937417c2ace25da311b4c127fac87a9831f0979bdbfdcf633",
+    "decoded_sha256": "61cd5da7b5c7bc0f3b9e1b937ee95be9f28de49b5b3ca2646524883f53af9a01"
+  },
+  {
+    "path": "3DDATA/CARS/MACH1S/3dobjs.XBX",
+    "input_size": 7628,
+    "decoded_size": 23978,
+    "input_sha256": "72d6c59e2ee45a813250e1a9b664f21cfc93feb2e5fc9cf125fd3855c81d47b7",
+    "decoded_sha256": "45d60dd8f0390b42664e129393d665043ced4a8d302b97068552a501e344bd60"
+  },
+  {
+    "path": "3DDATA/CARS/MACH1S/3dobjsp.XBX",
+    "input_size": 59641,
+    "decoded_size": 130368,
+    "input_sha256": "b5d986c47ad9f9930e083aa8581eb40a229583a338f775a6f1857ba39df671f2",
+    "decoded_sha256": "03d253d1b8a172b850a273305c8380a94318aa0295a11ca97b4ed0d1b302677e"
+  },
+  {
+    "path": "3DDATA/CARS/MACH1S/textures.DXT",
+    "input_size": 58150,
+    "decoded_size": 185947,
+    "input_sha256": "d2f162cf8859ab9cdee182931d5d21e844bfc1b23a68dcdfd01a65d46182dffd",
+    "decoded_sha256": "ff29ecff7e1885bc54bed3586b5967a626a15c719d7bb95ce7a11b7f904ae96b"
+  },
+  {
+    "path": "3DDATA/CARS/MONDEO/3dobjs.XBX",
+    "input_size": 11218,
+    "decoded_size": 39754,
+    "input_sha256": "d76bbbb22e9aec00085f4d6b822f0e72258641ef5234ea4d8ec4f4d14d3827f8",
+    "decoded_sha256": "39bdacdf3ed989121bffdc3cd6c2150313093c8fc921cf44135ef3a0e952dd02"
+  },
+  {
+    "path": "3DDATA/CARS/MONDEO/3dobjsp.XBX",
+    "input_size": 112020,
+    "decoded_size": 219132,
+    "input_sha256": "6281f67fd36e3cfc94e1cde54281157d915904ee6dc9bc0a0d82c81aa88f890a",
+    "decoded_sha256": "250dbdb85bc776806fa5c7d43e12ebcbcc85ad7cd18a0e92e033af2131ac4b4c"
+  },
+  {
+    "path": "3DDATA/CARS/MONDEO/textures.DXT",
+    "input_size": 187905,
+    "decoded_size": 523119,
+    "input_sha256": "3114289b012b1d4d4597e4e49811886907d0e7c84268f201e077b77ff78e55e9",
+    "decoded_sha256": "5cdb38f13d9b823140e0ee41099ed533be74fd245a95b1f2066b56992da8a55e"
+  },
+  {
+    "path": "3DDATA/CARS/MUST68B/3dobjs.XBX",
+    "input_size": 9505,
+    "decoded_size": 41222,
+    "input_sha256": "978991d5f0e16354b5b43cbda84ed5beadb0083357edfdc641d805e0df287943",
+    "decoded_sha256": "e7ced0adc5cc4e176e65d81f199ac2608bb6560f5d85561458f2fd616fc8a941"
+  },
+  {
+    "path": "3DDATA/CARS/MUST68B/3dobjsp.XBX",
+    "input_size": 90883,
+    "decoded_size": 233600,
+    "input_sha256": "2cd4264612c5af1450d794c6363b4e49d1303e1c2741801a2db0fc17b9af6929",
+    "decoded_sha256": "366dd4a36d750fb4d9a2c1f01595f872ffeee4bb650e6b4897bfb843c4b06a38"
+  },
+  {
+    "path": "3DDATA/CARS/MUST68B/textures.DXT",
+    "input_size": 43333,
+    "decoded_size": 186024,
+    "input_sha256": "4182ec230162081f94c18f26c37c3553a6c7fe4f9513f1c180fb31dcfa91a56f",
+    "decoded_sha256": "32aa2cee3d05face61cb90c76625514ba75cab8c61f090b0562216cb1ae54687"
+  },
+  {
+    "path": "3DDATA/CARS/MUSTGTR/3dobjs.XBX",
+    "input_size": 10245,
+    "decoded_size": 44008,
+    "input_sha256": "11dfa05f8370e2f0f8783dd38f6b900b57611f5752bed55109afe16df33429f4",
+    "decoded_sha256": "8f8c044b11f8f00226d1cd9d7bd82d73373a6f3bf45af019e56b0916e7866c17"
+  },
+  {
+    "path": "3DDATA/CARS/MUSTGTR/3dobjsp.XBX",
+    "input_size": 117744,
+    "decoded_size": 262268,
+    "input_sha256": "2f4780e109b19975ec80c0ef31c0e3395bafbd419abc7f6a4c16ffaa3b4a0653",
+    "decoded_sha256": "0a09ab21f6ebaf7db9fe5be0324c0f247d106b4afbb24521d4fc43eda42c3a4b"
+  },
+  {
+    "path": "3DDATA/CARS/MUSTGTR/textures.DXT",
+    "input_size": 54390,
+    "decoded_size": 195954,
+    "input_sha256": "7dc265311711031b15f99ecb5f25bf433b4a0b404d09619d4af572ebce4344bb",
+    "decoded_sha256": "5967afe288a6a41b29d61c26b0a8be91cbba9fe4429ade8e7e213ce288c190bd"
+  },
+  {
+    "path": "3DDATA/CARS/POWERST/3dobjs.XBX",
+    "input_size": 9969,
+    "decoded_size": 40884,
+    "input_sha256": "767b874d954c60b1ee9c068096e84dcc928e767c7934a30df2dd2a1a7dde8f29",
+    "decoded_sha256": "d86b1139f6d0578f62dd686a5674e8ba74f8e8bcf3a602fa28ffc24879e1c441"
+  },
+  {
+    "path": "3DDATA/CARS/POWERST/3dobjsp.XBX",
+    "input_size": 109891,
+    "decoded_size": 247856,
+    "input_sha256": "882317b3b6cca804afca5cecd8e6a64300aa34d12fc80c48e56bd84af587989e",
+    "decoded_sha256": "c25814cf98794a6f01089eedb6521c064acab660360bf46a3d2994b5ce3ad176"
+  },
+  {
+    "path": "3DDATA/CARS/POWERST/textures.DXT",
+    "input_size": 226085,
+    "decoded_size": 531780,
+    "input_sha256": "4b462e4f720f627ee746801571bceb373595e966a30e7dbc9c904535bdd07cfa",
+    "decoded_sha256": "a6d35301ddfb3daf94c32b2720aee365d65461de4c3d16ba239bc70e49cdc906"
+  },
+  {
+    "path": "3DDATA/CARS/PUMA_AL/3dobjs.XBX",
+    "input_size": 9964,
+    "decoded_size": 39212,
+    "input_sha256": "d9109e9ee55bd761950da9c39eb93ede25db9904f77bef0c62e3e764c7acdd88",
+    "decoded_sha256": "01999308ddc6c53bd48372ee288b2be356149529bdc2914f32f623836bfc5f5c"
+  },
+  {
+    "path": "3DDATA/CARS/PUMA_AL/3dobjsp.XBX",
+    "input_size": 99367,
+    "decoded_size": 222756,
+    "input_sha256": "6ca3cc1502a0e953840306073ac644d4ec59bed656489ad05bb3cd50f6656c99",
+    "decoded_sha256": "059379b585a1f55960f1757295334beca02831cb324bb826c69e2eb4f8675a7c"
+  },
+  {
+    "path": "3DDATA/CARS/PUMA_AL/textures.DXT",
+    "input_size": 48359,
+    "decoded_size": 185991,
+    "input_sha256": "7d631223da36318d18332f3a810d95b0d70de5e94e022462b700428b90d5df81",
+    "decoded_sha256": "57dc853e46763ad7b23f36fe112ae3fc0a4aa26f01d3957c7c88d25ee83989f8"
+  },
+  {
+    "path": "3DDATA/CARS/RS500/3dobjs.XBX",
+    "input_size": 10135,
+    "decoded_size": 38802,
+    "input_sha256": "963d3415473746d382b612a0c34fbaa6fd0078fcd0a20d7f99cc501b2b0fa313",
+    "decoded_sha256": "f18c4526583af16ccec8e042cdd3aeea959937657cb38eaa6e1f0472b2d0cb80"
+  },
+  {
+    "path": "3DDATA/CARS/RS500/3dobjsp.XBX",
+    "input_size": 115997,
+    "decoded_size": 220064,
+    "input_sha256": "2fd0e05d657d1a7e60a5fbf12fdf7730578da556bde85b2acd2359a43ce74b93",
+    "decoded_sha256": "d503a49632345ea2617c2c84956a0c27b5529036b50c3609c68d1f56c221c49e"
+  },
+  {
+    "path": "3DDATA/CARS/RS500/textures.DXT",
+    "input_size": 159315,
+    "decoded_size": 522077,
+    "input_sha256": "55e4ec19276f195409cfcfdb19964f4d143249833e2b0828a563d5ce7701aed2",
+    "decoded_sha256": "31bffd69d8c791dcc17bf6244737c535b3a7b1325f6c3afb3f8fef5e56253fc8"
+  },
+  {
+    "path": "3DDATA/CARS/TBIRD2/3dobjs.XBX",
+    "input_size": 10871,
+    "decoded_size": 45802,
+    "input_sha256": "2c5c06b9d038cd56a2f4df131dd3fe6c93c662cd97a913535bfaf083e7633e2f",
+    "decoded_sha256": "59d06b0b0f941450530b086c68f2d1bba5ee2ed490ceb6291ce1758a2b98d8fc"
+  },
+  {
+    "path": "3DDATA/CARS/TBIRD2/3dobjsp.XBX",
+    "input_size": 116823,
+    "decoded_size": 270988,
+    "input_sha256": "4aa9179c17e4a8278c6471e5a8e214845002c46a74796312dd9a7919668b0006",
+    "decoded_sha256": "011ba88b6579a1793ce0a31bdf2fa35aeacf07f992ffe7059292488268e16903"
+  },
+  {
+    "path": "3DDATA/CARS/TBIRD2/textures.DXT",
+    "input_size": 210495,
+    "decoded_size": 540092,
+    "input_sha256": "d3fb8449f7c9a7a98c0f2a6161dfe98766ed5486720586ac655509584cd090f3",
+    "decoded_sha256": "319fe2c545497f0eafe23a607c871c7975575a6ad1eea00e668a8e14b8fa74ec"
+  },
+  {
+    "path": "3DDATA/DEBUG/3dobjs.XBX",
+    "input_size": 678,
+    "decoded_size": 3396,
+    "input_sha256": "db122574fcf1374bbae2b78552da162fca27219a47e5b32913127dd621cea2b9",
+    "decoded_sha256": "6294f7c816bba6253aa66289519f8907d262e9c899ad58028e2e25baa2af2c28"
+  },
+  {
+    "path": "3DDATA/DEBUG/3dobjsp.XBX",
+    "input_size": 1476,
+    "decoded_size": 15888,
+    "input_sha256": "7daedc8f32a0c01a5cc719ea31af5d8ef4953397b063c53f46d1e1678b191318",
+    "decoded_sha256": "a8165d15968aa0fe02b9e1ce18b923f5aaf9b292cc28a4f1a8a464fcf94b08fc"
+  },
+  {
+    "path": "3DDATA/DEBUG/textures.DXT",
+    "input_size": 1757,
+    "decoded_size": 3417,
+    "input_sha256": "235d540ac616341ef1ff95f6c377045caeb0e2a0e611b080a2de24c015d3dea8",
+    "decoded_sha256": "40209650207a51c1d051f426fceeeb6e6e878960409b10d02331665a7f343028"
+  },
+  {
+    "path": "3DDATA/MISC/3dobjs.XBX",
+    "input_size": 4156,
+    "decoded_size": 14116,
+    "input_sha256": "30c172002011e1390a247ab479bdb39bf74bb2d4740ba235689a5f5ed465da1d",
+    "decoded_sha256": "dc02ad473854975e130d5732c2f0b4528a52b3871436b1b568ea2a4823fb4906"
+  },
+  {
+    "path": "3DDATA/MISC/3dobjsp.XBX",
+    "input_size": 25132,
+    "decoded_size": 66380,
+    "input_sha256": "0664866d3c7733df4890234e5829854e1562d40eed8f14e856f002202d3b487d",
+    "decoded_sha256": "a584c68d1b93eda0b5b2f78383d6508b85a8dcfe538aef84f6b86dd302407c7c"
+  },
+  {
+    "path": "3DDATA/MISC/textures.DXT",
+    "input_size": 83673,
+    "decoded_size": 178272,
+    "input_sha256": "8829238a66994e13883aaca6e4354446d50df10de06777d1f0b43f4e4bf0707a",
+    "decoded_sha256": "7286cbe45556d770b84c74830c5deecc50aa17d8ddda9e3c27ac680e5a0078a3"
+  },
+  {
+    "path": "3DDATA/TRACKS/ENGAF/3dobjs.XBX",
+    "input_size": 79175,
+    "decoded_size": 433554,
+    "input_sha256": "c93af86b7f8148175a84e49cacb35aa1d92cb4a35f83231cfa0b5ec08fec6780",
+    "decoded_sha256": "8ab8d73b0b544194272e77630e350ffc7efcea103ea2ee0d25c7ce6475d8146e"
+  },
+  {
+    "path": "3DDATA/TRACKS/ENGAF/3dobjsp.XBX",
+    "input_size": 985430,
+    "decoded_size": 2425896,
+    "input_sha256": "5a21b703667735a3500fd9307afad1f730da4740c661b84f65b4707e3ce69876",
+    "decoded_sha256": "384fcd0562e1c37d1bf7e4bb2ebd3cb29d3bce7cb01f7f9f03aaf22692d1024a"
+  },
+  {
+    "path": "3DDATA/TRACKS/ENGAF/textures.DXT",
+    "input_size": 1116533,
+    "decoded_size": 1692472,
+    "input_sha256": "f78da93c900983667cb46536d59cc0a05986f11bdd14ba5193184a2a7f5b3412",
+    "decoded_sha256": "71803f51e6029ebe6c205e2f45707775e26262cfee871e1ed605fb3568eb83e2"
+  },
+  {
+    "path": "GRAPHICS/BOOT/graphics.pcg",
+    "input_size": 197779,
+    "decoded_size": 5244544,
+    "input_sha256": "fee3b61bff32da611c92dde154953cc00797283869781e8c47213b6010f5aaaf",
+    "decoded_sha256": "f28115ed2bd91a73a6c74c67b82e0312b8c055738c2054c2e007b58dafdb0953"
+  },
+  {
+    "path": "GRAPHICS/DEMOEXIT/graphics.pcg",
+    "input_size": 139719,
+    "decoded_size": 2622208,
+    "input_sha256": "0111c46eb2cc0b9d520487aeca4578aea644d60859c5f73c885a9291aaed2f1d",
+    "decoded_sha256": "bd9c062bfdc0748229ddbb400acc93daa2e666dff785d6748e59402f40322a1e"
+  },
+  {
+    "path": "GRAPHICS/GAME/BKGNDS/NET/graphics.pcg",
+    "input_size": 449254,
+    "decoded_size": 3671040,
+    "input_sha256": "b9a662a7dd596fe87b3544641c015d1b9cceb4f7b0fd517265bc782fe7f50a64",
+    "decoded_sha256": "2dd01ae1907495d190c1b94ec2fbf3ae170cc4287277cce5ee2cb9dc09c32193"
+  },
+  {
+    "path": "GRAPHICS/GAME/BKGNDS/graphics.pcg",
+    "input_size": 1212690,
+    "decoded_size": 9439872,
+    "input_sha256": "2af17da1d317beeab8fe5c178c17dfe921a2409bd423a6ac20a546f7c207e7f2",
+    "decoded_sha256": "af18ab7dc8a879262aab0c61fe85c9246040e43d7375a66c621c608f72bd3d0d"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD1/graphics.pcg",
+    "input_size": 4499,
+    "decoded_size": 16640,
+    "input_sha256": "915a732c6686b5c766bd9c5986a9062577d76700f4ee39b74f5a522a28969ca7",
+    "decoded_sha256": "12439690e6299d32e265c2da034f8cecb211dce2c1662c56986bac4debde2365"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD10/graphics.pcg",
+    "input_size": 9199,
+    "decoded_size": 33152,
+    "input_sha256": "b18e5ee5f3beb1f817b44e0c2804e341099ad0b703fa50e6ad04b0359cb94435",
+    "decoded_sha256": "0ec0f712c10afd3f6a9e8be43153a64db2f0093021cf63f0f5b2010beb36952e"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD11/graphics.pcg",
+    "input_size": 9218,
+    "decoded_size": 33152,
+    "input_sha256": "bd774675fd2bd109bdb6d38a28665c7612026f66429620ed2b0423256aa97aa9",
+    "decoded_sha256": "c56adb9976fe00f7f86ca8a1e3ba1ef553e6dc0ccab3a60883ed0fdc89e0b342"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD12/graphics.pcg",
+    "input_size": 4486,
+    "decoded_size": 16640,
+    "input_sha256": "22c8a8f3d9a32a891b5f40360d50dc7be5010715d73ea6daec1e0f7ecdf5800f",
+    "decoded_sha256": "9f298e2a0756e08e93919dd38df178d6ca4528769e973a4ca5aa6366dbc91826"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD13/graphics.pcg",
+    "input_size": 9019,
+    "decoded_size": 33152,
+    "input_sha256": "b60aed181d4b70391378161cc18a13be6b7a4e684253a578373b1bb48d98a0f6",
+    "decoded_sha256": "ca04b63f5478152c44a76e7c5a5e0a7553ffe6fd16e16691ed57263323515257"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD14/graphics.pcg",
+    "input_size": 9199,
+    "decoded_size": 33152,
+    "input_sha256": "b18e5ee5f3beb1f817b44e0c2804e341099ad0b703fa50e6ad04b0359cb94435",
+    "decoded_sha256": "0ec0f712c10afd3f6a9e8be43153a64db2f0093021cf63f0f5b2010beb36952e"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD15/graphics.pcg",
+    "input_size": 4529,
+    "decoded_size": 16640,
+    "input_sha256": "c776d2bd364d2773b1cba55832fdaf45b5057adfaf70e191409932a1fa603761",
+    "decoded_sha256": "861769edca1211727b15ff9501efba5dd183414225544be80381bd5631f7755d"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD16/graphics.pcg",
+    "input_size": 9320,
+    "decoded_size": 33152,
+    "input_sha256": "3ca34aabf0156edfe5f680810afeae8afd82867764b406ed8024f603aad4d369",
+    "decoded_sha256": "709e627ae000b3776f00a151c1a94cc8d8acd5b3125fff993d459c8cbc12be13"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD17/graphics.pcg",
+    "input_size": 9019,
+    "decoded_size": 33152,
+    "input_sha256": "b60aed181d4b70391378161cc18a13be6b7a4e684253a578373b1bb48d98a0f6",
+    "decoded_sha256": "ca04b63f5478152c44a76e7c5a5e0a7553ffe6fd16e16691ed57263323515257"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD18/graphics.pcg",
+    "input_size": 4625,
+    "decoded_size": 16640,
+    "input_sha256": "c5a9844b98fc6c12da6d8d001ddbc75a39654ef907096c63423efc0775c3ff49",
+    "decoded_sha256": "2953f545d43a310a57716fa026c32a0798ecf45603e0bdfd93db0e8df5356683"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD19/graphics.pcg",
+    "input_size": 9177,
+    "decoded_size": 33152,
+    "input_sha256": "61e0abb7f2a1c7d322ad1f578f330cfaf2c833e388c4ca5fbe74d506df5ae1b1",
+    "decoded_sha256": "348b19d33e4208cd54524359819b5aca5269435549988c56d39193c576defb1a"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD2/graphics.pcg",
+    "input_size": 9192,
+    "decoded_size": 33152,
+    "input_sha256": "90baf71560653395ea4f21471544310d8d61363f058353085ad5ab2005804f6b",
+    "decoded_sha256": "da1ff6bfd6b123e23e17caf99331eb8360eae7c8f5c7cebac7259a4a24da0d56"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD20/graphics.pcg",
+    "input_size": 9320,
+    "decoded_size": 33152,
+    "input_sha256": "3ca34aabf0156edfe5f680810afeae8afd82867764b406ed8024f603aad4d369",
+    "decoded_sha256": "709e627ae000b3776f00a151c1a94cc8d8acd5b3125fff993d459c8cbc12be13"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD21/graphics.pcg",
+    "input_size": 4353,
+    "decoded_size": 16640,
+    "input_sha256": "9633972fedf7a9f9a751fddd5298a82a121b49a17679d4e5b31180235b39023d",
+    "decoded_sha256": "9623da90098fdafedc11a75c2dee0e812cabcab4195026cff7f61391af87cab9"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD22/graphics.pcg",
+    "input_size": 4407,
+    "decoded_size": 16640,
+    "input_sha256": "21a794df79c87f033ee4b758ecc0aa96ff411ae85cc00e35bf0bca53a6d8385f",
+    "decoded_sha256": "021f109b0ff0311b0c58ee347f068bebf66320e44f7404bfed7af60831c56d4d"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD23/graphics.pcg",
+    "input_size": 9198,
+    "decoded_size": 33152,
+    "input_sha256": "950825e39d3d8e2faf4a6573806661c79a0d72ba62e72d00bf80beae7bff8523",
+    "decoded_sha256": "fa9bde97619c1d608cc9f15ada5c08be293bf1ad80684888508e7aa27d762f49"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD24/graphics.pcg",
+    "input_size": 4506,
+    "decoded_size": 16640,
+    "input_sha256": "c99cc9aff75f417b8916382572b814f511f40427644b56d91bcc42c8d8cbc577",
+    "decoded_sha256": "b417296e4ccff2d8f576ab07a7c4950a9f8accde7eee791edc8ae14a2644961d"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD3/graphics.pcg",
+    "input_size": 4580,
+    "decoded_size": 16640,
+    "input_sha256": "1cce8b1b5452bba6cd8b2f87f07e8e3ec66eb0879227a322df7d9372173897d8",
+    "decoded_sha256": "490087320844d59d1511b7ecdfe410652f4f2509456bfa565361c98e5f5a2ab7"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD4/graphics.pcg",
+    "input_size": 9236,
+    "decoded_size": 33152,
+    "input_sha256": "024fdbab41ce6ade799d780a9da168bc97d14b97ef3cda41b9fd620cfc4f67fa",
+    "decoded_sha256": "8137936f4d4a2099647105c00c0f1c0ff4cc38e7094b44881b494992429579f0"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD5/graphics.pcg",
+    "input_size": 9178,
+    "decoded_size": 33152,
+    "input_sha256": "28b065bee0e3a7177b7365bed45c8e5acb47f5e8e52e518f59eeb782a2681ac6",
+    "decoded_sha256": "c43c38c225be35d32159a6551b8e45f4da0e2cbb674e19b4c37f1de596b1b9a5"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD6/graphics.pcg",
+    "input_size": 4664,
+    "decoded_size": 16640,
+    "input_sha256": "0ba906f6b5e0948964cf27ea977240e82fbf75edbc81f98c80832591cbb90968",
+    "decoded_sha256": "c80d7d9a1eec2720aca2805fee0d54207921e4a855ece59238fcc5b0578d1bbe"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD7/graphics.pcg",
+    "input_size": 9217,
+    "decoded_size": 33152,
+    "input_sha256": "7a83d98aaa42d8d278106cf7f9a5f18c237fcb06b34b5ec2c98d89e1c43bbdc3",
+    "decoded_sha256": "5a8bffe88feb33bf82f373949f300a072778dfcbe1aa85915b22be25c9bf5477"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD8/graphics.pcg",
+    "input_size": 9236,
+    "decoded_size": 33152,
+    "input_sha256": "024fdbab41ce6ade799d780a9da168bc97d14b97ef3cda41b9fd620cfc4f67fa",
+    "decoded_sha256": "8137936f4d4a2099647105c00c0f1c0ff4cc38e7094b44881b494992429579f0"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/RWD9/graphics.pcg",
+    "input_size": 4796,
+    "decoded_size": 16640,
+    "input_sha256": "b027bcd7c72c923473ae7a8871d20e5c7f460fe7201029f5a881e41f7d41f408",
+    "decoded_sha256": "69b7c1158c07802fc88b7567076bf31a74300658223e8ad1d6a391b03f1e382a"
+  },
+  {
+    "path": "GRAPHICS/GAME/CHALL/graphics.pcg",
+    "input_size": 4050,
+    "decoded_size": 46336,
+    "input_sha256": "6b5b6d1f8b0946316de023299e98a473adb0b1f114496c6536c4ca8ebf445354",
+    "decoded_sha256": "0bb2f4bba7ff649e0cf1694e2a96c6b583cdf706322c5a1a27eb2014464e36cd"
+  },
+  {
+    "path": "GRAPHICS/GAME/CMPICON/graphics.pcg",
+    "input_size": 9140,
+    "decoded_size": 72064,
+    "input_sha256": "abeef32de9b70633ec9b01c1f28998c5fa11a178773485dc2eaafc5a514dafc5",
+    "decoded_sha256": "78e0e01f543cd161e5f6f14e55c268ad2efe7df10d5bcd36a490394e24462d9f"
+  },
+  {
+    "path": "GRAPHICS/GAME/COMMON/MODEICON/graphics.pcg",
+    "input_size": 14271,
+    "decoded_size": 297600,
+    "input_sha256": "3052c8be5888f06237205bb8e45076f4bd47d5e71eff0cf2c6c924975852f861",
+    "decoded_sha256": "e581bd0294cf4851e0bca10c5b241fe874d47554f2f025062d42d1e425655ac2"
+  },
+  {
+    "path": "GRAPHICS/GAME/COMMON/PC/graphics.pcg",
+    "input_size": 486,
+    "decoded_size": 3584,
+    "input_sha256": "5b1ec9f482a9554318c9e76b578e2d425589d497a695275291cc3c8969329d06",
+    "decoded_sha256": "9e19be578315d595f9bd9110bfbf67eab3daa0813068046267054e32d50bd86e"
+  },
+  {
+    "path": "GRAPHICS/GAME/COMMON/PS/graphics.pcg",
+    "input_size": 809,
+    "decoded_size": 5888,
+    "input_sha256": "c0d07a12f32363a88f6a8c7eb62aee401673244edcd12a6ae72d5c47ccfc3046",
+    "decoded_sha256": "28851ba9a6658e9fe0be4c0503cf123e5fe7235eeab83c5d466abbca1392d9ee"
+  },
+  {
+    "path": "GRAPHICS/GAME/COMMON/XB/graphics.pcg",
+    "input_size": 575,
+    "decoded_size": 4736,
+    "input_sha256": "4f55f3e06334bf507a12c16854ab1d55770b37cc8a356828fafdd1fd6ab8f1cc",
+    "decoded_sha256": "e3457b2e4716125368e0744fe427eb0dbbcf99763df14455cad17177b39da317"
+  },
+  {
+    "path": "GRAPHICS/GAME/COMMON/graphics.pcg",
+    "input_size": 53183,
+    "decoded_size": 648320,
+    "input_sha256": "7324ed6734cfaf36de272a1f850de4fe21e539e1c0292f57cbd6ad33662d8b1a",
+    "decoded_sha256": "4b96cb81bc1a87b1417f3b521b0d7fcdf429bedeadf6515241870a73d2511daa"
+  },
+  {
+    "path": "GRAPHICS/GAME/CTRLICON/PS/graphics.pcg",
+    "input_size": 7590,
+    "decoded_size": 52736,
+    "input_sha256": "f9bfc31f80e872cacab4bb0c63c39f9fb2b4f22700a82e4ab9ce69464a157a99",
+    "decoded_sha256": "4469a4bfb5fe5971f94d19fb88236f86e0636c7ffa12896f8775207781a383e2"
+  },
+  {
+    "path": "GRAPHICS/GAME/CTRLICON/XB/graphics.pcg",
+    "input_size": 9274,
+    "decoded_size": 94848,
+    "input_sha256": "ecb03cc3308baa8ccbf023ba3afe3cb6cc3a96ddc923d1e775a53e096ad8a8ac",
+    "decoded_sha256": "0584896d536ce6e82d340277ead2f3d3a970786a15847652efdba4a0390847de"
+  },
+  {
+    "path": "GRAPHICS/GAME/CUPS/graphics.pcg",
+    "input_size": 14557,
+    "decoded_size": 59392,
+    "input_sha256": "fcc351a0ce42eb2869b23636ebc1fe76ca95c16e201dec2a4b2825e2ce75dbd8",
+    "decoded_sha256": "2868af32fdb175a6ed01906257c651470b1579639a054436645dca8a54875cb5"
+  },
+  {
+    "path": "GRAPHICS/GAME/MATRIX/graphics.pcg",
+    "input_size": 763315,
+    "decoded_size": 3074304,
+    "input_sha256": "41f62c08795657767c7d8db315c2478096b1f083894f53d04dd14ac9ff15ed53",
+    "decoded_sha256": "9347eab09d0df597a600806ba58fad313b2f3367eef7732ce7584dbc6860cb39"
+  },
+  {
+    "path": "GRAPHICS/GAME/NET/graphics.pcg",
+    "input_size": 2402,
+    "decoded_size": 17280,
+    "input_sha256": "990375b3096602492eda82634c5d5e97ddea1f81bd0df2b9fc23f299600dffdb",
+    "decoded_sha256": "32d5946e799625fe073fd6fc1a69afd70b624344f63567efe54e2ab541d70d00"
+  },
+  {
+    "path": "GRAPHICS/GAME/OPTIONS/graphics.pcg",
+    "input_size": 751,
+    "decoded_size": 9344,
+    "input_sha256": "0bbca042a19246ff8d1489ff13e10d0d7fd37632547b4aea8ae3acc1e03c8b8f",
+    "decoded_sha256": "80ea8facfb8d9b4092330beff6420c38efb71fc7225d66f6ed6be337fc7d7335"
+  },
+  {
+    "path": "GRAPHICS/GAME/RIBBONS/graphics.pcg",
+    "input_size": 48113,
+    "decoded_size": 480000,
+    "input_sha256": "92243fd11793be5cde6b02471ebeead07a5e8e298d31bc6f705ceb3817f051cd",
+    "decoded_sha256": "108ee7a52f550fb862291970b7191c661a027fac7de37afebbea93daeafcc501"
+  },
+  {
+    "path": "GRAPHICS/GAME/SHIELDS/graphics.pcg",
+    "input_size": 12379,
+    "decoded_size": 115712,
+    "input_sha256": "cc3b12c5623345ad82f1b04be30f3f161443752bf1869562b78631ff9fad1066",
+    "decoded_sha256": "9120ed697205e01f9b162a430469636aedba4e6cd9f5a6e516df0f7f95e09f3a"
+  },
+  {
+    "path": "GRAPHICS/GAME/TOKENS/graphics.pcg",
+    "input_size": 8319,
+    "decoded_size": 118784,
+    "input_sha256": "46a65efc2819f6b110d5e2c87336195e13497bc227a3fe0c9a30f059d7ea08d7",
+    "decoded_sha256": "7a35473d6e569a958ee45e5b4e8c8c1f0c34fb9dba60257ab3c6946b3a47664d"
+  },
+  {
+    "path": "GRAPHICS/GAME/TRACKS/graphics.pcg",
+    "input_size": 141676,
+    "decoded_size": 921600,
+    "input_sha256": "cddcda3fcfb63f79fc5e81c07a1e67b9e6b8766505c9d994d202b71a335a07e7",
+    "decoded_sha256": "39728c0934036a24d60e912d552a55a9ad1927d1883fc60061a9226457f36c6a"
+  },
+  {
+    "path": "GRAPHICS/GAME/TROPHIES/graphics.pcg",
+    "input_size": 16145,
+    "decoded_size": 98816,
+    "input_sha256": "636ef453b7de9ce2607792dc39bdc3d1090e98b3eed2c9fe2904fb685a8d3edc",
+    "decoded_sha256": "e351d4c7f7505aeb78677d5045261e225b99ab3e2d6d88f9eff13f27d55ceb13"
+  },
+  {
+    "path": "GRAPHICS/GAME/TROPHY/graphics.pcg",
+    "input_size": 13133,
+    "decoded_size": 71296,
+    "input_sha256": "7cb9696de87af2743822178ea7d77e09bb81ef8463595c7afaf6a444f85ffa92",
+    "decoded_sha256": "44db52acedb0088c191b3f4c7277c7bce4a363fdcde6e3099848d0a847b9fd57"
+  },
+  {
+    "path": "GRAPHICS/GAME/graphics.pcg",
+    "input_size": 99847,
+    "decoded_size": 733312,
+    "input_sha256": "4c5b5d6552a4a69e9adff8c7fdea1f588a1e4ad11ec3805e29f5454e6a034d90",
+    "decoded_sha256": "817eb54de618f3ea972fde5b42436b61f2134a6855b9f670d076127596291cee"
+  },
+  {
+    "path": "GRAPHICS/HUD/ATTRACT/graphics.pcg",
+    "input_size": 3813,
+    "decoded_size": 33024,
+    "input_sha256": "7546812191a698ef0f9b14ee4f9e646bdb8aeec96a9a090ab65f157ba098b2a7",
+    "decoded_sha256": "6850b526555ab9b7a081a02a7692404f84c6ca5371902118fe5d63b486228a86"
+  },
+  {
+    "path": "GRAPHICS/HUD/GENERIC/graphics.pcg",
+    "input_size": 9506,
+    "decoded_size": 170624,
+    "input_sha256": "85ea3caa7d083cb407f272eb4b5e52af56ae1d52b0b2826fc6b5a676b4351aed",
+    "decoded_sha256": "fbee8e5907d06a327756ad8800218ef950cf62d4222be31553349d4721105dd7"
+  },
+  {
+    "path": "GRAPHICS/HUD/KPH/graphics.pcg",
+    "input_size": 9932,
+    "decoded_size": 164608,
+    "input_sha256": "19dc1e82fdaff63f860e7ac1ee0ff8d36218986e5ec47814d4c226829af0405a",
+    "decoded_sha256": "d4d62fb9b4ae0bfa50c0e8759e857b229a7e548aad74de14132b939aaf4967cb"
+  },
+  {
+    "path": "GRAPHICS/HUD/MPH/graphics.pcg",
+    "input_size": 11623,
+    "decoded_size": 197504,
+    "input_sha256": "9eff46a3d76a8c857987ac2875a04ca393c65d1b2306ce17c09f769d93c5b606",
+    "decoded_sha256": "c7cc4942b3cb26f99b58808378cc26a98c640677e9666e72be7749c872cbf8ff"
+  },
+  {
+    "path": "GRAPHICS/HUD/NUMBERS/graphics.pcg",
+    "input_size": 1930,
+    "decoded_size": 16512,
+    "input_sha256": "84d60f5f351676519e6df85e87c4a3fc41ce388ef733b356044e5cab00c04552",
+    "decoded_sha256": "4da7ffe11f802aa6ce664aae58e3f0036dd94f8d90fe70d711fdafe5efd9a165"
+  },
+  {
+    "path": "GRAPHICS/HUD/PANEL/graphics.pcg",
+    "input_size": 1230,
+    "decoded_size": 203008,
+    "input_sha256": "e99652125ab097f49e59fbd60c70a05bee9da49a9dfb07497a1a0b8834a150c6",
+    "decoded_sha256": "4ad13670dde0930baf7d131c9ee5bcdb2a0f21dec19ad82076767c9148a36dda"
+  },
+  {
+    "path": "GRAPHICS/HUD/REV/graphics.pcg",
+    "input_size": 30158,
+    "decoded_size": 510336,
+    "input_sha256": "a1aae9b10c070433c561897dbe648956d1ae5e9de45f19b9b6222ccbfe0538e6",
+    "decoded_sha256": "04a3051e0e1abaa02fffef4cc24ccb6dad3c894e1f28e1e6f0fa7400f755819d"
+  },
+  {
+    "path": "GRAPHICS/HUD/REVM/graphics.pcg",
+    "input_size": 7182,
+    "decoded_size": 234752,
+    "input_sha256": "6204d6a1167b730c2967f6d58dde455fd568eb7342a4de3f144810c5f0486754",
+    "decoded_sha256": "11ad5037012590030f983b5f47cfc816d962816e2dfb20289554e922ddec6a45"
+  },
+  {
+    "path": "GRAPHICS/LOADING/PC/ENGLISH/graphics.pcg",
+    "input_size": 8069,
+    "decoded_size": 524544,
+    "input_sha256": "2baf3f4a6245394447936777273be208105f82a199b172cbaf224b1080d2c151",
+    "decoded_sha256": "98dd3b5093eed4393e889aff9067f23a4e485468ae978355e6234e91c1eb2a2f"
+  },
+  {
+    "path": "GRAPHICS/LOADING/PC/FRENCH/graphics.pcg",
+    "input_size": 8526,
+    "decoded_size": 524544,
+    "input_sha256": "8125d058c6e6cdf936a7ac59e1072a719710fa49441d8637211c2bc59df2d320",
+    "decoded_sha256": "c4180448d038c51c92085b4b29f65f62f0d11d5c3eab04d3576e86a76776a658"
+  },
+  {
+    "path": "GRAPHICS/LOADING/PC/GERMAN/graphics.pcg",
+    "input_size": 8856,
+    "decoded_size": 524544,
+    "input_sha256": "7a8aaa32dbbae7166ca784f8b6f5ad54a62784ae5f80288eab56d38692dd7d09",
+    "decoded_sha256": "2d718c7f46e6782d1410b1e9f06671e63728e992a3aa191741087405a2dc9fa5"
+  },
+  {
+    "path": "GRAPHICS/LOADING/PC/ITALIAN/graphics.pcg",
+    "input_size": 8863,
+    "decoded_size": 524544,
+    "input_sha256": "a249fcc8220fd272fe654bb3f24cab842a63c54e210c5b0f3d3a5e25dbb41a1b",
+    "decoded_sha256": "e4a0df582465598234f6883bfa2b8d415f9711d548dfb17f929884bce874ce26"
+  },
+  {
+    "path": "GRAPHICS/LOADING/PC/SPANISH/graphics.pcg",
+    "input_size": 9071,
+    "decoded_size": 524544,
+    "input_sha256": "aab751d02b35364ffd97a80b5fbda0199f1782cab51955340feb8d0f2448fad1",
+    "decoded_sha256": "496ce48be359ba1034a45c6098acc084f4109ec8bae80e63c62b44c1e34b2d0b"
+  },
+  {
+    "path": "GRAPHICS/LOADING/graphics.pcg",
+    "input_size": 85903,
+    "decoded_size": 528896,
+    "input_sha256": "56a09a01207a6e1f1d3add14c2e19a1440f9be8c04789e2d9549e422a92be603",
+    "decoded_sha256": "8c5a5704fd2af8bee38df73905edc946e12b7abf819d5674dcbf51761aeb6655"
+  }
+]

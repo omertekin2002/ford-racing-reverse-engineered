@@ -1,0 +1,1817 @@
+[
+  {
+    "id": 0,
+    "pointer_va": 5650136,
+    "name": "FIRST_APPLICATION_TAG"
+  },
+  {
+    "id": 1,
+    "pointer_va": 5650160,
+    "name": "ACCELERATOR_SPEED"
+  },
+  {
+    "id": 2,
+    "pointer_va": 5650180,
+    "name": "ADDITIONAL_BRAKING"
+  },
+  {
+    "id": 3,
+    "pointer_va": 5650200,
+    "name": "AEROFOIL"
+  },
+  {
+    "id": 4,
+    "pointer_va": 5650212,
+    "name": "AEROFOIL_ANGLES"
+  },
+  {
+    "id": 5,
+    "pointer_va": 5650228,
+    "name": "AI_DRAFTING_POWER_MODIFIER"
+  },
+  {
+    "id": 6,
+    "pointer_va": 5650256,
+    "name": "AI_LATERAL_GRIP_MODIFIER"
+  },
+  {
+    "id": 7,
+    "pointer_va": 5650284,
+    "name": "AI_OVERTAKE_POWER_MODIFIER"
+  },
+  {
+    "id": 8,
+    "pointer_va": 5650312,
+    "name": "AI_RACELINE_POWER_BOOST"
+  },
+  {
+    "id": 9,
+    "pointer_va": 5650336,
+    "name": "AI_TRACK_NAME"
+  },
+  {
+    "id": 10,
+    "pointer_va": 5650352,
+    "name": "ANALOG_SPEEDO_KPH"
+  },
+  {
+    "id": 11,
+    "pointer_va": 5650372,
+    "name": "ANALOG_SPEEDO_MPH"
+  },
+  {
+    "id": 12,
+    "pointer_va": 5650392,
+    "name": "ANTI_DIVE_STIFFNESS"
+  },
+  {
+    "id": 13,
+    "pointer_va": 5650412,
+    "name": "ANTI_ROLLBAR_STIFFNESS"
+  },
+  {
+    "id": 14,
+    "pointer_va": 5650436,
+    "name": "ANTI_WHEELSKID"
+  },
+  {
+    "id": 15,
+    "pointer_va": 5650452,
+    "name": "ANTI_WHEELSPIN"
+  },
+  {
+    "id": 16,
+    "pointer_va": 5650468,
+    "name": "ASPIRATION_TYPE"
+  },
+  {
+    "id": 17,
+    "pointer_va": 5650484,
+    "name": "BANK"
+  },
+  {
+    "id": 18,
+    "pointer_va": 5650492,
+    "name": "BEGIN_VIBRATION"
+  },
+  {
+    "id": 19,
+    "pointer_va": 5650508,
+    "name": "BEZEL"
+  },
+  {
+    "id": 20,
+    "pointer_va": 5650516,
+    "name": "BONUS"
+  },
+  {
+    "id": 21,
+    "pointer_va": 5650524,
+    "name": "BONUS_SCRIPT"
+  },
+  {
+    "id": 22,
+    "pointer_va": 5650540,
+    "name": "BRAKE_DISTRIBUTION"
+  },
+  {
+    "id": 23,
+    "pointer_va": 5650560,
+    "name": "BRAKE_MAX_FORCE"
+  },
+  {
+    "id": 24,
+    "pointer_va": 5650576,
+    "name": "BRAKE_PAD_FRICTION"
+  },
+  {
+    "id": 25,
+    "pointer_va": 5650596,
+    "name": "BRAKE_RADIUS"
+  },
+  {
+    "id": 26,
+    "pointer_va": 5650612,
+    "name": "BRAKE_SPEED"
+  },
+  {
+    "id": 27,
+    "pointer_va": 5650624,
+    "name": "BUMP_AMPLITUDE"
+  },
+  {
+    "id": 28,
+    "pointer_va": 5650640,
+    "name": "BUMP_FREQUENCY"
+  },
+  {
+    "id": 29,
+    "pointer_va": 5650656,
+    "name": "BUMPER_HEIGHT"
+  },
+  {
+    "id": 30,
+    "pointer_va": 5650672,
+    "name": "CAMBER_THRUST"
+  },
+  {
+    "id": 31,
+    "pointer_va": 5650688,
+    "name": "CAMERA_GROUP"
+  },
+  {
+    "id": 32,
+    "pointer_va": 5650704,
+    "name": "CAMERA_SYSTEM_CAMERA"
+  },
+  {
+    "id": 33,
+    "pointer_va": 5650728,
+    "name": "CAMERA_SYSTEM_CAMERA_CREATE"
+  },
+  {
+    "id": 34,
+    "pointer_va": 5650756,
+    "name": "CAMERA_SYSTEM_CAMERA_FOV"
+  },
+  {
+    "id": 35,
+    "pointer_va": 5650784,
+    "name": "CAMERA_SYSTEM_CAMERA_INITIALISE_BASE_ATTRIBS_ON_SUBJECT_CHANGE"
+  },
+  {
+    "id": 36,
+    "pointer_va": 5650848,
+    "name": "CAMERA_SYSTEM_CAMERA_INITIALISE_SPECIFIC_ATTRIBS_ON_SUBJECT_CHANGE"
+  },
+  {
+    "id": 37,
+    "pointer_va": 5650916,
+    "name": "CAMERA_SYSTEM_CAMERA_INVERT"
+  },
+  {
+    "id": 38,
+    "pointer_va": 5650944,
+    "name": "CAMERA_SYSTEM_CAMERA_OFFSET"
+  },
+  {
+    "id": 39,
+    "pointer_va": 5650972,
+    "name": "CAMERA_SYSTEM_CAMERA_SECONDARY"
+  },
+  {
+    "id": 40,
+    "pointer_va": 5651004,
+    "name": "CAMERA_SYSTEM_CAMERA_SHAKE"
+  },
+  {
+    "id": 41,
+    "pointer_va": 5651032,
+    "name": "CAMERA_SYSTEM_CAMERA_SUBJECT_VISIBLE"
+  },
+  {
+    "id": 42,
+    "pointer_va": 5651072,
+    "name": "CAMERA_SYSTEM_CAMERA_TAKE_SUBJECT_HEADING"
+  },
+  {
+    "id": 43,
+    "pointer_va": 5651116,
+    "name": "CAMERA_SYSTEM_CAMERA_TAKE_SUBJECT_PITCH"
+  },
+  {
+    "id": 44,
+    "pointer_va": 5651156,
+    "name": "CAMERA_SYSTEM_CAMERA_TAKE_SUBJECT_ROLL"
+  },
+  {
+    "id": 45,
+    "pointer_va": 5651196,
+    "name": "CAMERA_SYSTEM_CAMERA_TIME"
+  },
+  {
+    "id": 46,
+    "pointer_va": 5651224,
+    "name": "CAMERA_SYSTEM_CAMERA_TYPE_SPECIFIC"
+  },
+  {
+    "id": 47,
+    "pointer_va": 5651260,
+    "name": "CAMERA_SYSTEM_CAMERA_VIEWPORT_OFFSETS"
+  },
+  {
+    "id": 48,
+    "pointer_va": 5651300,
+    "name": "CAMERA_SYSTEM_DIRECTOR_VIEWPORT"
+  },
+  {
+    "id": 49,
+    "pointer_va": 5651332,
+    "name": "CAMERA_SYSTEM_MOUNTING_CREATE"
+  },
+  {
+    "id": 50,
+    "pointer_va": 5651364,
+    "name": "CAMERA_SYSTEM_MOUNTING_HILL_CLIMB_CAMERA_SPECIFIC"
+  },
+  {
+    "id": 51,
+    "pointer_va": 5651416,
+    "name": "CAMERA_SYSTEM_MOUNTING_OFFSET"
+  },
+  {
+    "id": 52,
+    "pointer_va": 5651448,
+    "name": "CAMERA_SYSTEM_MOUNTING_SHAKE"
+  },
+  {
+    "id": 53,
+    "pointer_va": 5651480,
+    "name": "CAMERA_SYSTEM_MOUNTING_SUBJECT_SCALE_VALUE"
+  },
+  {
+    "id": 54,
+    "pointer_va": 5651524,
+    "name": "CAMERA_SYSTEM_MOUNTING_TYPE_SPECIFIC"
+  },
+  {
+    "id": 55,
+    "pointer_va": 5651564,
+    "name": "CAPACITY"
+  },
+  {
+    "id": 56,
+    "pointer_va": 5651576,
+    "name": "CAR"
+  },
+  {
+    "id": 57,
+    "pointer_va": 5651580,
+    "name": "CAR_APPROVED"
+  },
+  {
+    "id": 58,
+    "pointer_va": 5651596,
+    "name": "CAR_APPROXIMATE_TOP_SPEED"
+  },
+  {
+    "id": 59,
+    "pointer_va": 5651624,
+    "name": "CAR_BACK_TYRE_TYPE"
+  },
+  {
+    "id": 60,
+    "pointer_va": 5651644,
+    "name": "CAR_BASE_DIFFICULTY_LEVEL"
+  },
+  {
+    "id": 61,
+    "pointer_va": 5651672,
+    "name": "CAR_BODY_TYPE"
+  },
+  {
+    "id": 62,
+    "pointer_va": 5651688,
+    "name": "CAR_BRAKE_TYPE"
+  },
+  {
+    "id": 63,
+    "pointer_va": 5651704,
+    "name": "CAR_CAMERA_COLLISION_SPHERE_RADIUS"
+  },
+  {
+    "id": 64,
+    "pointer_va": 5651740,
+    "name": "CAR_CONTROL_TYPE"
+  },
+  {
+    "id": 65,
+    "pointer_va": 5651760,
+    "name": "CAR_DIFFICULTY_LEVEL_SPREAD"
+  },
+  {
+    "id": 66,
+    "pointer_va": 5651788,
+    "name": "CAR_ENGINE_TYPE"
+  },
+  {
+    "id": 67,
+    "pointer_va": 5651804,
+    "name": "CAR_FRONT_TYRE_TYPE"
+  },
+  {
+    "id": 68,
+    "pointer_va": 5651824,
+    "name": "CAR_GEARBOX_TYPE"
+  },
+  {
+    "id": 69,
+    "pointer_va": 5651844,
+    "name": "CAR_GROUND_CLEARANCE"
+  },
+  {
+    "id": 70,
+    "pointer_va": 5651868,
+    "name": "CAR_GROUP_TYPE"
+  },
+  {
+    "id": 71,
+    "pointer_va": 5651884,
+    "name": "CAR_HEADLIGHTS_REQUIRED_FLAG"
+  },
+  {
+    "id": 72,
+    "pointer_va": 5651916,
+    "name": "CAR_MODEL_YEAR"
+  },
+  {
+    "id": 73,
+    "pointer_va": 5651932,
+    "name": "CAR_OVERLAY_TYPE"
+  },
+  {
+    "id": 74,
+    "pointer_va": 5651952,
+    "name": "CAR_PERFORMANCE"
+  },
+  {
+    "id": 75,
+    "pointer_va": 5651968,
+    "name": "CAR_SETUP_TYPE"
+  },
+  {
+    "id": 76,
+    "pointer_va": 5651984,
+    "name": "CAR_SOUND_TYPE"
+  },
+  {
+    "id": 77,
+    "pointer_va": 5652000,
+    "name": "CAR_TYPE"
+  },
+  {
+    "id": 78,
+    "pointer_va": 5652012,
+    "name": "CATCHUP_ADDITIONAL_POWER"
+  },
+  {
+    "id": 79,
+    "pointer_va": 5652040,
+    "name": "CATCHUP_ADDITIONAL_START_POWER"
+  },
+  {
+    "id": 80,
+    "pointer_va": 5652072,
+    "name": "CATCHUP_PACK_RATE_OF_CHANGE_PER_LAP"
+  },
+  {
+    "id": 81,
+    "pointer_va": 5652108,
+    "name": "CATCHUP_PACK_SHIFT"
+  },
+  {
+    "id": 82,
+    "pointer_va": 5652128,
+    "name": "CATCHUP_PACK_SPREAD"
+  },
+  {
+    "id": 83,
+    "pointer_va": 5652148,
+    "name": "CATCHUP_RANGE_AHEAD"
+  },
+  {
+    "id": 84,
+    "pointer_va": 5652168,
+    "name": "CATCHUP_RANGE_BEHIND"
+  },
+  {
+    "id": 85,
+    "pointer_va": 5652192,
+    "name": "CATCHUP_START_FADEOUT"
+  },
+  {
+    "id": 86,
+    "pointer_va": 5652216,
+    "name": "CATCHUP_STOP_FADEOUT"
+  },
+  {
+    "id": 87,
+    "pointer_va": 5652240,
+    "name": "CATCHUP_SUBTRACTIVE_POWER"
+  },
+  {
+    "id": 88,
+    "pointer_va": 5652268,
+    "name": "CATCHUP_SUBTRACTIVE_START_POWER"
+  },
+  {
+    "id": 89,
+    "pointer_va": 5652300,
+    "name": "CHALLENGE_FILENAME"
+  },
+  {
+    "id": 90,
+    "pointer_va": 5652320,
+    "name": "CHALLENGE_THEME_TYPE"
+  },
+  {
+    "id": 91,
+    "pointer_va": 5652344,
+    "name": "CHALLENGE_TYPE"
+  },
+  {
+    "id": 92,
+    "pointer_va": 5652360,
+    "name": "CHOICE"
+  },
+  {
+    "id": 93,
+    "pointer_va": 5652368,
+    "name": "CLASS"
+  },
+  {
+    "id": 94,
+    "pointer_va": 5652376,
+    "name": "CLUTCH_MAX_POWER"
+  },
+  {
+    "id": 95,
+    "pointer_va": 5652396,
+    "name": "CLUTCH_SPEED"
+  },
+  {
+    "id": 96,
+    "pointer_va": 5652412,
+    "name": "COLLECTION_TOTAL"
+  },
+  {
+    "id": 97,
+    "pointer_va": 5652432,
+    "name": "COLLISION_SPHERE"
+  },
+  {
+    "id": 98,
+    "pointer_va": 5652452,
+    "name": "COLOUR"
+  },
+  {
+    "id": 99,
+    "pointer_va": 5652460,
+    "name": "CONE"
+  },
+  {
+    "id": 100,
+    "pointer_va": 5652468,
+    "name": "CONE_SCRIPT"
+  },
+  {
+    "id": 101,
+    "pointer_va": 5652480,
+    "name": "CONTROL"
+  },
+  {
+    "id": 102,
+    "pointer_va": 5652488,
+    "name": "CREATE_ENTITY"
+  },
+  {
+    "id": 103,
+    "pointer_va": 5652504,
+    "name": "CROSSFADE_INFO"
+  },
+  {
+    "id": 104,
+    "pointer_va": 5652520,
+    "name": "CUP_FILENAME"
+  },
+  {
+    "id": 105,
+    "pointer_va": 5652536,
+    "name": "CUP_TEXT"
+  },
+  {
+    "id": 106,
+    "pointer_va": 5652548,
+    "name": "DAYS"
+  },
+  {
+    "id": 107,
+    "pointer_va": 5652556,
+    "name": "DEFAULT_TRACK_SURFACE"
+  },
+  {
+    "id": 108,
+    "pointer_va": 5652580,
+    "name": "DESCRIPTION_TEXT"
+  },
+  {
+    "id": 109,
+    "pointer_va": 5652600,
+    "name": "DIFF_TYPE"
+  },
+  {
+    "id": 110,
+    "pointer_va": 5652612,
+    "name": "DIFFICULTY_DATA"
+  },
+  {
+    "id": 111,
+    "pointer_va": 5652628,
+    "name": "DIFFICULTY_LEVEL"
+  },
+  {
+    "id": 112,
+    "pointer_va": 5652648,
+    "name": "DIFFICULTY_LINE_VARIATION"
+  },
+  {
+    "id": 113,
+    "pointer_va": 5652676,
+    "name": "DIFFICULTY_OVERTAKE_CLEARANCE"
+  },
+  {
+    "id": 114,
+    "pointer_va": 5652708,
+    "name": "DIFFICULTY_VALUE"
+  },
+  {
+    "id": 115,
+    "pointer_va": 5652728,
+    "name": "DIMENSIONS"
+  },
+  {
+    "id": 116,
+    "pointer_va": 5652740,
+    "name": "DPAD_INPUT_ARRAY"
+  },
+  {
+    "id": 117,
+    "pointer_va": 5652760,
+    "name": "DRAG"
+  },
+  {
+    "id": 118,
+    "pointer_va": 5652768,
+    "name": "DRIVE_SPLIT"
+  },
+  {
+    "id": 119,
+    "pointer_va": 5652780,
+    "name": "DRIVE_TYPE"
+  },
+  {
+    "id": 120,
+    "pointer_va": 5652792,
+    "name": "DRIVER_RATING"
+  },
+  {
+    "id": 121,
+    "pointer_va": 5652808,
+    "name": "DRIVER_RATING_DIFFICULTY_LEVEL_POINTS"
+  },
+  {
+    "id": 122,
+    "pointer_va": 5652848,
+    "name": "DRIVER_RATING_SCORES"
+  },
+  {
+    "id": 123,
+    "pointer_va": 5652872,
+    "name": "EFFECT_TYPE"
+  },
+  {
+    "id": 124,
+    "pointer_va": 5652884,
+    "name": "END_OF_RECORD"
+  },
+  {
+    "id": 125,
+    "pointer_va": 5652900,
+    "name": "END_SUB_SCRIPT"
+  },
+  {
+    "id": 126,
+    "pointer_va": 5652916,
+    "name": "END_VIBRATION"
+  },
+  {
+    "id": 127,
+    "pointer_va": 5652932,
+    "name": "ENGINE_BRAKING"
+  },
+  {
+    "id": 128,
+    "pointer_va": 5652948,
+    "name": "ENGINE_PITCH_MODIFIER"
+  },
+  {
+    "id": 129,
+    "pointer_va": 5652972,
+    "name": "ENGINE_PITCH_SCALING"
+  },
+  {
+    "id": 130,
+    "pointer_va": 5652996,
+    "name": "ENVIRONMENT_SOUND_VOLUME"
+  },
+  {
+    "id": 131,
+    "pointer_va": 5653024,
+    "name": "EXPIRE_TIME"
+  },
+  {
+    "id": 132,
+    "pointer_va": 5653036,
+    "name": "FASTEST_LAP"
+  },
+  {
+    "id": 133,
+    "pointer_va": 5653048,
+    "name": "FILENAME"
+  },
+  {
+    "id": 134,
+    "pointer_va": 5653060,
+    "name": "FLAT_NEEDLE"
+  },
+  {
+    "id": 135,
+    "pointer_va": 5653072,
+    "name": "FLYWHEEL_MASS"
+  },
+  {
+    "id": 136,
+    "pointer_va": 5653088,
+    "name": "FLYWHEEL_RADIUS"
+  },
+  {
+    "id": 137,
+    "pointer_va": 5653104,
+    "name": "FRICTION"
+  },
+  {
+    "id": 138,
+    "pointer_va": 5653116,
+    "name": "FUEL_CUTOFF"
+  },
+  {
+    "id": 139,
+    "pointer_va": 5653128,
+    "name": "FUELING_TYPE"
+  },
+  {
+    "id": 140,
+    "pointer_va": 5653144,
+    "name": "GAMEPLAY"
+  },
+  {
+    "id": 141,
+    "pointer_va": 5653156,
+    "name": "GAMEPLAY_TYPE"
+  },
+  {
+    "id": 142,
+    "pointer_va": 5653172,
+    "name": "GEARING_ARRAY"
+  },
+  {
+    "id": 143,
+    "pointer_va": 5653188,
+    "name": "GENERAL_SPEECH_TIME"
+  },
+  {
+    "id": 144,
+    "pointer_va": 5653208,
+    "name": "GENERIC_BODY_FLAG"
+  },
+  {
+    "id": 145,
+    "pointer_va": 5653228,
+    "name": "GET_DELTA_TIME"
+  },
+  {
+    "id": 146,
+    "pointer_va": 5653244,
+    "name": "GET_RANDOM_NUMBER"
+  },
+  {
+    "id": 147,
+    "pointer_va": 5653264,
+    "name": "GET_TIME_ACCELERATION"
+  },
+  {
+    "id": 148,
+    "pointer_va": 5653288,
+    "name": "GOAL"
+  },
+  {
+    "id": 149,
+    "pointer_va": 5653296,
+    "name": "GROUP_TYPE"
+  },
+  {
+    "id": 150,
+    "pointer_va": 5653308,
+    "name": "HELP"
+  },
+  {
+    "id": 151,
+    "pointer_va": 5653316,
+    "name": "HOURS"
+  },
+  {
+    "id": 152,
+    "pointer_va": 5653324,
+    "name": "HOWTO"
+  },
+  {
+    "id": 153,
+    "pointer_va": 5653332,
+    "name": "ICON_FILENAME"
+  },
+  {
+    "id": 154,
+    "pointer_va": 5653348,
+    "name": "INGAME_SHORT_TEXT_ENUM"
+  },
+  {
+    "id": 155,
+    "pointer_va": 5653372,
+    "name": "INGAME_TEXT_ENUM"
+  },
+  {
+    "id": 156,
+    "pointer_va": 5653392,
+    "name": "INHERIT_TYPE"
+  },
+  {
+    "id": 157,
+    "pointer_va": 5653408,
+    "name": "INTERPOLANT"
+  },
+  {
+    "id": 158,
+    "pointer_va": 5653420,
+    "name": "IRREGULARITY_AMPLITUDE"
+  },
+  {
+    "id": 159,
+    "pointer_va": 5653444,
+    "name": "IRREGULARITY_FREQUENCY"
+  },
+  {
+    "id": 160,
+    "pointer_va": 5653468,
+    "name": "JOYPAD_PC_INPUT_ARRAY"
+  },
+  {
+    "id": 161,
+    "pointer_va": 5653492,
+    "name": "JOYPAD_PS2_INPUT_ARRAY"
+  },
+  {
+    "id": 162,
+    "pointer_va": 5653516,
+    "name": "JOYPAD_XBOX_INPUT_ARRAY"
+  },
+  {
+    "id": 163,
+    "pointer_va": 5653540,
+    "name": "LATERAL_COMBINED_VALUES"
+  },
+  {
+    "id": 164,
+    "pointer_va": 5653564,
+    "name": "LEAD_GATE_SCRIPT"
+  },
+  {
+    "id": 165,
+    "pointer_va": 5653584,
+    "name": "LOCATION_TYPE"
+  },
+  {
+    "id": 166,
+    "pointer_va": 5653600,
+    "name": "LONGITUDINAL_COMBINED_VALUES"
+  },
+  {
+    "id": 167,
+    "pointer_va": 5653632,
+    "name": "MAIN_GATE_SCRIPT"
+  },
+  {
+    "id": 168,
+    "pointer_va": 5653652,
+    "name": "MASS"
+  },
+  {
+    "id": 169,
+    "pointer_va": 5653660,
+    "name": "MASS_SCALING_FACTOR"
+  },
+  {
+    "id": 170,
+    "pointer_va": 5653680,
+    "name": "MAX"
+  },
+  {
+    "id": 171,
+    "pointer_va": 5653684,
+    "name": "MAX_AIRFLOW"
+  },
+  {
+    "id": 172,
+    "pointer_va": 5653696,
+    "name": "MAX_CARS"
+  },
+  {
+    "id": 173,
+    "pointer_va": 5653708,
+    "name": "MAX_DELTA_FUELFLOW"
+  },
+  {
+    "id": 174,
+    "pointer_va": 5653728,
+    "name": "MAX_FUELFLOW"
+  },
+  {
+    "id": 175,
+    "pointer_va": 5653744,
+    "name": "MAX_LAPS"
+  },
+  {
+    "id": 176,
+    "pointer_va": 5653756,
+    "name": "MAX_RPM"
+  },
+  {
+    "id": 177,
+    "pointer_va": 5653764,
+    "name": "MAX_TURBO_PRESSURE"
+  },
+  {
+    "id": 178,
+    "pointer_va": 5653784,
+    "name": "MIN_CARS"
+  },
+  {
+    "id": 179,
+    "pointer_va": 5653796,
+    "name": "MINUTES"
+  },
+  {
+    "id": 180,
+    "pointer_va": 5653804,
+    "name": "MODE_TYPE"
+  },
+  {
+    "id": 181,
+    "pointer_va": 5653816,
+    "name": "MODEL_CD_FACTOR"
+  },
+  {
+    "id": 182,
+    "pointer_va": 5653832,
+    "name": "MODEL_DOWNFORCE_FACTOR"
+  },
+  {
+    "id": 183,
+    "pointer_va": 5653856,
+    "name": "MOVEABLE"
+  },
+  {
+    "id": 184,
+    "pointer_va": 5653868,
+    "name": "MULTIPLAYER"
+  },
+  {
+    "id": 185,
+    "pointer_va": 5653880,
+    "name": "MULTIPLAYER_CATCHUP_LEADER_POWER_ADJUSTMENT"
+  },
+  {
+    "id": 186,
+    "pointer_va": 5653924,
+    "name": "MULTIPLAYER_CATCHUP_LOSER_POWER_ADJUSTMENT"
+  },
+  {
+    "id": 187,
+    "pointer_va": 5653968,
+    "name": "MULTIPLAYER_CATCHUP_MAX_RANGE"
+  },
+  {
+    "id": 188,
+    "pointer_va": 5654000,
+    "name": "MULTIPLAYER_CATCHUP_MIN_RANGE"
+  },
+  {
+    "id": 189,
+    "pointer_va": 5654032,
+    "name": "MUSIC_TRACK"
+  },
+  {
+    "id": 190,
+    "pointer_va": 5654044,
+    "name": "NAME"
+  },
+  {
+    "id": 191,
+    "pointer_va": 5654052,
+    "name": "NEEDLE"
+  },
+  {
+    "id": 192,
+    "pointer_va": 5654060,
+    "name": "NEEDLE_ARC"
+  },
+  {
+    "id": 193,
+    "pointer_va": 5654072,
+    "name": "NEEDLE_CENTRE_X"
+  },
+  {
+    "id": 194,
+    "pointer_va": 5654088,
+    "name": "NEEDLE_CENTRE_Y"
+  },
+  {
+    "id": 195,
+    "pointer_va": 5654104,
+    "name": "NEEDLE_START"
+  },
+  {
+    "id": 196,
+    "pointer_va": 5654120,
+    "name": "NUM_OF_LAPS"
+  },
+  {
+    "id": 197,
+    "pointer_va": 5654132,
+    "name": "NUMBER"
+  },
+  {
+    "id": 198,
+    "pointer_va": 5654140,
+    "name": "NUMBER_OF_CYLINDERS"
+  },
+  {
+    "id": 199,
+    "pointer_va": 5654160,
+    "name": "NUMBER_OF_LAPS"
+  },
+  {
+    "id": 200,
+    "pointer_va": 5654176,
+    "name": "NUMBER_OF_TURBOS"
+  },
+  {
+    "id": 201,
+    "pointer_va": 5654196,
+    "name": "OBJECT_3D_SHAPE"
+  },
+  {
+    "id": 202,
+    "pointer_va": 5654212,
+    "name": "OBJECTIVE"
+  },
+  {
+    "id": 203,
+    "pointer_va": 5654224,
+    "name": "OBSTACLE"
+  },
+  {
+    "id": 204,
+    "pointer_va": 5654236,
+    "name": "OFFROAD_MAGIC_GRIP_NUMBER"
+  },
+  {
+    "id": 205,
+    "pointer_va": 5654264,
+    "name": "OFFSET"
+  },
+  {
+    "id": 206,
+    "pointer_va": 5654272,
+    "name": "OFFSET_TIME"
+  },
+  {
+    "id": 207,
+    "pointer_va": 5654284,
+    "name": "OPEN_TOP"
+  },
+  {
+    "id": 208,
+    "pointer_va": 5654296,
+    "name": "OVERALL_MASS"
+  },
+  {
+    "id": 209,
+    "pointer_va": 5654312,
+    "name": "PARTICIPANT"
+  },
+  {
+    "id": 210,
+    "pointer_va": 5654324,
+    "name": "PLAYER_INDEX"
+  },
+  {
+    "id": 211,
+    "pointer_va": 5654340,
+    "name": "POSITION"
+  },
+  {
+    "id": 212,
+    "pointer_va": 5654352,
+    "name": "POWER_ANALOG"
+  },
+  {
+    "id": 213,
+    "pointer_va": 5654368,
+    "name": "RADIUS"
+  },
+  {
+    "id": 214,
+    "pointer_va": 5654376,
+    "name": "RELAXATION_LENGTH"
+  },
+  {
+    "id": 215,
+    "pointer_va": 5654396,
+    "name": "RESET"
+  },
+  {
+    "id": 216,
+    "pointer_va": 5654404,
+    "name": "RESETABLE"
+  },
+  {
+    "id": 217,
+    "pointer_va": 5654416,
+    "name": "REV_COUNTER_IN_CAR"
+  },
+  {
+    "id": 218,
+    "pointer_va": 5654436,
+    "name": "REV_COUNTER_OUT_CAR"
+  },
+  {
+    "id": 219,
+    "pointer_va": 5654456,
+    "name": "REVERSE"
+  },
+  {
+    "id": 220,
+    "pointer_va": 5654464,
+    "name": "REWARD"
+  },
+  {
+    "id": 221,
+    "pointer_va": 5654472,
+    "name": "REWARD_END"
+  },
+  {
+    "id": 222,
+    "pointer_va": 5654484,
+    "name": "ROAD_MAGIC_GRIP_NUMBER"
+  },
+  {
+    "id": 223,
+    "pointer_va": 5654508,
+    "name": "ROADNET_LANE"
+  },
+  {
+    "id": 224,
+    "pointer_va": 5654524,
+    "name": "ROADNET_NODE"
+  },
+  {
+    "id": 225,
+    "pointer_va": 5654540,
+    "name": "ROADNET_SECTION"
+  },
+  {
+    "id": 226,
+    "pointer_va": 5654556,
+    "name": "ROADNET_TRAFFIC"
+  },
+  {
+    "id": 227,
+    "pointer_va": 5654572,
+    "name": "ROLLING_RESISTANCE"
+  },
+  {
+    "id": 228,
+    "pointer_va": 5654592,
+    "name": "ROUGHNESS"
+  },
+  {
+    "id": 229,
+    "pointer_va": 5654604,
+    "name": "RPM_TO_HZ"
+  },
+  {
+    "id": 230,
+    "pointer_va": 5654616,
+    "name": "RUMBLE"
+  },
+  {
+    "id": 231,
+    "pointer_va": 5654624,
+    "name": "SECONDS"
+  },
+  {
+    "id": 232,
+    "pointer_va": 5654632,
+    "name": "SET"
+  },
+  {
+    "id": 233,
+    "pointer_va": 5654636,
+    "name": "SET_TIME_ACCELERATION"
+  },
+  {
+    "id": 234,
+    "pointer_va": 5654660,
+    "name": "SET_TRIGGER_TIME"
+  },
+  {
+    "id": 235,
+    "pointer_va": 5654680,
+    "name": "SET_TRIGGER_TRIGGERED"
+  },
+  {
+    "id": 236,
+    "pointer_va": 5654704,
+    "name": "SOUND_EFFECT"
+  },
+  {
+    "id": 237,
+    "pointer_va": 5654720,
+    "name": "SOUND_EFFECT_CAR_ENGINE"
+  },
+  {
+    "id": 238,
+    "pointer_va": 5654744,
+    "name": "SOUND_EFFECT_CAR_TYRE_NOISE"
+  },
+  {
+    "id": 239,
+    "pointer_va": 5654772,
+    "name": "SOUND_EFFECT_CAR_TYRE_SKID"
+  },
+  {
+    "id": 240,
+    "pointer_va": 5654800,
+    "name": "SOUND_INFO"
+  },
+  {
+    "id": 241,
+    "pointer_va": 5654812,
+    "name": "SOUND_SAMPLE"
+  },
+  {
+    "id": 242,
+    "pointer_va": 5654828,
+    "name": "SOUND_SAMPLE_EDIT_POINTS"
+  },
+  {
+    "id": 243,
+    "pointer_va": 5654856,
+    "name": "SOUND_SAMPLE_INDEX"
+  },
+  {
+    "id": 244,
+    "pointer_va": 5654876,
+    "name": "SOUND_SAMPLE_MAX_VOLUME"
+  },
+  {
+    "id": 245,
+    "pointer_va": 5654900,
+    "name": "SOUNDBANK_TYPE"
+  },
+  {
+    "id": 246,
+    "pointer_va": 5654916,
+    "name": "SPARKABLE"
+  },
+  {
+    "id": 247,
+    "pointer_va": 5654928,
+    "name": "SPEECH_TYPE"
+  },
+  {
+    "id": 248,
+    "pointer_va": 5654940,
+    "name": "START_RPM"
+  },
+  {
+    "id": 249,
+    "pointer_va": 5654952,
+    "name": "START_TYPE"
+  },
+  {
+    "id": 250,
+    "pointer_va": 5654964,
+    "name": "STEERING_ANGLE_ARRAY"
+  },
+  {
+    "id": 251,
+    "pointer_va": 5654988,
+    "name": "STEERING_ANGLE_MAX_SPEED"
+  },
+  {
+    "id": 252,
+    "pointer_va": 5655016,
+    "name": "STEERING_RETURN_SPEED"
+  },
+  {
+    "id": 253,
+    "pointer_va": 5655040,
+    "name": "STEERING_SPEED_ARRAY"
+  },
+  {
+    "id": 254,
+    "pointer_va": 5655064,
+    "name": "STEERING_SPEED_MAX_SPEED"
+  },
+  {
+    "id": 255,
+    "pointer_va": 5655092,
+    "name": "STEP"
+  },
+  {
+    "id": 256,
+    "pointer_va": 5655100,
+    "name": "SUB_GROUP_TYPE"
+  },
+  {
+    "id": 257,
+    "pointer_va": 5655116,
+    "name": "SUBTYPE"
+  },
+  {
+    "id": 258,
+    "pointer_va": 5655124,
+    "name": "SURFACE_AI_GRIP_MODIFIER"
+  },
+  {
+    "id": 259,
+    "pointer_va": 5655152,
+    "name": "SURFACE_SCALE_BUMPS"
+  },
+  {
+    "id": 260,
+    "pointer_va": 5655172,
+    "name": "SURFACE_SINK_FACTOR"
+  },
+  {
+    "id": 261,
+    "pointer_va": 5655192,
+    "name": "SUSPENSION_DAMPING"
+  },
+  {
+    "id": 262,
+    "pointer_va": 5655212,
+    "name": "SUSPENSION_INNER_TIE_SPACING"
+  },
+  {
+    "id": 263,
+    "pointer_va": 5655244,
+    "name": "SUSPENSION_LOWER_TIE_LENGTH"
+  },
+  {
+    "id": 264,
+    "pointer_va": 5655272,
+    "name": "SUSPENSION_MAX_EXTENSION"
+  },
+  {
+    "id": 265,
+    "pointer_va": 5655300,
+    "name": "SUSPENSION_MIN_EXTENSION"
+  },
+  {
+    "id": 266,
+    "pointer_va": 5655328,
+    "name": "SUSPENSION_MOE"
+  },
+  {
+    "id": 267,
+    "pointer_va": 5655344,
+    "name": "SUSPENSION_NATURAL_LENGTH"
+  },
+  {
+    "id": 268,
+    "pointer_va": 5655372,
+    "name": "SUSPENSION_OUTER_TIE_SPACING"
+  },
+  {
+    "id": 269,
+    "pointer_va": 5655404,
+    "name": "SUSPENSION_UPPER_TIE_LENGTH"
+  },
+  {
+    "id": 270,
+    "pointer_va": 5655432,
+    "name": "TEAM"
+  },
+  {
+    "id": 271,
+    "pointer_va": 5655440,
+    "name": "TEAM_COUNT"
+  },
+  {
+    "id": 272,
+    "pointer_va": 5655452,
+    "name": "TEAM_ID"
+  },
+  {
+    "id": 273,
+    "pointer_va": 5655460,
+    "name": "TERMINATE_SCRIPT"
+  },
+  {
+    "id": 274,
+    "pointer_va": 5655480,
+    "name": "TICKOVER_RPM"
+  },
+  {
+    "id": 275,
+    "pointer_va": 5655496,
+    "name": "TIME_CAR_GROUP_TYPE"
+  },
+  {
+    "id": 276,
+    "pointer_va": 5655516,
+    "name": "TIME_LIMIT"
+  },
+  {
+    "id": 277,
+    "pointer_va": 5655528,
+    "name": "TIMESTAMP"
+  },
+  {
+    "id": 278,
+    "pointer_va": 5655540,
+    "name": "TOKEN_FILENAME"
+  },
+  {
+    "id": 279,
+    "pointer_va": 5655556,
+    "name": "TOKEN_TEXT_ENUM"
+  },
+  {
+    "id": 280,
+    "pointer_va": 5655572,
+    "name": "TORQUE_ARRAY"
+  },
+  {
+    "id": 281,
+    "pointer_va": 5655588,
+    "name": "TORQUE_MODIFIER"
+  },
+  {
+    "id": 282,
+    "pointer_va": 5655604,
+    "name": "TORQUE_SHIFT"
+  },
+  {
+    "id": 283,
+    "pointer_va": 5655620,
+    "name": "TRACK"
+  },
+  {
+    "id": 284,
+    "pointer_va": 5655628,
+    "name": "TRACK_COUNT"
+  },
+  {
+    "id": 285,
+    "pointer_va": 5655640,
+    "name": "TRACK_DIRECTORY"
+  },
+  {
+    "id": 286,
+    "pointer_va": 5655656,
+    "name": "TRACK_DIRECTORY_NIGHT"
+  },
+  {
+    "id": 287,
+    "pointer_va": 5655680,
+    "name": "TRACK_DIRECTORY_WET"
+  },
+  {
+    "id": 288,
+    "pointer_va": 5655700,
+    "name": "TRACK_END_TRACK_RLINE_VECS"
+  },
+  {
+    "id": 289,
+    "pointer_va": 5655728,
+    "name": "TRACK_END_TRACK_VECS"
+  },
+  {
+    "id": 290,
+    "pointer_va": 5655752,
+    "name": "TRACK_ENVIRONMENT_SOUND"
+  },
+  {
+    "id": 291,
+    "pointer_va": 5655776,
+    "name": "TRACK_ENVIRONMENT_SOUND_GROUP_THEME"
+  },
+  {
+    "id": 292,
+    "pointer_va": 5655812,
+    "name": "TRACK_GROUP_TYPE"
+  },
+  {
+    "id": 293,
+    "pointer_va": 5655832,
+    "name": "TRACK_ICON_FILENAME"
+  },
+  {
+    "id": 294,
+    "pointer_va": 5655852,
+    "name": "TRACK_ID"
+  },
+  {
+    "id": 295,
+    "pointer_va": 5655864,
+    "name": "TRACK_LENGTH"
+  },
+  {
+    "id": 296,
+    "pointer_va": 5655880,
+    "name": "TRACK_MAP_GRAPHIC_OFFSETS"
+  },
+  {
+    "id": 297,
+    "pointer_va": 5655908,
+    "name": "TRACK_MAP_OFFSETS"
+  },
+  {
+    "id": 298,
+    "pointer_va": 5655928,
+    "name": "TRACK_NAME"
+  },
+  {
+    "id": 299,
+    "pointer_va": 5655940,
+    "name": "TRACK_NUM_TRACK_RLINE_VECS"
+  },
+  {
+    "id": 300,
+    "pointer_va": 5655968,
+    "name": "TRACK_NUM_TRACK_VECS"
+  },
+  {
+    "id": 301,
+    "pointer_va": 5655992,
+    "name": "TRACK_RLINE_VEC"
+  },
+  {
+    "id": 302,
+    "pointer_va": 5656008,
+    "name": "TRACK_START_AI_TRACK"
+  },
+  {
+    "id": 303,
+    "pointer_va": 5656032,
+    "name": "TRACK_START_TRACK_RLINE_VECS"
+  },
+  {
+    "id": 304,
+    "pointer_va": 5656064,
+    "name": "TRACK_START_TRACK_VECS"
+  },
+  {
+    "id": 305,
+    "pointer_va": 5656088,
+    "name": "TRACK_TERRAIN_TYPE"
+  },
+  {
+    "id": 306,
+    "pointer_va": 5656108,
+    "name": "TRACK_TOOL_AI_PIT_END_INTERPOLANT"
+  },
+  {
+    "id": 307,
+    "pointer_va": 5656144,
+    "name": "TRACK_TOOL_AI_PIT_START_INTERPOLANT"
+  },
+  {
+    "id": 308,
+    "pointer_va": 5656180,
+    "name": "TRACK_TOOL_AI_QUERY_INTERPOLANT"
+  },
+  {
+    "id": 309,
+    "pointer_va": 5656212,
+    "name": "TRACK_TOOL_CREATION_DATE"
+  },
+  {
+    "id": 310,
+    "pointer_va": 5656240,
+    "name": "TRACK_TOOL_DATA"
+  },
+  {
+    "id": 311,
+    "pointer_va": 5656256,
+    "name": "TRACK_TOOL_FLYING_LAP_START_INTERPOLANT"
+  },
+  {
+    "id": 312,
+    "pointer_va": 5656296,
+    "name": "TRACK_TOOL_GARAGE_END_INTERPOLANT"
+  },
+  {
+    "id": 313,
+    "pointer_va": 5656332,
+    "name": "TRACK_TOOL_GARAGE_LINE_LENGTH"
+  },
+  {
+    "id": 314,
+    "pointer_va": 5656364,
+    "name": "TRACK_TOOL_GARAGE_LINE_POINTS_END"
+  },
+  {
+    "id": 315,
+    "pointer_va": 5656400,
+    "name": "TRACK_TOOL_GARAGE_LINE_POINTS_START"
+  },
+  {
+    "id": 316,
+    "pointer_va": 5656436,
+    "name": "TRACK_TOOL_GARAGE_START_INTERPOLANT"
+  },
+  {
+    "id": 317,
+    "pointer_va": 5656472,
+    "name": "TRACK_TOOL_GARAGE_STOP_INTERPOLANT"
+  },
+  {
+    "id": 318,
+    "pointer_va": 5656508,
+    "name": "TRACK_TOOL_GARAGE_WIDTH"
+  },
+  {
+    "id": 319,
+    "pointer_va": 5656532,
+    "name": "TRACK_TOOL_HEADER"
+  },
+  {
+    "id": 320,
+    "pointer_va": 5656552,
+    "name": "TRACK_TOOL_NUM_GARAGE_LINE_POINTS"
+  },
+  {
+    "id": 321,
+    "pointer_va": 5656588,
+    "name": "TRACK_TOOL_NUM_PITLANE_POINTS"
+  },
+  {
+    "id": 322,
+    "pointer_va": 5656620,
+    "name": "TRACK_TOOL_NUM_RACING_LINE_POINTS"
+  },
+  {
+    "id": 323,
+    "pointer_va": 5656656,
+    "name": "TRACK_TOOL_PIT_SPEED_LIMIT"
+  },
+  {
+    "id": 324,
+    "pointer_va": 5656684,
+    "name": "TRACK_TOOL_PIT_SPHERE_POSITION"
+  },
+  {
+    "id": 325,
+    "pointer_va": 5656716,
+    "name": "TRACK_TOOL_PIT_SPHERE_RADIUS"
+  },
+  {
+    "id": 326,
+    "pointer_va": 5656748,
+    "name": "TRACK_TOOL_PITLANE_LENGTH"
+  },
+  {
+    "id": 327,
+    "pointer_va": 5656776,
+    "name": "TRACK_TOOL_PITLANE_POINTS_END"
+  },
+  {
+    "id": 328,
+    "pointer_va": 5656808,
+    "name": "TRACK_TOOL_PITLANE_POINTS_START"
+  },
+  {
+    "id": 329,
+    "pointer_va": 5656840,
+    "name": "TRACK_TOOL_PLAYER_PIT_END_INTERPOLANT"
+  },
+  {
+    "id": 330,
+    "pointer_va": 5656880,
+    "name": "TRACK_TOOL_RACING_LINE_LENGTH"
+  },
+  {
+    "id": 331,
+    "pointer_va": 5656912,
+    "name": "TRACK_TOOL_RACING_LINE_POINTS_END"
+  },
+  {
+    "id": 332,
+    "pointer_va": 5656948,
+    "name": "TRACK_TOOL_RACING_LINE_POINTS_START"
+  },
+  {
+    "id": 333,
+    "pointer_va": 5656984,
+    "name": "TRACK_TOOL_REVERSE_FLAG"
+  },
+  {
+    "id": 334,
+    "pointer_va": 5657008,
+    "name": "TRACK_TOOL_SCENE_NAME"
+  },
+  {
+    "id": 335,
+    "pointer_va": 5657032,
+    "name": "TRACK_TOOL_SPEED_LIMIT_ZONE_INTERPOLANT"
+  },
+  {
+    "id": 336,
+    "pointer_va": 5657072,
+    "name": "TRACK_TOOL_TIMESTAMP"
+  },
+  {
+    "id": 337,
+    "pointer_va": 5657096,
+    "name": "TRACK_TOOL_TOLERANCE"
+  },
+  {
+    "id": 338,
+    "pointer_va": 5657120,
+    "name": "TRACK_TOOL_TRACK_EDGE_MODIFIER"
+  },
+  {
+    "id": 339,
+    "pointer_va": 5657152,
+    "name": "TRACK_TOOL_VERSION_NUMBER"
+  },
+  {
+    "id": 340,
+    "pointer_va": 5657180,
+    "name": "TRACK_TYPE"
+  },
+  {
+    "id": 341,
+    "pointer_va": 5657192,
+    "name": "TRACK_VEC"
+  },
+  {
+    "id": 342,
+    "pointer_va": 5657204,
+    "name": "TRANSLATION"
+  },
+  {
+    "id": 343,
+    "pointer_va": 5657216,
+    "name": "TRANSLATION_PARAGRAPH"
+  },
+  {
+    "id": 344,
+    "pointer_va": 5657240,
+    "name": "TRANSMISSION"
+  },
+  {
+    "id": 345,
+    "pointer_va": 5657256,
+    "name": "TRANSMISSION_TYPE"
+  },
+  {
+    "id": 346,
+    "pointer_va": 5657276,
+    "name": "TRIGGER"
+  },
+  {
+    "id": 347,
+    "pointer_va": 5657284,
+    "name": "TURBO_MASS"
+  },
+  {
+    "id": 348,
+    "pointer_va": 5657296,
+    "name": "TYRE_GRIP_DEPTH"
+  },
+  {
+    "id": 349,
+    "pointer_va": 5657312,
+    "name": "TYRE_PATCH_LENGTH"
+  },
+  {
+    "id": 350,
+    "pointer_va": 5657332,
+    "name": "UNLOCKED"
+  },
+  {
+    "id": 351,
+    "pointer_va": 5657344,
+    "name": "VALID_LIVERY"
+  },
+  {
+    "id": 352,
+    "pointer_va": 5657360,
+    "name": "VALID_RACING_SURFACE"
+  },
+  {
+    "id": 353,
+    "pointer_va": 5657384,
+    "name": "VARMOD_REGISTRY_VARIABLE"
+  },
+  {
+    "id": 354,
+    "pointer_va": 5657412,
+    "name": "VERTICAL_LOAD"
+  },
+  {
+    "id": 355,
+    "pointer_va": 5657428,
+    "name": "WAIT"
+  },
+  {
+    "id": 356,
+    "pointer_va": 5657436,
+    "name": "WET_MAGIC_GRIP_PERCENTAGE"
+  },
+  {
+    "id": 357,
+    "pointer_va": 5657464,
+    "name": "WETNESS"
+  },
+  {
+    "id": 358,
+    "pointer_va": 5657472,
+    "name": "WHEEL_ANGLE_ARRAY"
+  },
+  {
+    "id": 359,
+    "pointer_va": 5657492,
+    "name": "WHEEL_INPUT_ARRAY"
+  },
+  {
+    "id": 360,
+    "pointer_va": 5657512,
+    "name": "WHEEL_SPACING"
+  },
+  {
+    "id": 361,
+    "pointer_va": 5657528,
+    "name": "WHEEL_TOE_IN"
+  },
+  {
+    "id": 362,
+    "pointer_va": 5657544,
+    "name": "WIDTH"
+  }
+]
