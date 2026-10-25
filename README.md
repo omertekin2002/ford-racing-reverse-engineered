@@ -76,8 +76,17 @@ specification is needed for this snapshot.
 /workspace/toolchains/fr3/venv/bin/python scripts/verify_findings.py .
 ```
 
-The parser tests use synthetic fixtures and test corruption, output limits,
-truncation, trailing data and overlapping PCG payloads. The separate verification
+The synthetic tests also run without the cloud toolchain, using any Python 3.12+
+with the pinned `scripts/requirements.txt` installed:
+
+```sh
+python3 -m unittest discover -s tests -v
+```
+
+CI runs them, after a `compileall` syntax check, on every push and pull request
+(`.github/workflows/tests.yml`). They use synthetic fixtures and test corruption,
+output limits, truncation, trailing data and overlapping PCG payloads, as well as
+the PE virtual-address reader and file identity checks. The separate verification
 command checks the actual demo, all 773 game-file hashes, tag pointers, decoded
 resource hashes, PCG indexes, instruction sites, decompiler counts and C layout
 assertions. Synthetic tests alone do not validate game behavior.
