@@ -143,7 +143,8 @@ preserve the concrete evidence for these new findings.
 [Verification results](../analysis/verification.json) cover the exact executable,
 all game files, all tags, all identified compressed resources, every PCG index,
 the selected instruction sites, table dimensions, export counts and C layout
-assertions. Nine parser tests additionally reject malformed synthetic resources.
+assertions. Nine parser tests additionally reject malformed synthetic resources,
+and eight helper tests cover virtual-address bounds and file identity checks.
 The pinned installer was tested from a fresh temporary tool directory; its
 Ghidra probe decompiled the expected arithmetic expression.
 The default acquisition script also downloaded and extracted the demo into a
