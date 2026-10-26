@@ -79,6 +79,7 @@ headless script errors can be reported without a failing process exit code.
 | `analysis/annotated/selected.c` | 25 selected, labelled decompilations |
 | `analysis/selected/` | Instruction evidence and explicitly bounded disassembly |
 | `recovered/fr3_database_layouts.h` | Engine, gearbox and tyre in-memory layouts |
+| `artifacts/text-databases/` | Parsed engine and gearbox records from `scripts/text_database.py`, with source hashes |
 | `artifacts/ghidra/` | Complete baseline C, function disassembly, function list and call edges |
 | `artifacts/fr3-demo-annotated.gzf` | Portable annotated Ghidra program |
 | `artifacts/fr3-analysis.zip` | Analysis bundle with SHA-256 manifest |
@@ -89,6 +90,14 @@ portable program, derived exports and reproduction tools; it excludes the demo
 ZIP, game assets and working project database. Import the `.gzf` into a new
 Ghidra 10.3.3 project to browse the annotations. No experimental compiler
 specification is needed for this snapshot.
+
+The engine and gearbox text databases parse from the extracted demo alone, with
+no Ghidra tools:
+
+```sh
+python3 scripts/acquire_demo.py inputs
+python3 scripts/text_database.py inputs/extracted/Program_Executable_Files --output artifacts/text-databases
+```
 
 ## Validate without rebuilding
 
@@ -107,9 +116,11 @@ python3 -m unittest discover -s tests -v
 CI runs them, after a `compileall` syntax check, on every push and pull request
 (`.github/workflows/tests.yml`). They use synthetic fixtures and test corruption,
 output limits, truncation, trailing data and overlapping PCG payloads, as well as
-the PE virtual-address reader, file identity checks and tool-path resolution. The separate verification
-command checks the actual demo, all 773 game-file hashes, tag pointers, decoded
-resource hashes, PCG indexes, instruction sites, decompiler counts and C layout
+the PE virtual-address reader, file identity checks and tool-path resolution. They also cover
+the strict engine and gearbox text-database parser: its accepted grammar and each
+rejected construct. The separate verification command checks the actual demo,
+all 773 game-file hashes, tag pointers, decoded resource hashes, PCG indexes,
+parsed text-database counts, instruction sites, decompiler counts and C layout
 assertions. Synthetic tests alone do not validate game behavior.
 
 Each cloud task already has an isolated environment. Use this checkout;
