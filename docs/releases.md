@@ -5,6 +5,10 @@ They contain its unchanged 773 game files and original manuals. They are
 compatibility releases; the recovered decompiler output is not yet a native
 Linux or macOS game engine. The retail game is not included.
 
+**Download:** the packages and their `SHA256SUMS` are attached to the
+[v0.1.0-preview release](https://github.com/omertekin2002/ford-racing-reverse-engineered/releases/tag/v0.1.0-preview)
+([`SHA256SUMS`](https://github.com/omertekin2002/ford-racing-reverse-engineered/releases/download/v0.1.0-preview/SHA256SUMS)).
+
 ## Linux
 
 Extract `ford-racing-3-demo-0.1.0-preview-linux-x86_64.tar.gz`, open its directory,
@@ -93,3 +97,22 @@ The builder checks every original demo file against the analysis manifest,
 extracts runtimes from pinned upstream archives, preserves executable modes
 and macOS symlinks, and checks all archive contents against their manifests.
 Outputs are written to `artifacts/releases/`.
+
+### Publishing a release
+
+v0.1.0-preview was published from a local build with these steps:
+
+1. Build both packages with the two commands above.
+2. In `artifacts/releases/`, check the archives with `sha256sum -c SHA256SUMS`.
+3. Extract the Linux package and run `./launch.sh --verify` in its directory.
+4. From `artifacts/releases/`, create a prerelease with the two archives and
+   the checksum file:
+
+   ```sh
+   gh release create v<version> --prerelease \
+     ford-racing-3-demo-<version>-linux-x86_64.tar.gz \
+     ford-racing-3-demo-<version>-macos.zip \
+     SHA256SUMS
+   ```
+
+The version comes from `VERSION` in `scripts/build_releases.py`.

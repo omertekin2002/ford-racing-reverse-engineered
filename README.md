@@ -10,16 +10,29 @@ storage for 25 routines. Resource tools reproduce 363 application tags,
 146 compressed resources and 62 PCG graphics collections with 654 entries.
 The new tyre analysis reconstructs its 88-byte record and table allocations.
 
+## Play the demo
+
+- **Linux and macOS:** download the packages from the
+  [v0.1.0-preview release](https://github.com/omertekin2002/ford-racing-reverse-engineered/releases/tag/v0.1.0-preview).
+  They are Wine compatibility previews that run the unchanged public demo; the
+  macOS package has not been tested on a Mac. See the
+  [release instructions](docs/releases.md).
+- **Browser:** open the
+  [browser preview](https://omertekin2002.github.io/ford-racing-reverse-engineered/),
+  an experimental build that runs the same demo through Boxedwine's
+  WebAssembly runtime. See the [browser guide](docs/browser.md).
+
 Read [the verified findings and limitations](docs/analysis.md). This is an
 analysis package, not restored original source or a runnable replacement game.
 The installer is extracted without execution. Separate Wine compatibility
-packages now run the original demo; see [release instructions](docs/releases.md)
+packages run the original demo; see [release instructions](docs/releases.md)
 and [runtime validation](docs/release-validation.md).
 
-A static [browser preview and GitHub Pages workflow](docs/browser.md) now
-package the same demo with Boxedwine's WebAssembly JIT and Wine's WebGL runtime.
-The workflow builds on push; publication is a separate manual run after Pages
-is enabled. Build and browser validation are described in the browser guide.
+A static [browser preview and GitHub Pages workflow](docs/browser.md) package
+the same demo with Boxedwine's WebAssembly JIT and Wine's WebGL runtime.
+Pushes to `main` build and verify the site; redeploying it is a manual run of
+the workflow with **deploy** checked. Build and browser validation are described
+in the browser guide.
 
 ## Reproduce
 
@@ -122,7 +135,3 @@ rejected construct. The separate verification command checks the actual demo,
 all 773 game-file hashes, tag pointers, decoded resource hashes, PCG indexes,
 parsed text-database counts, instruction sites, decompiler counts and C layout
 assertions. Synthetic tests alone do not validate game behavior.
-
-Each cloud task already has an isolated environment. Use this checkout;
-creating another Git worktree is unnecessary unless explicitly requested.
-
