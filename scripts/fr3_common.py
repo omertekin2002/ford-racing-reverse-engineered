@@ -1,5 +1,12 @@
-"""Build identity from the supplied report, not yet independent evidence."""
+"""Build identity from the supplied report, not yet independent evidence.
+
+Also resolves the tool and download-cache roots shared by the setup and build
+scripts: an explicit flag wins, then FR3_TOOLS / FR3_CACHE, then XDG defaults.
+The original cloud workspace layout is FR3_TOOLS=/workspace/toolchains/fr3
+FR3_CACHE=/workspace/shared/downloads.
+"""
 import hashlib
+import os
 from pathlib import Path
 
 ARCHIVE_SIZE = 37_080_961
@@ -20,3 +27,46 @@ def verified_bytes(path, size, sha256):
 def verified_exe(path):
     return verified_bytes(path, EXE_SIZE, EXE_SHA256)
 
+
+
+def _env_path(environ, name):
+    value = environ.get(name, "").strip()
+    return Path(value) if value else None
+
+
+def _xdg_dir(environ, name, fallback):
+    # The XDG spec says relative values are invalid and must be ignored.
+    base = _env_path(environ, name)
+    if base and base.is_absolute():
+        return base
+    home = _env_path(environ, "HOME") or Path.home()
+    return home / fallback
+
+
+def tools_root(explicit=None, environ=None):
+    """Analysis tool root: flag, then FR3_TOOLS, then $XDG_DATA_HOME/fr3-tools."""
+    if explicit is not None:
+        return Path(explicit)
+    environ = os.environ if environ is None else environ
+    return _env_path(environ, "FR3_TOOLS") or _xdg_dir(environ, "XDG_DATA_HOME", ".local/share") / "fr3-tools"
+
+
+def download_cache(explicit=None, environ=None):
+    """Download cache: flag, then FR3_CACHE, then $XDG_CACHE_HOME/fr3/downloads."""
+    if explicit is not None:
+        return Path(explicit)
+    environ = os.environ if environ is None else environ
+    return _env_path(environ, "FR3_CACHE") or _xdg_dir(environ, "XDG_CACHE_HOME", ".cache") / "fr3" / "downloads"
+
+
+def runtime_root(explicit=None, environ=None):
+    """Wine release runtimes: flag, then <tools root>/runtime."""
+    return Path(explicit) if explicit is not None else tools_root(environ=environ) / "runtime"
+
+
+def web_tools_root(explicit=None, environ=None):
+    """Browser build tools: flag, then FR3_WEB_TOOLS, then <tools root>/web."""
+    if explicit is not None:
+        return Path(explicit)
+    environ = os.environ if environ is None else environ
+    return _env_path(environ, "FR3_WEB_TOOLS") or tools_root(environ=environ) / "web"

@@ -21,20 +21,41 @@ package the same demo with Boxedwine's WebAssembly JIT and Wine's WebGL runtime.
 The workflow builds on push; publication is a separate manual run after Pages
 is enabled. Build and browser validation are described in the browser guide.
 
-## Reproduce in the cloud workspace
+## Reproduce
+
+From the repository checkout:
 
 ```sh
-cd /workspace/ford-racing-reverse-engineered
 python3 scripts/setup_tools.py
-/workspace/toolchains/fr3/venv/bin/python scripts/run_analysis.py
-/workspace/toolchains/fr3/venv/bin/python scripts/package_analysis.py
+"${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python scripts/run_analysis.py
+"${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python scripts/package_analysis.py
 ```
 
 `setup_tools.py` installs pinned, checksum-verified Ghidra 10.3.3, Java 17,
-Unshield and Python dependencies under `/workspace/toolchains/fr3`. It requires
-the cloud machine's Python 3.12+, `dpkg-deb`, GCC and Linux amd64. It leaves
-repository source and system installations unchanged. The full script was
-tested in a fresh temporary tools directory as well as the retained directory.
+Unshield and Python dependencies in the tool root. It requires Python 3.12+,
+`dpkg-deb`, GCC and Linux amd64. It leaves repository source and system
+installations unchanged. The full script was tested in a fresh temporary tools
+directory as well as the retained directory.
+
+### Tool and cache locations
+
+Every setup and build script resolves the same locations, so the commands above
+need no flags. For each location an explicit flag wins, then the environment
+variable, then the default:
+
+| Location | Flag | Environment | Default |
+|---|---|---|---|
+| Analysis tools | `setup_tools.py --root`, `run_analysis.py --tools-root` | `FR3_TOOLS` | `$XDG_DATA_HOME/fr3-tools`, else `~/.local/share/fr3-tools` |
+| Download cache | `--cache` | `FR3_CACHE` | `$XDG_CACHE_HOME/fr3/downloads`, else `~/.cache/fr3/downloads` |
+| Wine release runtimes | `setup_release_tools.py --root`, `build_releases.py --runtime-root` | — | `<tools>/runtime` |
+| Browser build tools | `setup_web_tools.py --root`, `build_web.py --tools` | `FR3_WEB_TOOLS` | `<tools>/web` |
+
+Empty environment values are ignored. Each script's `--help` shows the resolved
+defaults. The original cloud workspace keeps its layout with:
+
+```sh
+export FR3_TOOLS=/workspace/toolchains/fr3 FR3_CACHE=/workspace/shared/downloads
+```
 
 Acquisition downloads the freely distributed demo and extracts its ZIP and
 InstallShield CAB without running `setup.exe`. Existing extracted inputs are
@@ -72,11 +93,11 @@ specification is needed for this snapshot.
 ## Validate without rebuilding
 
 ```sh
-/workspace/toolchains/fr3/venv/bin/python -m unittest discover -s tests -v
-/workspace/toolchains/fr3/venv/bin/python scripts/verify_findings.py .
+"${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python -m unittest discover -s tests -v
+"${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python scripts/verify_findings.py .
 ```
 
-The synthetic tests also run without the cloud toolchain, using any Python 3.12+
+The synthetic tests also run without the analysis toolchain, using any Python 3.12+
 with the pinned `scripts/requirements.txt` installed:
 
 ```sh
@@ -86,7 +107,7 @@ python3 -m unittest discover -s tests -v
 CI runs them, after a `compileall` syntax check, on every push and pull request
 (`.github/workflows/tests.yml`). They use synthetic fixtures and test corruption,
 output limits, truncation, trailing data and overlapping PCG payloads, as well as
-the PE virtual-address reader and file identity checks. The separate verification
+the PE virtual-address reader, file identity checks and tool-path resolution. The separate verification
 command checks the actual demo, all 773 game-file hashes, tag pointers, decoded
 resource hashes, PCG indexes, instruction sites, decompiler counts and C layout
 assertions. Synthetic tests alone do not validate game behavior.

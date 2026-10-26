@@ -36,12 +36,14 @@ to `inputs/fordracing3demo.zip` for local builds; its required SHA-256 is
 Use Linux with Python 3.12+, Git, Make, a C++ build environment and Unshield.
 The tool directory requires several GB of free disk space. On a typical
 Debian/Ubuntu development machine, install `git make build-essential unshield`
-using your normal package manager. In this cloud workspace the existing
-verified demo extraction can be reused.
+using your normal package manager. An existing verified demo extraction in
+`inputs/` is reused. The Unshield wrapper installed by `setup_tools.py`,
+`"${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/bin/unshield`,
+can replace the system `unshield`.
 
 ```sh
 python3 scripts/setup_web_tools.py
-python3 scripts/acquire_demo.py inputs --unshield /workspace/toolchains/fr3/bin/unshield
+python3 scripts/acquire_demo.py inputs --unshield unshield
 python3 scripts/build_web.py --jobs 4
 python3 scripts/verify_web.py artifacts/web
 python3 -m http.server 8000 --directory artifacts/web
@@ -52,6 +54,9 @@ hosting; opening `index.html` as a local file cannot fetch the runtime.
 The production launcher has only relative URLs and supports GitHub project
 Pages under a repository path.
 
+The tools default to `<tools>/web`, where `<tools>` is the analysis tool root
+(`FR3_TOOLS`, else `${XDG_DATA_HOME:-~/.local/share}/fr3-tools`; see
+[tool and cache locations](../README.md#tool-and-cache-locations)).
 Set `FR3_WEB_TOOLS` to select another writable tool directory, or pass `--root`
 to setup and the same `--tools` to build. `--skip-compile` repackages an existing
 build from that pinned checkout; it is useful when editing the launcher.

@@ -75,13 +75,19 @@ Each package contains a SHA-256 manifest, `BUILD.json`, Wine's license,
 third-party provenance, and the original game README/manuals. Release archive
 checksums are in the adjacent `SHA256SUMS` file.
 
-## Rebuild in the cloud workspace
+## Rebuild
+
+From the repository checkout:
 
 ```sh
-cd /workspace/ford-racing-reverse-engineered
 python3 scripts/setup_release_tools.py
 python3 scripts/build_releases.py
 ```
+
+Runtimes are installed in `<tools>/runtime` and downloads are cached in the
+shared download cache. Both follow `FR3_TOOLS` and `FR3_CACHE`; see
+[tool and cache locations](../README.md#tool-and-cache-locations). Pass the same
+`--root`/`--runtime-root` and `--cache` to both commands to use other directories.
 
 The builder checks every original demo file against the analysis manifest,
 extracts runtimes from pinned upstream archives, preserves executable modes
