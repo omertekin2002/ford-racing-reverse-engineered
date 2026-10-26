@@ -11,6 +11,7 @@ import pefile
 from fr3_common import ARCHIVE_SHA256, ARCHIVE_SIZE, EXE_SHA256, verified_bytes, verified_exe
 from extract_tag_registry import COUNT, TABLE_VA, read_va
 from index_pcg import index_pcg
+from text_database import verify_text_databases
 from unpack_resources import decode, has_wrapper
 
 
@@ -84,6 +85,7 @@ def main():
         values = [[float(value) for value in line.split()] for line in lines if line]
         require(len(values) == rows and all(len(row) == columns for row in values), "Tyre table dimensions mismatch: " + tag)
         table_counts[tag] = {"rows": rows, "columns": columns}
+    text_databases = verify_text_databases(game, {tag["name"] for tag in tags})
     baseline = load(root / "artifacts/ghidra/status.json")
     require(baseline["executable_sha256"] == EXE_SHA256 and baseline["compiler_spec"] == "windows", "Ghidra baseline identity mismatch")
     require(baseline["functions"] == 4922 and baseline["thunks"] == 152 and baseline["decompiled"] == 4770 and not baseline["failures"], "Baseline export outcome mismatch")
@@ -101,6 +103,7 @@ def main():
         "resources_decoded_verified": len(wrapper_manifest), "decoded_bytes_verified": sum(x["decoded_size"] for x in wrapper_manifest),
         "pcg_collections_verified": len(pcgs), "pcg_entries_verified": sum(pcg["count"] for pcg in pcgs),
         "field_instruction_sites_verified": len(field_evidence), "tyre_ascii_table_dimensions": table_counts,
+        "text_databases": text_databases,
         "baseline_functions": baseline["functions"], "baseline_decompiled": c_count, "baseline_decompiler_failures": baseline["failures"],
         "annotated_functions_verified": len(annotated), "snapshot_import_verified": True, "c_layout_assertions_passed": True,
         "annotated_snapshot_sha256": hashlib.sha256((root / "artifacts/fr3-demo-annotated.gzf").read_bytes()).hexdigest(),
