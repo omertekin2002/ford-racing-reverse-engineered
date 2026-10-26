@@ -9,8 +9,8 @@ Grammar accepted by parse():
     (the recovered `char name[20]` field) and are kept as strings.
   * `:TAG <values...>` adds a field to the current record. Tags must be in the
     executable's tag registry and appear at most once per record. Values are
-    separated by spaces or tabs; integers and decimals become numbers, enum
-    words stay strings.
+    separated by spaces or tabs; integers and finite decimals become numbers,
+    enum words stay strings.
   * A tag with no inline values opens a block. The following lines that are not
     tags are its rows. Rows hold numbers only, and every row of one block has
     the same column count. Blank and comment-only lines inside a block are
@@ -29,6 +29,7 @@ Tyre data uses nested `:SOUND_INFO` sub-entries and is not handled here.
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 
@@ -52,10 +53,15 @@ class TextDatabaseError(ValueError):
 
 
 def number(token, line):
-    if INTEGER.match(token):
-        return int(token)
-    if DECIMAL.match(token):
-        return float(token)
+    try:
+        if INTEGER.match(token):
+            return int(token)
+        if DECIMAL.match(token):
+            parsed = float(token)
+            if math.isfinite(parsed):
+                return parsed
+    except ValueError:  # Integers beyond Python's digit limit.
+        pass
     raise TextDatabaseError(line, f"unparsable number {token!r}")
 
 
@@ -212,7 +218,7 @@ def main():
     args.output.mkdir(parents=True, exist_ok=True)
     for stem, relative in DATABASES.items():
         database = read_database(args.game_dir, relative, known_tags)
-        (args.output / f"{stem}.json").write_text(json.dumps(database, indent=2) + "\n")
+        (args.output / f"{stem}.json").write_text(json.dumps(database, indent=2, allow_nan=False) + "\n")
         print(f"Parsed {len(database['records'])} {stem} from {relative}")
 
 

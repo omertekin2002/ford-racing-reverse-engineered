@@ -172,6 +172,13 @@ class ParseRejectTests(unittest.TestCase):
         self.reject(":TYPE A\n:TORQUE_ARRAY\n:CAPACITY 1\n:END\n", 2, "neither values nor rows")
         self.reject(":TYPE A\n:TORQUE_ARRAY\n\n:END\n", 2, "neither values nor rows")
 
+    def test_decimal_overflowing_to_infinity(self):
+        self.reject(":TYPE A\n:CAPACITY " + "9" * 400 + ".0\n:END\n", 2, "unparsable number")
+        self.reject(":TYPE A\n:TORQUE_ARRAY\n0.0 -" + "9" * 400 + ".0\n:END\n", 3, "unparsable number")
+
+    def test_integer_beyond_digit_limit(self):
+        self.reject(":TYPE A\n:CAPACITY " + "9" * 5000 + "\n:END\n", 2, "unparsable number")
+
     def test_unparsable_value(self):
         self.reject(":TYPE A\n:CAPACITY 1,5\n:END\n", 2, "unparsable value")
 
