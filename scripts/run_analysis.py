@@ -5,12 +5,13 @@ import json
 import os
 from pathlib import Path
 import subprocess
-from fr3_common import EXE_SHA256, verified_exe
+from fr3_common import EXE_SHA256, tools_root, verified_exe
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--tools-root", type=Path, default=Path("/workspace/toolchains/fr3"))
+    parser.add_argument("--tools-root", type=Path, default=tools_root(),
+                        help="Tool root from setup_tools.py (env FR3_TOOLS; default: %(default)s)")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     tools = args.tools_root.resolve()

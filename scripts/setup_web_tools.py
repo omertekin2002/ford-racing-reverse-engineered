@@ -1,8 +1,9 @@
 """Prepare the pinned WebAssembly compiler and Boxedwine source."""
 import argparse
-import os
 from pathlib import Path
 import subprocess
+
+from fr3_common import web_tools_root
 
 BOXEDWINE_REVISION = "65467424603484756a73308412f40b906d28b650"
 EMSDK_REVISION = "35ff8a6d150541276abbc6bae512ca90bcfbe220"
@@ -33,7 +34,8 @@ def checkout(path, url, revision):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=Path(os.environ.get("FR3_WEB_TOOLS", "/workspace/toolchains/fr3/web")))
+    parser.add_argument("--root", type=Path, default=web_tools_root(),
+                        help="Browser tool root (env FR3_WEB_TOOLS, else <FR3_TOOLS>/web; default: %(default)s)")
     args = parser.parse_args()
     root = args.root.resolve()
     checkout(root / "emsdk", "https://github.com/emscripten-core/emsdk.git", EMSDK_REVISION)

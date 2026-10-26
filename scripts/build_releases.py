@@ -13,7 +13,7 @@ import tarfile
 import tempfile
 import zipfile
 
-from fr3_common import verified_exe
+from fr3_common import download_cache, runtime_root, verified_exe
 from setup_release_tools import RUNTIMES
 from setup_tools import download
 
@@ -130,8 +130,9 @@ def verify_members(names, read, modes):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--runtime-root", type=Path, default=Path("/workspace/toolchains/fr3/runtime"))
-    parser.add_argument("--cache", type=Path, default=Path("/workspace/shared/downloads"))
+    parser.add_argument("--runtime-root", type=Path, default=runtime_root(),
+                        help="Runtime root from setup_release_tools.py (default: <FR3_TOOLS>/runtime, %(default)s)")
+    parser.add_argument("--cache", type=Path, default=download_cache(), help="Download cache (env FR3_CACHE; default: %(default)s)")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--platform", choices=["linux", "macos", "both"], default="both")
     args = parser.parse_args()
