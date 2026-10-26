@@ -2,13 +2,13 @@
 import argparse
 import hashlib
 import json
-import os
 from pathlib import Path
 import shlex
 import shutil
 import subprocess
 import zipfile
 
+from fr3_common import web_tools_root
 from setup_tools import download
 from setup_web_tools import BOXEDWINE_REVISION, EMSCRIPTEN_VERSION, WINE_WEB_SHA256, WINE_WEB_URL, require_clean_source
 
@@ -39,7 +39,8 @@ def game_zip(game, destination):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--tools", type=Path, default=Path(os.environ.get("FR3_WEB_TOOLS", "/workspace/toolchains/fr3/web")))
+    parser.add_argument("--tools", type=Path, default=web_tools_root(),
+                        help="Browser tool root from setup_web_tools.py (env FR3_WEB_TOOLS, else <FR3_TOOLS>/web; default: %(default)s)")
     parser.add_argument("--game", type=Path, default=ROOT / "inputs/extracted/Program_Executable_Files")
     parser.add_argument("--output", type=Path, default=ROOT / "artifacts/web")
     parser.add_argument("--skip-compile", action="store_true", help="Reuse this pinned source's existing JIT build")

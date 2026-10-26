@@ -4,6 +4,7 @@ from pathlib import Path
 import subprocess
 import tarfile
 
+from fr3_common import download_cache, runtime_root
 from setup_tools import download
 
 RUNTIMES = {
@@ -24,8 +25,8 @@ RUNTIMES = {
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=Path("/workspace/toolchains/fr3/runtime"))
-    parser.add_argument("--cache", type=Path, default=Path("/workspace/shared/downloads"))
+    parser.add_argument("--root", type=Path, default=runtime_root(), help="Runtime root (default: <FR3_TOOLS>/runtime, %(default)s)")
+    parser.add_argument("--cache", type=Path, default=download_cache(), help="Download cache (env FR3_CACHE; default: %(default)s)")
     parser.add_argument("--platform", choices=["linux", "macos", "both"], default="both")
     args = parser.parse_args()
     root, cache = args.root.resolve(), args.cache.resolve()

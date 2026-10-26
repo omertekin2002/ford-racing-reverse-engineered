@@ -21,20 +21,41 @@ package the same demo with Boxedwine's WebAssembly JIT and Wine's WebGL runtime.
 The workflow builds on push; publication is a separate manual run after Pages
 is enabled. Build and browser validation are described in the browser guide.
 
-## Reproduce in the cloud workspace
+## Reproduce
+
+From the repository checkout:
 
 ```sh
-cd /workspace/ford-racing-reverse-engineered
 python3 scripts/setup_tools.py
-/workspace/toolchains/fr3/venv/bin/python scripts/run_analysis.py
-/workspace/toolchains/fr3/venv/bin/python scripts/package_analysis.py
+"${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python scripts/run_analysis.py
+"${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python scripts/package_analysis.py
 ```
 
 `setup_tools.py` installs pinned, checksum-verified Ghidra 10.3.3, Java 17,
-Unshield and Python dependencies under `/workspace/toolchains/fr3`. It requires
-the cloud machine's Python 3.12+, `dpkg-deb`, GCC and Linux amd64. It leaves
-repository source and system installations unchanged. The full script was
-tested in a fresh temporary tools directory as well as the retained directory.
+Unshield and Python dependencies in the tool root. It requires Python 3.12+,
+`dpkg-deb`, GCC and Linux amd64. It leaves repository source and system
+installations unchanged. The full script was tested in a fresh temporary tools
+directory as well as the retained directory.
+
+### Tool and cache locations
+
+Every setup and build script resolves the same locations, so the commands above
+need no flags. For each location an explicit flag wins, then the environment
+variable, then the default:
+
+| Location | Flag | Environment | Default |
+|---|---|---|---|
+| Analysis tools | `setup_tools.py --root`, `run_analysis.py --tools-root` | `FR3_TOOLS` | `$XDG_DATA_HOME/fr3-tools`, else `~/.local/share/fr3-tools` |
+| Download cache | `--cache` | `FR3_CACHE` | `$XDG_CACHE_HOME/fr3/downloads`, else `~/.cache/fr3/downloads` |
+| Wine release runtimes | `setup_release_tools.py --root`, `build_releases.py --runtime-root` | — | `<tools>/runtime` |
+| Browser build tools | `setup_web_tools.py --root`, `build_web.py --tools` | `FR3_WEB_TOOLS` | `<tools>/web` |
+
+Empty environment values are ignored. Each script's `--help` shows the resolved
+defaults. The original cloud workspace keeps its layout with:
+
+```sh
+export FR3_TOOLS=/workspace/toolchains/fr3 FR3_CACHE=/workspace/shared/downloads
+```
 
 Acquisition downloads the freely distributed demo and extracts its ZIP and
 InstallShield CAB without running `setup.exe`. Existing extracted inputs are
@@ -58,6 +79,7 @@ headless script errors can be reported without a failing process exit code.
 | `analysis/annotated/selected.c` | 25 selected, labelled decompilations |
 | `analysis/selected/` | Instruction evidence and explicitly bounded disassembly |
 | `recovered/fr3_database_layouts.h` | Engine, gearbox and tyre in-memory layouts |
+| `artifacts/text-databases/` | Parsed engine and gearbox records from `scripts/text_database.py`, with source hashes |
 | `artifacts/ghidra/` | Complete baseline C, function disassembly, function list and call edges |
 | `artifacts/fr3-demo-annotated.gzf` | Portable annotated Ghidra program |
 | `artifacts/fr3-analysis.zip` | Analysis bundle with SHA-256 manifest |
@@ -69,17 +91,36 @@ ZIP, game assets and working project database. Import the `.gzf` into a new
 Ghidra 10.3.3 project to browse the annotations. No experimental compiler
 specification is needed for this snapshot.
 
+The engine and gearbox text databases parse from the extracted demo alone, with
+no Ghidra tools:
+
+```sh
+python3 scripts/acquire_demo.py inputs
+python3 scripts/text_database.py inputs/extracted/Program_Executable_Files --output artifacts/text-databases
+```
+
 ## Validate without rebuilding
 
 ```sh
-/workspace/toolchains/fr3/venv/bin/python -m unittest discover -s tests -v
-/workspace/toolchains/fr3/venv/bin/python scripts/verify_findings.py .
+"${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python -m unittest discover -s tests -v
+"${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python scripts/verify_findings.py .
 ```
 
-The parser tests use synthetic fixtures and test corruption, output limits,
-truncation, trailing data and overlapping PCG payloads. The separate verification
-command checks the actual demo, all 773 game-file hashes, tag pointers, decoded
-resource hashes, PCG indexes, instruction sites, decompiler counts and C layout
+The synthetic tests also run without the analysis toolchain, using any Python 3.12+
+with the pinned `scripts/requirements.txt` installed:
+
+```sh
+python3 -m unittest discover -s tests -v
+```
+
+CI runs them, after a `compileall` syntax check, on every push and pull request
+(`.github/workflows/tests.yml`). They use synthetic fixtures and test corruption,
+output limits, truncation, trailing data and overlapping PCG payloads, as well as
+the PE virtual-address reader, file identity checks and tool-path resolution. They also cover
+the strict engine and gearbox text-database parser: its accepted grammar and each
+rejected construct. The separate verification command checks the actual demo,
+all 773 game-file hashes, tag pointers, decoded resource hashes, PCG indexes,
+parsed text-database counts, instruction sites, decompiler counts and C layout
 assertions. Synthetic tests alone do not validate game behavior.
 
 Each cloud task already has an isolated environment. Use this checkout;

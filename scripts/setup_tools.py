@@ -10,6 +10,8 @@ import urllib.parse
 import urllib.request
 import zipfile
 
+from fr3_common import download_cache, tools_root
+
 GHIDRA_URL = "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.3.3_build/ghidra_10.3.3_PUBLIC_20230829.zip"
 JAVA_URL = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jdk_x64_linux_hotspot_17.0.12_7.tar.gz"
 # Ghidra: official release bytes, also matching the supplied report.
@@ -58,8 +60,8 @@ def download(cache, url, name, expected):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=Path("/workspace/toolchains/fr3"))
-    parser.add_argument("--cache", type=Path, default=Path("/workspace/shared/downloads"))
+    parser.add_argument("--root", type=Path, default=tools_root(), help="Tool root (env FR3_TOOLS; default: %(default)s)")
+    parser.add_argument("--cache", type=Path, default=download_cache(), help="Download cache (env FR3_CACHE; default: %(default)s)")
     args = parser.parse_args()
     root, cache = args.root.resolve(), args.cache.resolve()
     root.mkdir(parents=True, exist_ok=True); cache.mkdir(parents=True, exist_ok=True)

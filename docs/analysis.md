@@ -72,7 +72,24 @@ The actual table at `0x00594d94` contains 363 pointers to application tag names,
 starting with `FIRST_APPLICATION_TAG` and ending with `WIDTH`.
 [All tags and numeric IDs](../analysis/tags.json) were re-extracted from the
 hash-pinned executable. The text databases use colon-prefixed tags and `:TYPE`
-records; this project does not implement their full general grammar.
+records.
+
+[`scripts/text_database.py`](../scripts/text_database.py) strictly parses the two
+flat databases, `ENGDATA.DAT` and `GEARDATA.DAT`, and writes them to
+`artifacts/text-databases/` as raw records with the source SHA-256. The demo
+yields 56 engine and 14 gearbox records. There are 43 two-column torque arrays
+of 5 to 10 rows and 51 `:INHERIT_TYPE` references, each naming an earlier record.
+Every gearbox has the same 9 tags. The module docstring lists the exact grammar
+and every rejected construct; tags must exist in the executable's registry.
+
+One `ENGDATA.DAT` line, `INHERIT_TYPE DEFAULT_TRACK` in record `INDIGO`, lacks
+the leading colon. The parser keeps such a line in the record's `untagged` list
+rather than treating it as inheritance. Whether the game honours it is not
+established. Other non-tag lines outside a value block are rejected.
+
+The parser does not resolve inheritance into effective values or map fields to
+the C layout offsets below. It also does not handle `TYREDATA.DAT`, whose
+`:SOUND_INFO` blocks nest `:TYPE` and `:VALUE` sub-entries, or other text files.
 
 The engine loader at `0x005227f0` allocates a `0xb0`-byte payload, and the gearbox
 loader at `0x00523220` allocates `0x34` bytes. Their stores and copy routines
@@ -143,7 +160,8 @@ preserve the concrete evidence for these new findings.
 [Verification results](../analysis/verification.json) cover the exact executable,
 all game files, all tags, all identified compressed resources, every PCG index,
 the selected instruction sites, table dimensions, export counts and C layout
-assertions. Nine parser tests additionally reject malformed synthetic resources.
+assertions. Nine parser tests additionally reject malformed synthetic resources,
+and eight helper tests cover virtual-address bounds and file identity checks.
 The pinned installer was tested from a fresh temporary tool directory; its
 Ghidra probe decompiled the expected arithmetic expression.
 The default acquisition script also downloaded and extracted the demo into a
