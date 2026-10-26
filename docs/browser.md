@@ -21,7 +21,8 @@ Generated files in `artifacts/` and downloaded inputs stay out of Git.
 
 Pushes to `main` build and verify the site without deploying it. Manual runs
 with **deploy** unchecked also produce a downloadable artifact without
-publishing. This task does not enable Pages or publish the site.
+publishing. The site is live at the URL above; changes on `main` reach it only
+after a manual run with **deploy** checked.
 
 The workflow compiles the pinned runtime, downloads and verifies the public
 demo, extracts its CAB with Unshield, verifies all 773 original game files,
@@ -30,6 +31,17 @@ Runtime and game assets are assembled during the build instead of committed
 as large binaries. If ModDB changes its mirrors, supply the exact same demo ZIP
 to `inputs/fordracing3demo.zip` for local builds; its required SHA-256 is
 `4bf96967022195519817d91f143c5e1c62e5879a95dd70f5a1cd00ba89b1f84c`.
+
+## Rights-holder notice
+
+The page shows a notice above the player: it is an unofficial preservation
+preview, not affiliated with or endorsed by the rights holders, credits the
+Ford Racing 3 demo © 2004 Empire Interactive Europe Ltd., links the
+[official demo download](https://www.moddb.com/games/ford-racing/downloads/ford-racing-3-demo)
+and tells rights holders to request removal through the
+[repository's issues](https://github.com/omertekin2002/ford-racing-reverse-engineered/issues).
+The preview is taken down if a rights holder objects.
+`verify_web.py` fails the build when `index.html` lacks this notice.
 
 ## Build locally
 

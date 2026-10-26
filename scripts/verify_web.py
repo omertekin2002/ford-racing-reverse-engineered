@@ -7,7 +7,11 @@ from pathlib import Path, PurePosixPath
 import urllib.parse
 import zipfile
 
+from fr3_common import DEMO_PAGE
 from setup_web_tools import BOXEDWINE_REVISION, WINE_WEB_SHA256
+
+ISSUES_PAGE = "https://github.com/omertekin2002/ford-racing-reverse-engineered/issues"
+RIGHTS_CREDIT = "Ford Racing 3 demo © 2004 Empire Interactive Europe Ltd."
 
 
 class References(HTMLParser):
@@ -19,6 +23,55 @@ class References(HTMLParser):
         for key, value in attrs:
             if key in ("src", "href") and value:
                 self.paths.append(value)
+
+
+class Notice(HTMLParser):
+    """Collect the text and links of the rights notice and whether it precedes the player."""
+
+    def __init__(self):
+        super().__init__()
+        self.tag = None
+        self.depth = 0
+        self.found = False
+        self.after_player = False
+        self.text = []
+        self.links = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if self.depth:
+            if tag == self.tag:
+                self.depth += 1
+            if tag == "a" and attrs.get("href"):
+                self.links.append(attrs["href"])
+        elif attrs.get("id") == "rights-notice" and not self.found:
+            self.tag, self.depth, self.found = tag, 1, True
+        elif "player" in (attrs.get("class") or "").split() and not self.found:
+            self.after_player = True
+
+    def handle_endtag(self, tag):
+        if self.depth and tag == self.tag:
+            self.depth -= 1
+
+    def handle_data(self, data):
+        if self.depth:
+            self.text.append(data)
+
+
+def verify_notice(html):
+    """Require the visible rights-holder notice above the player in index.html."""
+    notice = Notice()
+    notice.feed(html)
+    if not notice.found:
+        raise ValueError("index.html lacks the rights-holder notice (#rights-notice)")
+    if notice.after_player:
+        raise ValueError("The rights-holder notice must appear above the player")
+    text = " ".join(" ".join(notice.text).split())
+    if RIGHTS_CREDIT not in text:
+        raise ValueError(f"The rights-holder notice lacks the credit: {RIGHTS_CREDIT}")
+    for url in (DEMO_PAGE, ISSUES_PAGE):
+        if url not in notice.links:
+            raise ValueError(f"The rights-holder notice lacks a link to {url}")
 
 
 def sha256(path):
@@ -36,6 +89,7 @@ def verify(root):
         assert sha256(path) == identity["sha256"], name
     assert (root / "runtime/boxedwine.wasm").read_bytes()[:8] == b"\0asm\x01\0\0\0"
     assert (root / ".nojekyll").exists()
+    verify_notice((root / "index.html").read_text(encoding="utf-8"))
     for line in (root / "SHA256SUMS").read_text().splitlines():
         expected, relative = line.split("  ", 1)
         path = (root / relative).resolve()
@@ -63,7 +117,7 @@ def verify(root):
             assert hashlib.sha256(data).hexdigest() == item["sha256"], item["path"]
             path = PurePosixPath(item["path"])
             assert not path.is_absolute() and ".." not in path.parts
-    print(f"Verified static Pages build, relative URLs, manifests and all {len(manifest)} original demo files")
+    print(f"Verified static Pages build, rights notice, relative URLs, manifests and all {len(manifest)} original demo files")
 
 
 if __name__ == "__main__":

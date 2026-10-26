@@ -21,6 +21,11 @@ workflow after selecting **GitHub Actions** in Settings → Pages. Manual runs
 deploy only when **deploy** is checked. Source and build instructions are in
 the repository's `docs/browser.md`.
 
+The page shows an unofficial-preview notice above the player with the game's
+credit, a link to the official demo download and a removal-request link to the
+repository's issues. The hosted preview is taken down if a rights holder
+objects. Keep the notice when hosting a copy.
+
 Chromium on Linux was tested with a Quick Race and keyboard input. Software
 graphics was slow. Other browsers, audible sound and full-race completion
 remain unverified. Music/video streaming is disabled and sound effects are
