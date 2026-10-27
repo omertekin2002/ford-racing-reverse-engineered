@@ -60,4 +60,5 @@ The app is unsigned and not notarized. The upstream runtime requires macOS
 10.15 or newer and GStreamer 1.28.1; Apple Silicon requires Rosetta 2.
 
 Local archives are in `artifacts/releases/`, with `SHA256SUMS` and `builds.json`.
-These preview builds have not been published as GitHub releases.
+They are published as the GitHub prerelease
+[v0.1.0-preview](https://github.com/omertekin2002/ford-racing-reverse-engineered/releases/tag/v0.1.0-preview).

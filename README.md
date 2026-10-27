@@ -10,16 +10,29 @@ storage for 25 routines. Resource tools reproduce 363 application tags,
 146 compressed resources and 62 PCG graphics collections with 654 entries.
 The new tyre analysis reconstructs its 88-byte record and table allocations.
 
+## Play the demo
+
+- **Linux and macOS:** download the packages from the
+  [v0.1.0-preview release](https://github.com/omertekin2002/ford-racing-reverse-engineered/releases/tag/v0.1.0-preview).
+  They are Wine compatibility previews that run the unchanged public demo; the
+  macOS package has not been tested on a Mac. See the
+  [release instructions](docs/releases.md).
+- **Browser:** open the
+  [browser preview](https://omertekin2002.github.io/ford-racing-reverse-engineered/),
+  an experimental build that runs the same demo through Boxedwine's
+  WebAssembly runtime. See the [browser guide](docs/browser.md).
+
 Read [the verified findings and limitations](docs/analysis.md). This is an
 analysis package, not restored original source or a runnable replacement game.
 The installer is extracted without execution. Separate Wine compatibility
-packages now run the original demo; see [release instructions](docs/releases.md)
+packages run the original demo; see [release instructions](docs/releases.md)
 and [runtime validation](docs/release-validation.md).
 
-A static [browser preview and GitHub Pages workflow](docs/browser.md) now
-package the same demo with Boxedwine's WebAssembly JIT and Wine's WebGL runtime.
-The workflow builds on push; publication is a separate manual run after Pages
-is enabled. Build and browser validation are described in the browser guide.
+A static [browser preview and GitHub Pages workflow](docs/browser.md) package
+the same demo with Boxedwine's WebAssembly JIT and Wine's WebGL runtime.
+Pushes to `main` build and verify the site; redeploying it is a manual run of
+the workflow with **deploy** checked. Build and browser validation are described
+in the browser guide.
 
 ## Reproduce
 
@@ -79,7 +92,7 @@ headless script errors can be reported without a failing process exit code.
 | `analysis/annotated/selected.c` | 25 selected, labelled decompilations |
 | `analysis/selected/` | Instruction evidence and explicitly bounded disassembly |
 | `recovered/fr3_database_layouts.h` | Engine, gearbox and tyre in-memory layouts |
-| `artifacts/text-databases/` | Parsed engine and gearbox records from `scripts/text_database.py`, with source hashes |
+| `artifacts/text-databases/` | Parsed engine, gearbox and tyre records from `scripts/text_database.py`, with source hashes |
 | `artifacts/ghidra/` | Complete baseline C, function disassembly, function list and call edges |
 | `artifacts/fr3-demo-annotated.gzf` | Portable annotated Ghidra program |
 | `artifacts/fr3-analysis.zip` | Analysis bundle with SHA-256 manifest |
@@ -91,8 +104,10 @@ ZIP, game assets and working project database. Import the `.gzf` into a new
 Ghidra 10.3.3 project to browse the annotations. No experimental compiler
 specification is needed for this snapshot.
 
-The engine and gearbox text databases parse from the extracted demo alone, with
-no Ghidra tools:
+The engine, gearbox and tyre text databases parse from the extracted demo alone,
+with no Ghidra tools. Tyre records keep their nested `:SOUND_INFO` entries in
+file order. Inheritance is recorded, not resolved, and the meaning of the sound
+table's first fifteen words is unknown:
 
 ```sh
 python3 scripts/acquire_demo.py inputs
@@ -117,12 +132,11 @@ CI runs them, after a `compileall` syntax check, on every push and pull request
 (`.github/workflows/tests.yml`). They use synthetic fixtures and test corruption,
 output limits, truncation, trailing data and overlapping PCG payloads, as well as
 the PE virtual-address reader, file identity checks and tool-path resolution. They also cover
-the strict engine and gearbox text-database parser: its accepted grammar and each
-rejected construct. The separate verification command checks the actual demo,
+the strict engine, gearbox and tyre text-database parser: its accepted grammar and each
+rejected construct. For demo acquisition they cover, without network access, the
+download-link filter, HTTPS-only fetches and redirects, the 12-URL cap, identity-checked
+archive writes and ZIP extraction safety (unsafe paths, symlinks, size limit, existing
+files). The separate verification command checks the actual demo,
 all 773 game-file hashes, tag pointers, decoded resource hashes, PCG indexes,
 parsed text-database counts, instruction sites, decompiler counts and C layout
 assertions. Synthetic tests alone do not validate game behavior.
-
-Each cloud task already has an isolated environment. Use this checkout;
-creating another Git worktree is unnecessary unless explicitly requested.
-
