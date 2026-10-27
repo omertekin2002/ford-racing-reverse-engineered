@@ -77,15 +77,12 @@ def main():
     field_evidence = load(root / "analysis/selected/field-evidence.json")
     for item in field_evidence:
         require(read_va(pe, executable, item["va"], len(bytes.fromhex(item["bytes"]))).hex() == item["bytes"], "Field instruction mismatch")
-    tyre_text = (game / "DATA/ASCII/CARS/TYREDATA.DAT").read_text()
-    table_counts = {}
-    for tag, rows, columns in (("LONGITUDINAL_COMBINED_VALUES", 9, 11), ("LATERAL_COMBINED_VALUES", 10, 21)):
-        block = re.search(r":" + tag + r"\s*([^:]+)", tyre_text).group(1)
-        lines = [line.split("//", 1)[0].strip() for line in block.splitlines()]
-        values = [[float(value) for value in line.split()] for line in lines if line]
-        require(len(values) == rows and all(len(row) == columns for row in values), "Tyre table dimensions mismatch: " + tag)
-        table_counts[tag] = {"rows": rows, "columns": columns}
     text_databases = verify_text_databases(game, {tag["name"] for tag in tags})
+    tyre_tables = text_databases["tyre_tables"]
+    table_counts = {tag: {"rows": tyre_tables[tag]["rows"], "columns": tyre_tables[tag]["columns"]}
+                    for tag in ("LONGITUDINAL_COMBINED_VALUES", "LATERAL_COMBINED_VALUES")}
+    require(table_counts == {"LONGITUDINAL_COMBINED_VALUES": {"rows": 9, "columns": 11},
+                             "LATERAL_COMBINED_VALUES": {"rows": 10, "columns": 21}}, "Tyre table dimensions mismatch")
     baseline = load(root / "artifacts/ghidra/status.json")
     require(baseline["executable_sha256"] == EXE_SHA256 and baseline["compiler_spec"] == "windows", "Ghidra baseline identity mismatch")
     require(baseline["functions"] == 4922 and baseline["thunks"] == 152 and baseline["decompiled"] == 4770 and not baseline["failures"], "Baseline export outcome mismatch")

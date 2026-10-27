@@ -7,9 +7,11 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import text_database
-from text_database import GEARBOX_TAGS, MAX_TEXT_BYTES, TextDatabaseError, parse, read_database, verify_text_databases
+from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, SOUND_INFO_COUNTS, TYRE_TABLES, TextDatabaseError, parse,
+                           read_database, verify_text_databases)
 
-TAGS = {"CAPACITY", "LOCATION_TYPE", "INHERIT_TYPE", "TORQUE_ARRAY", "MAX_RPM", "ENGINE_BRAKING", *GEARBOX_TAGS}
+TAGS = {"CAPACITY", "LOCATION_TYPE", "INHERIT_TYPE", "TORQUE_ARRAY", "MAX_RPM", "ENGINE_BRAKING", *GEARBOX_TAGS,
+        "RADIUS", "SOUND_INFO", "START_RPM", *TYRE_TABLES}
 VALID = """//////////////////////
 // Banner comment
 //////////////////////
@@ -186,6 +188,127 @@ class ParseRejectTests(unittest.TestCase):
         self.reject(":TYPE A\n: 1\n:END\n", 2, "unknown tag")
 
 
+TYRES = """// Default tyres
+:TYPE DEFAULT_ROAD
+:RADIUS \t0.1
+:CAMBER_THRUST\t\t
+\t0  0.0000
+\t1\t0.16900
+
+:SOUND_INFO\t\t\t
+\t:TYPE TYRE_SAMPLE_TYPE_SQUEAK\t\t
+\t:VALUE 2\t\t
+\t\t0\t0.00
+
+\t\t1\t0.30   // comment
+\t:START_RPM\t0.00\t
+\t:SOUND_INFO\t\t
+:TYPE TYRE_SAMPLE_TYPE_SQUEAL
+:VALUE 1
+0 0.80
+:START_RPM 1500
+:TYPE CHILD
+:INHERIT_TYPE DEFAULT_ROAD
+:SOUND_INFO
+:TYPE TYRE_SAMPLE_TYPE_SQUEAK
+:VALUE 1
+0 0.5
+:START_RPM 0.0
+:RADIUS 0.2
+:END
+"""
+SOUND = ":SOUND_INFO\n:TYPE S\n:VALUE 2\n0 0.0\n1 0.5\n:START_RPM 0.0\n"
+
+
+class ParseSoundInfoTests(unittest.TestCase):
+    def reject(self, text, line, fragment):
+        with self.assertRaises(TextDatabaseError) as caught:
+            parse(text, TAGS, sound_info=True)
+        self.assertEqual(caught.exception.line, line)
+        self.assertIn(fragment, str(caught.exception))
+
+    def test_nested_entries(self):
+        road, child = parse(TYRES.replace("\n", "\r\n").encode("ascii"), TAGS, sound_info=True)
+        self.assertEqual(road["sound_info"], [
+            {"line": 8, "type": "TYRE_SAMPLE_TYPE_SQUEAK", "value_count": 2, "rows": [[0, 0.0], [1, 0.3]], "start_rpm": 0.0},
+            {"line": 15, "type": "TYRE_SAMPLE_TYPE_SQUEAL", "value_count": 1, "rows": [[0, 0.8]], "start_rpm": 1500}])
+        self.assertEqual(road["fields"]["CAMBER_THRUST"]["rows"], [[0, 0.0], [1, 0.169]])
+        self.assertNotIn("SOUND_INFO", road["fields"])
+        self.assertEqual(child["fields"]["INHERIT_TYPE"]["values"], ["DEFAULT_ROAD"])
+        self.assertEqual(child["fields"]["RADIUS"]["values"], [0.2])
+        self.assertEqual([entry["type"] for entry in child["sound_info"]], ["TYRE_SAMPLE_TYPE_SQUEAK"])
+
+    def test_record_without_entries(self):
+        self.assertEqual(parse(":TYPE A\n:RADIUS 1\n:END\n", TAGS, sound_info=True)[0]["sound_info"], [])
+
+    def test_flat_databases_ignore_the_nesting(self):
+        records = parse(":TYPE A\n:START_RPM 1\n:END\n", TAGS)
+        self.assertEqual(records[0]["fields"]["START_RPM"]["values"], [1])
+        self.assertNotIn("sound_info", records[0])
+        with self.assertRaisesRegex(TextDatabaseError, "unknown tag 'VALUE'"):
+            parse(":TYPE A\n:VALUE 1\n:END\n", TAGS)
+
+    def test_value_outside_entry(self):
+        self.reject(":TYPE A\n:VALUE 1\n0 0.0\n:END\n", 2, ":VALUE outside a :SOUND_INFO entry")
+
+    def test_sub_entry_type_outside_entry(self):
+        # Without :SOUND_INFO, :TYPE starts a record, so its :VALUE is outside any entry.
+        self.reject(":TYPE A\n:TYPE S\n:VALUE 1\n0 0.0\n:START_RPM 0\n:END\n", 3, ":VALUE outside")
+        self.reject(":TYPE A\n:TYPE TYRE_SAMPLE_TYPE_SQUEAK\n:VALUE 1\n:END\n", 2, "char[20]")
+
+    def test_start_rpm_outside_entry(self):
+        self.reject(":TYPE A\n:START_RPM 0\n:END\n", 2, ":START_RPM outside a :SOUND_INFO entry")
+
+    def test_fewer_rows_than_value(self):
+        self.reject(":TYPE A\n" + SOUND.replace("1 0.5\n", "") + ":END\n", 6, "has 1 rows, :VALUE says 2")
+
+    def test_more_rows_than_value(self):
+        self.reject(":TYPE A\n" + SOUND.replace("1 0.5\n", "1 0.5\n2 0.5\n") + ":END\n", 7, "beyond its :VALUE 2")
+
+    def test_missing_start_rpm(self):
+        self.reject(":TYPE A\n" + SOUND.replace(":START_RPM 0.0\n", "") + SOUND + ":END\n", 7, "expects :START_RPM here")
+        self.reject(":TYPE A\n" + SOUND.replace(":START_RPM 0.0\n", ":END\n"), 7, "expects :START_RPM here, not :END")
+
+    def test_duplicate_start_rpm(self):
+        self.reject(":TYPE A\n" + SOUND + "\n:START_RPM 1.0\n:END\n", 9, "duplicate :START_RPM")
+
+    def test_unregistered_tag(self):
+        self.reject(":TYPE A\n:NOT_A_TAG 1\n:END\n", 2, "unknown tag")
+        self.reject(":TYPE A\n" + SOUND.replace(":VALUE", ":NOT_A_TAG") + ":END\n", 4, "expects :VALUE here, not :NOT_A_TAG")
+
+    def test_record_name_of_twenty_bytes(self):
+        self.reject(":TYPE " + "N" * 20 + "\n:END\n", 1, "char[20]")
+
+    def test_content_after_end(self):
+        self.reject(":TYPE A\n" + SOUND + ":END\n" + SOUND, 9, "after :END on line 8")
+
+    def test_truncated_inside_entry(self):
+        self.reject(":TYPE A\n" + SOUND.split(":START_RPM")[0], 7, "file ends inside the :SOUND_INFO entry from line 2")
+        self.reject(":TYPE A\n:SOUND_INFO\n", 3, "file ends inside the :SOUND_INFO entry from line 2")
+
+    def test_entry_order(self):
+        self.reject(":TYPE A\n:SOUND_INFO\n:VALUE 1\n:END\n", 3, "expects :TYPE here, not :VALUE")
+        self.reject(":TYPE A\n:SOUND_INFO\n:TYPE S\n:TYPE T\n:END\n", 4, "expects :VALUE here, not :TYPE")
+        self.reject(":TYPE A\n:SOUND_INFO\n:TYPE S\n0 0.0\n:END\n", 4, "before :VALUE")
+
+    def test_entry_values(self):
+        self.reject(":TYPE A\n:SOUND_INFO 1\n:END\n", 2, ":SOUND_INFO takes no inline values")
+        self.reject(":TYPE A\n" + SOUND.replace(":TYPE S", ":TYPE S T") + ":END\n", 3, "exactly one value")
+        self.reject(":TYPE A\n" + SOUND.replace(":TYPE S", ":TYPE 5") + ":END\n", 3, "unparsable sample type")
+        self.reject(":TYPE A\n" + SOUND.replace(":VALUE 2", ":VALUE 0") + ":END\n", 4, "positive integer")
+        self.reject(":TYPE A\n" + SOUND.replace(":VALUE 2", ":VALUE 2.0") + ":END\n", 4, "positive integer")
+        self.reject(":TYPE A\n" + SOUND.replace(":START_RPM 0.0", ":START_RPM FAST") + ":END\n", 7, "unparsable number")
+        self.reject(":TYPE A\n" + SOUND.replace(":START_RPM 0.0", ":START_RPM") + ":END\n", 7, "exactly one value")
+
+    def test_row_shape(self):
+        self.reject(":TYPE A\n" + SOUND.replace("1 0.5", "1 0.5 2") + ":END\n", 6, "needs an index and a value")
+        self.reject(":TYPE A\n" + SOUND.replace("1 0.5", "1 LOUD") + ":END\n", 6, "unparsable number")
+
+    def test_duplicate_sample_type(self):
+        self.reject(":TYPE A\n" + SOUND + SOUND + ":END\n", 9, "duplicate sample type 'S'")
+        self.assertEqual(len(parse(":TYPE A\n" + SOUND + ":TYPE B\n" + SOUND + ":END\n", TAGS, sound_info=True)), 2)
+
+
 def engine_file():
     lines = [":TYPE BASE0"]
     for i in range(5):
@@ -208,6 +331,23 @@ def gearbox_file(tags=GEARBOX_TAGS):
     return "\n".join(lines + [":END"]) + "\n"
 
 
+def tyre_file(sounds=SOUND_INFO_COUNTS):
+    lines = []
+    names = ["DEFAULT_ROAD", "DEFAULT_OFFROAD", "DEFAULT_TRACK"] + [f"TYRE{i}" for i in range(106)]
+    for i, name in enumerate(names):
+        lines += [f":TYPE {name}", ":RADIUS 0.3"] + ([":INHERIT_TYPE DEFAULT_ROAD"] if i else [])
+        if i == 0:
+            lines += [":LONGITUDINAL_COMBINED_VALUES"] + ["\t".join(["0.5"] * 11)] * 9
+            lines += [":LATERAL_COMBINED_VALUES"] + ["\t".join(["0.5"] * 21)] * 10
+        if i < 3:
+            lines += [":VERTICAL_LOAD"] + [f"{j} 1.0" for j in range(10)]
+            lines += [":CAMBER_THRUST"] + [f"{j} 0.5" for j in range(10)]
+        for j in range(sounds.get(name, 0)):
+            lines += ["\t:SOUND_INFO", f"\t:TYPE TYRE_SAMPLE_TYPE_{j}", "\t:VALUE 10"]
+            lines += [f"\t\t{k}\t0.00" for k in range(10)] + ["\t:START_RPM\t0.00"]
+    return "\r\n".join(lines + [":END"]) + "\r\n"
+
+
 class VerifyTextDatabaseTests(unittest.TestCase):
     def setUp(self):
         directory = tempfile.TemporaryDirectory()
@@ -216,6 +356,7 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         (self.game / "DATA/ASCII/CARS").mkdir(parents=True)
         self.write("engines", engine_file())
         self.write("gearboxes", gearbox_file())
+        self.write("tyres", tyre_file())
 
     def write(self, stem, text):
         (self.game / text_database.DATABASES[stem]).write_text(text, newline="")
@@ -228,6 +369,17 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.assertEqual(summary["torque_rows"], [5, 10])
         self.assertEqual(summary["engine_inheritances"], 51)
         self.assertEqual(summary["untagged_lines"], [{"record": "INDIGO", "line": 1410, "tokens": ["INHERIT_TYPE", "DEFAULT_TRACK"]}])
+        self.assertEqual(summary["tyre_records"], 109)
+        self.assertEqual(summary["tyre_inheritances"], 108)
+        self.assertEqual(summary["tyre_tables"], TYRE_TABLES)
+        self.assertEqual(summary["sound_info_entries"], 40)
+        self.assertEqual(summary["sound_info_per_record"], SOUND_INFO_COUNTS)
+
+    def test_read_database_records_sound_info(self):
+        records = read_database(self.game, text_database.DATABASES["tyres"], TAGS, sound_info=True)["records"]
+        entry = records[0]["sound_info"][0]
+        self.assertEqual((entry["type"], entry["value_count"], len(entry["rows"]), entry["start_rpm"]),
+                         ("TYRE_SAMPLE_TYPE_0", 10, 10, 0.0))
 
     def test_read_database_records_identity(self):
         database = read_database(self.game, text_database.DATABASES["gearboxes"], TAGS)
@@ -239,6 +391,16 @@ class VerifyTextDatabaseTests(unittest.TestCase):
     def test_reject_missing_gearbox_tag(self):
         self.write("gearboxes", gearbox_file(GEARBOX_TAGS - {"DIFF_TYPE"}))
         with self.assertRaisesRegex(ValueError, "Gearbox tag set mismatch"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_wrong_sound_entry_count(self):
+        self.write("tyres", tyre_file({**SOUND_INFO_COUNTS, "DEFAULT_TRACK": 11}))
+        with self.assertRaisesRegex(ValueError, "Sound entry count mismatch"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_wrong_tyre_table_shape(self):
+        self.write("tyres", tyre_file().replace("\t".join(["0.5"] * 11) + "\r\n", "", 1))
+        with self.assertRaisesRegex(ValueError, "Tyre table dimensions mismatch"):
             verify_text_databases(self.game, TAGS)
 
     def test_reject_wrong_engine_count(self):

@@ -74,10 +74,10 @@ starting with `FIRST_APPLICATION_TAG` and ending with `WIDTH`.
 hash-pinned executable. The text databases use colon-prefixed tags and `:TYPE`
 records.
 
-[`scripts/text_database.py`](../scripts/text_database.py) strictly parses the two
-flat databases, `ENGDATA.DAT` and `GEARDATA.DAT`, and writes them to
-`artifacts/text-databases/` as raw records with the source SHA-256. The demo
-yields 56 engine and 14 gearbox records. There are 43 two-column torque arrays
+[`scripts/text_database.py`](../scripts/text_database.py) strictly parses the
+three car databases, `ENGDATA.DAT`, `GEARDATA.DAT` and `TYREDATA.DAT`, and writes
+them to `artifacts/text-databases/` as raw records with the source SHA-256. The
+demo yields 56 engine and 14 gearbox records. There are 43 two-column torque arrays
 of 5 to 10 rows and 51 `:INHERIT_TYPE` references, each naming an earlier record.
 Every gearbox has the same 9 tags. The module docstring lists the exact grammar
 and every rejected construct; tags must exist in the executable's registry.
@@ -87,9 +87,20 @@ the leading colon. The parser keeps such a line in the record's `untagged` list
 rather than treating it as inheritance. Whether the game honours it is not
 established. Other non-tag lines outside a value block are rejected.
 
+`TYREDATA.DAT` yields 109 tyre records, 108 with `:INHERIT_TYPE`. It has one
+9×11 longitudinal and one 10×21 lateral combined table, and three 10×2 blocks
+each of vertical load and camber thrust. Its 40 `:SOUND_INFO` entries (14 in
+`DEFAULT_ROAD`, 14 in `DEFAULT_OFFROAD`, 12 in `DEFAULT_TRACK`) each nest a
+sample `:TYPE`, a `:VALUE` row count of 10 with that many index/value rows, and
+a closing `:START_RPM`. `VALUE`, `TYPE` and `END` are not registry tags, so the
+grammar, not the indentation, decides that `:TYPE` names a sample inside an
+entry and a record outside one. The parser keeps each record's entries in file
+order and checks the row count against `:VALUE`.
+
 The parser does not resolve inheritance into effective values or map fields to
-the C layout offsets below. It also does not handle `TYREDATA.DAT`, whose
-`:SOUND_INFO` blocks nest `:TYPE` and `:VALUE` sub-entries, or other text files.
+the C layout offsets below, and it does not handle the other text files. The
+meaning of the sound table's first fifteen words, described below, is still
+unknown.
 
 The engine loader at `0x005227f0` allocates a `0xb0`-byte payload, and the gearbox
 loader at `0x00523220` allocates `0x34` bytes. Their stores and copy routines
