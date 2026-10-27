@@ -27,6 +27,21 @@ class Links(html.parser.HTMLParser):
             self.hrefs.append(attrs["href"])
 
 
+def download_links(html_text, base_url):
+    """Yield the absolute ModDB download-start and mirror links in a page, in order.
+
+    A generator, so links before a malformed href that makes urljoin raise
+    still reach the caller's queue.
+    """
+    parser = Links()
+    parser.feed(html_text)
+    for href in parser.hrefs:
+        candidate = urllib.parse.urljoin(base_url, href)
+        parts = urllib.parse.urlsplit(candidate)
+        if parts.scheme == "https" and parts.hostname == "www.moddb.com" and parts.path.startswith(("/downloads/start/", "/downloads/mirror/")):
+            yield candidate
+
+
 def fetch(url):
     if urllib.parse.urlsplit(url).scheme != "https":
         raise ValueError("Acquisition requires HTTPS")
@@ -62,13 +77,7 @@ def acquire(destination, explicit_url=None):
                     staged = Path(stream.name)
                 os.replace(staged, destination)
                 return {"mode": "download", "source_page": DEMO_PAGE, "download_url": final_url}
-            parser = Links()
-            parser.feed(data.decode("utf-8", errors="replace"))
-            for href in parser.hrefs:
-                candidate = urllib.parse.urljoin(final_url, href)
-                parts = urllib.parse.urlsplit(candidate)
-                if parts.scheme == "https" and parts.hostname == "www.moddb.com" and parts.path.startswith(("/downloads/start/", "/downloads/mirror/")):
-                    queue.append(candidate)
+            queue.extend(download_links(data.decode("utf-8", errors="replace"), final_url))
             if not queue:
                 errors.append(f"{url}: no matching demo archive or download links")
         except (OSError, ValueError) as error:
