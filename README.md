@@ -133,7 +133,10 @@ CI runs them, after a `compileall` syntax check, on every push and pull request
 output limits, truncation, trailing data and overlapping PCG payloads, as well as
 the PE virtual-address reader, file identity checks and tool-path resolution. They also cover
 the strict engine, gearbox and tyre text-database parser: its accepted grammar and each
-rejected construct. The separate verification command checks the actual demo,
+rejected construct. For demo acquisition they cover, without network access, the
+download-link filter, HTTPS-only fetches and redirects, the 12-URL cap, identity-checked
+archive writes and ZIP extraction safety (unsafe paths, symlinks, size limit, existing
+files). The separate verification command checks the actual demo,
 all 773 game-file hashes, tag pointers, decoded resource hashes, PCG indexes,
 parsed text-database counts, instruction sites, decompiler counts and C layout
 assertions. Synthetic tests alone do not validate game behavior.
