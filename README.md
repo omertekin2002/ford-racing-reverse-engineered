@@ -92,7 +92,7 @@ headless script errors can be reported without a failing process exit code.
 | `analysis/annotated/selected.c` | 25 selected, labelled decompilations |
 | `analysis/selected/` | Instruction evidence and explicitly bounded disassembly |
 | `recovered/fr3_database_layouts.h` | Engine, gearbox and tyre in-memory layouts |
-| `artifacts/text-databases/` | Parsed engine and gearbox records from `scripts/text_database.py`, with source hashes |
+| `artifacts/text-databases/` | Parsed engine, gearbox and tyre records from `scripts/text_database.py`, with source hashes |
 | `artifacts/ghidra/` | Complete baseline C, function disassembly, function list and call edges |
 | `artifacts/fr3-demo-annotated.gzf` | Portable annotated Ghidra program |
 | `artifacts/fr3-analysis.zip` | Analysis bundle with SHA-256 manifest |
@@ -104,8 +104,10 @@ ZIP, game assets and working project database. Import the `.gzf` into a new
 Ghidra 10.3.3 project to browse the annotations. No experimental compiler
 specification is needed for this snapshot.
 
-The engine and gearbox text databases parse from the extracted demo alone, with
-no Ghidra tools:
+The engine, gearbox and tyre text databases parse from the extracted demo alone,
+with no Ghidra tools. Tyre records keep their nested `:SOUND_INFO` entries in
+file order. Inheritance is recorded, not resolved, and the meaning of the sound
+table's first fifteen words is unknown:
 
 ```sh
 python3 scripts/acquire_demo.py inputs
@@ -130,7 +132,7 @@ CI runs them, after a `compileall` syntax check, on every push and pull request
 (`.github/workflows/tests.yml`). They use synthetic fixtures and test corruption,
 output limits, truncation, trailing data and overlapping PCG payloads, as well as
 the PE virtual-address reader, file identity checks and tool-path resolution. They also cover
-the strict engine and gearbox text-database parser: its accepted grammar and each
+the strict engine, gearbox and tyre text-database parser: its accepted grammar and each
 rejected construct. The separate verification command checks the actual demo,
 all 773 game-file hashes, tag pointers, decoded resource hashes, PCG indexes,
 parsed text-database counts, instruction sites, decompiler counts and C layout
