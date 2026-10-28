@@ -140,3 +140,11 @@ files). The separate verification command checks the actual demo,
 all 773 game-file hashes, tag pointers, decoded resource hashes, PCG indexes,
 parsed text-database counts, instruction sites, decompiler counts and C layout
 assertions. Synthetic tests alone do not validate game behavior.
+
+Lint the scripts and tests with the hash-pinned ruff and the repository's `ruff.toml`;
+CI also runs this lint step on every push and pull request:
+
+```sh
+python3 -m pip install --require-hashes -r scripts/requirements-lint.txt
+ruff check scripts tests
+```
