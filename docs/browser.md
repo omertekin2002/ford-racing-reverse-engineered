@@ -104,7 +104,17 @@ fixed at 640×480; use the detail settings to reduce rendering work.
 The game canvas receives keyboard
 input after clicking it. Gamepad and mobile touch controls are not implemented.
 
-The loading bar measures downloads, not game initialization. A quick race,
+The loading bar measures downloads. After that, Wine and the game start and the
+screen can stay black for minutes. The launcher shows an indeterminate bar and
+keeps Play demo and Game settings disabled until the game shows a detailed
+frame, so Play demo cannot restart a slow first launch; Restart stays
+available. `runtime-bridge.js` checks once a second: software frames on the
+2D present canvas, and Direct3D frames by `readPixels` from the emulator's
+preserved WebGL2 buffer (copying that canvas to a 2D canvas read back black in
+testing, probably because Direct3D leaves alpha at zero). Single-colour frames, such as the black screen and Wine's
+plain desktop, are ignored. Only then does it ask for Enter, which the game
+accepts at its PRESS ANY KEY screen. After 10 minutes without such a frame the
+buttons are re-enabled anyway. A quick race,
 acceleration, steering and pause were observed in Chromium on Linux. See
 [browser validation](browser-validation.md) for evidence and limits.
 

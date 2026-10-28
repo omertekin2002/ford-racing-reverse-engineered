@@ -68,7 +68,10 @@
   const originalStatus = Module.setStatus;
   Module.setStatus = text => { originalStatus(text); if (text) send({status:String(text)}); };
   Module.onAbort = reason => fatal(`Runtime aborted: ${reason}`);
-  Module.onExit = code => send({state:"exited", status:`The game has closed (code ${code}). Press Play demo to start again.`});
+  Module.onExit = code => {
+    clearInterval(pictureTimer);
+    send({state:"exited", status:`The game has closed (code ${code}). Press Play demo to start again.`});
+  };
   const originalBuild = buildBrowserFileSystem;
   buildBrowserFileSystem = function() {
     // The supplied Wine image already has a complete, initialized prefix.
@@ -79,7 +82,75 @@
     FS.writeFile(ROOT + "/home/username/.wine/.update-timestamp", "disable\n");
     originalBuild();
     document.getElementById("loading").style.display = "none";
-    send({state:"running",status:settings ? "Opening game settings…" : "Click the game and press Enter to continue. First initialization may take several minutes."});
+    send({state:"starting",status:settings ? "Opening game settings… The screen stays black until the settings window appears." :
+      "Starting Windows and the game. This takes a few minutes; the screen stays black until the game appears."});
+    waitForPicture();
+  };
+  // Wine and the game start minutes after the files are mounted. Report
+  // "running" only once a detailed frame has been presented: the black
+  // screen and Wine's plain desktop, shown first, are a single colour.
+  let pictureTimer;
+  const detailed = (pixels, width, height) => {
+    const colours = new Set();
+    for (let y = 0; y < 24; y++) for (let x = 0; x < 32; x++) {
+      const i = ((y * height / 24 | 0) * width + (x * width / 32 | 0)) * 4;
+      colours.add((pixels[i] >> 4) << 8 | (pixels[i + 1] >> 4) << 4 | pixels[i + 2] >> 4);
+    }
+    return colours.size >= 8;
+  };
+  // Software frames (Wine's desktop, dialogs) are copied to an opaque 2D canvas.
+  const sample = document.createElement("canvas");
+  const softwareFrame = () => {
+    const canvas = document.getElementById("boxedwine-webgl-canvas-0");
+    if (!canvas?.width || !canvas.height || getComputedStyle(canvas).visibility === "hidden") return false;
+    sample.width = canvas.width; sample.height = canvas.height;
+    const context = sample.getContext("2d", {willReadFrequently:true});
+    context.drawImage(canvas, 0, 0);
+    return detailed(context.getImageData(0, 0, sample.width, sample.height).data, sample.width, sample.height);
+  };
+  // Direct3D renders straight into the emulator's WebGL2 canvas. Copying it
+  // to a 2D canvas reads back black (probably zero alpha), so read its
+  // preserved drawing buffer instead, restoring the state readPixels needs.
+  const glFrame = () => {
+    if (typeof GL === "undefined" || !GL.contexts) return false;
+    return GL.contexts.some(context => {
+      const gl = context?.GLctx;
+      if (!(gl instanceof WebGL2RenderingContext) || !gl.drawingBufferWidth || !gl.drawingBufferHeight) return false;
+      const width = gl.drawingBufferWidth, height = gl.drawingBufferHeight;
+      const framebuffer = gl.getParameter(gl.READ_FRAMEBUFFER_BINDING);
+      const buffer = gl.getParameter(gl.PIXEL_PACK_BUFFER_BINDING);
+      const store = [gl.PACK_ALIGNMENT, gl.PACK_ROW_LENGTH, gl.PACK_SKIP_PIXELS, gl.PACK_SKIP_ROWS].map(name => [name, gl.getParameter(name)]);
+      const pixels = new Uint8Array(width * height * 4);
+      try {
+        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, null);
+        gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+        for (const [name] of store) gl.pixelStorei(name, name === gl.PACK_ALIGNMENT ? 4 : 0);
+        gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+      } finally {
+        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, framebuffer);
+        gl.bindBuffer(gl.PIXEL_PACK_BUFFER, buffer);
+        for (const [name, value] of store) gl.pixelStorei(name, value);
+      }
+      return detailed(pixels, width, height);
+    });
+  };
+  const pictureShown = () => {
+    try { return softwareFrame() || glFrame(); } catch { return false; }
+  };
+  const waitForPicture = () => {
+    const started = Date.now();
+    pictureTimer = setInterval(() => {
+      if (failed) return clearInterval(pictureTimer);
+      if (pictureShown()) {
+        clearInterval(pictureTimer);
+        send({state:"running", status:settings ? "Choose your settings, then press OK and Play demo." :
+          "The game is loading. Click it and press Enter when it shows PRESS ANY KEY."});
+      } else if (Date.now() - started > 10 * 60 * 1000) {
+        // Never leave the launcher locked if detection misses the picture.
+        clearInterval(pictureTimer);
+        send({state:"running", status:"This is taking longer than usual. If the screen stays black, use Restart or download the log."});
+      }
+    }, 1000);
   };
   window.addEventListener("error", event => fatal(event.message));
   window.addEventListener("unhandledrejection", event => fatal(event.reason));

@@ -77,6 +77,8 @@ window.addEventListener("message", event => {
   if (typeof data.log === "string") { logs.push(data.log); if (logs.length > 500) logs.shift(); }
   if (typeof data.status === "string") status.textContent = data.status;
   if (typeof data.progress === "number") { progress.hidden = false; progress.value = data.progress; }
+  // Downloads are done; keep Play disabled so it cannot restart a slow first launch.
+  if (data.state === "starting") progress.removeAttribute("value");
   if (data.state === "running" || data.state === "error" || data.state === "exited") {
     progress.hidden = true;
     play.disabled = false;
