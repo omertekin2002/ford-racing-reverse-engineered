@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy:
-        description: Deploy after enabling Settings → Pages → GitHub Actions
+        description: Deploy to GitHub Pages (pushes to main always deploy)
         required: true
         type: boolean
         default: false
@@ -63,7 +63,7 @@ jobs:
           path: artifacts/web
 
   deploy:
-    if: github.event_name == 'workflow_dispatch' && inputs.deploy
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.deploy)
     needs: build
     runs-on: ubuntu-24.04
     permissions:

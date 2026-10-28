@@ -17,8 +17,8 @@ Serve over HTTPS when publicly hosting it; opening `index.html` as a local file
 does not work.
 
 For GitHub Pages, use the repository's **Browser demo and GitHub Pages**
-workflow after selecting **GitHub Actions** in Settings → Pages. Manual runs
-deploy only when **deploy** is checked. Source and build instructions are in
+workflow after selecting **GitHub Actions** in Settings → Pages. Pushes to
+`main` deploy automatically; manual runs deploy only when **deploy** is checked. Source and build instructions are in
 the repository's `docs/browser.md`.
 
 The page shows an unofficial-preview notice above the player with the game's
