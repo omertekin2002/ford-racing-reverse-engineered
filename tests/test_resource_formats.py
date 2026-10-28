@@ -54,6 +54,19 @@ class ResourceTests(unittest.TestCase):
         self.assertEqual((result["entries"][0]["width"], result["entries"][0]["height"]), (4, 2))
         self.assertEqual(result["entries"][0]["extra_bytes"], 1024)
 
+    def test_pcg_empty_collection(self):
+        result = index_pcg(struct.pack("<4I", 0, 2004, 0, 0).ljust(128, b"\0"))
+        self.assertEqual((result["count"], result["payload_base"], result["entries"]), (0, 128, []))
+
+    def test_pcg_spans_follow_file_order_not_directory_order(self):
+        graphic = bytearray(128)
+        struct.pack_into("<I", graphic, 40, 8)
+        graphic = bytes(graphic) + b"abcdefgh"
+        directory = struct.pack("<4I", 2, 2004, 0, 0) + struct.pack("<I12s", 136, b"second") + struct.pack("<I12s", 0, b"first")
+        result = index_pcg(directory.ljust(128, b"\0") + graphic + graphic + b"tail")
+        self.assertEqual([(e["name"], e["span_bytes"], e["extra_bytes"]) for e in result["entries"]],
+                         [("second", 140, 4), ("first", 136, 0)])
+
     def test_pcg_reject_truncated_directory_and_graphic(self):
         for data in (b"", struct.pack("<4I", 100, 0, 0, 0), self.make_pcg()[:200]):
             with self.assertRaises(ValueError):

@@ -1,0 +1,7 @@
+# Lint config for `ruff check scripts tests`; the pinned ruff is in scripts/requirements-lint.txt.
+target-version = "py312"
+include = ["scripts/**/*.py", "tests/**/*.py"]
+
+[lint]
+# Ruff's defaults plus flake8-bugbear. No E501: long lines are allowed.
+select = ["E4", "E7", "E9", "F", "B"]

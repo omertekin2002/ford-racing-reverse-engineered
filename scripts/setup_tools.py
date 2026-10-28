@@ -64,7 +64,8 @@ def main():
     parser.add_argument("--cache", type=Path, default=download_cache(), help="Download cache (env FR3_CACHE; default: %(default)s)")
     args = parser.parse_args()
     root, cache = args.root.resolve(), args.cache.resolve()
-    root.mkdir(parents=True, exist_ok=True); cache.mkdir(parents=True, exist_ok=True)
+    root.mkdir(parents=True, exist_ok=True)
+    cache.mkdir(parents=True, exist_ok=True)
     files = [download(cache, *item) for item in ARTIFACTS]
     ghidra, java = root / "ghidra_10.3.3_PUBLIC", root / "jdk-17.0.12+7"
     if not ghidra.exists():
