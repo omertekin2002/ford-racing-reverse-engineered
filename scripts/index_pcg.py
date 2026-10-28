@@ -25,7 +25,7 @@ def index_pcg(data):
         entries.append({"index": i, "name": name.split(b"\0", 1)[0].decode("ascii"), "name_raw_hex": name.hex(), "file_offset": absolute})
     if len(set(offsets)) != len(offsets):
         raise ValueError("Duplicate graphic offsets")
-    ends = dict(zip(sorted(offsets), sorted(offsets)[1:] + [len(data)]))
+    ends = dict(zip(sorted(offsets), sorted(offsets)[1:] + [len(data)], strict=True))
     for entry in entries:
         offset = entry["file_offset"]
         span = ends[offset] - offset

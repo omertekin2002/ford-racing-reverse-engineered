@@ -10,13 +10,14 @@ import tempfile
 import unittest
 import zipfile
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from fr3_common import DEMO_PAGE
 from setup_web_tools import BOXEDWINE_REVISION, WINE_WEB_SHA256
 import verify_web
 from verify_web import (ISSUES_PAGE, RIGHTS_CREDIT, WASM_HEADER, verify, verify_archive, verify_build_record,
                         verify_notice, verify_relative_urls, verify_script_order, verify_sums)
+
+ROOT = Path(__file__).resolve().parents[1]
 
 NOTICE = f"""<aside id="rights-notice" aria-label="Rights notice"><p>Unofficial preview.
   {RIGHTS_CREDIT}</p><p><a href="{DEMO_PAGE}" rel="noopener">Official demo</a>
