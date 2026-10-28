@@ -8,7 +8,9 @@ from fr3_common import web_tools_root
 BOXEDWINE_REVISION = "65467424603484756a73308412f40b906d28b650"
 EMSDK_REVISION = "35ff8a6d150541276abbc6bae512ca90bcfbe220"
 EMSCRIPTEN_VERSION = "5.0.7"
-WINE_WEB_URL = "https://boxedwine.org/v2/14/TinyCore15Wine11.0-web.zip"
+# Boxedwine filesystem 14 (manifest tools/buildWine/webgl_filesystems_v14.json, profile web-v14).
+# boxedwine.org stopped serving it, so the build uses an unmodified mirror in this repository's releases.
+WINE_WEB_URL = "https://github.com/omertekin2002/ford-racing-reverse-engineered/releases/download/wine-web-fs-v14/TinyCore15Wine11.0-web.zip"
 WINE_WEB_SHA256 = "3365e31caaf6a1fc832a0a7c4812592d25410b9f5c9536277131388c8e103a49"
 
 

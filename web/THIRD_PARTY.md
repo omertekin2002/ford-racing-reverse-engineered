@@ -14,7 +14,8 @@ The source archive includes notices for its bundled SDL, zlib, softfloat,
 SIMDe and other dependencies.
 
 The Wine 11 filesystem is the checksum-verified
-[Boxedwine web filesystem 14](https://boxedwine.org/v2/14/TinyCore15Wine11.0-web.zip),
+Boxedwine web filesystem 14 (originally `https://boxedwine.org/v2/14/TinyCore15Wine11.0-web.zip`,
+now [mirrored unmodified](https://github.com/omertekin2002/ford-racing-reverse-engineered/releases/tag/wine-web-fs-v14)),
 with WineD3D WebGL patches. Its exact Wine source revision, production patches,
 dependency pins and build commands are included in the emulator source archive
 under `tools/buildWine/` and `tools/d3dToWebGL/`.
