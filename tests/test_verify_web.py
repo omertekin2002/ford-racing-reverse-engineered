@@ -155,6 +155,16 @@ class VerifyBuildRecordTests(SiteTestCase):
         with self.assertRaisesRegex(ValueError, "missing runtime asset: runtime/absent.js"):
             verify_build_record(self.root, record)
 
+    def test_reject_missing_assets(self):
+        for assets in (None, {}, []):
+            record = self.record()
+            if assets is None:
+                del record["assets"]
+            else:
+                record["assets"] = assets
+            with self.subTest(assets=assets), self.assertRaisesRegex(ValueError, r"lacks the runtime asset identities"):
+                verify_build_record(self.root, record)
+
     def test_reject_missing_nojekyll(self):
         (self.root / ".nojekyll").unlink()
         with self.assertRaisesRegex(ValueError, r"\.nojekyll"):

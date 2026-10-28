@@ -89,7 +89,10 @@ def verify_build_record(root, record):
     for key, expected in (("boxedwine_revision", BOXEDWINE_REVISION), ("wine_filesystem_sha256", WINE_WEB_SHA256)):
         if record.get(key) != expected:
             raise ValueError(f"build.json {key} is {record.get(key)!r}, expected {expected}")
-    for name, identity in record.get("assets", {}).items():
+    assets = record.get("assets")
+    if not isinstance(assets, dict) or not assets:
+        raise ValueError("build.json lacks the runtime asset identities (assets)")
+    for name, identity in assets.items():
         path = root / "runtime" / name
         if not path.is_file():
             raise ValueError(f"build.json lists a missing runtime asset: runtime/{name}")
