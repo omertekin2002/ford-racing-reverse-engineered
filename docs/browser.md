@@ -19,10 +19,10 @@ Generated files in `artifacts/` and downloaded inputs stay out of Git.
 4. Open the URL reported by the deployment. For this repository it normally is
    `https://omertekin2002.github.io/ford-racing-reverse-engineered/`.
 
-Pushes to `main` build and verify the site without deploying it. Manual runs
-with **deploy** unchecked also produce a downloadable artifact without
-publishing. The site is live at the URL above; changes on `main` reach it only
-after a manual run with **deploy** checked.
+Pushes to `main` that touch `web/`, `scripts/`,
+`analysis/game-file-manifest.json` or the workflow build, verify and deploy the
+site to the URL above. Manual runs with **deploy** unchecked produce a
+downloadable artifact without publishing.
 
 The workflow compiles the pinned runtime, downloads and verifies the public
 demo, extracts its CAB with Unshield, verifies all 773 original game files,

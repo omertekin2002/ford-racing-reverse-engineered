@@ -30,9 +30,9 @@ and [runtime validation](docs/release-validation.md).
 
 A static [browser preview and GitHub Pages workflow](docs/browser.md) package
 the same demo with Boxedwine's WebAssembly JIT and Wine's WebGL runtime.
-Pushes to `main` build and verify the site; redeploying it is a manual run of
-the workflow with **deploy** checked. Build and browser validation are described
-in the browser guide.
+Pushes to `main` build, verify and deploy the site; manual runs of the
+workflow deploy only with **deploy** checked. Build and browser validation are
+described in the browser guide.
 
 ## Reproduce
 
