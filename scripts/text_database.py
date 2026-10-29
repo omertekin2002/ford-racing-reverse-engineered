@@ -16,7 +16,7 @@ Grammar accepted by parse():
     the same column count. Blank and comment-only lines inside a block are
     skipped.
   * `:INHERIT_TYPE <NAME>` must name a record defined earlier in the file.
-    Inheritance is recorded as a field and is not resolved.
+    parse() records it as a field and does not resolve it.
   * A line outside a block whose first word is a registered tag written without
     its colon (the demo's ENGDATA.DAT has `INHERIT_TYPE DEFAULT_TRACK` in
     INDIGO) is kept verbatim in the record's `untagged` list. It is not applied
@@ -39,6 +39,14 @@ loader recognises them is not established, so their meaning comes from position:
 `:TYPE` starts a sample type inside an entry and a record outside one. `:VALUE` and `:START_RPM` are accepted only inside an entry;
 any other tag, a missing or extra row, or the end of the file inside an entry is
 rejected. With sound_info=False (engines and gearboxes) none of this applies.
+
+resolve_tyre_tables() resolves tyre inheritance for five tables only: the four
+TYRE_TABLES blocks and the sound information. The game's accessors at
+0x00523e90, 0x00523eb0, 0x00523e50, 0x00523e70 and 0x00523f10 return the
+record's own table address at +0x44, +0x48, +0x4c, +0x50 or +0x54 when it is
+non-zero, and otherwise repeat the test on the record at +0x14 (INHERIT_TYPE).
+main() adds the result to tyres.json as `resolved_tables`. Scalar fields, engine
+inheritance and the colon-less INDIGO line stay unresolved.
 """
 import argparse
 import hashlib
@@ -62,6 +70,13 @@ TYRE_TABLES = {"LONGITUDINAL_COMBINED_VALUES": {"blocks": 1, "rows": 9, "columns
                "VERTICAL_LOAD": {"blocks": 3, "rows": 10, "columns": 2},
                "CAMBER_THRUST": {"blocks": 3, "rows": 10, "columns": 2}}
 SOUND_INFO_COUNTS = {"DEFAULT_ROAD": 14, "DEFAULT_OFFROAD": 14, "DEFAULT_TRACK": 12}
+# Tables the accessors resolve through INHERIT_TYPE; "sound_info" is the :SOUND_INFO entry list.
+RESOLVED_TYRE_TABLES = (*TYRE_TABLES, "sound_info")
+# How many demo tyre records resolve each table to each source record.
+TYRE_TABLE_SOURCES = {"LONGITUDINAL_COMBINED_VALUES": {"DEFAULT_ROAD": 109},
+                      "LATERAL_COMBINED_VALUES": {"DEFAULT_ROAD": 109},
+                      **{table: {"DEFAULT_ROAD": 73, "DEFAULT_OFFROAD": 23, "DEFAULT_TRACK": 13}
+                         for table in ("VERTICAL_LOAD", "CAMBER_THRUST", "sound_info")}}
 GEARBOX_TAGS = frozenset({"CLUTCH_SPEED", "CLUTCH_MAX_POWER", "TRANSMISSION_TYPE", "TORQUE_SHIFT", "DRIVE_TYPE",
                           "DRIVE_SPLIT", "DIFF_TYPE", "ANTI_WHEELSPIN", "ANTI_WHEELSKID"})
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -257,6 +272,54 @@ def parse(text, known_tags, sound_info=False):
     return records
 
 
+def has_local_table(record, table):
+    if table == "sound_info":
+        return bool(record["sound_info"])
+    return table in record["fields"]
+
+
+def resolve_tyre_tables(records):
+    """Return, for each tyre record, the name of the record whose table the game reads.
+
+    Like the accessors, this follows INHERIT_TYPE through any depth until a record
+    has its own table. A chain that ends without one is an error: the game would
+    follow a null +0x14 there. The records are not modified.
+    """
+    by_name = {record["type"]: record for record in records}
+    resolved = {}
+    for record in records:
+        sources = {}
+        for table in RESOLVED_TYRE_TABLES:
+            current = record
+            # parse() only accepts an INHERIT_TYPE naming an earlier record, so no chain loops.
+            for _ in range(len(records)):
+                if has_local_table(current, table):
+                    break
+                inherit = current["fields"].get("INHERIT_TYPE")
+                if inherit is None:
+                    raise TextDatabaseError(record["line"], f"tyre {record['type']!r} has no {table} table, "
+                                                            f"and its INHERIT_TYPE chain ends at {current['type']!r}")
+                parent = inherit["values"][0]
+                if parent not in by_name:
+                    raise TextDatabaseError(inherit["line"], f"{current['type']!r} inherits unknown record {parent!r}")
+                current = by_name[parent]
+            else:
+                raise TextDatabaseError(record["line"], f"INHERIT_TYPE chain of tyre {record['type']!r} "
+                                                        f"does not end within {len(records)} records")
+            sources[table] = current["type"]
+        resolved[record["type"]] = sources
+    return resolved
+
+
+def table_sources(resolved):
+    """Count, for each table, how many records resolve it to each source record."""
+    counts = {table: {} for table in RESOLVED_TYRE_TABLES}
+    for sources in resolved.values():
+        for table, source in sources.items():
+            counts[table][source] = counts[table].get(source, 0) + 1
+    return counts
+
+
 def load_known_tags(path=REPO_ROOT / "analysis/tags.json"):
     return {tag["name"] for tag in json.loads(Path(path).read_text())}
 
@@ -307,6 +370,8 @@ def verify_text_databases(game_dir, known_tags):
     require(sounds == SOUND_INFO_COUNTS, f"Sound entry count mismatch: {sounds}")
     entries = [entry for record in tyres for entry in record["sound_info"]]
     require(all(entry["value_count"] == 10 for entry in entries), "Sound entry row count mismatch")
+    sources = table_sources(resolve_tyre_tables(tyres))
+    require(sources == TYRE_TABLE_SOURCES, f"Tyre table source mismatch: {sources}")
     untagged = [{"record": record["type"], **item}
                 for record in engines + gearboxes + tyres for item in record["untagged"]]
     require(untagged == [{"record": "INDIGO", "line": 1410, "tokens": ["INHERIT_TYPE", "DEFAULT_TRACK"]}],
@@ -315,7 +380,7 @@ def verify_text_databases(game_dir, known_tags):
             "torque_rows": [min(len(f["rows"]) for f in torque), max(len(f["rows"]) for f in torque)],
             "engine_inheritances": len(inherits), "gearbox_tags": sorted(GEARBOX_TAGS), "untagged_lines": untagged,
             "tyre_records": len(tyres), "tyre_inheritances": len(tyre_inherits), "tyre_tables": tables,
-            "sound_info_entries": len(entries), "sound_info_per_record": sounds}
+            "tyre_table_sources": sources, "sound_info_entries": len(entries), "sound_info_per_record": sounds}
 
 
 def main():
@@ -330,6 +395,8 @@ def main():
     args.output.mkdir(parents=True, exist_ok=True)
     for stem, relative in DATABASES.items():
         database = read_database(args.game_dir, relative, known_tags, stem in SOUND_INFO_DATABASES)
+        if stem == "tyres":
+            database["resolved_tables"] = resolve_tyre_tables(database["records"])
         (args.output / f"{stem}.json").write_text(json.dumps(database, indent=2, allow_nan=False) + "\n")
         print(f"Parsed {len(database['records'])} {stem} from {relative}")
 
