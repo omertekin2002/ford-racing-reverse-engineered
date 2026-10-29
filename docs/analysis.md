@@ -97,10 +97,11 @@ grammar, not the indentation, decides that `:TYPE` names a sample inside an
 entry and a record outside one. The parser keeps each record's entries in file
 order and checks the row count against `:VALUE`.
 
-The parser does not resolve inheritance into effective values or map fields to
-the C layout offsets below, and it does not handle the other text files. The
-meaning of the sound table's first fifteen words, described below, is still
-unknown.
+The parser resolves tyre inheritance for the five tables only, as described in
+[Tyre table inheritance](#tyre-table-inheritance). It does not resolve engine
+inheritance, scalar fields or the colon-less `INDIGO` line, map other fields to
+the C layout offsets below, or handle the other text files. The meaning of the
+sound table's first fifteen words, described below, is still unknown.
 
 The engine loader at `0x005227f0` allocates a `0xb0`-byte payload, and the gearbox
 loader at `0x00523220` allocates `0x34` bytes. Their stores and copy routines
@@ -156,11 +157,58 @@ branches read ten index/value pairs. The sound table has values starting at
 `+0x78`, with 15 rows of ten floats, and `START_RPM` values at `+0x3c`.
 The meaning of its first fifteen words remains unknown.
 
-Accessors at `0x00523e50`, `0x00523e70`, `0x00523e90` and `0x00523eb0` retrieve
-the corresponding local table or follow the inherited address at `+0x14`.
-The scalar-copy helper at `0x00524090` copies selected physical values rather
-than deep-copying tables. The grip scaling global's runtime value and physical
-units remain unverified; the table dimensions do not prove the force equations.
+The scalar-copy helper at `0x00524090` copies selected physical values from
+`+0x18` to `+0x40` rather than deep-copying tables. The grip scaling global's
+runtime value and physical units remain unverified; the table dimensions do not
+prove the force equations.
+
+### Tyre table inheritance
+
+[The table accessors](../analysis/selected/tyre_table_accessors.asm) resolve
+inheritance for the five table addresses:
+
+| Accessor | Offset | Table |
+|---|---|---|
+| `0x00523e90` | `0x44` | `LONGITUDINAL_COMBINED_VALUES` |
+| `0x00523eb0` | `0x48` | `LATERAL_COMBINED_VALUES` |
+| `0x00523e50` | `0x4c` | `VERTICAL_LOAD` |
+| `0x00523e70` | `0x50` | `CAMBER_THRUST` |
+| `0x00523f10` | `0x54` | `:SOUND_INFO` entries (`0x00523ed0` returns one sound row) |
+
+Each accessor returns the record's own address at that offset when it is
+non-zero. Otherwise it loads the inherited record from `+0x14` and jumps back to
+the same test, so it follows any number of levels and never checks for a null
+parent. The loader writes each table address only when it parses the matching
+tag; the first `:SOUND_INFO` of a record allocates its `0x2d0`-byte table, and
+later ones reuse it (test at `0x00523a5c`). `INHERIT_TYPE` sets `+0x14` and runs
+the scalar copy above, which leaves `+0x44` to `+0x54` untouched.
+
+A record without one of these tags holds zero at that offset. The tyre loader
+creates its database at `0x00523842` with no preallocated record slots (the
+argument pushed at `0x00523839` is 0). Each `:TYPE` therefore reaches
+[the record allocator](../analysis/selected/allocate_database_record.asm),
+called at `0x005238c4`, on its heap path at `0x0042ef36`. It allocates the `0x58`-byte payload plus the
+`0x20`-byte node header and clears all of it with
+[`0x00534690`](../analysis/selected/fill_memory.asm), a fill routine called here
+with value 0 and the node size. The [database
+constructor](../analysis/selected/create_database.asm) stores that `0x58` size
+at `0x0042ed93`.
+
+`resolve_tyre_tables()` in the parser applies the same rule and `tyres.json`
+records, as `resolved_tables`, which record's table each tyre ends up reading. A
+chain that reaches a record with no table and no `:INHERIT_TYPE` is rejected,
+because the game would follow a null `+0x14` there. In the demo all 109 tyre
+records resolve all five tables:
+
+| Table | Source records |
+|---|---|
+| Longitudinal and lateral combined | `DEFAULT_ROAD` 109 |
+| Vertical load, camber thrust and sound information | `DEFAULT_ROAD` 73, `DEFAULT_OFFROAD` 23, `DEFAULT_TRACK` 13 |
+
+Scalar fields are not resolved: the copy at `0x00524090` runs when
+`INHERIT_TYPE` is parsed, so the result depends on tag order, which is not
+modelled. Engine inheritance in `ENGDATA.DAT` and the colon-less
+`INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` also remain unresolved.
 
 [Twenty byte-checked instruction sites](../analysis/selected/field-evidence.json)
 and [the loader's disassembly](../analysis/selected/load_tyre_database.asm)
