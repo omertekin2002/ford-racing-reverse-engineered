@@ -106,8 +106,11 @@ specification is needed for this snapshot.
 
 The engine, gearbox and tyre text databases parse from the extracted demo alone,
 with no Ghidra tools. Tyre records keep their nested `:SOUND_INFO` entries in
-file order. Inheritance is recorded, not resolved, and the meaning of the sound
-table's first fifteen words is unknown:
+file order. `tyres.json` also lists, under `resolved_tables`, which record's
+longitudinal, lateral, vertical-load, camber-thrust and sound tables each tyre
+reads through `:INHERIT_TYPE`, following the game's accessors at
+`0x00523e50`–`0x00523f10`. Engine and scalar-field inheritance are recorded, not
+resolved, and the meaning of the sound table's first fifteen words is unknown:
 
 ```sh
 python3 scripts/acquire_demo.py inputs
@@ -133,7 +136,7 @@ CI runs them, after a `compileall` syntax check, on every push and pull request
 output limits, truncation, trailing data and overlapping PCG payloads, as well as
 the PE virtual-address reader, file identity checks and tool-path resolution. They also cover
 the strict engine, gearbox and tyre text-database parser: its accepted grammar and each
-rejected construct. For demo acquisition they cover, without network access, the
+rejected construct, and tyre table inheritance resolution. For demo acquisition they cover, without network access, the
 download-link filter, HTTPS-only fetches and redirects, the 12-URL cap, identity-checked
 archive writes and ZIP extraction safety (unsafe paths, symlinks, size limit, existing
 files). The separate verification command checks the actual demo,

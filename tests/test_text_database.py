@@ -1,14 +1,18 @@
 """Synthetic text-database parser tests; these use no game data."""
+import copy
 import hashlib
+import json
 from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import text_database
-from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, SOUND_INFO_COUNTS, TYRE_TABLES, TextDatabaseError, parse,
-                           read_database, verify_text_databases)
+from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, SOUND_INFO_COUNTS, TYRE_TABLE_SOURCES, TYRE_TABLES,
+                           TextDatabaseError, parse, read_database, resolve_tyre_tables, table_sources,
+                           verify_text_databases)
 
 TAGS = {"CAPACITY", "LOCATION_TYPE", "INHERIT_TYPE", "TORQUE_ARRAY", "MAX_RPM", "ENGINE_BRAKING", *GEARBOX_TAGS,
         "RADIUS", "SOUND_INFO", "START_RPM", *TYRE_TABLES}
@@ -309,6 +313,76 @@ class ParseSoundInfoTests(unittest.TestCase):
         self.assertEqual(len(parse(":TYPE A\n" + SOUND + ":TYPE B\n" + SOUND + ":END\n", TAGS, sound_info=True)), 2)
 
 
+def tyre_record(name, inherit=None, tables=(), sound=False):
+    lines = [f":TYPE {name}"] + ([f":INHERIT_TYPE {inherit}"] if inherit else [])
+    for table in tables:
+        lines += [f":{table}", "0 1.0"]
+    return "\n".join(lines + ([SOUND.rstrip("\n")] if sound else [])) + "\n"
+
+
+def resolve(*records):
+    return resolve_tyre_tables(parse("".join(records) + ":END\n", TAGS, sound_info=True))
+
+
+ALL = {"tables": TYRE_TABLES, "sound": True}
+
+
+class ResolveTyreTablesTests(unittest.TestCase):
+    def test_local_tables_resolve_to_the_record(self):
+        self.assertEqual(resolve(tyre_record("ROOT", **ALL)),
+                         {"ROOT": dict.fromkeys([*TYRE_TABLES, "sound_info"], "ROOT")})
+
+    def test_single_level_inheritance(self):
+        resolved = resolve(tyre_record("ROOT", **ALL), tyre_record("CHILD", "ROOT"))
+        self.assertEqual(resolved["CHILD"], dict.fromkeys([*TYRE_TABLES, "sound_info"], "ROOT"))
+
+    def test_multi_level_inheritance(self):
+        resolved = resolve(tyre_record("ROOT", **ALL), tyre_record("A", "ROOT"), tyre_record("B", "A"),
+                           tyre_record("C", "B"))
+        self.assertEqual(resolved["C"], dict.fromkeys([*TYRE_TABLES, "sound_info"], "ROOT"))
+
+    def test_tables_resolve_to_different_ancestors(self):
+        resolved = resolve(tyre_record("ROOT", tables=["LONGITUDINAL_COMBINED_VALUES", "LATERAL_COMBINED_VALUES",
+                                                       "VERTICAL_LOAD", "CAMBER_THRUST"], sound=True),
+                           tyre_record("MID", "ROOT", ["VERTICAL_LOAD"], sound=True),
+                           tyre_record("LEAF", "MID", ["CAMBER_THRUST"]))
+        self.assertEqual(resolved["LEAF"], {"LONGITUDINAL_COMBINED_VALUES": "ROOT", "LATERAL_COMBINED_VALUES": "ROOT",
+                                            "VERTICAL_LOAD": "MID", "CAMBER_THRUST": "LEAF", "sound_info": "MID"})
+        self.assertEqual(resolved["MID"]["CAMBER_THRUST"], "ROOT")
+        self.assertEqual(table_sources(resolved)["VERTICAL_LOAD"], {"ROOT": 1, "MID": 2})
+
+    def test_missing_table_at_chain_end(self):
+        text = tyre_record("ROOT", tables=["VERTICAL_LOAD"]) + tyre_record("CHILD", "ROOT", ["CAMBER_THRUST"])
+        with self.assertRaises(TextDatabaseError) as caught:
+            resolve(text)
+        self.assertEqual(caught.exception.line, 1)
+        self.assertIn("tyre 'ROOT' has no LONGITUDINAL_COMBINED_VALUES table", str(caught.exception))
+        self.assertIn("chain ends at 'ROOT'", str(caught.exception))
+
+    def test_missing_sound_info_names_the_child(self):
+        records = parse(tyre_record("ROOT", tables=TYRE_TABLES) + tyre_record("CHILD", "ROOT") + ":END\n", TAGS,
+                        sound_info=True)
+        with self.assertRaisesRegex(TextDatabaseError, "tyre 'ROOT' has no sound_info table"):
+            resolve_tyre_tables(records)
+        with self.assertRaisesRegex(TextDatabaseError, "tyre 'CHILD' has no sound_info table, .* ends at 'ROOT'"):
+            resolve_tyre_tables(records[1:] + records[:1])
+
+    def test_records_are_not_mutated(self):
+        records = parse(tyre_record("ROOT", **ALL) + tyre_record("CHILD", "ROOT") + ":END\n", TAGS, sound_info=True)
+        before = copy.deepcopy(records)
+        resolve_tyre_tables(records)
+        self.assertEqual(records, before)
+
+    def test_defensive_bounds(self):
+        records = parse(tyre_record("A", "") + tyre_record("B", "A") + ":END\n", TAGS, sound_info=True)
+        records[0]["fields"]["INHERIT_TYPE"] = {"line": 1, "values": ["B"], "rows": []}
+        with self.assertRaisesRegex(TextDatabaseError, "chain of tyre 'A' does not end within 2 records"):
+            resolve_tyre_tables(records)
+        records[0]["fields"]["INHERIT_TYPE"]["values"] = ["MISSING"]
+        with self.assertRaisesRegex(TextDatabaseError, "'A' inherits unknown record 'MISSING'"):
+            resolve_tyre_tables(records)
+
+
 def engine_file():
     lines = [":TYPE BASE0"]
     for i in range(5):
@@ -331,11 +405,16 @@ def gearbox_file(tags=GEARBOX_TAGS):
     return "\n".join(lines + [":END"]) + "\n"
 
 
-def tyre_file(sounds=SOUND_INFO_COUNTS):
+# Mirror the demo: 72 further tyres inherit DEFAULT_ROAD, 22 DEFAULT_OFFROAD and 12 DEFAULT_TRACK.
+DEMO_PARENTS = ["DEFAULT_ROAD"] * 72 + ["DEFAULT_OFFROAD"] * 22 + ["DEFAULT_TRACK"] * 12
+
+
+def tyre_file(sounds=SOUND_INFO_COUNTS, parents=DEMO_PARENTS):
     lines = []
-    names = ["DEFAULT_ROAD", "DEFAULT_OFFROAD", "DEFAULT_TRACK"] + [f"TYRE{i}" for i in range(106)]
+    names = ["DEFAULT_ROAD", "DEFAULT_OFFROAD", "DEFAULT_TRACK"] + [f"TYRE{i}" for i in range(len(parents))]
+    parents = [None, "DEFAULT_ROAD", "DEFAULT_ROAD", *parents]
     for i, name in enumerate(names):
-        lines += [f":TYPE {name}", ":RADIUS 0.3"] + ([":INHERIT_TYPE DEFAULT_ROAD"] if i else [])
+        lines += [f":TYPE {name}", ":RADIUS 0.3"] + ([f":INHERIT_TYPE {parents[i]}"] if parents[i] else [])
         if i == 0:
             lines += [":LONGITUDINAL_COMBINED_VALUES"] + ["\t".join(["0.5"] * 11)] * 9
             lines += [":LATERAL_COMBINED_VALUES"] + ["\t".join(["0.5"] * 21)] * 10
@@ -372,6 +451,7 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.assertEqual(summary["tyre_records"], 109)
         self.assertEqual(summary["tyre_inheritances"], 108)
         self.assertEqual(summary["tyre_tables"], TYRE_TABLES)
+        self.assertEqual(summary["tyre_table_sources"], TYRE_TABLE_SOURCES)
         self.assertEqual(summary["sound_info_entries"], 40)
         self.assertEqual(summary["sound_info_per_record"], SOUND_INFO_COUNTS)
 
@@ -402,6 +482,25 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.write("tyres", tyre_file().replace("\t".join(["0.5"] * 11) + "\r\n", "", 1))
         with self.assertRaisesRegex(ValueError, "Tyre table dimensions mismatch"):
             verify_text_databases(self.game, TAGS)
+
+    def test_reject_wrong_tyre_table_source(self):
+        self.write("tyres", tyre_file(parents=["DEFAULT_ROAD"] * 73 + ["DEFAULT_OFFROAD"] * 21 + ["DEFAULT_TRACK"] * 12))
+        with self.assertRaisesRegex(ValueError, "Tyre table source mismatch"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_main_writes_resolved_tables(self):
+        output = self.game / "out"
+        argv = ["text_database.py", str(self.game), "--output", str(output),
+                "--tags", str(text_database.REPO_ROOT / "analysis/tags.json")]
+        with mock.patch.object(sys, "argv", argv), mock.patch("builtins.print"):
+            text_database.main()
+        tyres = json.loads((output / "tyres.json").read_text())
+        expected = read_database(self.game, text_database.DATABASES["tyres"], TAGS, sound_info=True)
+        self.assertEqual(list(tyres), ["source", "sha256", "records", "resolved_tables"])
+        self.assertEqual(tyres["records"], expected["records"])
+        self.assertEqual(tyres["resolved_tables"], resolve_tyre_tables(expected["records"]))
+        self.assertEqual(tyres["resolved_tables"]["TYRE100"]["VERTICAL_LOAD"], "DEFAULT_TRACK")
+        self.assertNotIn("resolved_tables", json.loads((output / "engines.json").read_text()))
 
     def test_reject_wrong_engine_count(self):
         self.write("engines", engine_file().replace(":TYPE CHILD49\r\n:INHERIT_TYPE BASE4\r\n", ""))

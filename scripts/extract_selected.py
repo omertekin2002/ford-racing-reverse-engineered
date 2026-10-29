@@ -12,6 +12,8 @@ from extract_tag_registry import read_va
 ROUTINES = [
     (0x00409B80, 0x00409D80, "load_directx_libraries"),
     (0x0040BA30, 0x0040BB60, "load_compressed_resource"),
+    (0x0042ED50, 0x0042EDF5, "create_database"),
+    (0x0042EED0, 0x0042EF62, "allocate_database_record"),
     (0x00423B20, 0x00423C10, "build_pcg_view"),
     (0x005227F0, 0x00522C80, "load_engine_database"),
     (0x00522C80, 0x00522EC0, "copy_engine_record"),
@@ -21,6 +23,8 @@ ROUTINES = [
     (0x00523DC0, 0x00523E50, "free_tyre_tables"),
     (0x00523E50, 0x00523F30, "tyre_table_accessors"),
     (0x00524090, 0x005240E0, "copy_tyre_scalar_fields"),
+    (0x00534690, 0x005346A8, "fill_memory"),
+    (0x00537240, 0x005372E3, "fill_memory_body"),
 ]
 
 EVIDENCE = [
