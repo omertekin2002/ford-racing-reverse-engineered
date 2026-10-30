@@ -1,6 +1,7 @@
 """Synthetic text-database parser tests; these use no game data."""
 import copy
 import hashlib
+import re
 import json
 from pathlib import Path
 import sys
@@ -8,14 +9,18 @@ import tempfile
 import unittest
 from unittest import mock
 
+import capstone
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import text_database
-from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, SOUND_INFO_COUNTS, TYRE_TABLE_SOURCES, TYRE_TABLES,
-                           TextDatabaseError, parse, read_database, resolve_tyre_tables, table_sources,
-                           verify_text_databases)
+from extract_selected import EVIDENCE, ROUTINES
+from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, RESOLVED_TYRE_TABLES, SOUND_INFO_COUNTS,
+                           TYRE_TABLE_ACCESSORS, TYRE_TABLE_SOURCES, TYRE_TABLES, TextDatabaseError,
+                           check_table_provenance, parse, read_database, resolve_tyre_tables, scalar_inheritance,
+                           table_sources, tyre_table_provenance, verify_text_databases)
 
 TAGS = {"CAPACITY", "LOCATION_TYPE", "INHERIT_TYPE", "TORQUE_ARRAY", "MAX_RPM", "ENGINE_BRAKING", *GEARBOX_TAGS,
-        "RADIUS", "SOUND_INFO", "START_RPM", *TYRE_TABLES}
+        "RADIUS", "WIDTH", "MASS", "ROLLING_RESISTANCE", "SOUND_INFO", "START_RPM", *TYRE_TABLES}
 VALID = """//////////////////////
 // Banner comment
 //////////////////////
@@ -383,6 +388,249 @@ class ResolveTyreTablesTests(unittest.TestCase):
             resolve_tyre_tables(records)
 
 
+def parse_tyres(*records):
+    return parse("".join(records) + ":END\n", TAGS, sound_info=True)
+
+
+def provenance_paths(provenance, name):
+    return {table: entry["path"] for table, entry in provenance[name].items()}
+
+
+# ROOT declares its tables on lines 2, 4, 6 and 8 and its :SOUND_INFO on line 10.
+ROOT_LINES = {"LONGITUDINAL_COMBINED_VALUES": 2, "LATERAL_COMBINED_VALUES": 4, "VERTICAL_LOAD": 6,
+              "CAMBER_THRUST": 8, "sound_info": 10}
+
+
+class TyreTableProvenanceTests(unittest.TestCase):
+    def test_local_tables(self):
+        provenance = tyre_table_provenance(parse_tyres(tyre_record("ROOT", **ALL)))
+        self.assertEqual(provenance["ROOT"], {
+            table: {"source": "ROOT", "path": ["ROOT"], "source_line": ROOT_LINES[table], **TYRE_TABLE_ACCESSORS[table]}
+            for table in RESOLVED_TYRE_TABLES})
+
+    def test_one_hop(self):
+        provenance = tyre_table_provenance(parse_tyres(tyre_record("ROOT", **ALL), tyre_record("CHILD", "ROOT")))
+        self.assertEqual(provenance_paths(provenance, "CHILD"), dict.fromkeys(RESOLVED_TYRE_TABLES, ["CHILD", "ROOT"]))
+        self.assertEqual({table: entry["source_line"] for table, entry in provenance["CHILD"].items()}, ROOT_LINES)
+
+    def test_multi_hop(self):
+        provenance = tyre_table_provenance(parse_tyres(tyre_record("ROOT", **ALL), tyre_record("A", "ROOT"),
+                                                       tyre_record("B", "A"), tyre_record("C", "B")))
+        self.assertEqual(provenance_paths(provenance, "C"), dict.fromkeys(RESOLVED_TYRE_TABLES, ["C", "B", "A", "ROOT"]))
+        self.assertEqual(provenance["C"]["VERTICAL_LOAD"]["source_line"], 6)
+
+    def test_tables_from_different_ancestors(self):
+        records = parse_tyres(tyre_record("ROOT", **ALL), tyre_record("MID", "ROOT", ["VERTICAL_LOAD"], sound=True),
+                              tyre_record("LEAF", "MID", ["CAMBER_THRUST"]))
+        provenance = tyre_table_provenance(records)
+        self.assertEqual(provenance_paths(provenance, "LEAF"), {
+            "LONGITUDINAL_COMBINED_VALUES": ["LEAF", "MID", "ROOT"], "LATERAL_COMBINED_VALUES": ["LEAF", "MID", "ROOT"],
+            "VERTICAL_LOAD": ["LEAF", "MID"], "CAMBER_THRUST": ["LEAF"], "sound_info": ["LEAF", "MID"]})
+        self.assertEqual({table: entry["source_line"] for table, entry in provenance["LEAF"].items()},
+                         {"LONGITUDINAL_COMBINED_VALUES": 2, "LATERAL_COMBINED_VALUES": 4, "VERTICAL_LOAD": 18,
+                          "CAMBER_THRUST": 28, "sound_info": 20})
+        resolved = resolve_tyre_tables(records)
+        self.assertEqual({name: {table: entry["source"] for table, entry in tables.items()}
+                          for name, tables in provenance.items()}, resolved)
+        check_table_provenance(records, provenance)
+
+    def test_sound_info_line_is_the_first_entry(self):
+        sound = SOUND + SOUND.replace(":TYPE S", ":TYPE T")
+        records = parse_tyres(tyre_record("ROOT", tables=TYRE_TABLES) + "\n// gap\n" + sound,
+                              tyre_record("CHILD", "ROOT"))
+        self.assertEqual([entry["line"] for entry in records[0]["sound_info"]], [12, 18])
+        self.assertEqual(tyre_table_provenance(records)["CHILD"]["sound_info"]["source_line"], 12)
+
+    def test_errors_match_resolve_tyre_tables(self):
+        records = parse(tyre_record("ROOT", tables=TYRE_TABLES) + tyre_record("CHILD", "ROOT") + ":END\n", TAGS,
+                        sound_info=True)
+        with self.assertRaisesRegex(TextDatabaseError, "tyre 'ROOT' has no sound_info table"):
+            tyre_table_provenance(records)
+
+    def test_records_are_not_mutated(self):
+        records = parse_tyres(tyre_record("ROOT", **ALL), tyre_record("CHILD", "ROOT"))
+        before = copy.deepcopy(records)
+        tyre_table_provenance(records)
+        scalar_inheritance(records)
+        self.assertEqual(records, before)
+
+
+class CheckTableProvenanceTests(unittest.TestCase):
+    def setUp(self):
+        self.records = parse_tyres(tyre_record("ROOT", **ALL), tyre_record("MID", "ROOT", ["VERTICAL_LOAD"]),
+                                   tyre_record("LEAF", "MID"))
+        self.provenance = tyre_table_provenance(self.records)
+
+    def reject(self, fragment, edit):
+        provenance = copy.deepcopy(self.provenance)
+        edit(provenance)
+        with self.assertRaisesRegex(ValueError, fragment):
+            check_table_provenance(self.records, provenance)
+
+    def test_valid(self):
+        check_table_provenance(self.records, self.provenance)
+
+    def test_path_must_start_at_its_record(self):
+        self.reject("does not start at its record",
+                    lambda p: p["LEAF"]["VERTICAL_LOAD"].update(path=["MID"], source="MID"))
+
+    def test_hops_must_follow_inherit_type(self):
+        self.reject("hop LEAF -> ROOT does not follow INHERIT_TYPE",
+                    lambda p: p["LEAF"]["LATERAL_COMBINED_VALUES"].update(path=["LEAF", "ROOT"]))
+
+    def test_path_must_not_skip_a_local_table(self):
+        self.reject("hop MID -> ROOT does not follow INHERIT_TYPE", lambda p: p["LEAF"]["VERTICAL_LOAD"].update(
+            path=["LEAF", "MID", "ROOT"], source="ROOT", source_line=6))
+
+    def test_source_must_declare_the_table_on_source_line(self):
+        self.reject("does not declare the table on source_line",
+                    lambda p: p["LEAF"]["VERTICAL_LOAD"].update(source_line=6))
+        self.reject("does not declare the table on source_line",
+                    lambda p: p["LEAF"]["CAMBER_THRUST"].update(path=["LEAF", "MID"], source="MID"))
+
+    def test_source_must_be_the_path_end(self):
+        self.reject("source is not the path end", lambda p: p["LEAF"]["VERTICAL_LOAD"].update(source="ROOT"))
+
+    def test_accessor_must_match(self):
+        self.reject("accessor mismatch", lambda p: p["MID"]["sound_info"].update(record_offset="0x50"))
+
+    def test_every_record_and_table(self):
+        self.reject("record set mismatch", lambda p: p.pop("MID"))
+        self.reject("table set mismatch", lambda p: p["MID"].pop("sound_info"))
+
+
+class ScalarInheritanceTests(unittest.TestCase):
+    def test_tags_before_and_after_inherit_type(self):
+        records = parse_tyres(tyre_record("ROOT", **ALL),
+                              ":TYPE CHILD\n:WIDTH 0.2\n:RADIUS 0.3\n:VERTICAL_LOAD\n0 1.0\n:INHERIT_TYPE ROOT\n"
+                              + SOUND + ":MASS 9\n:CAMBER_THRUST\n0 1.0\n:ROLLING_RESISTANCE 0.01\n")
+        self.assertEqual(scalar_inheritance(records), {"CHILD": {
+            "status": "unresolved", "inherit_type": {"line": 21, "parent": "ROOT"},
+            "scalars_before": [{"tag": "WIDTH", "line": 17}, {"tag": "RADIUS", "line": 18}],
+            "scalars_after": [{"tag": "MASS", "line": 28}, {"tag": "ROLLING_RESISTANCE", "line": 31}]}})
+
+    def test_record_without_inherit_type_has_no_entry(self):
+        records = parse_tyres(":TYPE ROOT\n:RADIUS 0.3\n", tyre_record("CHILD", "ROOT"))
+        self.assertEqual(scalar_inheritance(records), {"CHILD": {
+            "status": "unresolved", "inherit_type": {"line": 4, "parent": "ROOT"},
+            "scalars_before": [], "scalars_after": []}})
+
+
+ASM_LINE = re.compile(r"([0-9a-f]{8}) [0-9a-f]+ +(.*?) *\Z")
+FIELD_OFFSET = re.compile(r"dword ptr \[eax \+ (0x[0-9a-f]+)\]")
+
+
+def accessor_routines():
+    lines = (text_database.REPO_ROOT / "analysis/selected/tyre_table_accessors.asm").read_text().splitlines()
+    return [(int(match[1], 16), match[2]) for match in map(ASM_LINE.match, lines) if match]
+
+
+class TyreTableAccessorEvidenceTests(unittest.TestCase):
+    def test_accessors_test_the_recorded_offset_and_hop_through_0x14(self):
+        instructions = accessor_routines()
+        by_address = dict(instructions)
+        for table, evidence in TYRE_TABLE_ACCESSORS.items():
+            with self.subTest(table=table):
+                start = [address for address, _ in instructions].index(int(evidence["accessor"], 16))
+                routine = []
+                for address, text in instructions[start:]:
+                    routine.append((address, text))
+                    if text == "ret":
+                        break
+                loads = [FIELD_OFFSET.search(text) for _, text in routine]
+                self.assertEqual(next(load[1] for load in loads if load), evidence["record_offset"])
+                texts = [text for _, text in routine]
+                hop = texts.index("mov eax, dword ptr [eax + 0x14]")
+                # The hop jumps back to a re-test of the same offset, so the accessor follows any depth.
+                jump = re.fullmatch(r"jmp (0x[0-9a-f]+)", texts[hop + 1])
+                self.assertIsNotNone(jump)
+                retest = FIELD_OFFSET.search(by_address[int(jump[1], 16)])
+                self.assertEqual(retest[1], evidence["record_offset"])
+
+    def test_offsets_match_the_recovered_layout(self):
+        header = (text_database.REPO_ROOT / "recovered/fr3_database_layouts.h").read_text()
+        body = header[:header.index("} Fr3TyreRecord;")].rsplit("typedef struct {", 1)[1]
+        offsets, offset = {}, 0
+        for kind, name, count in re.findall(r"(char|uint32_t|float) (\w+)(?:\[(\d+)\])?;", body):
+            offsets[name] = offset
+            offset += (1 if kind == "char" else 4) * int(count or 1)
+        self.assertEqual(offset, 0x58)
+        self.assertEqual(offsets["inherited_address"], 0x14)
+        fields = {"LONGITUDINAL_COMBINED_VALUES": "longitudinal_table_address",
+                  "LATERAL_COMBINED_VALUES": "lateral_table_address", "VERTICAL_LOAD": "vertical_load_address",
+                  "CAMBER_THRUST": "camber_thrust_address", "sound_info": "sound_info_address"}
+        self.assertEqual({table: hex(offsets[field]) for table, field in fields.items()},
+                         {table: evidence["record_offset"] for table, evidence in TYRE_TABLE_ACCESSORS.items()})
+
+    def test_offsets_match_the_analysis_table(self):
+        analysis = (text_database.REPO_ROOT / "docs/analysis.md").read_text()
+        rows = re.findall(r"^\| `(0x[0-9a-f]{8})` \| `(0x[0-9a-f]+)` \| `:?(\w+)`", analysis, re.M)
+        documented = {("sound_info" if table == "SOUND_INFO" else table): {"accessor": accessor, "record_offset": offset}
+                      for accessor, offset, table in rows}
+        self.assertEqual(documented, TYRE_TABLE_ACCESSORS)
+
+
+# Each table accessor ends before the next routine starts 0x20 bytes later (tyre_table_accessors.asm).
+ACCESSOR_SPAN = 0x20
+HOP = "mov eax, dword ptr [eax + 0x14]"
+
+
+def decoded_evidence():
+    """Decode every byte-checked instruction site in extract_selected.EVIDENCE."""
+    decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+    sites = []
+    for va, expected, _ in EVIDENCE:
+        raw = bytes.fromhex(expected)
+        instructions = list(decoder.disasm(raw, va))
+        if len(instructions) != 1 or instructions[0].size != len(raw):
+            raise AssertionError(f"0x{va:08x}: evidence bytes are not exactly one instruction")
+        sites.append((va, f"{instructions[0].mnemonic} {instructions[0].op_str}"))
+    return sites
+
+
+def unevidenced_accessors(accessors, sites):
+    """List each table whose accessor has no evidence site reading its offset, or none loading + 0x14."""
+    problems = []
+    for table, entry in accessors.items():
+        start, offset = int(entry["accessor"], 16), re.escape(entry["record_offset"])
+        texts = [text for va, text in sites if start <= va < start + ACCESSOR_SPAN]
+        read = re.compile(rf"mov \w+, dword ptr \[eax \+ {offset}\]|cmp dword ptr \[eax \+ {offset}\], 0")
+        if not any(read.fullmatch(text) for text in texts):
+            problems.append(f"{table}: no evidence that {entry['accessor']} reads + {entry['record_offset']}")
+        if HOP not in texts:
+            problems.append(f"{table}: no evidence that {entry['accessor']} loads + 0x14")
+    return problems
+
+
+class TyreTableAccessorByteEvidenceTests(unittest.TestCase):
+    def test_field_evidence_matches_extract_selected(self):
+        recorded = json.loads((text_database.REPO_ROOT / "analysis/selected/field-evidence.json").read_text())
+        self.assertEqual(recorded, [{"va": va, "bytes": expected, "claim": claim} for va, expected, claim in EVIDENCE])
+
+    def test_every_accessor_read_and_fallback_is_byte_checked(self):
+        self.assertEqual(unevidenced_accessors(TYRE_TABLE_ACCESSORS, decoded_evidence()), [])
+
+    def test_drifted_accessor_or_offset_has_no_evidence(self):
+        sites = decoded_evidence()
+        for table in TYRE_TABLE_ACCESSORS:
+            for key, wrong in (("accessor", "0x00523ed0"), ("record_offset", "0x40")):
+                with self.subTest(table=table, key=key):
+                    drifted = copy.deepcopy(TYRE_TABLE_ACCESSORS)
+                    drifted[table][key] = wrong
+                    self.assertTrue(unevidenced_accessors(drifted, sites))
+        swapped = copy.deepcopy(TYRE_TABLE_ACCESSORS)
+        swapped["VERTICAL_LOAD"]["accessor"], swapped["CAMBER_THRUST"]["accessor"] = "0x00523e70", "0x00523e50"
+        self.assertEqual(len(unevidenced_accessors(swapped, sites)), 2)
+
+    def test_loader_stores_every_table_offset(self):
+        start, end = next((start, end) for start, end, name in ROUTINES if name == "load_tyre_database")
+        texts = [text for va, text in decoded_evidence() if start <= va < end]
+        for table, entry in TYRE_TABLE_ACCESSORS.items():
+            with self.subTest(table=table):
+                store = re.compile(rf"mov dword ptr \[\w+ \+ {re.escape(entry['record_offset'])}\], \w+")
+                self.assertTrue(any(store.fullmatch(text) for text in texts))
+
+
 def engine_file():
     lines = [":TYPE BASE0"]
     for i in range(5):
@@ -496,11 +744,34 @@ class VerifyTextDatabaseTests(unittest.TestCase):
             text_database.main()
         tyres = json.loads((output / "tyres.json").read_text())
         expected = read_database(self.game, text_database.DATABASES["tyres"], TAGS, sound_info=True)
-        self.assertEqual(list(tyres), ["source", "sha256", "records", "resolved_tables"])
+        self.assertEqual(list(tyres), ["source", "sha256", "records", "resolved_tables", "table_provenance",
+                                       "scalar_inheritance"])
         self.assertEqual(tyres["records"], expected["records"])
         self.assertEqual(tyres["resolved_tables"], resolve_tyre_tables(expected["records"]))
         self.assertEqual(tyres["resolved_tables"]["TYRE100"]["VERTICAL_LOAD"], "DEFAULT_TRACK")
+        # The keys written before table_provenance existed keep their exact bytes.
+        text = (output / "tyres.json").read_text()
+        legacy = {key: tyres[key] for key in ("source", "sha256", "records", "resolved_tables")}
+        self.assertTrue(text.startswith(json.dumps(legacy, indent=2, allow_nan=False)[:-2] + ",\n"))
+        self.assertEqual(tyres["table_provenance"], tyre_table_provenance(expected["records"]))
+        self.assertEqual(tyres["table_provenance"]["TYRE100"]["VERTICAL_LOAD"],
+                         {"source": "DEFAULT_TRACK", "path": ["TYRE100", "DEFAULT_TRACK"], "source_line": 466,
+                          "accessor": "0x00523e50", "record_offset": "0x4c"})
+        self.assertEqual(len(tyres["table_provenance"]), 109)
+        self.assertTrue(all(len(tables) == 5 for tables in tyres["table_provenance"].values()))
+        self.assertEqual(tyres["scalar_inheritance"], scalar_inheritance(expected["records"]))
+        self.assertEqual(len(tyres["scalar_inheritance"]), 108)
+        self.assertNotIn("DEFAULT_ROAD", tyres["scalar_inheritance"])
         self.assertNotIn("resolved_tables", json.loads((output / "engines.json").read_text()))
+
+    def test_reject_bad_table_provenance(self):
+        def tampered(records):
+            provenance = tyre_table_provenance(records)
+            provenance["TYRE100"]["VERTICAL_LOAD"]["source_line"] += 1
+            return provenance
+        with mock.patch.object(text_database, "tyre_table_provenance", tampered), \
+                self.assertRaisesRegex(ValueError, "does not declare the table on source_line: TYRE100 VERTICAL_LOAD"):
+            verify_text_databases(self.game, TAGS)
 
     def test_reject_wrong_engine_count(self):
         self.write("engines", engine_file().replace(":TYPE CHILD49\r\n:INHERIT_TYPE BASE4\r\n", ""))

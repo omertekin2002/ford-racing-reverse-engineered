@@ -55,6 +55,11 @@
     "claim": "SOUND_INFO allocation size: EDX = 0x2d0"
   },
   {
+    "va": 5388937,
+    "bytes": "894854",
+    "claim": "SOUND_INFO allocation address store at + 0x54"
+  },
+  {
     "va": 5389122,
     "bytes": "894814",
     "claim": "INHERIT_TYPE stores record address at + 0x14"
@@ -98,5 +103,60 @@
     "va": 5389542,
     "bytes": "894250",
     "claim": "CAMBER_THRUST allocation address store at + 0x50"
+  },
+  {
+    "va": 5389906,
+    "bytes": "8b504c",
+    "claim": "VERTICAL_LOAD accessor reads record + 0x4c"
+  },
+  {
+    "va": 5389920,
+    "bytes": "8b4014",
+    "claim": "VERTICAL_LOAD accessor loads the inherited record from + 0x14"
+  },
+  {
+    "va": 5389938,
+    "bytes": "8b5050",
+    "claim": "CAMBER_THRUST accessor reads record + 0x50"
+  },
+  {
+    "va": 5389952,
+    "bytes": "8b4014",
+    "claim": "CAMBER_THRUST accessor loads the inherited record from + 0x14"
+  },
+  {
+    "va": 5389970,
+    "bytes": "8b5044",
+    "claim": "LONGITUDINAL_COMBINED_VALUES accessor reads record + 0x44"
+  },
+  {
+    "va": 5389984,
+    "bytes": "8b4014",
+    "claim": "LONGITUDINAL_COMBINED_VALUES accessor loads the inherited record from + 0x14"
+  },
+  {
+    "va": 5390002,
+    "bytes": "8b5048",
+    "claim": "LATERAL_COMBINED_VALUES accessor reads record + 0x48"
+  },
+  {
+    "va": 5390016,
+    "bytes": "8b4014",
+    "claim": "LATERAL_COMBINED_VALUES accessor loads the inherited record from + 0x14"
+  },
+  {
+    "va": 5390096,
+    "bytes": "83785400",
+    "claim": "SOUND_INFO accessor compares record + 0x54 with 0"
+  },
+  {
+    "va": 5390108,
+    "bytes": "8b4014",
+    "claim": "SOUND_INFO accessor loads the inherited record from + 0x14"
+  },
+  {
+    "va": 5390119,
+    "bytes": "8b4054",
+    "claim": "SOUND_INFO accessor returns record + 0x54"
   }
 ]

@@ -39,6 +39,7 @@ EVIDENCE = [
     (0x00523a35, "d95830", "WIDTH store at + 0x30"),
     (0x00523a4a, "d95840", "ROLLING_RESISTANCE store at + 0x40"),
     (0x00523a67, "bad0020000", "SOUND_INFO allocation size: EDX = 0x2d0"),
+    (0x00523a89, "894854", "SOUND_INFO allocation address store at + 0x54"),
     (0x00523b42, "894814", "INHERIT_TYPE stores record address at + 0x14"),
     (0x00523b60, "be48030000", "LATERAL_COMBINED_VALUES allocation size: ESI = 0x348"),
     (0x00523b7d, "894248", "Lateral allocation address store at + 0x48"),
@@ -48,6 +49,17 @@ EVIDENCE = [
     (0x00523c8a, "d95838", "Reciprocal mass store at + 0x38"),
     (0x00523cb0, "d9581c", "OFFROAD_MAGIC_GRIP_NUMBER initial store at + 0x1c"),
     (0x00523ce6, "894250", "CAMBER_THRUST allocation address store at + 0x50"),
+    (0x00523e52, "8b504c", "VERTICAL_LOAD accessor reads record + 0x4c"),
+    (0x00523e60, "8b4014", "VERTICAL_LOAD accessor loads the inherited record from + 0x14"),
+    (0x00523e72, "8b5050", "CAMBER_THRUST accessor reads record + 0x50"),
+    (0x00523e80, "8b4014", "CAMBER_THRUST accessor loads the inherited record from + 0x14"),
+    (0x00523e92, "8b5044", "LONGITUDINAL_COMBINED_VALUES accessor reads record + 0x44"),
+    (0x00523ea0, "8b4014", "LONGITUDINAL_COMBINED_VALUES accessor loads the inherited record from + 0x14"),
+    (0x00523eb2, "8b5048", "LATERAL_COMBINED_VALUES accessor reads record + 0x48"),
+    (0x00523ec0, "8b4014", "LATERAL_COMBINED_VALUES accessor loads the inherited record from + 0x14"),
+    (0x00523f10, "83785400", "SOUND_INFO accessor compares record + 0x54 with 0"),
+    (0x00523f1c, "8b4014", "SOUND_INFO accessor loads the inherited record from + 0x14"),
+    (0x00523f27, "8b4054", "SOUND_INFO accessor returns record + 0x54"),
 ]
 
 

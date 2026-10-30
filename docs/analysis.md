@@ -178,8 +178,13 @@ inheritance for the five table addresses:
 Each accessor returns the record's own address at that offset when it is
 non-zero. Otherwise it loads the inherited record from `+0x14` and jumps back to
 the same test, so it follows any number of levels and never checks for a null
-parent. The loader writes each table address only when it parses the matching
-tag; the first `:SOUND_INFO` of a record allocates its `0x2d0`-byte table, and
+parent. For each of the five accessors,
+[`field-evidence.json`](../analysis/selected/field-evidence.json) byte-checks
+against `fr3.exe` the instruction that reads its offset and the fallback load
+from `+0x14`, along with the loader's store of each table address at that offset.
+A synthetic test checks that the table above and the parser's
+`TYRE_TABLE_ACCESSORS` agree with those sites. The loader writes each table
+address only when it parses the matching tag; the first `:SOUND_INFO` of a record allocates its `0x2d0`-byte table, and
 later ones reuse it (test at `0x00523a5c`). `INHERIT_TYPE` sets `+0x14` and runs
 the scalar copy above, which leaves `+0x44` to `+0x54` untouched.
 
@@ -205,12 +210,29 @@ records resolve all five tables:
 | Longitudinal and lateral combined | `DEFAULT_ROAD` 109 |
 | Vertical load, camber thrust and sound information | `DEFAULT_ROAD` 73, `DEFAULT_OFFROAD` 23, `DEFAULT_TRACK` 13 |
 
+`tyres.json` also records, as `table_provenance`, how each tyre reaches each of
+the five tables. For every record and table it gives the `source` (the same
+record as `resolved_tables`), the `path` of records the accessor visits from the
+record itself to the source, the `source_line` in `TYREDATA.DAT` where the
+source declares the table (the tag's line, or its first `:SOUND_INFO` entry's
+line) and the `accessor` and `record_offset` from the table above. For example,
+`OFFROAD_R366x297` reads its longitudinal table along
+`OFFROAD_R366x297` → `DEFAULT_OFFROAD` → `DEFAULT_ROAD` from line 24, through
+`0x00523e90` at `+0x44`. `verify_text_databases()` checks that every path starts
+at its record, follows each hop's `:INHERIT_TYPE` past records without the
+table, and ends at a record that declares the table on `source_line`.
+
 Scalar fields are not resolved: the copy at `0x00524090` runs when
 `INHERIT_TYPE` is parsed, so the result depends on tag order, which is not
-modelled. Engine inheritance in `ENGDATA.DAT` and the colon-less
+modelled. `tyres.json` labels this under `scalar_inheritance`: each of the 108
+records with `:INHERIT_TYPE` gets `status: "unresolved"`, its `INHERIT_TYPE`
+line and parent, and the scalar tags (neither a table nor `INHERIT_TYPE`) it
+declares before and after that line, in file order. No inherited value is
+computed. In the demo every one of those records declares its scalars after
+`INHERIT_TYPE`. Engine inheritance in `ENGDATA.DAT` and the colon-less
 `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` also remain unresolved.
 
-[Twenty byte-checked instruction sites](../analysis/selected/field-evidence.json)
+[Thirty-two byte-checked instruction sites](../analysis/selected/field-evidence.json)
 and [the loader's disassembly](../analysis/selected/load_tyre_database.asm)
 preserve the concrete evidence for these new findings.
 
@@ -219,8 +241,10 @@ preserve the concrete evidence for these new findings.
 [Verification results](../analysis/verification.json) cover the exact executable,
 all game files, all tags, all identified compressed resources, every PCG index,
 the selected instruction sites, table dimensions, export counts and C layout
-assertions. Nine parser tests additionally reject malformed synthetic resources,
-and eight helper tests cover virtual-address bounds and file identity checks.
+assertions. The committed results predate the twelve tyre accessor and
+`+0x54` store sites and still record 20 instruction sites until the next full
+verification run. Nine parser tests additionally reject malformed synthetic
+resources, and eight helper tests cover virtual-address bounds and file identity checks.
 The pinned installer was tested from a fresh temporary tool directory; its
 Ghidra probe decompiled the expected arithmetic expression.
 The default acquisition script also downloaded and extracted the demo into a
