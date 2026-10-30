@@ -220,7 +220,9 @@ line) and the `accessor` and `record_offset` from the table above. For example,
 `OFFROAD_R366x297` → `DEFAULT_OFFROAD` → `DEFAULT_ROAD` from line 24, through
 `0x00523e90` at `+0x44`. `verify_text_databases()` checks that every path starts
 at its record, follows each hop's `:INHERIT_TYPE` past records without the
-table, and ends at a record that declares the table on `source_line`.
+table, and ends at a record that declares the table on `source_line`. It also
+compares every source with one derived separately, in file order, from each
+record's own tables and its parent's sources.
 
 Scalar fields are not resolved: the copy at `0x00524090` runs when
 `INHERIT_TYPE` is parsed, so the result depends on tag order, which is not
@@ -229,7 +231,7 @@ records with `:INHERIT_TYPE` gets `status: "unresolved"`, its `INHERIT_TYPE`
 line and parent, and the scalar tags (neither a table nor `INHERIT_TYPE`) it
 declares before and after that line, in file order. No inherited value is
 computed. In the demo every one of those records declares its scalars after
-`INHERIT_TYPE`. Engine inheritance in `ENGDATA.DAT` and the colon-less
+`INHERIT_TYPE`; `verify_text_databases()` checks this and the 108 records. Engine inheritance in `ENGDATA.DAT` and the colon-less
 `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` also remain unresolved.
 
 [Thirty-two byte-checked instruction sites](../analysis/selected/field-evidence.json)
@@ -241,9 +243,9 @@ preserve the concrete evidence for these new findings.
 [Verification results](../analysis/verification.json) cover the exact executable,
 all game files, all tags, all identified compressed resources, every PCG index,
 the selected instruction sites, table dimensions, export counts and C layout
-assertions. The committed results predate the twelve tyre accessor and
-`+0x54` store sites and still record 20 instruction sites until the next full
-verification run. Nine parser tests additionally reject malformed synthetic
+assertions. All 32 instruction sites were byte-checked against the pinned
+`fr3.exe` at `field_instruction_sites_verified_utc`, with the comparison
+`verify_findings.py` makes; the other results date from `verified_utc`. Nine parser tests additionally reject malformed synthetic
 resources, and eight helper tests cover virtual-address bounds and file identity checks.
 The pinned installer was tested from a fresh temporary tool directory; its
 Ghidra probe decompiled the expected arithmetic expression.

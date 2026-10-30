@@ -8,7 +8,8 @@
   "decoded_bytes_verified": 56325649,
   "pcg_collections_verified": 62,
   "pcg_entries_verified": 654,
-  "field_instruction_sites_verified": 20,
+  "field_instruction_sites_verified": 32,
+  "field_instruction_sites_verified_utc": "2026-10-30T18:13:14+00:00",
   "tyre_ascii_table_dimensions": {
     "LONGITUDINAL_COMBINED_VALUES": {
       "rows": 9,
