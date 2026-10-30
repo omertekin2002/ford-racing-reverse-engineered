@@ -367,6 +367,22 @@ def scalar_inheritance(records):
     return entries
 
 
+def sources_in_file_order(records):
+    """Return each tyre's table sources from its own tables, else its parent's sources.
+
+    An independent check on resolve_tyre_tables(): it does not walk chains through
+    table_path(). parse() only accepts an INHERIT_TYPE naming an earlier record, so
+    every parent's sources are known before its children. A missing table is None.
+    """
+    sources = {}
+    for record in records:
+        inherit = record["fields"].get("INHERIT_TYPE")
+        parent = sources.get(inherit["values"][0], {}) if inherit else {}
+        sources[record["type"]] = {table: record["type"] if has_local_table(record, table) else parent.get(table)
+                                   for table in RESOLVED_TYRE_TABLES}
+    return sources
+
+
 def check_table_provenance(records, provenance):
     """Check that every provenance path follows INHERIT_TYPE to a record declaring the table on source_line."""
     by_name = {record["type"]: record for record in records}
@@ -452,10 +468,19 @@ def verify_text_databases(game_dir, known_tags):
     resolved = resolve_tyre_tables(tyres)
     sources = table_sources(resolved)
     require(sources == TYRE_TABLE_SOURCES, f"Tyre table source mismatch: {sources}")
+    expected = sources_in_file_order(tyres)
+    require(resolved == expected, "resolved_tables disagrees with INHERIT_TYPE resolved in file order")
     provenance = tyre_table_provenance(tyres)
     check_table_provenance(tyres, provenance)
     require({name: {table: entry["source"] for table, entry in tables.items()} for name, tables in provenance.items()}
-            == resolved, "Tyre table provenance disagrees with resolved_tables")
+            == expected, "Tyre table provenance disagrees with INHERIT_TYPE resolved in file order")
+    scalars = scalar_inheritance(tyres)
+    require(set(scalars) == {record["type"] for record in tyre_inherits}
+            and all(entry["status"] == "unresolved" for entry in scalars.values()),
+            "Tyre scalar inheritance record set mismatch")
+    # docs/analysis.md states that every demo record declares its scalars after INHERIT_TYPE.
+    early = sorted(name for name, entry in scalars.items() if entry["scalars_before"])
+    require(not early, "Tyre scalars declared before INHERIT_TYPE: " + ", ".join(early))
     untagged = [{"record": record["type"], **item}
                 for record in engines + gearboxes + tyres for item in record["untagged"]]
     require(untagged == [{"record": "INDIGO", "line": 1410, "tokens": ["INHERIT_TYPE", "DEFAULT_TRACK"]}],
@@ -464,7 +489,8 @@ def verify_text_databases(game_dir, known_tags):
             "torque_rows": [min(len(f["rows"]) for f in torque), max(len(f["rows"]) for f in torque)],
             "engine_inheritances": len(inherits), "gearbox_tags": sorted(GEARBOX_TAGS), "untagged_lines": untagged,
             "tyre_records": len(tyres), "tyre_inheritances": len(tyre_inherits), "tyre_tables": tables,
-            "tyre_table_sources": sources, "sound_info_entries": len(entries), "sound_info_per_record": sounds}
+            "tyre_table_sources": sources, "tyre_scalar_inheritance_records": len(scalars),
+            "sound_info_entries": len(entries), "sound_info_per_record": sounds}
 
 
 def main():

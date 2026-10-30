@@ -9,15 +9,19 @@ import tempfile
 import unittest
 from unittest import mock
 
-import capstone
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import text_database
-from extract_selected import EVIDENCE, ROUTINES
 from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, RESOLVED_TYRE_TABLES, SOUND_INFO_COUNTS,
                            TYRE_TABLE_ACCESSORS, TYRE_TABLE_SOURCES, TYRE_TABLES, TextDatabaseError,
                            check_table_provenance, parse, read_database, resolve_tyre_tables, scalar_inheritance,
-                           table_sources, tyre_table_provenance, verify_text_databases)
+                           sources_in_file_order, table_sources, tyre_table_provenance, verify_text_databases)
+
+# Only the disassembly tests need capstone, and extract_selected also imports pefile.
+try:
+    import capstone
+    from extract_selected import EVIDENCE, ROUTINES
+except ImportError:
+    capstone = None
 
 TAGS = {"CAPACITY", "LOCATION_TYPE", "INHERIT_TYPE", "TORQUE_ARRAY", "MAX_RPM", "ENGINE_BRAKING", *GEARBOX_TAGS,
         "RADIUS", "WIDTH", "MASS", "ROLLING_RESISTANCE", "SOUND_INFO", "START_RPM", *TYRE_TABLES}
@@ -441,6 +445,12 @@ class TyreTableProvenanceTests(unittest.TestCase):
         self.assertEqual([entry["line"] for entry in records[0]["sound_info"]], [12, 18])
         self.assertEqual(tyre_table_provenance(records)["CHILD"]["sound_info"]["source_line"], 12)
 
+    def test_sources_in_file_order_match_resolve_tyre_tables(self):
+        records = parse_tyres(tyre_record("ROOT", **ALL), tyre_record("A", "ROOT"),
+                              tyre_record("B", "A", ["VERTICAL_LOAD"]), tyre_record("C", "B"))
+        self.assertEqual(sources_in_file_order(records), resolve_tyre_tables(records))
+        self.assertEqual(sources_in_file_order(records)["C"]["VERTICAL_LOAD"], "B")
+
     def test_errors_match_resolve_tyre_tables(self):
         records = parse(tyre_record("ROOT", tables=TYRE_TABLES) + tyre_record("CHILD", "ROOT") + ":END\n", TAGS,
                         sound_info=True)
@@ -602,6 +612,7 @@ def unevidenced_accessors(accessors, sites):
     return problems
 
 
+@unittest.skipIf(capstone is None, "needs capstone and pefile from scripts/requirements.txt")
 class TyreTableAccessorByteEvidenceTests(unittest.TestCase):
     def test_field_evidence_matches_extract_selected(self):
         recorded = json.loads((text_database.REPO_ROOT / "analysis/selected/field-evidence.json").read_text())
@@ -657,12 +668,14 @@ def gearbox_file(tags=GEARBOX_TAGS):
 DEMO_PARENTS = ["DEFAULT_ROAD"] * 72 + ["DEFAULT_OFFROAD"] * 22 + ["DEFAULT_TRACK"] * 12
 
 
-def tyre_file(sounds=SOUND_INFO_COUNTS, parents=DEMO_PARENTS):
+def tyre_file(sounds=SOUND_INFO_COUNTS, parents=DEMO_PARENTS, scalar_first=()):
     lines = []
     names = ["DEFAULT_ROAD", "DEFAULT_OFFROAD", "DEFAULT_TRACK"] + [f"TYRE{i}" for i in range(len(parents))]
     parents = [None, "DEFAULT_ROAD", "DEFAULT_ROAD", *parents]
     for i, name in enumerate(names):
-        lines += [f":TYPE {name}", ":RADIUS 0.3"] + ([f":INHERIT_TYPE {parents[i]}"] if parents[i] else [])
+        # Like the demo, scalars follow INHERIT_TYPE unless scalar_first names the record.
+        inherit = [f":INHERIT_TYPE {parents[i]}"] if parents[i] else []
+        lines += [f":TYPE {name}"] + ([":RADIUS 0.3", *inherit] if name in scalar_first else [*inherit, ":RADIUS 0.3"])
         if i == 0:
             lines += [":LONGITUDINAL_COMBINED_VALUES"] + ["\t".join(["0.5"] * 11)] * 9
             lines += [":LATERAL_COMBINED_VALUES"] + ["\t".join(["0.5"] * 21)] * 10
@@ -700,6 +713,7 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.assertEqual(summary["tyre_inheritances"], 108)
         self.assertEqual(summary["tyre_tables"], TYRE_TABLES)
         self.assertEqual(summary["tyre_table_sources"], TYRE_TABLE_SOURCES)
+        self.assertEqual(summary["tyre_scalar_inheritance_records"], 108)
         self.assertEqual(summary["sound_info_entries"], 40)
         self.assertEqual(summary["sound_info_per_record"], SOUND_INFO_COUNTS)
 
@@ -771,6 +785,30 @@ class VerifyTextDatabaseTests(unittest.TestCase):
             return provenance
         with mock.patch.object(text_database, "tyre_table_provenance", tampered), \
                 self.assertRaisesRegex(ValueError, "does not declare the table on source_line: TYRE100 VERTICAL_LOAD"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_sources_that_disagree_with_inherit_type(self):
+        # Swapping two sources keeps the per-table counts, so only the independent resolution catches it.
+        def tampered(records):
+            resolved = resolve_tyre_tables(records)
+            resolved["TYRE0"]["VERTICAL_LOAD"], resolved["TYRE100"]["VERTICAL_LOAD"] = "DEFAULT_TRACK", "DEFAULT_ROAD"
+            return resolved
+        with mock.patch.object(text_database, "resolve_tyre_tables", tampered), \
+                self.assertRaisesRegex(ValueError, "resolved_tables disagrees with INHERIT_TYPE resolved in file order"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_scalar_before_inherit_type(self):
+        self.write("tyres", tyre_file(scalar_first={"TYRE5"}))
+        with self.assertRaisesRegex(ValueError, "Tyre scalars declared before INHERIT_TYPE: TYRE5"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_wrong_scalar_inheritance_records(self):
+        def tampered(records):
+            entries = scalar_inheritance(records)
+            del entries["TYRE5"]
+            return entries
+        with mock.patch.object(text_database, "scalar_inheritance", tampered), \
+                self.assertRaisesRegex(ValueError, "Tyre scalar inheritance record set mismatch"):
             verify_text_databases(self.game, TAGS)
 
     def test_reject_wrong_engine_count(self):
