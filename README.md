@@ -111,7 +111,9 @@ longitudinal, lateral, vertical-load, camber-thrust and sound tables each tyre
 reads through `:INHERIT_TYPE`, following the game's accessors at
 `0x00523e50`–`0x00523f10`. Under `table_provenance` it gives, for each of those
 tables, the inheritance path, the `TYREDATA.DAT` line the table comes from and
-the accessor and record offset the game reads it through. Under
+the accessor and record offset the game reads it through; those accessor
+reads and their `+0x14` fallbacks are byte-checked in
+[`field-evidence.json`](analysis/selected/field-evidence.json). Under
 `scalar_inheritance` it lists, for each inheriting tyre, the scalar tags
 declared before and after its `INHERIT_TYPE` line, labelled `unresolved`.
 Engine and scalar-field inheritance are recorded, not resolved, and the meaning
