@@ -45,8 +45,13 @@ TYRE_TABLES blocks and the sound information. The game's accessors at
 0x00523e90, 0x00523eb0, 0x00523e50, 0x00523e70 and 0x00523f10 return the
 record's own table address at +0x44, +0x48, +0x4c, +0x50 or +0x54 when it is
 non-zero, and otherwise repeat the test on the record at +0x14 (INHERIT_TYPE).
-main() adds the result to tyres.json as `resolved_tables`. Scalar fields, engine
-inheritance and the colon-less INDIGO line stay unresolved.
+main() adds the result to tyres.json as `resolved_tables`. tyre_table_provenance()
+adds, as `table_provenance`, the INHERIT_TYPE path to each source, the source
+line and the accessor and offset the game reads through.
+scalar_inheritance() lists, as `scalar_inheritance`, the scalar tags each
+inheriting record declares before and after its INHERIT_TYPE line, labelled
+unresolved. Scalar fields, engine inheritance and the colon-less INDIGO line
+stay unresolved.
 """
 import argparse
 import hashlib
@@ -72,6 +77,12 @@ TYRE_TABLES = {"LONGITUDINAL_COMBINED_VALUES": {"blocks": 1, "rows": 9, "columns
 SOUND_INFO_COUNTS = {"DEFAULT_ROAD": 14, "DEFAULT_OFFROAD": 14, "DEFAULT_TRACK": 12}
 # Tables the accessors resolve through INHERIT_TYPE; "sound_info" is the :SOUND_INFO entry list.
 RESOLVED_TYRE_TABLES = (*TYRE_TABLES, "sound_info")
+# The accessor that reads each table and the tyre record offset it tests (analysis/selected/tyre_table_accessors.asm).
+TYRE_TABLE_ACCESSORS = {"LONGITUDINAL_COMBINED_VALUES": {"accessor": "0x00523e90", "record_offset": "0x44"},
+                        "LATERAL_COMBINED_VALUES": {"accessor": "0x00523eb0", "record_offset": "0x48"},
+                        "VERTICAL_LOAD": {"accessor": "0x00523e50", "record_offset": "0x4c"},
+                        "CAMBER_THRUST": {"accessor": "0x00523e70", "record_offset": "0x50"},
+                        "sound_info": {"accessor": "0x00523f10", "record_offset": "0x54"}}
 # How many demo tyre records resolve each table to each source record.
 TYRE_TABLE_SOURCES = {"LONGITUDINAL_COMBINED_VALUES": {"DEFAULT_ROAD": 109},
                       "LATERAL_COMBINED_VALUES": {"DEFAULT_ROAD": 109},
@@ -278,6 +289,40 @@ def has_local_table(record, table):
     return table in record["fields"]
 
 
+def table_line(record, table):
+    """Return the line on which a record declares a table: its tag, or its first :SOUND_INFO."""
+    if table == "sound_info":
+        return record["sound_info"][0]["line"]
+    return record["fields"][table]["line"]
+
+
+def table_path(record, table, by_name, limit):
+    """Return the record names the accessor visits for one table, from the record to its source."""
+    path = [record["type"]]
+    current = record
+    # parse() only accepts an INHERIT_TYPE naming an earlier record, so no chain loops.
+    for _ in range(limit):
+        if has_local_table(current, table):
+            return path
+        inherit = current["fields"].get("INHERIT_TYPE")
+        if inherit is None:
+            raise TextDatabaseError(record["line"], f"tyre {record['type']!r} has no {table} table, "
+                                                    f"and its INHERIT_TYPE chain ends at {current['type']!r}")
+        parent = inherit["values"][0]
+        if parent not in by_name:
+            raise TextDatabaseError(inherit["line"], f"{current['type']!r} inherits unknown record {parent!r}")
+        current = by_name[parent]
+        path.append(parent)
+    raise TextDatabaseError(record["line"], f"INHERIT_TYPE chain of tyre {record['type']!r} "
+                                            f"does not end within {limit} records")
+
+
+def tyre_table_paths(records):
+    by_name = {record["type"]: record for record in records}
+    return {record["type"]: {table: table_path(record, table, by_name, len(records)) for table in RESOLVED_TYRE_TABLES}
+            for record in records}
+
+
 def resolve_tyre_tables(records):
     """Return, for each tyre record, the name of the record whose table the game reads.
 
@@ -285,30 +330,64 @@ def resolve_tyre_tables(records):
     has its own table. A chain that ends without one is an error: the game would
     follow a null +0x14 there. The records are not modified.
     """
+    return {name: {table: path[-1] for table, path in paths.items()} for name, paths in tyre_table_paths(records).items()}
+
+
+def tyre_table_provenance(records):
+    """Return, for each tyre record and table, how resolve_tyre_tables() reached its source.
+
+    `path` lists the records visited, the record itself first and the source last.
+    `source_line` is where the source declares the table, and `accessor` and
+    `record_offset` name the routine and record field the game reads it through.
+    """
     by_name = {record["type"]: record for record in records}
-    resolved = {}
+    return {name: {table: {"source": path[-1], "path": path, "source_line": table_line(by_name[path[-1]], table),
+                           **TYRE_TABLE_ACCESSORS[table]}
+                   for table, path in paths.items()}
+            for name, paths in tyre_table_paths(records).items()}
+
+
+def scalar_inheritance(records):
+    """List, for each tyre with :INHERIT_TYPE, the scalar tags it declares before and after that line.
+
+    Only facts from the file: no inherited value is computed, because the copy at
+    0x00524090 depends on tag order, which is not modelled.
+    """
+    entries = {}
     for record in records:
-        sources = {}
-        for table in RESOLVED_TYRE_TABLES:
-            current = record
-            # parse() only accepts an INHERIT_TYPE naming an earlier record, so no chain loops.
-            for _ in range(len(records)):
-                if has_local_table(current, table):
-                    break
-                inherit = current["fields"].get("INHERIT_TYPE")
-                if inherit is None:
-                    raise TextDatabaseError(record["line"], f"tyre {record['type']!r} has no {table} table, "
-                                                            f"and its INHERIT_TYPE chain ends at {current['type']!r}")
-                parent = inherit["values"][0]
-                if parent not in by_name:
-                    raise TextDatabaseError(inherit["line"], f"{current['type']!r} inherits unknown record {parent!r}")
-                current = by_name[parent]
-            else:
-                raise TextDatabaseError(record["line"], f"INHERIT_TYPE chain of tyre {record['type']!r} "
-                                                        f"does not end within {len(records)} records")
-            sources[table] = current["type"]
-        resolved[record["type"]] = sources
-    return resolved
+        inherit = record["fields"].get("INHERIT_TYPE")
+        if inherit is None:
+            continue
+        scalars = [{"tag": tag, "line": field["line"]} for tag, field in record["fields"].items()
+                   if tag not in TYRE_TABLES and tag != "INHERIT_TYPE"]
+        entries[record["type"]] = {
+            "status": "unresolved", "inherit_type": {"line": inherit["line"], "parent": inherit["values"][0]},
+            "scalars_before": [scalar for scalar in scalars if scalar["line"] < inherit["line"]],
+            "scalars_after": [scalar for scalar in scalars if scalar["line"] > inherit["line"]]}
+    return entries
+
+
+def check_table_provenance(records, provenance):
+    """Check that every provenance path follows INHERIT_TYPE to a record declaring the table on source_line."""
+    by_name = {record["type"]: record for record in records}
+    require(set(provenance) == set(by_name), "Tyre table provenance record set mismatch")
+    for name, tables in provenance.items():
+        require(set(tables) == set(RESOLVED_TYRE_TABLES), "Tyre table provenance table set mismatch: " + name)
+        for table, entry in tables.items():
+            label = f"{name} {table}"
+            path = entry["path"]
+            require(path and path[0] == name, "Tyre table provenance path does not start at its record: " + label)
+            require(entry["source"] == path[-1], "Tyre table provenance source is not the path end: " + label)
+            for here, there in zip(path, path[1:], strict=False):
+                record = by_name.get(here)
+                inherit = record and record["fields"].get("INHERIT_TYPE")
+                require(inherit and inherit["values"] == [there] and not has_local_table(record, table),
+                        f"Tyre table provenance hop {here} -> {there} does not follow INHERIT_TYPE: " + label)
+            source = by_name.get(path[-1])
+            require(source and has_local_table(source, table) and table_line(source, table) == entry["source_line"],
+                    "Tyre table provenance source does not declare the table on source_line: " + label)
+            require({key: entry[key] for key in ("accessor", "record_offset")} == TYRE_TABLE_ACCESSORS[table],
+                    "Tyre table provenance accessor mismatch: " + label)
 
 
 def table_sources(resolved):
@@ -370,8 +449,13 @@ def verify_text_databases(game_dir, known_tags):
     require(sounds == SOUND_INFO_COUNTS, f"Sound entry count mismatch: {sounds}")
     entries = [entry for record in tyres for entry in record["sound_info"]]
     require(all(entry["value_count"] == 10 for entry in entries), "Sound entry row count mismatch")
-    sources = table_sources(resolve_tyre_tables(tyres))
+    resolved = resolve_tyre_tables(tyres)
+    sources = table_sources(resolved)
     require(sources == TYRE_TABLE_SOURCES, f"Tyre table source mismatch: {sources}")
+    provenance = tyre_table_provenance(tyres)
+    check_table_provenance(tyres, provenance)
+    require({name: {table: entry["source"] for table, entry in tables.items()} for name, tables in provenance.items()}
+            == resolved, "Tyre table provenance disagrees with resolved_tables")
     untagged = [{"record": record["type"], **item}
                 for record in engines + gearboxes + tyres for item in record["untagged"]]
     require(untagged == [{"record": "INDIGO", "line": 1410, "tokens": ["INHERIT_TYPE", "DEFAULT_TRACK"]}],
@@ -397,6 +481,8 @@ def main():
         database = read_database(args.game_dir, relative, known_tags, stem in SOUND_INFO_DATABASES)
         if stem == "tyres":
             database["resolved_tables"] = resolve_tyre_tables(database["records"])
+            database["table_provenance"] = tyre_table_provenance(database["records"])
+            database["scalar_inheritance"] = scalar_inheritance(database["records"])
         (args.output / f"{stem}.json").write_text(json.dumps(database, indent=2, allow_nan=False) + "\n")
         print(f"Parsed {len(database['records'])} {stem} from {relative}")
 
