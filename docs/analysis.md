@@ -205,9 +205,26 @@ records resolve all five tables:
 | Longitudinal and lateral combined | `DEFAULT_ROAD` 109 |
 | Vertical load, camber thrust and sound information | `DEFAULT_ROAD` 73, `DEFAULT_OFFROAD` 23, `DEFAULT_TRACK` 13 |
 
+`tyres.json` also records, as `table_provenance`, how each tyre reaches each of
+the five tables. For every record and table it gives the `source` (the same
+record as `resolved_tables`), the `path` of records the accessor visits from the
+record itself to the source, the `source_line` in `TYREDATA.DAT` where the
+source declares the table (the tag's line, or its first `:SOUND_INFO` entry's
+line) and the `accessor` and `record_offset` from the table above. For example,
+`OFFROAD_R366x297` reads its longitudinal table along
+`OFFROAD_R366x297` → `DEFAULT_OFFROAD` → `DEFAULT_ROAD` from line 24, through
+`0x00523e90` at `+0x44`. `verify_text_databases()` checks that every path starts
+at its record, follows each hop's `:INHERIT_TYPE` past records without the
+table, and ends at a record that declares the table on `source_line`.
+
 Scalar fields are not resolved: the copy at `0x00524090` runs when
 `INHERIT_TYPE` is parsed, so the result depends on tag order, which is not
-modelled. Engine inheritance in `ENGDATA.DAT` and the colon-less
+modelled. `tyres.json` labels this under `scalar_inheritance`: each of the 108
+records with `:INHERIT_TYPE` gets `status: "unresolved"`, its `INHERIT_TYPE`
+line and parent, and the scalar tags (neither a table nor `INHERIT_TYPE`) it
+declares before and after that line, in file order. No inherited value is
+computed. In the demo every one of those records declares its scalars after
+`INHERIT_TYPE`. Engine inheritance in `ENGDATA.DAT` and the colon-less
 `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` also remain unresolved.
 
 [Twenty byte-checked instruction sites](../analysis/selected/field-evidence.json)
