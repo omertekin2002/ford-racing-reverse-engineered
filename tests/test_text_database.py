@@ -9,8 +9,11 @@ import tempfile
 import unittest
 from unittest import mock
 
+import capstone
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import text_database
+from extract_selected import EVIDENCE, ROUTINES
 from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, RESOLVED_TYRE_TABLES, SOUND_INFO_COUNTS,
                            TYRE_TABLE_ACCESSORS, TYRE_TABLE_SOURCES, TYRE_TABLES, TextDatabaseError,
                            check_table_provenance, parse, read_database, resolve_tyre_tables, scalar_inheritance,
@@ -565,6 +568,67 @@ class TyreTableAccessorEvidenceTests(unittest.TestCase):
         documented = {("sound_info" if table == "SOUND_INFO" else table): {"accessor": accessor, "record_offset": offset}
                       for accessor, offset, table in rows}
         self.assertEqual(documented, TYRE_TABLE_ACCESSORS)
+
+
+# Each table accessor ends before the next routine starts 0x20 bytes later (tyre_table_accessors.asm).
+ACCESSOR_SPAN = 0x20
+HOP = "mov eax, dword ptr [eax + 0x14]"
+
+
+def decoded_evidence():
+    """Decode every byte-checked instruction site in extract_selected.EVIDENCE."""
+    decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+    sites = []
+    for va, expected, _ in EVIDENCE:
+        raw = bytes.fromhex(expected)
+        instructions = list(decoder.disasm(raw, va))
+        if len(instructions) != 1 or instructions[0].size != len(raw):
+            raise AssertionError(f"0x{va:08x}: evidence bytes are not exactly one instruction")
+        sites.append((va, f"{instructions[0].mnemonic} {instructions[0].op_str}"))
+    return sites
+
+
+def unevidenced_accessors(accessors, sites):
+    """List each table whose accessor has no evidence site reading its offset, or none loading + 0x14."""
+    problems = []
+    for table, entry in accessors.items():
+        start, offset = int(entry["accessor"], 16), re.escape(entry["record_offset"])
+        texts = [text for va, text in sites if start <= va < start + ACCESSOR_SPAN]
+        read = re.compile(rf"mov \w+, dword ptr \[eax \+ {offset}\]|cmp dword ptr \[eax \+ {offset}\], 0")
+        if not any(read.fullmatch(text) for text in texts):
+            problems.append(f"{table}: no evidence that {entry['accessor']} reads + {entry['record_offset']}")
+        if HOP not in texts:
+            problems.append(f"{table}: no evidence that {entry['accessor']} loads + 0x14")
+    return problems
+
+
+class TyreTableAccessorByteEvidenceTests(unittest.TestCase):
+    def test_field_evidence_matches_extract_selected(self):
+        recorded = json.loads((text_database.REPO_ROOT / "analysis/selected/field-evidence.json").read_text())
+        self.assertEqual(recorded, [{"va": va, "bytes": expected, "claim": claim} for va, expected, claim in EVIDENCE])
+
+    def test_every_accessor_read_and_fallback_is_byte_checked(self):
+        self.assertEqual(unevidenced_accessors(TYRE_TABLE_ACCESSORS, decoded_evidence()), [])
+
+    def test_drifted_accessor_or_offset_has_no_evidence(self):
+        sites = decoded_evidence()
+        for table in TYRE_TABLE_ACCESSORS:
+            for key, wrong in (("accessor", "0x00523ed0"), ("record_offset", "0x40")):
+                with self.subTest(table=table, key=key):
+                    drifted = copy.deepcopy(TYRE_TABLE_ACCESSORS)
+                    drifted[table][key] = wrong
+                    self.assertTrue(unevidenced_accessors(drifted, sites))
+        swapped = copy.deepcopy(TYRE_TABLE_ACCESSORS)
+        swapped["VERTICAL_LOAD"]["accessor"], swapped["CAMBER_THRUST"]["accessor"] = "0x00523e70", "0x00523e50"
+        self.assertEqual(len(unevidenced_accessors(swapped, sites)), 2)
+
+    def test_loader_stores_every_table_offset(self):
+        start, end = next((start, end) for start, end, name in ROUTINES if name == "load_tyre_database")
+        texts = [text for va, text in decoded_evidence() if start <= va < end]
+        for table, entry in TYRE_TABLE_ACCESSORS.items():
+            with self.subTest(table=table):
+                store = re.compile(rf"mov dword ptr \[\w+ \+ {re.escape(entry['record_offset'])}\], \w+")
+                self.assertTrue(any(store.fullmatch(text) for text in texts))
 
 
 def engine_file():
