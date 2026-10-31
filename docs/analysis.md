@@ -238,6 +238,22 @@ computed. In the demo every one of those records declares its scalars after
 and [the loader's disassembly](../analysis/selected/load_tyre_database.asm)
 preserve the concrete evidence for these new findings.
 
+### Tyre dossier
+
+`python3 scripts/tyre_dossier.py`, run after `text_database.py`, writes
+`artifacts/dossier/tyres.html`. For each tyre it shows the declarations as
+written, the source, path, source line, accessor and offset of each of the five
+tables above, and a "Why?" trail of the field-evidence sites behind each table:
+the sites inside that table's accessor and the loader's allocation and store
+sites for it. Sites are matched by address, not claim text. Inheriting records
+show their scalar tags around `INHERIT_TYPE` labelled unresolved, with no
+inherited values. The script exits non-zero instead of writing a page when a
+record lacks a table, `resolved_tables` and `table_provenance` disagree, a path
+does not follow `INHERIT_TYPE`, or a cited accessor or offset has no matching
+byte-checked site. A shared table source does not make two tyres handle the
+same: their scalar fields can differ. The page is not committed because it holds
+game data.
+
 ## Validation and limits
 
 [Verification results](../analysis/verification.json) cover the exact executable,

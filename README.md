@@ -93,6 +93,7 @@ headless script errors can be reported without a failing process exit code.
 | `analysis/selected/` | Instruction evidence and explicitly bounded disassembly |
 | `recovered/fr3_database_layouts.h` | Engine, gearbox and tyre in-memory layouts |
 | `artifacts/text-databases/` | Parsed engine, gearbox and tyre records from `scripts/text_database.py`, with source hashes |
+| `artifacts/dossier/tyres.html` | Offline tyre dossier from `scripts/tyre_dossier.py`: each tyre's declarations beside its five table sources and their byte-checked evidence |
 | `artifacts/ghidra/` | Complete baseline C, function disassembly, function list and call edges |
 | `artifacts/fr3-demo-annotated.gzf` | Portable annotated Ghidra program |
 | `artifacts/fr3-analysis.zip` | Analysis bundle with SHA-256 manifest |
@@ -124,6 +125,17 @@ python3 scripts/acquire_demo.py inputs
 python3 scripts/text_database.py inputs/extracted/Program_Executable_Files --output artifacts/text-databases
 ```
 
+`scripts/tyre_dossier.py` turns `tyres.json`, `field-evidence.json` and
+`pe-metadata.json` into one static page, `artifacts/dossier/tyres.html`, with no
+JavaScript or external resources. It needs only the standard library and
+refuses to write the page when the inputs disagree; see
+[the analysis notes](docs/analysis.md#tyre-dossier). The page holds game data,
+so it stays under the ignored `artifacts/`:
+
+```sh
+python3 scripts/tyre_dossier.py
+```
+
 ## Validate without rebuilding
 
 ```sh
@@ -143,7 +155,8 @@ CI runs them, after a `compileall` syntax check, on every push and pull request
 output limits, truncation, trailing data and overlapping PCG payloads, as well as
 the PE virtual-address reader, file identity checks and tool-path resolution. They also cover
 the strict engine, gearbox and tyre text-database parser: its accepted grammar and each
-rejected construct, and tyre table inheritance resolution. For demo acquisition they cover, without network access, the
+rejected construct, and tyre table inheritance resolution. They check the tyre dossier's anchors and links, its
+address-matched evidence trails, its escaping and each input disagreement it refuses. For demo acquisition they cover, without network access, the
 download-link filter, HTTPS-only fetches and redirects, the 12-URL cap, identity-checked
 archive writes and ZIP extraction safety (unsafe paths, symlinks, size limit, existing
 files). The separate verification command checks the actual demo,
