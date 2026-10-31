@@ -232,7 +232,7 @@ def why_trail(name, table, entry, sites, by_name, hrefs, exe_sha256):
             f'<a href="{e(hrefs["loader"])}">loader disassembly</a>).</p><ol>{"".join(hops)}</ol>'
             f'<table><tr><th>Role</th><th>VA</th><th>Bytes</th><th>Claim</th></tr>{found}</table>'
             f'<p>Sites byte-checked against <code>fr3.exe</code> SHA-256 <code>{e(exe_sha256)}</code> '
-            f'(<a href="{e(hrefs["evidence"])}">field-evidence.json</a>).</p></details>')
+            f'(<a href="{e(hrefs["evidence"])}">{e(Path(hrefs["evidence"]).name)}</a>).</p></details>')
 
 
 def scalar_section(entry):
@@ -318,7 +318,7 @@ def build(tyres_path, evidence_path, pe_path, output, revision=None):
     require(isinstance(pe, dict) and pe.get("sha256"), "PE metadata has no sha256")
     sites = check_inputs(tyres, evidence)
     hrefs = {"accessors": relative_href(ACCESSORS_ASM, output), "loader": relative_href(LOADER_ASM, output),
-             "evidence": relative_href(FIELD_EVIDENCE, output)}
+             "evidence": relative_href(Path(evidence_path).resolve(), output)}
     page = render(tyres, sites, pe, revision or producer_revision(), hrefs)
     Path(output).parent.mkdir(parents=True, exist_ok=True)
     Path(output).write_text(page)

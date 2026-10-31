@@ -204,7 +204,8 @@ class DossierPageTests(DossierTestCase):
         page = self.build()
         targets = set(re.findall(r'href="([^"#][^"]*)"', page))
         self.assertEqual({Path(os.path.normpath(self.output.parent / target)) for target in targets},
-                         {tyre_dossier.ACCESSORS_ASM, tyre_dossier.LOADER_ASM, tyre_dossier.FIELD_EVIDENCE})
+                         {tyre_dossier.ACCESSORS_ASM, tyre_dossier.LOADER_ASM, (self.root / "evidence.json").resolve()})
+        self.assertIn('evidence.json</a>).</p>', page)
 
     def test_input_text_is_escaped(self):
         text = TYRES.replace("CHILD", "EVILNAME").replace("FRONT", "EVILVALUE")
