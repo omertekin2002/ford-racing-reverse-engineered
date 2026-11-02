@@ -311,6 +311,21 @@ class DossierRejectTests(DossierTestCase):
         del tyres["scalar_inheritance"]["MID"]
         self.reject("scalar_inheritance does not list exactly", tyres)
 
+    def test_scalar_inheritance_must_match_the_declarations(self):
+        for mutation in ("parent", "line", "tag", "order"):
+            with self.subTest(mutation=mutation):
+                tyres = tyres_json()
+                child = tyres["scalar_inheritance"]["CHILD"]
+                if mutation == "parent":
+                    child["inherit_type"]["parent"] = "NONEXISTENT"
+                elif mutation == "line":
+                    child["inherit_type"]["line"] = 999
+                elif mutation == "tag":
+                    child["scalars_before"][0]["tag"] = "WIDTH"
+                else:
+                    child["scalars_after"].append(child["scalars_before"].pop())
+                self.reject("scalar_inheritance disagrees with record declarations", tyres)
+
     def test_missing_input(self):
         tyres = copy.deepcopy(tyres_json())
         del tyres["table_provenance"]

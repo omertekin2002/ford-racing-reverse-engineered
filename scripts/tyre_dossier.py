@@ -35,7 +35,7 @@ import os
 from pathlib import Path
 import subprocess
 
-from text_database import REPO_ROOT, RESOLVED_TYRE_TABLES, check_table_provenance, require, table_sources
+from text_database import REPO_ROOT, RESOLVED_TYRE_TABLES, check_table_provenance, require, scalar_inheritance, table_sources
 
 # Each table accessor ends before the next routine starts 0x20 bytes later (tyre_table_accessors.asm).
 ACCESSOR_SPAN = 0x20
@@ -209,6 +209,7 @@ def check_inputs(tyres, evidence):
     require(set(scalars) == inheriting, "scalar_inheritance does not list exactly the records with INHERIT_TYPE")
     require(all(entry.get("status") == "unresolved" for entry in scalars.values()),
             "scalar_inheritance has an entry not labelled unresolved")
+    require(scalars == scalar_inheritance(records), "scalar_inheritance disagrees with record declarations")
     return sites
 
 
