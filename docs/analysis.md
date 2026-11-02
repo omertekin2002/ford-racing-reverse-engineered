@@ -244,8 +244,9 @@ preserve the concrete evidence for these new findings.
 `artifacts/dossier/tyres.html`. For each tyre it shows the declarations as
 written, the source, path, source line, accessor and offset of each of the five
 tables above, and a "Why?" trail of the field-evidence sites behind each table:
-the sites inside that table's accessor and the loader's allocation and store
-sites for it. Sites are matched by address, not claim text. Inheriting records
+the sites inside that table's accessor and the loader's byte-checked store
+sites, plus allocation-size sites where available. Sites are matched by address,
+not claim text. Inheriting records
 show their scalar tags around `INHERIT_TYPE` labelled unresolved, with no
 inherited values. The script exits non-zero instead of writing a page when a
 record lacks a table, `resolved_tables` and `table_provenance` disagree, a path

@@ -68,7 +68,7 @@ summary { cursor: pointer; }
 
 def load_json(path, label):
     require(Path(path).is_file(), f"{label} not found: {path}")
-    return json.loads(Path(path).read_text())
+    return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
 def modrm_disp8(raw):
@@ -113,21 +113,74 @@ def table_evidence(evidence, table, accessor, record_offset):
     require(reads, f"No byte-checked site in field-evidence.json shows the {label} reading its record offset")
     require(hops, f"No byte-checked site in field-evidence.json shows the {label} loading + 0x14")
     loader_sites = []
+    stores = 0
     for site in evidence:
         if not LOADER_SPAN[0] <= site["va"] < LOADER_SPAN[1]:
             continue
         raw = bytes.fromhex(site["bytes"])
         operand = modrm_disp8(raw)
         # mov [reg + disp8], r32 (89) at the table's record offset stores the table address.
-        if (raw[0] == 0x89 and operand and operand[1] == offset) or site["va"] == LOADER_ALLOCATIONS.get(table):
+        store = raw[0] == 0x89 and operand and operand[1] == offset
+        if store:
+            stores += 1
+        if store or site["va"] == LOADER_ALLOCATIONS.get(table):
             loader_sites.append(site)
+    require(stores, f"No byte-checked loader store in field-evidence.json shows the {table} table at {record_offset}")
     return {"accessor": accessor_sites, "loader": loader_sites}
+
+
+def check_fields(value, fields, label):
+    """Reject malformed JSON containers with a field-specific diagnostic."""
+    require(isinstance(value, dict), f"{label} must be an object")
+    for key, kind in fields.items():
+        require(key in value, f"{label} has no {key!r}")
+        require(isinstance(value[key], kind), f"{label}.{key} has the wrong type")
+
+
+def check_input_shapes(tyres):
+    check_fields(tyres, {"source": str, "sha256": str, "records": list, "resolved_tables": dict,
+                         "table_provenance": dict, "scalar_inheritance": dict}, "tyres.json")
+    for i, record in enumerate(tyres["records"]):
+        label = f"tyres.json.records[{i}]"
+        check_fields(record, {"type": str, "line": int, "fields": dict}, label)
+        for tag, field in record["fields"].items():
+            check_fields(field, {"line": int, "values": list, "rows": list}, f"{label}.fields.{tag}")
+            require(all(isinstance(row, list) for row in field["rows"]), f"{label}.fields.{tag}.rows must contain lists")
+            if tag == "INHERIT_TYPE":
+                require(len(field["values"]) == 1 and isinstance(field["values"][0], str),
+                        f"{label}.fields.INHERIT_TYPE.values must name one parent")
+        for key in ("sound_info", "untagged"):
+            require(isinstance(record.get(key, []), list), f"{label}.{key} must be a list")
+        for j, entry in enumerate(record.get("sound_info", [])):
+            entry_label = f"{label}.sound_info[{j}]"
+            check_fields(entry, {"type": str, "line": int, "value_count": int, "start_rpm": (int, float), "rows": list},
+                         entry_label)
+            require(all(isinstance(row, list) for row in entry["rows"]), f"{entry_label}.rows must contain lists")
+        for j, entry in enumerate(record.get("untagged", [])):
+            check_fields(entry, {"line": int, "tokens": list}, f"{label}.untagged[{j}]")
+            require(all(isinstance(token, str) for token in entry["tokens"]), f"{label}.untagged[{j}].tokens must be strings")
+    for name, tables in tyres["resolved_tables"].items():
+        require(isinstance(tables, dict), f"tyres.json.resolved_tables.{name} must be an object")
+        require(all(isinstance(source, str) for source in tables.values()),
+                f"tyres.json.resolved_tables.{name} sources must be strings")
+    for name, tables in tyres["table_provenance"].items():
+        require(isinstance(tables, dict), f"tyres.json.table_provenance.{name} must be an object")
+        for table, entry in tables.items():
+            label = f"tyres.json.table_provenance.{name}.{table}"
+            check_fields(entry, {"source": str, "source_line": int, "accessor": str, "record_offset": str, "path": list}, label)
+            require(all(isinstance(hop, str) for hop in entry["path"]), f"{label}.path must contain record names")
+    for name, entry in tyres["scalar_inheritance"].items():
+        label = f"tyres.json.scalar_inheritance.{name}"
+        check_fields(entry, {"status": str, "inherit_type": dict, "scalars_before": list, "scalars_after": list}, label)
+        check_fields(entry["inherit_type"], {"line": int, "parent": str}, f"{label}.inherit_type")
+        for key in ("scalars_before", "scalars_after"):
+            for i, scalar in enumerate(entry[key]):
+                check_fields(scalar, {"tag": str, "line": int}, f"{label}.{key}[{i}]")
 
 
 def check_inputs(tyres, evidence):
     """Check the inputs agree with each other; return the evidence sites per (table, accessor, offset)."""
-    for key in ("source", "sha256", "records", "resolved_tables", "table_provenance", "scalar_inheritance"):
-        require(key in tyres, f"tyres.json has no {key!r}; regenerate it with scripts/text_database.py")
+    check_input_shapes(tyres)
     records = tyres["records"]
     names = [record["type"] for record in records]
     require(names, "tyres.json has no records")
@@ -321,7 +374,7 @@ def build(tyres_path, evidence_path, pe_path, output, revision=None):
              "evidence": relative_href(Path(evidence_path).resolve(), output)}
     page = render(tyres, sites, pe, revision or producer_revision(), hrefs)
     Path(output).parent.mkdir(parents=True, exist_ok=True)
-    Path(output).write_text(page)
+    Path(output).write_text(page, encoding="utf-8")
     return len(tyres["records"])
 
 
@@ -338,7 +391,7 @@ def main():
     args = parser.parse_args()
     try:
         count = build(args.tyres, args.evidence, args.pe, args.output)
-    except (ValueError, KeyError, OSError) as error:
+    except (ValueError, KeyError, TypeError, AttributeError, OSError) as error:
         raise SystemExit(f"tyre_dossier.py: {error}") from None
     print(f"Wrote {count} tyre records to {args.output}")
 

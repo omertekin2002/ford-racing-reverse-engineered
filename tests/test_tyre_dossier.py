@@ -89,14 +89,14 @@ class DossierTestCase(unittest.TestCase):
 
     def write(self, name, data):
         path = self.root / name
-        path.write_text(json.dumps(data))
+        path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
         return path
 
     def build(self, tyres=None, evidence=EVIDENCE, pe=PE):
         tyres = tyres_json() if tyres is None else tyres
         tyre_dossier.build(self.write("tyres.json", tyres), self.write("evidence.json", evidence),
                            self.write("pe.json", pe), self.output, revision="0123abcd")
-        return self.output.read_text()
+        return self.output.read_text(encoding="utf-8")
 
     def reject(self, fragment, tyres=None, evidence=EVIDENCE):
         with self.assertRaises(ValueError) as caught:
@@ -219,6 +219,39 @@ class DossierPageTests(DossierTestCase):
 
 
 class DossierRejectTests(DossierTestCase):
+    def test_missing_loader_store_even_with_allocation_evidence(self):
+        for table, addresses in LOADER_SITES.items():
+            with self.subTest(table=table):
+                evidence = [site for site in EVIDENCE if site["va"] != addresses[-1]]
+                self.reject(f"No byte-checked loader store in field-evidence.json shows the {table} table", evidence=evidence)
+
+    def test_malformed_input_containers_and_nested_entries(self):
+        self.reject("tyres.json must be an object", [])
+        cases = [
+            (("records",), {}, "records"),
+            (("records", 0), [], "records[0]"),
+            (("records", 0, "fields"), [], "records[0].fields"),
+            (("records", 0, "fields", "RADIUS"), [], "fields.RADIUS"),
+            (("records", 0, "sound_info"), {}, "records[0].sound_info"),
+            (("resolved_tables",), [], "resolved_tables"),
+            (("resolved_tables", "CHILD"), [], "resolved_tables.CHILD"),
+            (("table_provenance",), [], "table_provenance"),
+            (("table_provenance", "CHILD"), [], "table_provenance.CHILD"),
+            (("table_provenance", "CHILD", "VERTICAL_LOAD"), [], "table_provenance.CHILD.VERTICAL_LOAD"),
+            (("table_provenance", "CHILD", "VERTICAL_LOAD", "path"), [[]], "VERTICAL_LOAD.path"),
+            (("scalar_inheritance", "CHILD"), {}, "scalar_inheritance.CHILD has no 'status'"),
+            (("scalar_inheritance", "CHILD", "inherit_type"), {}, "inherit_type has no 'line'"),
+            (("scalar_inheritance", "CHILD", "scalars_before"), [None], "scalars_before[0]"),
+        ]
+        for path, value, message in cases:
+            with self.subTest(path=path):
+                tyres = tyres_json()
+                target = tyres
+                for key in path[:-1]:
+                    target = target[key]
+                target[path[-1]] = value
+                self.reject(message, tyres)
+
     def test_missing_accessor_read(self):
         evidence = [site for site in EVIDENCE if site["va"] != 0x00523e52]
         self.reject("No byte-checked site in field-evidence.json shows the VERTICAL_LOAD accessor 0x00523e50 "
@@ -291,8 +324,28 @@ class DossierRejectTests(DossierTestCase):
 class DossierCommandTests(DossierTestCase):
     SCRIPT = REPO_ROOT / "scripts/tyre_dossier.py"
 
-    def run_script(self, *args):
-        return subprocess.run([sys.executable, str(self.SCRIPT), *args], capture_output=True, text=True, check=False)
+    def run_script(self, *args, env=None):
+        return subprocess.run([sys.executable, str(self.SCRIPT), *args], capture_output=True, text=True, check=False, env=env)
+
+    def test_cli_uses_utf8_even_with_an_ascii_locale(self):
+        tyres = tyres_json()
+        tyres["source"] = "Veri/Türkçe.DAT"
+        evidence = copy.deepcopy(EVIDENCE)
+        evidence[0]["claim"] = "Türkçe — kanıt"
+        result = self.run_script("--tyres", str(self.write("tyres.json", tyres)),
+                                 "--evidence", str(self.write("evidence.json", evidence)), "--output", str(self.output),
+                                 env={**os.environ, "LC_ALL": "C", "PYTHONUTF8": "0", "PYTHONCOERCECLOCALE": "0"})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Veri/Türkçe.DAT", self.output.read_bytes().decode("utf-8"))
+
+    def test_cli_reports_malformed_nested_input_without_a_traceback(self):
+        tyres = tyres_json()
+        tyres["table_provenance"]["CHILD"] = []
+        result = self.run_script("--tyres", str(self.write("tyres.json", tyres)), "--output", str(self.output))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("tyre_dossier.py: tyres.json.table_provenance.CHILD must be an object", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertFalse(self.output.exists())
 
     def test_help_documents_flags_and_defaults(self):
         result = self.run_script("--help")
