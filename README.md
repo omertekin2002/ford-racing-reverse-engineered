@@ -164,6 +164,15 @@ all 773 game-file hashes, tag pointers, decoded resource hashes, PCG indexes,
 parsed text-database counts, instruction sites, decompiler counts and C layout
 assertions. Synthetic tests alone do not validate game behavior.
 
+The browser launcher (`web/site.js`) and runtime bridge (`web/runtime-bridge.js`)
+have their own tests. They load the real files into Node's `vm` with stand-in
+browser and Boxedwine globals, need Node 22+ and no `npm install` or network, and
+also run in CI:
+
+```sh
+node --test "tests/js/*.test.mjs"
+```
+
 Lint the scripts and tests with the hash-pinned ruff and the repository's `ruff.toml`;
 CI also runs this lint step on every push and pull request:
 

@@ -74,6 +74,18 @@ to setup and the same `--tools` to build. `--skip-compile` repackages an existin
 build from that pinned checkout; it is useful when editing the launcher.
 Setup preserves modified tool source instead of replacing it.
 
+After editing `web/site.js` or `web/runtime-bridge.js`, run their tests with
+Node 22+ (no `npm install`, no network, no build needed):
+
+```sh
+node --test "tests/js/*.test.mjs"
+```
+
+They load the real files with stand-in browser and Boxedwine globals and cover
+the launcher's readiness, isolation, launch, Restart, message and log handling,
+and the bridge's runtime arguments, download size and SHA-256 checks and its
+messages to the launcher. They do not run Boxedwine, Wine or the game.
+
 ## Runtime requirements and behavior
 
 Use a desktop keyboard, WebGL2, WebAssembly SIMD, tail calls and standardized
