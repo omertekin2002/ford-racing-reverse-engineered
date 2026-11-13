@@ -94,6 +94,7 @@ headless script errors can be reported without a failing process exit code.
 | `recovered/fr3_database_layouts.h` | Engine, gearbox and tyre in-memory layouts |
 | `artifacts/text-databases/` | Parsed engine, gearbox and tyre records from `scripts/text_database.py`, with source hashes |
 | `artifacts/dossier/tyres.html` | Offline tyre dossier from `scripts/tyre_dossier.py`: each tyre's declarations beside its five table sources and their byte-checked evidence |
+| `artifacts/dossier/engines.html`, `artifacts/dossier/gearboxes.html` | Offline engine and gearbox dossiers from `scripts/record_dossier.py`: each record's declarations as written, with inheritance and untagged lines labelled unresolved |
 | `artifacts/ghidra/` | Complete baseline C, function disassembly, function list and call edges |
 | `artifacts/fr3-demo-annotated.gzf` | Portable annotated Ghidra program |
 | `artifacts/fr3-analysis.zip` | Analysis bundle with SHA-256 manifest |
@@ -136,6 +137,16 @@ so it stays under the ignored `artifacts/`:
 python3 scripts/tyre_dossier.py
 ```
 
+`scripts/record_dossier.py` does the same for `engines.json` and
+`gearboxes.json`, writing `engines.html` and `gearboxes.html` next to the tyre
+page. They show each record's declarations as written; engine inheritance, the
+colon-less `INDIGO` line and the units of the values stay unresolved (see
+[the analysis notes](docs/analysis.md#engine-and-gearbox-dossier)):
+
+```sh
+python3 scripts/record_dossier.py
+```
+
 ## Validate without rebuilding
 
 ```sh
@@ -156,7 +167,8 @@ output limits, truncation, trailing data and overlapping PCG payloads, as well a
 the PE virtual-address reader, file identity checks and tool-path resolution. They also cover
 the strict engine, gearbox and tyre text-database parser: its accepted grammar and each
 rejected construct, and tyre table inheritance resolution. They check the tyre dossier's anchors and links, its
-address-matched evidence trails, its escaping and each input disagreement it refuses. For demo acquisition they cover, without network access, the
+address-matched evidence trails, its escaping and each input disagreement it refuses, and the engine and gearbox
+dossiers' anchors, unresolved labels, escaping and the malformed inputs they refuse. For demo acquisition they cover, without network access, the
 download-link filter, HTTPS-only fetches and redirects, the 12-URL cap, identity-checked
 archive writes and ZIP extraction safety (unsafe paths, symlinks, size limit, existing
 files). The separate verification command checks the actual demo,

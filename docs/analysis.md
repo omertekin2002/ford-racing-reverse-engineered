@@ -255,6 +255,26 @@ byte-checked site. A shared table source does not make two tyres handle the
 same: their scalar fields can differ. The page is not committed because it holds
 game data.
 
+### Engine and gearbox dossier
+
+`python3 scripts/record_dossier.py`, run after `text_database.py`, writes
+`artifacts/dossier/engines.html` and `artifacts/dossier/gearboxes.html` beside
+the tyre page, with a link bar between the three. Each page lists the records in
+file order, with each engine's `:INHERIT_TYPE` parent and torque array shape,
+and then shows every record's declarations exactly as written, in line order.
+Multi-row fields such as `TORQUE_ARRAY` appear as row tables with their
+dimensions. `:INHERIT_TYPE` links to the parent and is labelled unresolved: none
+of the parent's values are copied into the child, because engine inheritance is
+not resolved. The colon-less `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` is
+shown verbatim as an untagged line, not as inheritance, with a note that whether
+the game honours it is not established. The meaning and units of the values,
+including the torque arrays, are not interpreted. The script exits non-zero
+without writing either page when an input is missing or malformed: records that
+are not a list or lack `type`, `line` or `fields`, duplicate record names, an
+`:INHERIT_TYPE` that does not name an earlier record of the same file, or PE
+metadata without `sha256`. The pages are not committed because they hold game
+data.
+
 ## Validation and limits
 
 [Verification results](../analysis/verification.json) cover the exact executable,
