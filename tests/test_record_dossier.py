@@ -11,6 +11,7 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+from dossier_common import NOTICE_LINKS, rights_notice
 import record_dossier
 from text_database import GEARBOX_TAGS, REPO_ROOT, parse
 
@@ -119,12 +120,13 @@ class RecordDossierPageTests(RecordDossierTestCase):
                                        strict=True):
             with self.subTest(prefix=prefix):
                 links = Links(page)
-                self.assertEqual(links.ids, [f"{prefix}-{name}" for name in names])
+                self.assertEqual(links.ids, ["rights-notice", "rights-title", *(f"{prefix}-{name}" for name in names)])
                 internal = [href[1:] for href in links.hrefs if href.startswith("#")]
                 self.assertTrue(internal)
                 self.assertEqual([href for href in internal if href not in links.ids], [])
                 self.assertEqual({href for href in links.hrefs if not href.startswith("#")},
-                                 {"engines.html", "gearboxes.html", "tyres.html", "pcg.html"} - {self.pages[prefix == "gearbox"].name})
+                                 {"engines.html", "gearboxes.html", "tyres.html", "pcg.html", *NOTICE_LINKS}
+                                 - {self.pages[prefix == "gearbox"].name})
 
     def test_inherit_type_links_to_the_parent_and_is_unresolved(self):
         engines, _ = self.build()
@@ -202,15 +204,20 @@ class RecordDossierPageTests(RecordDossierTestCase):
 
     def test_nav_bar(self):
         engines, gearboxes = self.build()
-        self.assertIn('<nav>Dossiers: <strong>Engines</strong> | <a href="gearboxes.html">Gearboxes</a> | '
+        self.assertIn('<nav>Research: <strong>Engines</strong> | <a href="gearboxes.html">Gearboxes</a> | '
                       '<a href="tyres.html">Tyres</a> | <a href="pcg.html">PCG catalogue</a></nav>', engines)
-        self.assertIn('<nav>Dossiers: <a href="engines.html">Engines</a> | <strong>Gearboxes</strong> | '
+        self.assertIn('<nav>Research: <a href="engines.html">Engines</a> | <strong>Gearboxes</strong> | '
                       '<a href="tyres.html">Tyres</a> | <a href="pcg.html">PCG catalogue</a></nav>', gearboxes)
 
     def test_no_scripts_or_remote_resources(self):
         for page in self.build():
             self.assertNotIn("<script", page.lower())
-            self.assertNotRegex(page, r"https?://")
+            self.assertNotRegex(page.replace(rights_notice(), ""), r"https?://")
+
+    def test_rights_notice_comes_before_the_main_content(self):
+        for page in self.build():
+            self.assertEqual(page.count(rights_notice()), 1)
+            self.assertLess(page.index(rights_notice()), page.index("<h1>"))
 
     def test_input_text_is_escaped(self):
         engines = json.loads(json.dumps(engines_json()).replace("BASE", 'A<&\\"B').replace("FRONT", 'x<&\\"y'))

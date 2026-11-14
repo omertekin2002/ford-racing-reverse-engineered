@@ -32,9 +32,10 @@ import argparse
 from pathlib import Path
 
 import dossier_common
-from dossier_common import STYLE, check_fields, check_pe, e, load_json, nav, producer_revision, relative_href
+from dossier_common import check_fields, check_pe, e, load_json, page_start, producer_revision, relative_href
 from text_database import REPO_ROOT, RESOLVED_TYRE_TABLES, check_table_provenance, require, scalar_inheritance, table_sources
 
+PAGE = "tyres.html"
 # Each table accessor ends before the next routine starts 0x20 bytes later (tyre_table_accessors.asm).
 ACCESSOR_SPAN = 0x20
 INHERIT_OFFSET = 0x14
@@ -232,14 +233,12 @@ def scalar_section(entry):
             f'</table></div>')
 
 
-def render(tyres, sites, pe, revision, hrefs):
+def render(tyres, sites, pe, revision, hrefs, entrance=False):
     """Return the dossier HTML. check_inputs() must have accepted tyres first."""
     records = tyres["records"]
     by_name = {record["type"]: record for record in records}
     provenance = tyres["table_provenance"]
-    parts = [f'<!DOCTYPE html>\n<html lang="en"><head><meta charset="utf-8">'
-             f'<title>Ford Racing 3 demo tyre dossier</title><style>{STYLE}</style></head><body>',
-             nav("tyres.html"),
+    parts = [page_start("Ford Racing 3 demo tyre dossier", PAGE, entrance=entrance),
              '<h1>Ford Racing 3 demo: tyre dossier</h1><dl>',
              f'<dt>Executable</dt><dd><code>{e(pe.get("file", "fr3.exe"))}</code> SHA-256 <code>{e(pe["sha256"])}</code>, '
              f'PE timestamp {e(pe.get("timestamp_header_utc", "unknown"))}</dd>',
@@ -291,16 +290,21 @@ def render(tyres, sites, pe, revision, hrefs):
     return "\n".join(parts)
 
 
-def build(tyres_path, evidence_path, pe_path, output, revision=None):
-    """Read the inputs, check them and write the dossier; return the number of records."""
+def build(tyres_path, evidence_path, pe_path, output, revision=None, hrefs=None, entrance=False):
+    """Read the inputs, check them and write the dossier; return the number of records.
+
+    hrefs maps "accessors", "loader" and "evidence" to the links the page uses for its evidence files; by
+    default they are relative links from `output` to the files in this repository. entrance=True adds the
+    entrance page to the nav bar, for scripts/build_research.py.
+    """
     tyres = load_json(tyres_path, "Tyre database (run scripts/text_database.py first)")
     evidence = load_json(evidence_path, "Field evidence")
     pe = load_json(pe_path, "PE metadata")
     check_pe(pe)
     sites = check_inputs(tyres, evidence)
-    hrefs = {"accessors": relative_href(ACCESSORS_ASM, output), "loader": relative_href(LOADER_ASM, output),
-             "evidence": relative_href(Path(evidence_path).resolve(), output)}
-    page = render(tyres, sites, pe, revision or producer_revision(), hrefs)
+    hrefs = hrefs or {"accessors": relative_href(ACCESSORS_ASM, output), "loader": relative_href(LOADER_ASM, output),
+                      "evidence": relative_href(Path(evidence_path).resolve(), output)}
+    page = render(tyres, sites, pe, revision or producer_revision(), hrefs, entrance)
     Path(output).parent.mkdir(parents=True, exist_ok=True)
     Path(output).write_text(page, encoding="utf-8")
     return len(tyres["records"])

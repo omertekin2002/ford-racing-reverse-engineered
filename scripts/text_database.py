@@ -493,24 +493,30 @@ def verify_text_databases(game_dir, known_tags):
             "sound_info_entries": len(entries), "sound_info_per_record": sounds}
 
 
+def write_databases(game_dir, output, known_tags):
+    """Parse the three text databases under game_dir into <output>/<stem>.json; return the record count per stem."""
+    require(Path(game_dir).is_dir(), f"Game directory does not exist: {game_dir}")
+    Path(output).mkdir(parents=True, exist_ok=True)
+    counts = {}
+    for stem, relative in DATABASES.items():
+        database = read_database(game_dir, relative, known_tags, stem in SOUND_INFO_DATABASES)
+        if stem == "tyres":
+            database["resolved_tables"] = resolve_tyre_tables(database["records"])
+            database["table_provenance"] = tyre_table_provenance(database["records"])
+            database["scalar_inheritance"] = scalar_inheritance(database["records"])
+        (Path(output) / f"{stem}.json").write_text(json.dumps(database, indent=2, allow_nan=False) + "\n")
+        counts[stem] = len(database["records"])
+    return counts
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("game_dir", type=Path, help="Extracted Program_Executable_Files directory")
     parser.add_argument("--output", type=Path, default=Path("artifacts/text-databases"), help="Directory for engines.json, gearboxes.json and tyres.json")
     parser.add_argument("--tags", type=Path, default=REPO_ROOT / "analysis/tags.json", help="Tag registry JSON")
     args = parser.parse_args()
-    if not args.game_dir.is_dir():
-        raise ValueError("Game directory does not exist")
-    known_tags = load_known_tags(args.tags)
-    args.output.mkdir(parents=True, exist_ok=True)
-    for stem, relative in DATABASES.items():
-        database = read_database(args.game_dir, relative, known_tags, stem in SOUND_INFO_DATABASES)
-        if stem == "tyres":
-            database["resolved_tables"] = resolve_tyre_tables(database["records"])
-            database["table_provenance"] = tyre_table_provenance(database["records"])
-            database["scalar_inheritance"] = scalar_inheritance(database["records"])
-        (args.output / f"{stem}.json").write_text(json.dumps(database, indent=2, allow_nan=False) + "\n")
-        print(f"Parsed {len(database['records'])} {stem} from {relative}")
+    for stem, count in write_databases(args.game_dir, args.output, load_known_tags(args.tags)).items():
+        print(f"Parsed {count} {stem} from {DATABASES[stem]}")
 
 
 if __name__ == "__main__":
