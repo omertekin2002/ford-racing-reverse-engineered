@@ -94,7 +94,7 @@ def render_index(counts, pe, revision, evidence):
                     for page, title, text, count in rows)
     files = "".join(f'<li><a href="{e(href)}"><code>{e(href)}</code></a></li>' for href in evidence)
     return "\n".join([
-        page_start("Ford Racing 3 demo research findings", INDEX_PAGE),
+        page_start("Ford Racing 3 demo research findings", INDEX_PAGE, entrance=True),
         "<h1>Ford Racing 3 demo: explore the findings</h1><dl>",
         f'<dt>Executable</dt><dd><code>{e(pe.get("file", "fr3.exe"))}</code> SHA-256 <code>{e(pe["sha256"])}</code>, '
         f'PE timestamp {e(pe.get("timestamp_header_utc", "unknown"))}</dd>',
@@ -123,11 +123,13 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
             work = Path(work)
             write_databases(game_dir, work, load_known_tags(analysis / "tags.json"))
             counts = {"tyres": tyre_dossier.build(work / "tyres.json", analysis / TYRE_EVIDENCE["evidence"], pe_path,
-                                                  staging / tyre_dossier.PAGE, revision, hrefs=tyre_hrefs),
-                      **record_dossier.build(work / "engines.json", work / "gearboxes.json", pe_path, staging, revision)}
+                                                  staging / tyre_dossier.PAGE, revision, hrefs=tyre_hrefs,
+                                                  entrance=True),
+                      **record_dossier.build(work / "engines.json", work / "gearboxes.json", pe_path, staging, revision,
+                                               entrance=True)}
         counts["pcg_collections"], counts["pcg_graphics"] = pcg_catalogue.build(
             analysis / PCG_EVIDENCE["index"], analysis / PCG_EVIDENCE["manifest"], pe_path,
-            analysis / "verification.json", staging / pcg_catalogue.PAGE, revision, hrefs=pcg_hrefs)
+            analysis / "verification.json", staging / pcg_catalogue.PAGE, revision, hrefs=pcg_hrefs, entrance=True)
         evidence = sorted({*tyre_hrefs.values(), *pcg_hrefs.values()})
         index = render_index(counts, load_json(pe_path, "PE metadata"), revision, evidence)
         (staging / INDEX_PAGE).write_text(index, encoding="utf-8")

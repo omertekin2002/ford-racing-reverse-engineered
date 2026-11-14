@@ -146,7 +146,7 @@ python3 scripts/build_research.py
 ```
 
 The per-page commands below still work on their own and write to
-`artifacts/dossier/`.
+`artifacts/dossier/`, without the entrance page or a nav link to it.
 
 `scripts/tyre_dossier.py` turns `tyres.json`, `field-evidence.json` and
 `pe-metadata.json` into one static page, `artifacts/dossier/tyres.html`, with no

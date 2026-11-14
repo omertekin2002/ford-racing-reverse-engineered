@@ -86,10 +86,14 @@ def link(prefix, name, part=None):
     return f'<a href="#{e(anchor(prefix, name, part))}">{e(name)}</a>'
 
 
-def nav(current):
-    """Return the link bar between the sibling dossier pages; `current` is this page's file name."""
+def nav(current, entrance=False):
+    """Return the link bar between the sibling research pages; `current` is this page's file name.
+
+    The entrance page (index.html) is listed only when `entrance` is true: scripts/build_research.py writes it,
+    the standalone generators do not.
+    """
     items = [f"<strong>{e(title)}</strong>" if page == current else f'<a href="{e(page)}">{e(title)}</a>'
-             for page, title in PAGES]
+             for page, title in PAGES if entrance or page != INDEX_PAGE]
     return f'<nav>Research: {" | ".join(items)}</nav>'
 
 
@@ -106,10 +110,11 @@ def rights_notice():
             f'<a href="{e(ISSUES_PAGE)}" rel="noopener">request removal through the project’s issues</a>.</p></aside>')
 
 
-def page_start(title, current, style=STYLE):
+def page_start(title, current, style=STYLE, entrance=False):
     """Return a research page's head, nav bar and rights-holder notice, up to where its main content starts."""
     return (f'<!DOCTYPE html>\n<html lang="en"><head><meta charset="utf-8">'
-            f'<title>{e(title)}</title><style>{style}</style></head><body>\n{nav(current)}\n{rights_notice()}')
+            f'<title>{e(title)}</title><style>{style}</style></head><body>\n{nav(current, entrance)}\n'
+            f'{rights_notice()}')
 
 
 def rows_table(rows):

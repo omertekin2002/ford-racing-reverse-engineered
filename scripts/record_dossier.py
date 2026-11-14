@@ -78,14 +78,14 @@ def shape(field):
     return f'{len(field["rows"])} &times; {len(field["rows"][0])}' if field["rows"] else "inline"
 
 
-def render(database, kind, pe, revision):
+def render(database, kind, pe, revision, entrance=False):
     """Return one dossier page. check_records() must have accepted the database first."""
     spec = DATABASES[kind]
     prefix, title = spec["prefix"], spec["title"]
     records = database["records"]
     inherits = kind == "engines" or any("INHERIT_TYPE" in record["fields"] for record in records)
     torque = kind == "engines"
-    parts = [page_start(f"Ford Racing 3 demo {title} dossier", spec["page"], STYLE + EXTRA_STYLE),
+    parts = [page_start(f"Ford Racing 3 demo {title} dossier", spec["page"], STYLE + EXTRA_STYLE, entrance),
              f'<h1>Ford Racing 3 demo: {title} dossier</h1><dl>',
              f'<dt>Executable</dt><dd><code>{e(pe.get("file", "fr3.exe"))}</code> SHA-256 <code>{e(pe["sha256"])}</code>, '
              f'PE timestamp {e(pe.get("timestamp_header_utc", "unknown"))}</dd>',
@@ -127,8 +127,11 @@ def render(database, kind, pe, revision):
     return "\n".join(parts)
 
 
-def build(engines_path, gearboxes_path, pe_path, output_dir, revision=None):
-    """Read and check every input, then write both pages; return the record count per database."""
+def build(engines_path, gearboxes_path, pe_path, output_dir, revision=None, entrance=False):
+    """Read and check every input, then write both pages; return the record count per database.
+
+    entrance=True adds the entrance page to the nav bar, for scripts/build_research.py.
+    """
     databases = {"engines": load_json(engines_path, "Engine database (run scripts/text_database.py first)"),
                  "gearboxes": load_json(gearboxes_path, "Gearbox database (run scripts/text_database.py first)")}
     pe = load_json(pe_path, "PE metadata")
@@ -136,7 +139,7 @@ def build(engines_path, gearboxes_path, pe_path, output_dir, revision=None):
     for kind, database in databases.items():
         check_records(database, f"{kind}.json")
     revision = revision or producer_revision()
-    pages = {kind: render(database, kind, pe, revision) for kind, database in databases.items()}
+    pages = {kind: render(database, kind, pe, revision, entrance) for kind, database in databases.items()}
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     for kind, page in pages.items():
         (Path(output_dir) / DATABASES[kind]["page"]).write_text(page, encoding="utf-8")

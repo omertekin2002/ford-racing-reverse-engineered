@@ -170,10 +170,10 @@ def entry_row(collection, entry):
             f'<td>{header_words(entry["header_words"])}</td></tr>')
 
 
-def render(collections, resources, pe, revision, hrefs):
+def render(collections, resources, pe, revision, hrefs, entrance=False):
     """Return the catalogue page. check_inputs() must have accepted the inputs first."""
     entries = sum(len(collection["entries"]) for collection in collections)
-    parts = [page_start("Ford Racing 3 demo PCG catalogue", PAGE, STYLE + EXTRA_STYLE),
+    parts = [page_start("Ford Racing 3 demo PCG catalogue", PAGE, STYLE + EXTRA_STYLE, entrance),
              '<h1>Ford Racing 3 demo: PCG catalogue</h1><dl>',
              f'<dt>Executable</dt><dd><code>{e(pe.get("file", "fr3.exe"))}</code> SHA-256 <code>{e(pe["sha256"])}</code>, '
              f'PE timestamp {e(pe.get("timestamp_header_utc", "unknown"))}</dd>',
@@ -233,11 +233,13 @@ def render(collections, resources, pe, revision, hrefs):
     return "\n".join(parts)
 
 
-def build(index_path, manifest_path, pe_path, verification_path, output, revision=None, hrefs=None):
+def build(index_path, manifest_path, pe_path, verification_path, output, revision=None, hrefs=None,
+          entrance=False):
     """Read and check every input, then write the page; return (collections, entries).
 
     hrefs maps "index", "manifest" and "asm" to the links the page uses for its inputs; by default they are
-    relative links from `output` to the files in this repository.
+    relative links from `output` to the files in this repository. entrance=True adds the entrance page to the
+    nav bar, for scripts/build_research.py.
     """
     collections = load_json(index_path, "PCG index")
     manifest = load_json(manifest_path, "Unpacked manifest")
@@ -248,7 +250,7 @@ def build(index_path, manifest_path, pe_path, verification_path, output, revisio
     hrefs = hrefs or {"index": relative_href(Path(index_path).resolve(), output),
                       "manifest": relative_href(Path(manifest_path).resolve(), output),
                       "asm": relative_href(VIEW_ASM, output)}
-    page = render(collections, resources, pe, revision or producer_revision(), hrefs)
+    page = render(collections, resources, pe, revision or producer_revision(), hrefs, entrance)
     Path(output).parent.mkdir(parents=True, exist_ok=True)
     Path(output).write_text(page, encoding="utf-8")
     return len(collections), sum(len(collection["entries"]) for collection in collections)
