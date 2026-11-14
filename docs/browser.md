@@ -19,9 +19,8 @@ Generated files in `artifacts/` and downloaded inputs stay out of Git.
 4. Open the URL reported by the deployment. For this repository it normally is
    `https://omertekin2002.github.io/ford-racing-reverse-engineered/`.
 
-Pushes to `main` that touch `web/`, `scripts/`,
-`analysis/game-file-manifest.json` or the workflow build, verify and deploy the
-site to the URL above. Manual runs with **deploy** unchecked produce a
+Pushes to `main` that touch `web/`, `scripts/`, `analysis/` or the workflow
+build, verify and deploy the site to the URL above. Manual runs with **deploy** unchecked produce a
 downloadable artifact without publishing.
 
 The workflow compiles the pinned runtime, downloads and verifies the public
@@ -43,6 +42,33 @@ and tells rights holders to request removal through the
 The preview is taken down if a rights holder objects.
 `verify_web.py` fails the build when `index.html` lacks this notice.
 
+## Research findings
+
+Per decision #46 the site also publishes the generated research pages under
+`research/`, at
+<https://omertekin2002.github.io/ford-racing-reverse-engineered/research/>. The
+landing page links them as **Explore findings**. The directory holds what
+`scripts/build_research.py` writes (see
+[the analysis notes](analysis.md#research-directory)): the entrance page
+`index.html`, `engines.html`, `gearboxes.html`, `tyres.html` and `pcg.html`, and
+the committed `analysis/` files they link to under `evidence/`. No parsed JSON
+or game file is published there. Every page carries the same rights-holder
+notice and official demo link as the preview, before its content.
+
+The workflow builds the pages from the verified demo right after acquiring it,
+into `artifacts/web/research/`, before `build_web.py` writes `SHA256SUMS`, so the
+sums cover every research file. When `index.html` links to `research/` or the
+directory exists, `verify_web.py` requires `research/index.html`, runs
+`verify_research()` on the directory (notice on every page, no scripts or
+external resources, every local link resolving inside `research/`, no file
+other than the ones `build_research.py` writes), checks
+`research/index.html`'s relative URLs and requires every file under `research/`
+to be listed in `SHA256SUMS`.
+
+The research pages are taken down together with the preview if a rights holder
+objects: both are one Pages deployment, so disabling Pages or removing the
+deploy removes both.
+
 ## Build locally
 
 Use Linux with Python 3.12+, Git, Make, a C++ build environment and Unshield.
@@ -56,6 +82,7 @@ can replace the system `unshield`.
 ```sh
 python3 scripts/setup_web_tools.py
 python3 scripts/acquire_demo.py inputs --unshield unshield
+python3 scripts/build_research.py --output artifacts/web/research
 python3 scripts/build_web.py --jobs 4
 python3 scripts/verify_web.py artifacts/web
 python3 -m http.server 8000 --directory artifacts/web
@@ -73,6 +100,18 @@ Set `FR3_WEB_TOOLS` to select another writable tool directory, or pass `--root`
 to setup and the same `--tools` to build. `--skip-compile` repackages an existing
 build from that pinned checkout; it is useful when editing the launcher.
 Setup preserves modified tool source instead of replacing it.
+
+After editing `web/site.js` or `web/runtime-bridge.js`, run their tests with
+Node 22+ (no `npm install`, no network, no build needed):
+
+```sh
+node --test "tests/js/*.test.mjs"
+```
+
+They load the real files with stand-in browser and Boxedwine globals and cover
+the launcher's readiness, isolation, launch, Restart, message and log handling,
+and the bridge's runtime arguments, download size and SHA-256 checks and its
+messages to the launcher. They do not run Boxedwine, Wine or the game.
 
 ## Runtime requirements and behavior
 

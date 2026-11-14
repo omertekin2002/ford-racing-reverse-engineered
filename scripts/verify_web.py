@@ -15,6 +15,8 @@ from setup_web_tools import BOXEDWINE_REVISION, WINE_WEB_SHA256
 ISSUES_PAGE = "https://github.com/omertekin2002/ford-racing-reverse-engineered/issues"
 RIGHTS_CREDIT = "Ford Racing 3 demo © 2004 Empire Interactive Europe Ltd."
 MANIFEST = Path(__file__).resolve().parents[1] / "analysis/game-file-manifest.json"
+# The research pages from scripts/build_research.py, published under this directory of the site (decision #46).
+RESEARCH_DIR = "research"
 SUM_LINE = re.compile(r"([0-9a-f]{64})  (.+)")
 WASM_HEADER = b"\0asm\x01\0\0\0"
 
@@ -108,11 +110,15 @@ def verify_build_record(root, record):
 
 
 def verify_sums(root):
-    """Check every SHA256SUMS entry: strict format, a path inside the site and a matching digest."""
+    """Check every SHA256SUMS entry: strict format, a path inside the site and a matching digest.
+
+    Return the set of listed paths, as written in SHA256SUMS.
+    """
     lines = (root / "SHA256SUMS").read_text(encoding="utf-8").rstrip("\n").split("\n")
     if lines == [""]:
         raise ValueError("SHA256SUMS lists no files")
     site = root.resolve()
+    listed = set()
     for number, line in enumerate(lines, 1):
         match = SUM_LINE.fullmatch(line)
         if not match:
@@ -125,6 +131,8 @@ def verify_sums(root):
             raise ValueError(f"SHA256SUMS lists a missing file: {relative}")
         if sha256(path) != expected:
             raise ValueError(f"SHA256SUMS digest does not match: {relative}")
+        listed.add(relative)
+    return listed
 
 
 def verify_relative_urls(root, html_path):
@@ -144,6 +152,49 @@ def verify_relative_urls(root, html_path):
             raise ValueError(f"URL in {page} escapes the site: {reference}")
         if not path.exists():
             raise ValueError(f"URL in {page} points to a missing file: {reference}")
+
+
+def links_to_research(html):
+    """Return whether a page links to the research directory (research/, or a file under it)."""
+    parser = References()
+    parser.feed(html)
+    for reference in parser.paths:
+        url = urllib.parse.urlsplit(reference)
+        if url.scheme or url.netloc:
+            continue
+        parts = [part for part in PurePosixPath(urllib.parse.unquote(url.path)).parts if part != "."]
+        if parts and parts[0] == RESEARCH_DIR:
+            return True
+    return False
+
+
+def verify_research_site(root, listed):
+    """Check the published research directory when index.html links to it or it exists.
+
+    It must hold research/index.html, pass build_research.verify_research() (the notice on every page, no
+    scripts or external resources, local links resolving inside research/, no file other than the ones
+    build_research.py writes), and every file under it must be listed in SHA256SUMS (`listed`, from verify_sums). Return the number of research files, 0 when there is none.
+    """
+    research = root / RESEARCH_DIR
+    linked = links_to_research((root / "index.html").read_text(encoding="utf-8"))
+    if not linked and not research.exists():
+        return 0
+    if not (research / "index.html").is_file():
+        raise ValueError(f"index.html links to {RESEARCH_DIR}/ but the site has no {RESEARCH_DIR}/index.html; "
+                         f"run scripts/build_research.py --output <site>/{RESEARCH_DIR} before build_web.py")
+    # Imported here: build_research imports this module for the rights-notice wording.
+    from build_research import verify_research
+    try:
+        verify_research(research)
+    except ValueError as error:
+        raise ValueError(f"{RESEARCH_DIR}/: {error}") from error
+    verify_relative_urls(root, research / "index.html")
+    files = sorted(path.relative_to(root).as_posix() for path in research.rglob("*") if path.is_file())
+    unlisted = [name for name in files if name not in listed]
+    if unlisted:
+        shown = ", ".join(unlisted[:5]) + (f" and {len(unlisted) - 5} more" if len(unlisted) > 5 else "")
+        raise ValueError(f"SHA256SUMS does not list these research files: {shown}")
+    return len(files)
 
 
 def verify_script_order(html):
@@ -188,12 +239,15 @@ def verify(root, manifest=None):
         manifest = json.loads(MANIFEST.read_text())
     verify_build_record(root, json.loads((root / "build.json").read_text()))
     verify_notice((root / "index.html").read_text(encoding="utf-8"))
-    verify_sums(root)
+    # Before the relative-URL checks, so a missing research/ fails with its own message.
+    research = verify_research_site(root, verify_sums(root))
     for html in (root / "index.html", root / "runtime/game.html"):
         verify_relative_urls(root, html)
     verify_script_order((root / "runtime/game.html").read_text(encoding="utf-8"))
     verify_archive(root / "runtime/fr3.zip", manifest)
-    print(f"Verified static Pages build, rights notice, relative URLs, manifests and all {len(manifest)} original demo files")
+    pages = f" and {research} research files" if research else ""
+    print(f"Verified static Pages build, rights notice, relative URLs, manifests{pages} "
+          f"and all {len(manifest)} original demo files")
 
 
 if __name__ == "__main__":

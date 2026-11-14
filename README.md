@@ -21,6 +21,10 @@ The new tyre analysis reconstructs its 88-byte record and table allocations.
   [browser preview](https://omertekin2002.github.io/ford-racing-reverse-engineered/),
   an experimental build that runs the same demo through Boxedwine's
   WebAssembly runtime. See the [browser guide](docs/browser.md).
+- **Research findings:** open
+  [Explore findings](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/),
+  the engine, gearbox, tyre and PCG catalogue pages built from the demo in the
+  same Pages workflow and published beside the preview under `research/`.
 
 Read [the verified findings and limitations](docs/analysis.md). This is an
 analysis package, not restored original source or a runnable replacement game.
@@ -30,7 +34,8 @@ and [runtime validation](docs/release-validation.md).
 
 A static [browser preview and GitHub Pages workflow](docs/browser.md) package
 the same demo with Boxedwine's WebAssembly JIT and Wine's WebGL runtime.
-Pushes to `main` build, verify and deploy the site; manual runs of the
+The workflow also builds the research pages into the site's `research/`
+directory. Pushes to `main` build, verify and deploy the site; manual runs of the
 workflow deploy only with **deploy** checked. Build and browser validation are
 described in the browser guide.
 
@@ -93,7 +98,10 @@ headless script errors can be reported without a failing process exit code.
 | `analysis/selected/` | Instruction evidence and explicitly bounded disassembly |
 | `recovered/fr3_database_layouts.h` | Engine, gearbox and tyre in-memory layouts |
 | `artifacts/text-databases/` | Parsed engine, gearbox and tyre records from `scripts/text_database.py`, with source hashes |
+| `artifacts/research/` | Self-contained research directory from `scripts/build_research.py`: the "Explore findings" entrance page `index.html`, the four pages below, and the `analysis/` files they link to under `evidence/`; every page carries the rights-holder notice |
 | `artifacts/dossier/tyres.html` | Offline tyre dossier from `scripts/tyre_dossier.py`: each tyre's declarations beside its five table sources and their byte-checked evidence |
+| `artifacts/dossier/engines.html`, `artifacts/dossier/gearboxes.html` | Offline engine and gearbox dossiers from `scripts/record_dossier.py`: each record's declarations as written, with inheritance and untagged lines labelled unresolved |
+| `artifacts/dossier/pcg.html` | Offline PCG catalogue from `scripts/pcg_catalogue.py`: every PCG collection and graphic, its header fields, byte spans and decoding status |
 | `artifacts/ghidra/` | Complete baseline C, function disassembly, function list and call edges |
 | `artifacts/fr3-demo-annotated.gzf` | Portable annotated Ghidra program |
 | `artifacts/fr3-analysis.zip` | Analysis bundle with SHA-256 manifest |
@@ -125,6 +133,26 @@ python3 scripts/acquire_demo.py inputs
 python3 scripts/text_database.py inputs/extracted/Program_Executable_Files --output artifacts/text-databases
 ```
 
+`scripts/build_research.py` builds every research page in one step, after
+`acquire_demo.py`. It parses the text databases into a temporary directory,
+writes the tyre, engine, gearbox and PCG pages described below plus an "Explore
+findings" entrance page, `index.html`, into `artifacts/research/`, and copies the
+committed `analysis/` files the pages link to into `artifacts/research/evidence/`,
+so the directory is self-contained. Every page carries the browser preview's
+rights-holder notice before its content and a link bar to the other pages. The
+script then checks the directory and exits non-zero if a page is missing, lacks
+the notice, has a `<script>` or an external resource, or has a local link that
+does not resolve inside it (see
+[the analysis notes](docs/analysis.md#research-directory)):
+
+```sh
+python3 scripts/acquire_demo.py inputs
+python3 scripts/build_research.py
+```
+
+The per-page commands below still work on their own and write to
+`artifacts/dossier/`, without the entrance page or a nav link to it.
+
 `scripts/tyre_dossier.py` turns `tyres.json`, `field-evidence.json` and
 `pe-metadata.json` into one static page, `artifacts/dossier/tyres.html`, with no
 JavaScript or external resources. It needs only the standard library and
@@ -134,6 +162,27 @@ so it stays under the ignored `artifacts/`:
 
 ```sh
 python3 scripts/tyre_dossier.py
+```
+
+`scripts/record_dossier.py` does the same for `engines.json` and
+`gearboxes.json`, writing `engines.html` and `gearboxes.html` next to the tyre
+page. They show each record's declarations as written; engine inheritance, the
+colon-less `INDIGO` line and the units of the values stay unresolved (see
+[the analysis notes](docs/analysis.md#engine-and-gearbox-dossier)):
+
+```sh
+python3 scripts/record_dossier.py
+```
+
+`scripts/pcg_catalogue.py` builds `artifacts/dossier/pcg.html` from the
+committed `analysis/` files alone, so it needs no demo. It lists every PCG
+collection and graphic with its header fields, byte spans and decoding status;
+no pixel data is decoded, and header words other than width, height and
+declared payload stay unlabelled (see
+[the analysis notes](docs/analysis.md#pcg-catalogue)):
+
+```sh
+python3 scripts/pcg_catalogue.py
 ```
 
 ## Validate without rebuilding
@@ -156,13 +205,23 @@ output limits, truncation, trailing data and overlapping PCG payloads, as well a
 the PE virtual-address reader, file identity checks and tool-path resolution. They also cover
 the strict engine, gearbox and tyre text-database parser: its accepted grammar and each
 rejected construct, and tyre table inheritance resolution. They check the tyre dossier's anchors and links, its
-address-matched evidence trails, its escaping and each input disagreement it refuses. For demo acquisition they cover, without network access, the
+address-matched evidence trails, its escaping and each input disagreement it refuses, and the engine and gearbox
+dossiers' anchors, unresolved labels, escaping and the malformed inputs they refuse. The PCG catalogue tests run the script on the committed `analysis/` files and check every input disagreement it refuses. The research-directory tests build it from fixture game files, check its pages, notice, links and copied evidence, and check that the verifier rejects a missing page or notice, a broken local link, an external resource, a `<script>` and a file the build does not write. For demo acquisition they cover, without network access, the
 download-link filter, HTTPS-only fetches and redirects, the 12-URL cap, identity-checked
 archive writes and ZIP extraction safety (unsafe paths, symlinks, size limit, existing
 files). The separate verification command checks the actual demo,
 all 773 game-file hashes, tag pointers, decoded resource hashes, PCG indexes,
 parsed text-database counts, instruction sites, decompiler counts and C layout
 assertions. Synthetic tests alone do not validate game behavior.
+
+The browser launcher (`web/site.js`) and runtime bridge (`web/runtime-bridge.js`)
+have their own tests. They load the real files into Node's `vm` with stand-in
+browser and Boxedwine globals, need Node 22+ and no `npm install` or network, and
+also run in CI:
+
+```sh
+node --test "tests/js/*.test.mjs"
+```
 
 Lint the scripts and tests with the hash-pinned ruff and the repository's `ruff.toml`;
 CI also runs this lint step on every push and pull request:
