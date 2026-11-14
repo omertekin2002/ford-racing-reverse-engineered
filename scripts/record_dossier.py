@@ -21,7 +21,8 @@ an earlier record of the same file, or PE metadata without `sha256`.
 import argparse
 from pathlib import Path
 
-from dossier_common import STYLE, anchor, check_fields, check_pe, declarations, e, link, load_json, nav, producer_revision
+from dossier_common import (STYLE, anchor, check_fields, check_pe, declarations, e, link, load_json, page_start,
+                            producer_revision)
 from text_database import REPO_ROOT, require
 
 TORQUE = "TORQUE_ARRAY"
@@ -84,9 +85,7 @@ def render(database, kind, pe, revision):
     records = database["records"]
     inherits = kind == "engines" or any("INHERIT_TYPE" in record["fields"] for record in records)
     torque = kind == "engines"
-    parts = [f'<!DOCTYPE html>\n<html lang="en"><head><meta charset="utf-8">'
-             f'<title>Ford Racing 3 demo {title} dossier</title><style>{STYLE}{EXTRA_STYLE}</style></head><body>',
-             nav(spec["page"]),
+    parts = [page_start(f"Ford Racing 3 demo {title} dossier", spec["page"], STYLE + EXTRA_STYLE),
              f'<h1>Ford Racing 3 demo: {title} dossier</h1><dl>',
              f'<dt>Executable</dt><dd><code>{e(pe.get("file", "fr3.exe"))}</code> SHA-256 <code>{e(pe["sha256"])}</code>, '
              f'PE timestamp {e(pe.get("timestamp_header_utc", "unknown"))}</dd>',

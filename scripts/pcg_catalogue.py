@@ -28,7 +28,7 @@ import argparse
 from pathlib import Path
 import re
 
-from dossier_common import STYLE, check_fields, check_pe, e, load_json, nav, producer_revision, relative_href
+from dossier_common import STYLE, check_fields, check_pe, e, load_json, page_start, producer_revision, relative_href
 from text_database import REPO_ROOT, require
 
 PAGE = "pcg.html"
@@ -173,9 +173,7 @@ def entry_row(collection, entry):
 def render(collections, resources, pe, revision, hrefs):
     """Return the catalogue page. check_inputs() must have accepted the inputs first."""
     entries = sum(len(collection["entries"]) for collection in collections)
-    parts = [f'<!DOCTYPE html>\n<html lang="en"><head><meta charset="utf-8">'
-             f'<title>Ford Racing 3 demo PCG catalogue</title><style>{STYLE}{EXTRA_STYLE}</style></head><body>',
-             nav(PAGE),
+    parts = [page_start("Ford Racing 3 demo PCG catalogue", PAGE, STYLE + EXTRA_STYLE),
              '<h1>Ford Racing 3 demo: PCG catalogue</h1><dl>',
              f'<dt>Executable</dt><dd><code>{e(pe.get("file", "fr3.exe"))}</code> SHA-256 <code>{e(pe["sha256"])}</code>, '
              f'PE timestamp {e(pe.get("timestamp_header_utc", "unknown"))}</dd>',
@@ -235,16 +233,21 @@ def render(collections, resources, pe, revision, hrefs):
     return "\n".join(parts)
 
 
-def build(index_path, manifest_path, pe_path, verification_path, output, revision=None):
-    """Read and check every input, then write the page; return (collections, entries)."""
+def build(index_path, manifest_path, pe_path, verification_path, output, revision=None, hrefs=None):
+    """Read and check every input, then write the page; return (collections, entries).
+
+    hrefs maps "index", "manifest" and "asm" to the links the page uses for its inputs; by default they are
+    relative links from `output` to the files in this repository.
+    """
     collections = load_json(index_path, "PCG index")
     manifest = load_json(manifest_path, "Unpacked manifest")
     pe = load_json(pe_path, "PE metadata")
     verification = load_json(verification_path, "Verification results")
     check_pe(pe)
     resources = check_inputs(collections, manifest, verification)
-    hrefs = {"index": relative_href(Path(index_path).resolve(), output),
-             "manifest": relative_href(Path(manifest_path).resolve(), output), "asm": relative_href(VIEW_ASM, output)}
+    hrefs = hrefs or {"index": relative_href(Path(index_path).resolve(), output),
+                      "manifest": relative_href(Path(manifest_path).resolve(), output),
+                      "asm": relative_href(VIEW_ASM, output)}
     page = render(collections, resources, pe, revision or producer_revision(), hrefs)
     Path(output).parent.mkdir(parents=True, exist_ok=True)
     Path(output).write_text(page, encoding="utf-8")

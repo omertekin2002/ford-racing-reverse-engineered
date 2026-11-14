@@ -11,6 +11,7 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+from dossier_common import NOTICE_LINKS, rights_notice
 import pcg_catalogue
 from text_database import REPO_ROOT
 
@@ -162,15 +163,21 @@ class CataloguePageTests(CatalogueTestCase):
         self.assertEqual([href for href in internal if href not in parsed.ids], [])
         self.assertEqual(parsed.scripts, 0)
         self.assertNotIn("<script", page.lower())
-        self.assertNotRegex(page, r"https?://")
-        files = {href for href in parsed.hrefs if not href.startswith("#")} - {"engines.html", "gearboxes.html", "tyres.html"}
+        self.assertNotRegex(page.replace(rights_notice(), ""), r"https?://")
+        files = {href for href in parsed.hrefs if not href.startswith("#")} - {"index.html", "engines.html", "gearboxes.html",
+                                                                                 "tyres.html", *NOTICE_LINKS}
         self.assertEqual({Path(os.path.normpath(self.output.parent / href)) for href in files},
                          {pcg_catalogue.VIEW_ASM, (self.root / "pcg-index.json").resolve(),
                           (self.root / "manifest.json").resolve()})
 
     def test_nav_bar(self):
-        self.assertIn('<nav>Dossiers: <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | '
+        self.assertIn('<nav>Research: <a href="index.html">Explore findings</a> | <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | '
                       '<a href="tyres.html">Tyres</a> | <strong>PCG catalogue</strong></nav>', self.build())
+
+    def test_rights_notice_comes_before_the_main_content(self):
+        page = self.build()
+        self.assertEqual(page.count(rights_notice()), 1)
+        self.assertLess(page.index(rights_notice()), page.index("<h1>"))
 
     def test_hostile_entry_name_is_escaped(self):
         index = pcg_index()
@@ -308,7 +315,7 @@ class CatalogueCommandTests(CatalogueTestCase):
         self.assertEqual(len(parsed.ids), len(set(parsed.ids)))
         self.assertEqual([href for href in parsed.hrefs if href.startswith("#") and href[1:] not in parsed.ids], [])
         self.assertEqual(parsed.scripts, 0)
-        self.assertNotRegex(page, r"https?://")
+        self.assertNotRegex(page.replace(rights_notice(), ""), r"https?://")
         self.assertEqual(page.count("<details><summary>32 header words</summary>"), 654)
 
     def test_cli_fails_loudly(self):

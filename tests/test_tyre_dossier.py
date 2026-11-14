@@ -11,6 +11,7 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+from dossier_common import NOTICE_LINKS, rights_notice
 import tyre_dossier
 from text_database import (REPO_ROOT, RESOLVED_TYRE_TABLES, TYRE_TABLES, parse, resolve_tyre_tables,
                            scalar_inheritance, tyre_table_provenance)
@@ -198,17 +199,23 @@ class DossierPageTests(DossierTestCase):
     def test_no_scripts_or_remote_resources(self):
         page = self.build()
         self.assertNotIn("<script", page.lower())
-        self.assertNotRegex(page, r"https?://")
+        self.assertNotRegex(page.replace(rights_notice(), ""), r"https?://")
+
+    def test_rights_notice_comes_before_the_main_content(self):
+        page = self.build()
+        self.assertEqual(page.count(rights_notice()), 1)
+        self.assertLess(page.index(rights_notice()), page.index("<h1>"))
 
     def test_repository_links_resolve_from_the_output(self):
         page = self.build()
-        targets = set(re.findall(r'href="([^"#][^"]*)"', page)) - {"engines.html", "gearboxes.html", "pcg.html"}
+        targets = set(re.findall(r'href="([^"#][^"]*)"', page)) - {"index.html", "engines.html", "gearboxes.html", "pcg.html",
+                                                                     *NOTICE_LINKS}
         self.assertEqual({Path(os.path.normpath(self.output.parent / target)) for target in targets},
                          {tyre_dossier.ACCESSORS_ASM, tyre_dossier.LOADER_ASM, (self.root / "evidence.json").resolve()})
         self.assertIn('evidence.json</a>).</p>', page)
 
     def test_nav_bar_links_the_sibling_dossiers(self):
-        self.assertIn('<nav>Dossiers: <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | '
+        self.assertIn('<nav>Research: <a href="index.html">Explore findings</a> | <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | '
                       '<strong>Tyres</strong> | <a href="pcg.html">PCG catalogue</a></nav>', self.build())
 
     def test_input_text_is_escaped(self):
