@@ -1,6 +1,6 @@
 """HTML and input helpers shared by the offline dossier generators.
 
-scripts/tyre_dossier.py and scripts/record_dossier.py both write static pages
+scripts/tyre_dossier.py, scripts/record_dossier.py and scripts/pcg_catalogue.py write static pages
 with inline CSS, no JavaScript and no external resources. Every piece of input
 text goes through e() before it reaches the page.
 """
@@ -27,7 +27,8 @@ summary { cursor: pointer; }
 :target { outline: 3px solid #3b7ddd; }
 """
 # The dossier pages, as written next to each other in one directory, in navigation order.
-PAGES = (("engines.html", "Engines"), ("gearboxes.html", "Gearboxes"), ("tyres.html", "Tyres"))
+PAGES = (("engines.html", "Engines"), ("gearboxes.html", "Gearboxes"), ("tyres.html", "Tyres"),
+         ("pcg.html", "PCG catalogue"))
 UNTAGGED_NOTE = " kept verbatim, not applied"
 
 

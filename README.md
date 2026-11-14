@@ -95,6 +95,7 @@ headless script errors can be reported without a failing process exit code.
 | `artifacts/text-databases/` | Parsed engine, gearbox and tyre records from `scripts/text_database.py`, with source hashes |
 | `artifacts/dossier/tyres.html` | Offline tyre dossier from `scripts/tyre_dossier.py`: each tyre's declarations beside its five table sources and their byte-checked evidence |
 | `artifacts/dossier/engines.html`, `artifacts/dossier/gearboxes.html` | Offline engine and gearbox dossiers from `scripts/record_dossier.py`: each record's declarations as written, with inheritance and untagged lines labelled unresolved |
+| `artifacts/dossier/pcg.html` | Offline PCG catalogue from `scripts/pcg_catalogue.py`: every PCG collection and graphic, its header fields, byte spans and decoding status |
 | `artifacts/ghidra/` | Complete baseline C, function disassembly, function list and call edges |
 | `artifacts/fr3-demo-annotated.gzf` | Portable annotated Ghidra program |
 | `artifacts/fr3-analysis.zip` | Analysis bundle with SHA-256 manifest |
@@ -147,6 +148,17 @@ colon-less `INDIGO` line and the units of the values stay unresolved (see
 python3 scripts/record_dossier.py
 ```
 
+`scripts/pcg_catalogue.py` builds `artifacts/dossier/pcg.html` from the
+committed `analysis/` files alone, so it needs no demo. It lists every PCG
+collection and graphic with its header fields, byte spans and decoding status;
+no pixel data is decoded, and header words other than width, height and
+declared payload stay unlabelled (see
+[the analysis notes](docs/analysis.md#pcg-catalogue)):
+
+```sh
+python3 scripts/pcg_catalogue.py
+```
+
 ## Validate without rebuilding
 
 ```sh
@@ -168,7 +180,7 @@ the PE virtual-address reader, file identity checks and tool-path resolution. Th
 the strict engine, gearbox and tyre text-database parser: its accepted grammar and each
 rejected construct, and tyre table inheritance resolution. They check the tyre dossier's anchors and links, its
 address-matched evidence trails, its escaping and each input disagreement it refuses, and the engine and gearbox
-dossiers' anchors, unresolved labels, escaping and the malformed inputs they refuse. For demo acquisition they cover, without network access, the
+dossiers' anchors, unresolved labels, escaping and the malformed inputs they refuse. The PCG catalogue tests run the script on the committed `analysis/` files and check every input disagreement it refuses. For demo acquisition they cover, without network access, the
 download-link filter, HTTPS-only fetches and redirects, the 12-URL cap, identity-checked
 archive writes and ZIP extraction safety (unsafe paths, symlinks, size limit, existing
 files). The separate verification command checks the actual demo,
