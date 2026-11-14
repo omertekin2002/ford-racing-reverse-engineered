@@ -29,12 +29,10 @@ when a provenance path does not follow INHERIT_TYPE, or when a cited accessor
 or record offset has no matching byte-checked site.
 """
 import argparse
-import html
-import json
-import os
 from pathlib import Path
-import subprocess
 
+import dossier_common
+from dossier_common import STYLE, check_fields, check_pe, e, load_json, nav, producer_revision, relative_href
 from text_database import REPO_ROOT, RESOLVED_TYRE_TABLES, check_table_provenance, require, scalar_inheritance, table_sources
 
 # Each table accessor ends before the next routine starts 0x20 bytes later (tyre_table_accessors.asm).
@@ -50,25 +48,6 @@ TABLE_LABELS = {"LONGITUDINAL_COMBINED_VALUES": "Longitudinal", "LATERAL_COMBINE
 ACCESSORS_ASM = REPO_ROOT / "analysis/selected/tyre_table_accessors.asm"
 LOADER_ASM = REPO_ROOT / "analysis/selected/load_tyre_database.asm"
 FIELD_EVIDENCE = REPO_ROOT / "analysis/selected/field-evidence.json"
-STYLE = """
-body { font: 15px/1.45 system-ui, sans-serif; margin: 2em auto; max-width: 72em; padding: 0 1em; color: #1b1b1b; }
-code, .num { font-family: ui-monospace, monospace; font-size: 0.92em; }
-table { border-collapse: collapse; margin: 0.5em 0 1em; }
-th, td { border: 1px solid #c8c8c8; padding: 0.2em 0.5em; text-align: left; vertical-align: top; }
-th { background: #f0f0f0; }
-table.rows td { border-color: #e2e2e2; padding: 0 0.4em; text-align: right; }
-section.tyre { border-top: 2px solid #888; margin-top: 2em; }
-details { margin: 0.3em 0; }
-summary { cursor: pointer; }
-.scope, .unresolved { background: #fff6dd; border-left: 4px solid #d8a400; padding: 0.4em 0.8em; }
-.label { font-weight: bold; text-transform: uppercase; }
-:target { outline: 3px solid #3b7ddd; }
-"""
-
-
-def load_json(path, label):
-    require(Path(path).is_file(), f"{label} not found: {path}")
-    return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
 def modrm_disp8(raw):
@@ -127,14 +106,6 @@ def table_evidence(evidence, table, accessor, record_offset):
             loader_sites.append(site)
     require(stores, f"No byte-checked loader store in field-evidence.json shows the {table} table at {record_offset}")
     return {"accessor": accessor_sites, "loader": loader_sites}
-
-
-def check_fields(value, fields, label):
-    """Reject malformed JSON containers with a field-specific diagnostic."""
-    require(isinstance(value, dict), f"{label} must be an object")
-    for key, kind in fields.items():
-        require(key in value, f"{label} has no {key!r}")
-        require(isinstance(value[key], kind), f"{label}.{key} has the wrong type")
 
 
 def check_input_shapes(tyres):
@@ -213,53 +184,12 @@ def check_inputs(tyres, evidence):
     return sites
 
 
-def producer_revision():
-    try:
-        result = subprocess.run(["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], capture_output=True, text=True,
-                                check=False, timeout=10)
-    except (OSError, subprocess.SubprocessError):
-        return "unknown"
-    revision = result.stdout.strip()
-    return revision if result.returncode == 0 and revision else "unknown"
-
-
-def e(text):
-    return html.escape(str(text), quote=True)
-
-
 def anchor(name, table=None):
-    return f"tyre-{name}-{table}" if table else f"tyre-{name}"
+    return dossier_common.anchor("tyre", name, table)
 
 
 def link(name, table=None):
-    return f'<a href="#{e(anchor(name, table))}">{e(name)}</a>'
-
-
-def rows_table(rows):
-    body = "".join("<tr>" + "".join(f'<td class="num">{e(cell)}</td>' for cell in row) + "</tr>" for row in rows)
-    return f'<table class="rows">{body}</table>'
-
-
-def declarations(record):
-    """Return the record's fields, :SOUND_INFO entries and untagged lines as table rows, in line order."""
-    items = []
-    for tag, field in record["fields"].items():
-        if tag == "INHERIT_TYPE":
-            shown = "parent " + link(field["values"][0])
-        elif field["rows"]:
-            shown = f'{len(field["rows"])} rows &times; {len(field["rows"][0])} columns' + rows_table(field["rows"])
-        else:
-            shown = f'<span class="num">{e(" ".join(map(str, field["values"])))}</span>'
-        items.append((field["line"], f":{tag}", shown))
-    for entry in record.get("sound_info", []):
-        shown = (f'type <code>{e(entry["type"])}</code>, {e(entry["value_count"])} values, '
-                 f'START_RPM <span class="num">{e(entry["start_rpm"])}</span>' + rows_table(entry["rows"]))
-        items.append((entry["line"], ":SOUND_INFO", shown))
-    for item in record.get("untagged", []):
-        items.append((item["line"], "(untagged)", f'<code>{e(" ".join(item["tokens"]))}</code> kept verbatim, not applied'))
-    body = "".join(f"<tr><td>{e(line)}</td><td><code>{e(tag)}</code></td><td>{shown}</td></tr>"
-                   for line, tag, shown in sorted(items, key=lambda item: item[0]))
-    return f"<table><tr><th>Line</th><th>Tag</th><th>Values</th></tr>{body}</table>"
+    return dossier_common.link("tyre", name, table)
 
 
 def path_html(path, table):
@@ -309,6 +239,7 @@ def render(tyres, sites, pe, revision, hrefs):
     provenance = tyres["table_provenance"]
     parts = [f'<!DOCTYPE html>\n<html lang="en"><head><meta charset="utf-8">'
              f'<title>Ford Racing 3 demo tyre dossier</title><style>{STYLE}</style></head><body>',
+             nav("tyres.html"),
              '<h1>Ford Racing 3 demo: tyre dossier</h1><dl>',
              f'<dt>Executable</dt><dd><code>{e(pe.get("file", "fr3.exe"))}</code> SHA-256 <code>{e(pe["sha256"])}</code>, '
              f'PE timestamp {e(pe.get("timestamp_header_utc", "unknown"))}</dd>',
@@ -339,7 +270,7 @@ def render(tyres, sites, pe, revision, hrefs):
         name = record["type"]
         parts.append(f'<section class="tyre" id="{e(anchor(name))}"><h2>{e(name)}</h2>'
                      f'<p>Declared at line {e(record["line"])} of <code>{e(tyres["source"])}</code>.</p>'
-                     f'<h3>Declarations, as written</h3>{declarations(record)}<h3>Table sources</h3>'
+                     f'<h3>Declarations, as written</h3>{dossier_common.declarations(record, "tyre")}<h3>Table sources</h3>'
                      '<table><tr><th>Table</th><th>Source</th><th>Path</th><th>Source line</th><th>Accessor</th>'
                      '<th>Record offset</th></tr>')
         for table in RESOLVED_TYRE_TABLES:
@@ -360,16 +291,12 @@ def render(tyres, sites, pe, revision, hrefs):
     return "\n".join(parts)
 
 
-def relative_href(target, output):
-    return Path(os.path.relpath(target, Path(output).resolve().parent)).as_posix()
-
-
 def build(tyres_path, evidence_path, pe_path, output, revision=None):
     """Read the inputs, check them and write the dossier; return the number of records."""
     tyres = load_json(tyres_path, "Tyre database (run scripts/text_database.py first)")
     evidence = load_json(evidence_path, "Field evidence")
     pe = load_json(pe_path, "PE metadata")
-    require(isinstance(pe, dict) and pe.get("sha256"), "PE metadata has no sha256")
+    check_pe(pe)
     sites = check_inputs(tyres, evidence)
     hrefs = {"accessors": relative_href(ACCESSORS_ASM, output), "loader": relative_href(LOADER_ASM, output),
              "evidence": relative_href(Path(evidence_path).resolve(), output)}

@@ -255,6 +255,49 @@ byte-checked site. A shared table source does not make two tyres handle the
 same: their scalar fields can differ. The page is not committed because it holds
 game data.
 
+### Engine and gearbox dossier
+
+`python3 scripts/record_dossier.py`, run after `text_database.py`, writes
+`artifacts/dossier/engines.html` and `artifacts/dossier/gearboxes.html` beside
+the tyre page, with a link bar between the dossier pages. Each page lists the records in
+file order, with each engine's `:INHERIT_TYPE` parent and torque array shape,
+and then shows every record's declarations exactly as written, in line order.
+Multi-row fields such as `TORQUE_ARRAY` appear as row tables with their
+dimensions. `:INHERIT_TYPE` links to the parent and is labelled unresolved: none
+of the parent's values are copied into the child, because engine inheritance is
+not resolved. The colon-less `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` is
+shown verbatim as an untagged line, not as inheritance, with a note that whether
+the game honours it is not established. The meaning and units of the values,
+including the torque arrays, are not interpreted. The script exits non-zero
+without writing either page when an input is missing or malformed: records that
+are not a list or lack `type`, `line` or `fields`, duplicate record names, an
+`:INHERIT_TYPE` that does not name an earlier record of the same file, or PE
+metadata without `sha256`. The pages are not committed because they hold game
+data.
+
+### PCG catalogue
+
+`python3 scripts/pcg_catalogue.py` writes `artifacts/dossier/pcg.html` beside
+the other dossier pages, which link to it. It needs no demo, network or Ghidra:
+it reads only the committed [PCG index](../analysis/pcg-index.json),
+[decoded manifest](../analysis/unpacked-manifest.json), PE metadata and
+[verification results](../analysis/verification.json). The page covers the PCG
+directory structure only; no pixel data is decoded or shown. It lists the 62
+collections with their payload base, raw header words and compressed and decoded
+SHA-256, then each of the 654 graphics with its name and name bytes, file offset,
+width and height, declared payload, span and extra bytes. Every graphic carries
+one decoding status from a fixed set in the script; today all are
+`not decoded: pixel encoding not established`. Of the 32 graphic header words,
+only `+8` (width), `+12` (height) and `+0x28` (declared payload) are labelled;
+the rest are shown raw as "meaning not established". The 1,024 extra bytes of
+`_loadbar` and `_loadbr2` are labelled unresolved. The script exits non-zero
+without writing the page when an input is missing or malformed, collection paths
+repeat, a count disagrees with its entries, entry indexes are not `0..count-1`
+in order, a width, height or declared payload disagrees with its header word,
+the extra bytes disagree with the span, the payload base disagrees with the
+formula above, a collection has no manifest entry, the totals disagree with
+`verification.json`, or the PE metadata has no `sha256`.
+
 ## Validation and limits
 
 [Verification results](../analysis/verification.json) cover the exact executable,
