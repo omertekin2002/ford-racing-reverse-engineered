@@ -11,7 +11,8 @@ Run it after scripts/acquire_demo.py has extracted the demo. It:
      graphic counts, the fr3.exe SHA-256 and the producer revision;
   5. checks the directory with verify_research(): all five pages exist, each carries
      the rights-holder notice before its main content, none has a <script> or an
-     external resource, and every local link resolves to a file inside the output.
+     external resource, every local link resolves to a file inside the output, and
+     the directory holds no file other than the ones this script writes.
 
 The pages are built in a staging directory next to the output and only replace it
 once they pass. An existing output directory is replaced only when it holds nothing
@@ -218,6 +219,12 @@ def verify_research(root):
             errors.append(f"{page} loads a resource from its CSS (url() or @import)")
         for tag, key, value, in_notice in found.refs:
             errors.extend(check_ref(root, page, parsed, tag, key, value, in_notice))
+    # Nothing else may ride along: the directory is published as it stands, and only the pages above are
+    # checked for the notice.
+    for path in sorted(root.rglob("*")):
+        relative = path.relative_to(root).as_posix()
+        if path.is_symlink() or (not path.is_dir() and relative not in OUTPUT_FILES):
+            errors.append(f"{relative} is not a file build_research.py writes")
     require(not errors, "Research pages failed verification:\n  " + "\n  ".join(errors))
     return sorted(parsed)
 

@@ -60,7 +60,8 @@ into `artifacts/web/research/`, before `build_web.py` writes `SHA256SUMS`, so th
 sums cover every research file. When `index.html` links to `research/` or the
 directory exists, `verify_web.py` requires `research/index.html`, runs
 `verify_research()` on the directory (notice on every page, no scripts or
-external resources, every local link resolving inside `research/`), checks
+external resources, every local link resolving inside `research/`, no file
+other than the ones `build_research.py` writes), checks
 `research/index.html`'s relative URLs and requires every file under `research/`
 to be listed in `SHA256SUMS`.
 

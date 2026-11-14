@@ -172,8 +172,8 @@ def verify_research_site(root, listed):
     """Check the published research directory when index.html links to it or it exists.
 
     It must hold research/index.html, pass build_research.verify_research() (the notice on every page, no
-    scripts or external resources, local links resolving inside research/), and every file under it must be
-    listed in SHA256SUMS (`listed`, from verify_sums). Return the number of research files, 0 when there is none.
+    scripts or external resources, local links resolving inside research/, no file other than the ones
+    build_research.py writes), and every file under it must be listed in SHA256SUMS (`listed`, from verify_sums). Return the number of research files, 0 when there is none.
     """
     research = root / RESEARCH_DIR
     linked = links_to_research((root / "index.html").read_text(encoding="utf-8"))

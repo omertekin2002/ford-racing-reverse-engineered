@@ -206,7 +206,7 @@ the PE virtual-address reader, file identity checks and tool-path resolution. Th
 the strict engine, gearbox and tyre text-database parser: its accepted grammar and each
 rejected construct, and tyre table inheritance resolution. They check the tyre dossier's anchors and links, its
 address-matched evidence trails, its escaping and each input disagreement it refuses, and the engine and gearbox
-dossiers' anchors, unresolved labels, escaping and the malformed inputs they refuse. The PCG catalogue tests run the script on the committed `analysis/` files and check every input disagreement it refuses. The research-directory tests build it from fixture game files, check its pages, notice, links and copied evidence, and check that the verifier rejects a missing page or notice, a broken local link, an external resource and a `<script>`. For demo acquisition they cover, without network access, the
+dossiers' anchors, unresolved labels, escaping and the malformed inputs they refuse. The PCG catalogue tests run the script on the committed `analysis/` files and check every input disagreement it refuses. The research-directory tests build it from fixture game files, check its pages, notice, links and copied evidence, and check that the verifier rejects a missing page or notice, a broken local link, an external resource, a `<script>` and a file the build does not write. For demo acquisition they cover, without network access, the
 download-link filter, HTTPS-only fetches and redirects, the 12-URL cap, identity-checked
 archive writes and ZIP extraction safety (unsafe paths, symlinks, size limit, existing
 files). The separate verification command checks the actual demo,

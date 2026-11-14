@@ -324,8 +324,9 @@ link) before its main content, and a link bar to the other four pages. The pages
 are built in a staging directory next to the output; `verify_research()` then
 checks that all five exist, that each has the notice before its `<h1>`, that
 none has a `<script>`, CSS `url()` or `@import`, or any external link or
-resource other than the notice's two links, and that every local link, fragment
-included, resolves to a file and id inside the directory. Only then does the
+resource other than the notice's two links, that every local link, fragment
+included, resolves to a file and id inside the directory, and that the directory
+holds no file other than the ones the script writes. Only then does the
 staging directory replace the output; an existing output that holds anything
 else is left alone. The directory is not committed because it holds game data.
 Per decision #46 the Pages workflow builds it from the verified public demo and

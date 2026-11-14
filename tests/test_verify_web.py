@@ -433,6 +433,14 @@ class ResearchSiteTests(unittest.TestCase):
                                                 r"'evidence/gone\.json'"):
             self.verify()
 
+    def test_reject_research_file_the_build_does_not_write(self):
+        # Listed in SHA256SUMS, so only the research check can stop it from being published.
+        (self.root / "research/engines.json").write_text("{}", encoding="utf-8")
+        write_sums(self.root)
+        with self.assertRaisesRegex(ValueError, r"(?s)research/: .*engines\.json is not a file build_research\.py "
+                                                r"writes"):
+            self.verify()
+
     def test_reject_research_file_missing_from_sums(self):
         sums = self.root / "SHA256SUMS"
         sums.write_text("".join(line + "\n" for line in sums.read_text().splitlines()

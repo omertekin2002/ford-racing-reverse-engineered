@@ -275,6 +275,22 @@ class VerifierTests(unittest.TestCase):
         self.edit("tyres.html", "</style>", "@import 'https://example.com/x.css';</style>")
         self.reject("tyres.html loads a resource from its CSS")
 
+    def test_files_the_build_does_not_write(self):
+        # A page outside the five is never checked for the notice, so no extra file may sit in the directory.
+        (self.root / "notes.html").write_text("<h1>no notice</h1>", encoding="utf-8")
+        (self.root / "evidence/tyres.json").write_text("{}", encoding="utf-8")
+        (self.root / "evidence/selected/link.asm").symlink_to(self.root / "evidence/selected/build_pcg_view.asm")
+        self.reject("notes.html is not a file build_research.py writes")
+        self.reject("evidence/tyres.json is not a file build_research.py writes")
+        self.reject("evidence/selected/link.asm is not a file build_research.py writes")
+
+    def test_a_written_file_replaced_by_a_symlink(self):
+        target = self.root.parent / "outside.json"
+        target.write_text("{}", encoding="utf-8")
+        (self.root / "evidence/pcg-index.json").unlink()
+        (self.root / "evidence/pcg-index.json").symlink_to(target)
+        self.reject("evidence/pcg-index.json is not a file build_research.py writes")
+
     def test_reports_every_problem_at_once(self):
         self.edit("index.html", "</body>", "<script></script></body>")
         self.edit("tyres.html", rights_notice(), "")
