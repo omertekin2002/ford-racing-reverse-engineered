@@ -21,6 +21,10 @@ The new tyre analysis reconstructs its 88-byte record and table allocations.
   [browser preview](https://omertekin2002.github.io/ford-racing-reverse-engineered/),
   an experimental build that runs the same demo through Boxedwine's
   WebAssembly runtime. See the [browser guide](docs/browser.md).
+- **Research findings:** open
+  [Explore findings](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/),
+  the engine, gearbox, tyre and PCG catalogue pages built from the demo in the
+  same Pages workflow and published beside the preview under `research/`.
 
 Read [the verified findings and limitations](docs/analysis.md). This is an
 analysis package, not restored original source or a runnable replacement game.
@@ -30,7 +34,8 @@ and [runtime validation](docs/release-validation.md).
 
 A static [browser preview and GitHub Pages workflow](docs/browser.md) package
 the same demo with Boxedwine's WebAssembly JIT and Wine's WebGL runtime.
-Pushes to `main` build, verify and deploy the site; manual runs of the
+The workflow also builds the research pages into the site's `research/`
+directory. Pushes to `main` build, verify and deploy the site; manual runs of the
 workflow deploy only with **deploy** checked. Build and browser validation are
 described in the browser guide.
 

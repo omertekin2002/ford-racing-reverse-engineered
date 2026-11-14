@@ -4,6 +4,7 @@ import hashlib
 import io
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -14,8 +15,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from fr3_common import DEMO_PAGE
 from setup_web_tools import BOXEDWINE_REVISION, WINE_WEB_SHA256
 import verify_web
-from verify_web import (ISSUES_PAGE, RIGHTS_CREDIT, WASM_HEADER, verify, verify_archive, verify_build_record,
-                        verify_notice, verify_relative_urls, verify_script_order, verify_sums)
+from verify_web import (ISSUES_PAGE, RIGHTS_CREDIT, WASM_HEADER, links_to_research, verify, verify_archive,
+                        verify_build_record, verify_notice, verify_relative_urls, verify_research_site,
+                        verify_script_order, verify_sums)
+
+import build_research
+from test_build_research import write_analysis, write_game
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -35,6 +40,11 @@ class VerifyNoticeTests(unittest.TestCase):
 
     def test_accept_repository_page(self):
         verify_notice((ROOT / "web/index.html").read_text(encoding="utf-8"))
+
+    def test_repository_page_links_to_research(self):
+        html = (ROOT / "web/index.html").read_text(encoding="utf-8")
+        self.assertIn('<a href="research/">Explore findings</a>', html)
+        self.assertTrue(links_to_research(html))
 
     def test_reject_missing_notice(self):
         with self.assertRaisesRegex(ValueError, "lacks the rights-holder notice"):
@@ -350,6 +360,102 @@ class VerifySiteTests(SiteTestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("ValueError: SHA256SUMS digest does not match: site.css", result.stderr)
         self.assertEqual(result.stdout, "")
+
+
+RESEARCH_LINK = '<a href="research/">Explore findings</a>'
+
+
+class ResearchSiteTests(unittest.TestCase):
+    """A site with research/ built by build_research.py from fixture game files, as the Pages workflow lays it out."""
+
+    @classmethod
+    def setUpClass(cls):
+        directory = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(directory.cleanup)
+        work = Path(directory.name)
+        cls.research = work / "research"
+        build_research.build(write_game(work / "game"), cls.research, write_analysis(work / "analysis"),
+                             revision="0123abcd")
+
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name) / "site"
+        self.manifest = build_site(self.root)
+        shutil.copytree(self.research, self.root / "research")
+        index = self.root / "index.html"
+        index.write_text(index.read_text(encoding="utf-8").replace("</main>", RESEARCH_LINK + "</main>"),
+                         encoding="utf-8")
+        write_sums(self.root)
+
+    def research_files(self):
+        return sorted(p.relative_to(self.root).as_posix() for p in (self.root / "research").rglob("*") if p.is_file())
+
+    def verify(self):
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            verify(self.root, self.manifest)
+        return output.getvalue()
+
+    def test_accept_site_with_research(self):
+        files = self.research_files()
+        self.assertIn("research/index.html", files)
+        self.assertIn("research/evidence/pcg-index.json", files)
+        self.assertEqual(self.verify(), f"Verified static Pages build, rights notice, relative URLs, manifests and "
+                                        f"{len(files)} research files and all 2 original demo files\n")
+
+    def test_sums_list_every_research_file(self):
+        listed = verify_sums(self.root)
+        self.assertTrue(set(self.research_files()) <= listed)
+        self.assertEqual(verify_research_site(self.root, listed), len(self.research_files()))
+
+    def test_reject_link_to_missing_research(self):
+        shutil.rmtree(self.root / "research")
+        write_sums(self.root)
+        with self.assertRaisesRegex(ValueError, r"index\.html links to research/ but the site has no "
+                                                r"research/index\.html"):
+            self.verify()
+
+    def test_reject_research_page_without_notice(self):
+        page = self.root / "research/tyres.html"
+        html = page.read_text(encoding="utf-8")
+        start, end = html.index('<aside id="rights-notice"'), html.index("</aside>") + len("</aside>")
+        page.write_text(html[:start] + html[end:], encoding="utf-8")
+        write_sums(self.root)
+        with self.assertRaisesRegex(ValueError, r"(?s)research/: .*tyres\.html lacks the rights-holder notice"):
+            self.verify()
+
+    def test_reject_research_page_with_broken_local_link(self):
+        page = self.root / "research/engines.html"
+        page.write_text(page.read_text(encoding="utf-8").replace("</body>", '<a href="evidence/gone.json">x</a></body>'),
+                        encoding="utf-8")
+        write_sums(self.root)
+        with self.assertRaisesRegex(ValueError, r"(?s)research/: .*engines\.html has a broken local link: "
+                                                r"'evidence/gone\.json'"):
+            self.verify()
+
+    def test_reject_research_file_missing_from_sums(self):
+        sums = self.root / "SHA256SUMS"
+        sums.write_text("".join(line + "\n" for line in sums.read_text().splitlines()
+                                if not line.endswith("  research/pcg.html")))
+        with self.assertRaisesRegex(ValueError, "SHA256SUMS does not list these research files: research/pcg.html"):
+            self.verify()
+
+    def test_reject_unlinked_research_directory_that_fails(self):
+        # research/ is checked whenever it exists, even if index.html does not link to it.
+        index = self.root / "index.html"
+        index.write_text(index.read_text(encoding="utf-8").replace(RESEARCH_LINK, ""), encoding="utf-8")
+        (self.root / "research/pcg.html").unlink()
+        write_sums(self.root)
+        with self.assertRaisesRegex(ValueError, r"(?s)research/: .*pcg\.html is missing"):
+            self.verify()
+
+    def test_links_to_research(self):
+        for html, expected in ((RESEARCH_LINK, True), ('<a href="./research/index.html">x</a>', True),
+                               ('<a href="research">x</a>', True), ('<a href="research-notes.html">x</a>', False),
+                               ('<a href="https://example.com/research/">x</a>', False),
+                               ('<a href="runtime/research/">x</a>', False), ("<p>research/</p>", False)):
+            with self.subTest(html=html):
+                self.assertEqual(links_to_research(html), expected)
 
 
 if __name__ == "__main__":
