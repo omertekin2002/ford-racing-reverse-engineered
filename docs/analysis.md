@@ -253,7 +253,8 @@ record lacks a table, `resolved_tables` and `table_provenance` disagree, a path
 does not follow `INHERIT_TYPE`, or a cited accessor or offset has no matching
 byte-checked site. A shared table source does not make two tyres handle the
 same: their scalar fields can differ. The page is not committed because it holds
-game data.
+game data; [`build_research.py`](#research-directory) builds it with the other
+research pages, for publishing per decision #46.
 
 ### Engine and gearbox dossier
 
@@ -273,7 +274,8 @@ without writing either page when an input is missing or malformed: records that
 are not a list or lack `type`, `line` or `fields`, duplicate record names, an
 `:INHERIT_TYPE` that does not name an earlier record of the same file, or PE
 metadata without `sha256`. The pages are not committed because they hold game
-data.
+data; [`build_research.py`](#research-directory) builds them with the other
+research pages, for publishing per decision #46.
 
 ### PCG catalogue
 
@@ -297,6 +299,37 @@ in order, a width, height or declared payload disagrees with its header word,
 the extra bytes disagree with the span, the payload base disagrees with the
 formula above, a collection has no manifest entry, the totals disagree with
 `verification.json`, or the PE metadata has no `sha256`.
+
+### Research directory
+
+`python3 scripts/build_research.py`, run after `acquire_demo.py`, builds all of
+the pages above into one self-contained directory, `artifacts/research/` by
+default (`--game` and `--output` change the paths). It parses the three text
+databases with `text_database.py` into a temporary working directory, so no
+parsed JSON is published, and runs the tyre, engine and gearbox and PCG
+generators with their usual checks. The `analysis/` files the pages link to,
+the tyre accessor and loader disassembly, `field-evidence.json`, the PCG view
+disassembly, `pcg-index.json` and `unpacked-manifest.json`, are copied unchanged
+to `evidence/` under their `analysis/` paths, and the pages link there instead
+of into the repository. It also writes `index.html`, the "Explore findings"
+entrance: it links the four pages with a one-line description and the engine,
+gearbox and tyre record counts and the PCG collection and graphic counts, all
+computed from the inputs, and shows the `fr3.exe` SHA-256 and the producer
+revision. Values are shown as declared, and unresolved items stay labelled
+unresolved.
+
+Every research page, the entrance included, carries the browser preview's
+rights-holder notice (the credit, the official demo link and the removal-request
+link) before its main content, and a link bar to the other four pages. The pages
+are built in a staging directory next to the output; `verify_research()` then
+checks that all five exist, that each has the notice before its `<h1>`, that
+none has a `<script>`, CSS `url()` or `@import`, or any external link or
+resource other than the notice's two links, and that every local link, fragment
+included, resolves to a file and id inside the directory. Only then does the
+staging directory replace the output; an existing output that holds anything
+else is left alone. The directory is not committed because it holds game data;
+per decision #46 it is to be published under `research/` on GitHub Pages once
+the Pages workflow builds it.
 
 ## Validation and limits
 
