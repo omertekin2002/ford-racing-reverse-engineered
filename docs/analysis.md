@@ -327,9 +327,12 @@ none has a `<script>`, CSS `url()` or `@import`, or any external link or
 resource other than the notice's two links, and that every local link, fragment
 included, resolves to a file and id inside the directory. Only then does the
 staging directory replace the output; an existing output that holds anything
-else is left alone. The directory is not committed because it holds game data;
-per decision #46 it is to be published under `research/` on GitHub Pages once
-the Pages workflow builds it.
+else is left alone. The directory is not committed because it holds game data.
+Per decision #46 the Pages workflow builds it from the verified public demo and
+publishes it under `research/` beside the browser preview, at
+<https://omertekin2002.github.io/ford-racing-reverse-engineered/research/>; the
+preview's landing page links it as "Explore findings". See
+[the browser guide](browser.md#research-findings) for the build and takedown.
 
 ## Validation and limits
 

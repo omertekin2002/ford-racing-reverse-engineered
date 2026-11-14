@@ -6,7 +6,7 @@ on:
     paths:
       - web/**
       - scripts/**
-      - analysis/game-file-manifest.json
+      - analysis/**
       - .github/workflows/pages.yml
   workflow_dispatch:
     inputs:
@@ -47,6 +47,9 @@ jobs:
         run: python3 scripts/setup_web_tools.py
       - name: Acquire and verify the public demo
         run: python3 scripts/acquire_demo.py inputs --unshield unshield
+      - name: Build the research pages into the site
+        # Before build_web.py, so SHA256SUMS covers every file under research/.
+        run: python3 scripts/build_research.py --output artifacts/web/research
       - name: Compile and build the static site
         run: python3 scripts/build_web.py --jobs 2
       - name: Verify packaged assets and project-page paths
