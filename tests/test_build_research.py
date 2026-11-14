@@ -137,6 +137,27 @@ class BuildTests(ResearchTestCase):
             self.build()
         self.assertEqual(files_under(self.output), ["notes.txt"])
 
+    def test_refuses_to_replace_unknown_files_below_the_top_level(self):
+        self.build()
+        cases = (("evidence/notes.txt", "file"), ("evidence/selected/extra", "dir"), ("tyres.html", "dir"),
+                 ("evidence/pcg-index.json", "dir"), ("index.html", "symlink"))
+        for relative, kind in cases:
+            with self.subTest(relative=relative, kind=kind):
+                self.build()
+                path = self.output / relative
+                if path.exists():
+                    path.unlink()
+                if kind == "file":
+                    path.write_text("keep me", encoding="utf-8")
+                elif kind == "dir":
+                    path.mkdir()
+                else:
+                    path.symlink_to(self.output / "tyres.html")
+                with self.assertRaisesRegex(ValueError, f"does not write: {re.escape(relative)}"):
+                    self.build()
+                self.assertTrue(path.exists() or path.is_symlink())
+                shutil.rmtree(self.output)
+
     def test_failed_build_leaves_no_output_or_staging(self):
         (self.game / DATABASES["tyres"]).unlink()
         with self.assertRaises(OSError):

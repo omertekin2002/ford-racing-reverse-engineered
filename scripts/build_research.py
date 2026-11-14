@@ -44,15 +44,26 @@ TYRE_EVIDENCE = {"accessors": tyre_dossier.ACCESSORS_ASM.relative_to(ANALYSIS),
 PCG_EVIDENCE = {"index": pcg_catalogue.PCG_INDEX.relative_to(ANALYSIS),
                 "manifest": pcg_catalogue.MANIFEST.relative_to(ANALYSIS),
                 "asm": pcg_catalogue.VIEW_ASM.relative_to(ANALYSIS)}
+# Every path this script writes under the output directory, and the directories that hold them.
+OUTPUT_FILES = frozenset({*RESEARCH_PAGES, *(f"{EVIDENCE_DIR}/{relative.as_posix()}"
+                                            for relative in (*TYRE_EVIDENCE.values(), *PCG_EVIDENCE.values()))})
+OUTPUT_DIRS = frozenset(parent.as_posix() for name in OUTPUT_FILES for parent in Path(name).parents
+                        if parent != Path("."))
 STYLE_URL = re.compile(r"url\s*\(|@import", re.I)
 
 
 def check_output(output):
-    """Refuse to replace a directory that holds anything this script does not write."""
-    if not output.exists():
+    """Refuse to replace a directory that holds anything, at any depth, this script does not write."""
+    if not output.exists() and not output.is_symlink():
         return
-    require(output.is_dir(), f"Output is not a directory: {output}")
-    foreign = sorted(path.name for path in output.iterdir() if path.name not in (*RESEARCH_PAGES, EVIDENCE_DIR))
+    require(output.is_dir() and not output.is_symlink(), f"Output is not a directory: {output}")
+    foreign = []
+    for path in output.rglob("*"):
+        relative = path.relative_to(output).as_posix()
+        expected = (OUTPUT_DIRS if path.is_dir() else OUTPUT_FILES) if not path.is_symlink() else ()
+        if relative not in expected or not (path.is_dir() or path.is_file()):
+            foreign.append(relative)
+    foreign.sort()
     require(not foreign, f"Refusing to replace {output}: it holds files build_research.py does not write: "
                          + ", ".join(foreign))
 
