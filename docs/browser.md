@@ -50,8 +50,9 @@ Per decision #46 the site also publishes the generated research pages under
 landing page links them as **Explore findings**. The directory holds what
 `scripts/build_research.py` writes (see
 [the analysis notes](analysis.md#research-directory)): the entrance page
-`index.html`, `engines.html`, `gearboxes.html`, `tyres.html` and `pcg.html`, and
-the committed `analysis/` files they link to under `evidence/`. No parsed JSON
+`index.html`, `engines.html`, `gearboxes.html`, `tyres.html`, `pcg.html` and
+`routines.html`, and the committed `analysis/` files they link to under
+`evidence/`. No parsed JSON
 or game file is published there. Every page carries the same rights-holder
 notice and official demo link as the preview, before its content.
 

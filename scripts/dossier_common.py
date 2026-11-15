@@ -1,6 +1,6 @@
 """HTML and input helpers shared by the offline dossier generators.
 
-scripts/tyre_dossier.py, scripts/record_dossier.py and scripts/pcg_catalogue.py write static pages
+scripts/tyre_dossier.py, scripts/record_dossier.py, scripts/pcg_catalogue.py and scripts/routine_index.py write static pages
 with inline CSS, no JavaScript and no external resources other than the two links in
 the rights-holder notice. Every piece of input text goes through e() before it reaches
 the page. scripts/build_research.py writes all of them, plus the entrance page, into
@@ -36,7 +36,7 @@ summary { cursor: pointer; }
 # "Explore findings" entrance that scripts/build_research.py writes.
 INDEX_PAGE = "index.html"
 PAGES = ((INDEX_PAGE, "Explore findings"), ("engines.html", "Engines"), ("gearboxes.html", "Gearboxes"),
-         ("tyres.html", "Tyres"), ("pcg.html", "PCG catalogue"))
+         ("tyres.html", "Tyres"), ("pcg.html", "PCG catalogue"), ("routines.html", "Routines"))
 # The external links a research page may carry; both sit in the rights-holder notice.
 NOTICE_LINKS = (DEMO_PAGE, ISSUES_PAGE)
 NOTICE_ID = "rights-notice"
