@@ -300,29 +300,62 @@ the extra bytes disagree with the span, the payload base disagrees with the
 formula above, a collection has no manifest entry, the totals disagree with
 `verification.json`, or the PE metadata has no `sha256`.
 
+### Routine index
+
+`python3 scripts/routine_index.py` writes `artifacts/dossier/routines.html`
+beside the other dossier pages. Like the PCG catalogue it needs no demo, network
+or Ghidra: it reads only the committed
+[annotated status](../analysis/annotated/status.json),
+[pseudocode](../analysis/annotated/selected.c), the bounded `.asm` files and
+[field evidence](../analysis/selected/field-evidence.json) under
+`analysis/selected/`, and the PE metadata. A summary table lists the 25 routines
+in `status.json` order with entry VA, analyst label, signature, return and
+parameter storage and whether they decompiled, with the error text where one
+did not. Each routine then gets a section anchored by its label (for example
+`#fr3_load_tyre_database`) with its `selected.c` block, escaped, in a collapsed
+`<pre>`; links to the disassembly files whose export span (start included, end
+excluded) holds its entry VA; and the byte-checked sites placed under it. The
+six tyre accessors share `tyre_table_accessors.asm`, so a site in a file that
+holds several routine entries is listed under the routine with the nearest entry
+VA at or below it. That is a placement rule of the page, not an established
+routine boundary. The nine reader routines (`fr3_read_integer` and the like)
+lie in no committed span. The four files that hold no routine entry
+(`allocate_database_record`, `create_database`, `fill_memory` and
+`fill_memory_body`) get their own sections, and any site in no span, or before
+every routine entry in its file, is listed apart; today there is none. Each of
+the 32 sites is shown exactly once. The page says that every label is
+analyst-assigned, not an original symbol, and that the pseudocode is Ghidra
+output with unresolved callees and inferred types. The script exits non-zero
+without writing the page when an input is missing or malformed, the routines or
+labels in `selected.c` disagree with the decompiled routines in `status.json`,
+an `.asm` file lacks its `; Analyst label: <name>; export span
+0x<start>..0x<end>` header or the span is empty or reversed, a site's VA repeats,
+a site would be shown zero times or more than once, or the PE metadata has no
+`sha256`.
+
 ### Research directory
 
 `python3 scripts/build_research.py`, run after `acquire_demo.py`, builds all of
 the pages above into one self-contained directory, `artifacts/research/` by
 default (`--game` and `--output` change the paths). It parses the three text
 databases with `text_database.py` into a temporary working directory, so no
-parsed JSON is published, and runs the tyre, engine and gearbox and PCG
-generators with their usual checks. The `analysis/` files the pages link to,
-the tyre accessor and loader disassembly, `field-evidence.json`, the PCG view
-disassembly, `pcg-index.json` and `unpacked-manifest.json`, are copied unchanged
+parsed JSON is published, and runs the tyre, engine and gearbox, PCG and
+routine generators with their usual checks. The `analysis/` files the pages link
+to, all 15 bounded `.asm` files, `field-evidence.json`, `pcg-index.json`,
+`unpacked-manifest.json` and the annotated `status.json` and `selected.c`, are copied unchanged
 to `evidence/` under their `analysis/` paths, and the pages link there instead
 of into the repository. It also writes `index.html`, the "Explore findings"
-entrance: it links the four pages with a one-line description and the engine,
-gearbox and tyre record counts and the PCG collection and graphic counts, all
-computed from the inputs, and shows the `fr3.exe` SHA-256 and the producer
+entrance: it links the five pages with a one-line description and the engine,
+gearbox and tyre record counts, the PCG collection and graphic counts and the
+annotated routine count, all computed from the inputs, and shows the `fr3.exe` SHA-256 and the producer
 revision. Values are shown as declared, and unresolved items stay labelled
 unresolved.
 
 Every research page, the entrance included, carries the browser preview's
 rights-holder notice (the credit, the official demo link and the removal-request
-link) before its main content, and a link bar to the other four pages. The pages
+link) before its main content, and a link bar to the other five pages. The pages
 are built in a staging directory next to the output; `verify_research()` then
-checks that all five exist, that each has the notice before its `<h1>`, that
+checks that all six exist, that each has the notice before its `<h1>`, that
 none has a `<script>`, CSS `url()` or `@import`, or any external link or
 resource other than the notice's two links, that every local link, fragment
 included, resolves to a file and id inside the directory, and that the directory

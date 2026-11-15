@@ -23,7 +23,7 @@ The new tyre analysis reconstructs its 88-byte record and table allocations.
   WebAssembly runtime. See the [browser guide](docs/browser.md).
 - **Research findings:** open
   [Explore findings](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/),
-  the engine, gearbox, tyre and PCG catalogue pages built from the demo in the
+  the engine, gearbox, tyre, PCG catalogue and routines pages built from the demo in the
   same Pages workflow and published beside the preview under `research/`.
 
 Read [the verified findings and limitations](docs/analysis.md). This is an
@@ -98,10 +98,11 @@ headless script errors can be reported without a failing process exit code.
 | `analysis/selected/` | Instruction evidence and explicitly bounded disassembly |
 | `recovered/fr3_database_layouts.h` | Engine, gearbox and tyre in-memory layouts |
 | `artifacts/text-databases/` | Parsed engine, gearbox and tyre records from `scripts/text_database.py`, with source hashes |
-| `artifacts/research/` | Self-contained research directory from `scripts/build_research.py`: the "Explore findings" entrance page `index.html`, the four pages below, and the `analysis/` files they link to under `evidence/`; every page carries the rights-holder notice |
+| `artifacts/research/` | Self-contained research directory from `scripts/build_research.py`: the "Explore findings" entrance page `index.html`, the five pages below, and the `analysis/` files they link to under `evidence/`; every page carries the rights-holder notice |
 | `artifacts/dossier/tyres.html` | Offline tyre dossier from `scripts/tyre_dossier.py`: each tyre's declarations beside its five table sources and their byte-checked evidence |
 | `artifacts/dossier/engines.html`, `artifacts/dossier/gearboxes.html` | Offline engine and gearbox dossiers from `scripts/record_dossier.py`: each record's declarations as written, with inheritance and untagged lines labelled unresolved |
 | `artifacts/dossier/pcg.html` | Offline PCG catalogue from `scripts/pcg_catalogue.py`: every PCG collection and graphic, its header fields, byte spans and decoding status |
+| `artifacts/dossier/routines.html` | Offline routine index from `scripts/routine_index.py`: each of the 25 analyst-labelled routines with its signature, Ghidra pseudocode, bounded disassembly and byte-checked sites |
 | `artifacts/ghidra/` | Complete baseline C, function disassembly, function list and call edges |
 | `artifacts/fr3-demo-annotated.gzf` | Portable annotated Ghidra program |
 | `artifacts/fr3-analysis.zip` | Analysis bundle with SHA-256 manifest |
@@ -135,7 +136,7 @@ python3 scripts/text_database.py inputs/extracted/Program_Executable_Files --out
 
 `scripts/build_research.py` builds every research page in one step, after
 `acquire_demo.py`. It parses the text databases into a temporary directory,
-writes the tyre, engine, gearbox and PCG pages described below plus an "Explore
+writes the tyre, engine, gearbox, PCG and routines pages described below plus an "Explore
 findings" entrance page, `index.html`, into `artifacts/research/`, and copies the
 committed `analysis/` files the pages link to into `artifacts/research/evidence/`,
 so the directory is self-contained. Every page carries the browser preview's
@@ -185,6 +186,18 @@ declared payload stay unlabelled (see
 python3 scripts/pcg_catalogue.py
 ```
 
+`scripts/routine_index.py` builds `artifacts/dossier/routines.html` from the
+committed `analysis/annotated/` and `analysis/selected/` files alone, so it also
+needs no demo. It gives each of the 25 annotated routines a section with its
+analyst label, signature, register storage, pseudocode, the disassembly files
+whose span holds its entry and the byte-checked sites in them; every label is
+analyst-assigned, not an original symbol (see
+[the analysis notes](docs/analysis.md#routine-index)):
+
+```sh
+python3 scripts/routine_index.py
+```
+
 ## Validate without rebuilding
 
 ```sh
@@ -206,7 +219,7 @@ the PE virtual-address reader, file identity checks and tool-path resolution. Th
 the strict engine, gearbox and tyre text-database parser: its accepted grammar and each
 rejected construct, and tyre table inheritance resolution. They check the tyre dossier's anchors and links, its
 address-matched evidence trails, its escaping and each input disagreement it refuses, and the engine and gearbox
-dossiers' anchors, unresolved labels, escaping and the malformed inputs they refuse. The PCG catalogue tests run the script on the committed `analysis/` files and check every input disagreement it refuses. The research-directory tests build it from fixture game files, check its pages, notice, links and copied evidence, and check that the verifier rejects a missing page or notice, a broken local link, an external resource, a `<script>` and a file the build does not write. For demo acquisition they cover, without network access, the
+dossiers' anchors, unresolved labels, escaping and the malformed inputs they refuse. The PCG catalogue tests run the script on the committed `analysis/` files and check every input disagreement it refuses. The routine index tests check its sections, escaping and site placement on synthetic routines, run it on the committed files, and check each refusal: `selected.c` and `status.json` disagreeing, a malformed `.asm` span header, and a site that would be dropped or shown twice. The research-directory tests build it from fixture game files, check its pages, notice, links and copied evidence, and check that the verifier rejects a missing page or notice, a broken local link, an external resource, a `<script>` and a file the build does not write. For demo acquisition they cover, without network access, the
 download-link filter, HTTPS-only fetches and redirects, the 12-URL cap, identity-checked
 archive writes and ZIP extraction safety (unsafe paths, symlinks, size limit, existing
 files). The separate verification command checks the actual demo,
