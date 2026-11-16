@@ -250,7 +250,32 @@ class RefusalTests(PackageTestCase):
 
     def test_revision_that_is_not_a_commit(self):
         self.refuse("Producer revision is 'unknown', not a Git commit", revision="unknown")
-        self.refuse("analysis/pe-metadata.json is not committed at revision", revision="f" * 40)
+        self.refuse(f"Git has no object {'f' * 40}", revision="f" * 40)
+
+    def test_hexadecimal_object_that_is_not_a_commit(self):
+        # A tree or annotated-tag ID is hexadecimal too, and `git show <id>:./<path>` reads the committed files
+        # through either, so pages built with one pass every other check.
+        repo = self.root / "repo"
+        shutil.copytree(self.repo, repo)
+        git(repo, "tag", "-a", "-m", "fixture tag", "v1")
+        for kind, name in (("tree", "HEAD^{tree}"), ("tag", "v1")):
+            with self.subTest(kind=kind):
+                revision = git(repo, "rev-parse", name)
+                self.assertEqual(git(repo, "cat-file", "-t", revision), kind)
+                self.assertIsNotNone(package_research.committed(repo / "analysis", revision, "pe-metadata.json"))
+                shutil.rmtree(self.research)
+                build_research.build(self.game, self.research, repo / "analysis", revision=revision)
+                self.refuse(f"Producer revision {revision} is a Git {kind}, not a commit", revision=revision,
+                            analysis=repo / "analysis")
+
+    def test_commit_without_pe_metadata(self):
+        repo = self.root / "repo"
+        shutil.copytree(self.repo, repo)
+        git(repo, "rm", "-q", "analysis/pe-metadata.json")
+        git(repo, "commit", "-q", "-m", "drop the PE metadata")
+        later = git(repo, "rev-parse", "HEAD")
+        self.refuse(f"analysis/pe-metadata.json is not committed at revision {later}", revision=later,
+                    analysis=repo / "analysis")
 
     def test_pages_built_at_another_revision(self):
         repo = self.root / "repo"

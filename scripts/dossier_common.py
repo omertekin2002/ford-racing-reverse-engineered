@@ -40,6 +40,8 @@ PAGES = ((INDEX_PAGE, "Explore findings"), ("engines.html", "Engines"), ("gearbo
 # The external links a research page may carry; both sit in the rights-holder notice.
 NOTICE_LINKS = (DEMO_PAGE, ISSUES_PAGE)
 NOTICE_ID = "rights-notice"
+# The notice's heading. A page whose anchors come from its data must reserve both ids.
+NOTICE_TITLE_ID = "rights-title"
 UNTAGGED_NOTE = " kept verbatim, not applied"
 
 
@@ -102,8 +104,8 @@ def rights_notice():
 
     Every research page carries it before its main content; scripts/build_research.py checks that.
     """
-    return (f'<aside id="{NOTICE_ID}" class="rights" aria-labelledby="rights-title">'
-            '<h2 id="rights-title">Unofficial research findings</h2>'
+    return (f'<aside id="{NOTICE_ID}" class="rights" aria-labelledby="{NOTICE_TITLE_ID}">'
+            f'<h2 id="{NOTICE_TITLE_ID}">Unofficial research findings</h2>'
             "<p>This fan project is not affiliated with or endorsed by the rights holders. "
             f"{e(RIGHTS_CREDIT)}</p>"
             f'<p><a href="{e(DEMO_PAGE)}" rel="noopener">Get the official demo download</a> · Rights holders can '

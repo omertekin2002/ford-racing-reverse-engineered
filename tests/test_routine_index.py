@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -15,6 +16,12 @@ import routine_index
 from text_database import REPO_ROOT
 
 from test_pcg_catalogue import Page
+
+# extract_selected imports capstone and pefile, which only the disassembly export needs.
+try:
+    from extract_selected import ROUTINES
+except ImportError:
+    ROUTINES = None
 
 PE = json.loads((REPO_ROOT / "analysis/pe-metadata.json").read_text())
 SCRIPT = REPO_ROOT / "scripts/routine_index.py"
@@ -208,6 +215,16 @@ class PageTests(RoutineTestCase):
 
 
 class RefusalTests(RoutineTestCase):
+    def test_label_that_repeats_an_id_in_the_rights_notice(self):
+        # Read the ids from the notice itself, so one added to it later has to be reserved too.
+        notice_ids = Page(rights_notice()).ids
+        self.assertEqual(notice_ids, ["rights-notice", "rights-title"])
+        for label in notice_ids:
+            with self.subTest(label=label):
+                routines = [routine(0x1000, label), *status()[1:]]
+                self.write(routines, pseudocode(routines))
+                self.refuse(f"These page anchors are not unique: {label}")
+
     def test_selected_c_lacks_a_routine(self):
         self.write(c=pseudocode(status()[:3]))
         self.refuse("status.json routine fr3_no_asm (00003000) has no block in selected.c")
@@ -305,9 +322,9 @@ class CommittedFilesTests(unittest.TestCase):
         self.addCleanup(directory.cleanup)
         self.output = Path(directory.name) / "routines.html"
 
-    def run_script(self, *args):
+    def run_script(self, *args, script=SCRIPT):
         # A wide terminal, so argparse does not wrap the default paths at their hyphens.
-        return subprocess.run([sys.executable, str(SCRIPT), *args], capture_output=True, text=True, check=False,
+        return subprocess.run([sys.executable, str(script), *args], capture_output=True, text=True, check=False,
                               timeout=60, env={**os.environ, "COLUMNS": "1000"})
 
     def test_builds_from_the_committed_analysis_files(self):
@@ -329,6 +346,37 @@ class CommittedFilesTests(unittest.TestCase):
         self.assertEqual(len(site_vas(found["fr3_load_tyre_database"])), 21)
         for name in ("fill_memory", "allocate_database_record", "create_database", "fill_memory_body"):
             self.assertIn(f"asm-{name}", found)
+
+    def test_asm_files_names_exactly_the_committed_disassembly(self):
+        committed = sorted(path.name for path in routine_index.SELECTED.glob("*.asm"))
+        self.assertEqual(list(routine_index.ASM_FILES), committed)
+
+    @unittest.skipIf(ROUTINES is None, "needs capstone and pefile from scripts/requirements.txt")
+    def test_asm_files_names_every_span_extract_selected_exports(self):
+        self.assertEqual(list(routine_index.ASM_FILES), sorted(f"{name}.asm" for _, _, name in ROUTINES))
+
+    def test_missing_committed_disassembly_file_is_refused(self):
+        # A copy of the scripts and their inputs, run in a new process: the list of committed files must not
+        # come from whatever the working tree holds when the module is imported.
+        copy_root = self.output.parent / "copy"
+        shutil.copytree(REPO_ROOT / "scripts", copy_root / "scripts", ignore=shutil.ignore_patterns("__pycache__"))
+        for name in ("selected", "annotated"):
+            shutil.copytree(REPO_ROOT / "analysis" / name, copy_root / "analysis" / name)
+        shutil.copyfile(REPO_ROOT / "analysis/pe-metadata.json", copy_root / "analysis/pe-metadata.json")
+        script = copy_root / "scripts/routine_index.py"
+        result = self.run_script("--output", str(self.output), script=script)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("15 disassembly files", result.stdout)
+        self.output.unlink()
+        (copy_root / "analysis/selected/fill_memory_body.asm").unlink()
+        for args in ((), ("--selected", str(copy_root / "analysis/selected"))):
+            with self.subTest(args=args):
+                result = self.run_script("--output", str(self.output), *args, script=script)
+                self.assertNotEqual(result.returncode, 0, result.stdout)
+                self.assertIn("routine_index.py: ", result.stderr)
+                self.assertIn("lacks committed disassembly files: fill_memory_body.asm", result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+                self.assertFalse(self.output.exists())
 
     def test_refusal_exits_non_zero_without_a_traceback(self):
         directory = self.output.parent

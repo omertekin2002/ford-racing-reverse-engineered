@@ -339,9 +339,25 @@ class CommandTests(unittest.TestCase):
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name)
 
-    def run_script(self, *args):
-        return subprocess.run([sys.executable, str(SCRIPT), *args], capture_output=True, text=True, check=False,
+    def run_script(self, *args, script=SCRIPT):
+        return subprocess.run([sys.executable, str(script), *args], capture_output=True, text=True, check=False,
                               timeout=120)
+
+    def test_missing_committed_disassembly_file_is_refused(self):
+        # A copy of the scripts and their inputs, run in a new process: a committed .asm file missing from the
+        # working tree must stop the build, not drop out of the evidence and the routines page.
+        copy_root = self.root / "copy"
+        shutil.copytree(REPO_ROOT / "scripts", copy_root / "scripts", ignore=shutil.ignore_patterns("__pycache__"))
+        write_analysis(copy_root / "analysis")
+        (copy_root / "analysis/selected/fill_memory_body.asm").unlink()
+        output = self.root / "research"
+        result = self.run_script("--game", str(write_game(self.root / "game")), "--output", str(output),
+                                 script=copy_root / "scripts/build_research.py")
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("build_research.py: ", result.stderr)
+        self.assertIn("fill_memory_body.asm", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertFalse(output.exists())
 
     def test_builds_from_the_committed_analysis_files(self):
         output = self.root / "research"

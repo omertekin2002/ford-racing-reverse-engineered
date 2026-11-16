@@ -22,17 +22,19 @@ no span, or before every routine entry in their file, are listed apart. Every
 site is shown exactly once. Labels are analyst-assigned, not original symbols.
 
 The script refuses to write the page, and exits non-zero, when an input is
-missing or malformed, the routines or labels in selected.c disagree with the
-decompiled routines in status.json, an .asm file's span header is missing or
-malformed, a site's VA repeats, a site would be shown zero times or more than
-once, or the PE metadata has no sha256.
+missing or malformed, analysis/selected lacks one of the committed .asm files,
+the routines or labels in selected.c disagree with the decompiled routines in
+status.json, an .asm file's span header is missing or malformed, a label
+repeats another id on the page, a site's VA repeats, a site would be shown zero
+times or more than once, or the PE metadata has no sha256.
 """
 import argparse
 from collections import Counter
 from pathlib import Path
 import re
 
-from dossier_common import STYLE, check_fields, check_pe, e, load_json, page_start, producer_revision, relative_href
+from dossier_common import (NOTICE_ID, NOTICE_TITLE_ID, STYLE, check_fields, check_pe, e, load_json, page_start,
+                            producer_revision, relative_href)
 from text_database import REPO_ROOT, require
 from tyre_dossier import check_evidence
 
@@ -43,8 +45,14 @@ PSEUDOCODE = ANALYSIS / "annotated/selected.c"
 SELECTED = ANALYSIS / "selected"
 FIELD_EVIDENCE = SELECTED / "field-evidence.json"
 PE_METADATA = ANALYSIS / "pe-metadata.json"
-# The committed disassembly files, by name. scripts/build_research.py copies each one beside the page.
-ASM_FILES = tuple(sorted(path.name for path in SELECTED.glob("*.asm")))
+# The committed disassembly files, by name: one per span in scripts/extract_selected.py's ROUTINES. They are
+# listed here, not read from the working tree, so that a missing file is refused instead of left off the page.
+# scripts/build_research.py copies each one beside the page.
+ASM_FILES = ("allocate_database_record.asm", "build_pcg_view.asm", "copy_engine_record.asm",
+             "copy_gearbox_record.asm", "copy_tyre_scalar_fields.asm", "create_database.asm", "fill_memory.asm",
+             "fill_memory_body.asm", "free_tyre_tables.asm", "load_compressed_resource.asm",
+             "load_directx_libraries.asm", "load_engine_database.asm", "load_gearbox_database.asm",
+             "load_tyre_database.asm", "tyre_table_accessors.asm")
 STATUS_FIELDS = {"entry_va": str, "label": str, "signature": str, "return_storage": str, "parameter_storage": list,
                  "decompiled": bool, "error": str}
 ENTRY_VA = re.compile(r"[0-9a-f]{8}")
@@ -103,8 +111,15 @@ def check_pseudocode(routines, blocks):
 
 
 def disassembly_files(directory):
-    """Read each .asm file's span header; return [{"name", "label", "start", "end"}] sorted by name."""
+    """Read each .asm file's span header; return [{"name", "label", "start", "end"}] sorted by name.
+
+    The repository's own analysis/selected must hold every file in ASM_FILES. Any other directory is read as it
+    stands, so a caller can index its own set of files.
+    """
     paths = sorted(Path(directory).glob("*.asm"))
+    if Path(directory).resolve() == SELECTED.resolve():
+        missing = sorted(set(ASM_FILES) - {path.name for path in paths})
+        require(not missing, f"{directory} lacks committed disassembly files: " + ", ".join(missing))
     require(paths, f"No .asm files in {directory}")
     files = []
     for path in paths:
@@ -286,7 +301,9 @@ def render(routines, blocks, files, placement, pe, revision, hrefs, entrance=Fal
 
 
 def check_anchors(routines, files, sites):
-    ids = (["summary", "other-files", "unplaced-sites"] + [routine["label"] for routine in routines]
+    """Every id on the page must be unique: the fixed ones, including the rights-holder notice's, and each label."""
+    ids = ([NOTICE_ID, NOTICE_TITLE_ID, "summary", "other-files", "unplaced-sites"]
+           + [routine["label"] for routine in routines]
            + [file_anchor(item["name"]) for item in files] + [site_anchor(site) for site in sites])
     repeated = sorted(anchor for anchor, count in Counter(ids).items() if count > 1)
     require(not repeated, "These page anchors are not unique: " + ", ".join(repeated))

@@ -115,11 +115,26 @@ def committed(analysis, revision, relative):
     return result.stdout if result.returncode == 0 else None
 
 
+def object_type(analysis, revision):
+    """Return the type Git gives the object named revision ("commit", "tree", "tag" or "blob"), or None."""
+    try:
+        result = subprocess.run(["git", "-C", str(analysis), "cat-file", "-t", revision],
+                                capture_output=True, text=True, check=False, timeout=30)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return result.stdout.strip() if result.returncode == 0 else None
+
+
 def committed_pe(analysis, revision):
-    """Return analysis/pe-metadata.json as committed at revision."""
+    """Return analysis/pe-metadata.json as committed at revision, which must be a full commit ID."""
     require(re.fullmatch(r"[0-9a-f]{40,64}", revision),
             f"Producer revision is {revision!r}, not a Git commit: the packet can only cite committed analysis/ "
             "files, so run it from a Git checkout")
+    # A tree or annotated-tag ID is hexadecimal too, and `git show <id>:./<path>` reads files through either.
+    kind = object_type(analysis, revision)
+    require(kind is not None, f"Git has no object {revision} in the repository holding {analysis}")
+    require(kind == "commit", f"Producer revision {revision} is a Git {kind}, not a commit: MANIFEST.json must "
+                              "name the commit whose analysis/ files the packet cites")
     data = committed(analysis, revision, "pe-metadata.json")
     require(data is not None, f"analysis/pe-metadata.json is not committed at revision {revision}")
     pe = json.loads(data)
