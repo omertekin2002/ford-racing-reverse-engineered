@@ -69,6 +69,7 @@ class PackageTestCase(unittest.TestCase):
     def package(self, output=None, epoch=1_700_000_000, **kwargs):
         kwargs.setdefault("analysis", self.analysis)
         kwargs.setdefault("revision", self.revision)
+        kwargs.setdefault("game", self.game)
         return package_research.package(self.research, output or self.out / f"{self.edition}.zip", epoch=epoch,
                                         **kwargs)
 
@@ -184,6 +185,38 @@ class PackageTests(PackageTestCase):
 
 
 class RefusalTests(PackageTestCase):
+    def test_edited_pages_with_valid_notice_and_links_are_refused(self):
+        for name in PAGES:
+            with self.subTest(page=name):
+                page = self.research / name
+                original = page.read_bytes()
+                self.addCleanup(page.write_bytes, original)
+                text = original.decode("utf-8")
+                if name == "index.html":
+                    self.assertIn("25 annotated routines", text)
+                    text = text.replace("25 annotated routines", "999 annotated routines")
+                else:
+                    text = text.replace("</body>", "<p>Invented research finding</p></body>")
+                page.write_text(text, encoding="utf-8")
+                # These edits passed the old pre-packaging structural checks.
+                build_research.verify_research(self.research)
+                self.refuse(f"fresh build with committed analysis inputs: {name}")
+                page.write_bytes(original)
+
+    def test_missing_game_for_rebuild_preserves_existing_packet(self):
+        destination = self.out / f"{self.edition}.zip"
+        destination.write_bytes(b"old packet")
+        self.refuse("Game directory does not exist", game=self.root / "absent")
+        self.assertEqual(destination.read_bytes(), b"old packet")
+
+    def test_rebuild_uses_committed_non_published_inputs(self):
+        repo = self.root / "repo"
+        shutil.copytree(self.repo, repo)
+        for name in ("tags.json", "verification.json"):
+            (repo / "analysis" / name).write_text("invalid uncommitted metadata", encoding="utf-8")
+        destination, _, _ = self.package(analysis=repo / "analysis")
+        self.assertTrue(zipfile.is_zipfile(destination))
+
     def test_missing_research_directory(self):
         shutil.rmtree(self.research)
         self.refuse("Research directory does not exist")
@@ -302,13 +335,15 @@ class CommandTests(unittest.TestCase):
 
     def test_packages_a_directory_build_research_built(self):
         research = self.root / "research"
-        built = self.run_script(BUILD_SCRIPT, "--game", str(write_game(self.root / "game")), "--output", str(research))
+        game = write_game(self.root / "game")
+        built = self.run_script(BUILD_SCRIPT, "--game", str(game), "--output", str(research))
         self.assertEqual(built.returncode, 0, built.stderr)
         env = {**os.environ, "SOURCE_DATE_EPOCH": "1700000000"}
         outputs = []
         for name in ("fr3-research-a.zip", "fr3-research-b.zip"):
             output = self.root / name
-            result = self.run_script(SCRIPT, "--research", str(research), "--output", str(output), env=env)
+            result = self.run_script(SCRIPT, "--research", str(research), "--output", str(output),
+                                     "--game", str(game), env=env)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn(f"Packaged and verified {len(RESEARCH_FILES) + 2} files", result.stdout)
             self.assertIn(f"{output} ({output.stat().st_size} bytes)", result.stdout)
@@ -328,7 +363,8 @@ class CommandTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         text = " ".join(result.stdout.split())
         self.assertRegex(text, r"--research .*default: [^)]*artifacts/research\)")
-        self.assertRegex(text, r"--output .*fr3-research-<short revision>\.zip\)")
+        self.assertRegex(text, r"--game .*default: [^)]*inputs/extracted/Program_Executable_Files\)")
+        self.assertRegex(text, r"--output .*fr3-\s*research-<short revision>\.zip\)")
 
     def test_packets_stay_out_of_git(self):
         result = subprocess.run(["git", "-C", str(REPO_ROOT), "check-ignore", "-q",

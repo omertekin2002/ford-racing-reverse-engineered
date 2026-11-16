@@ -373,13 +373,19 @@ preview's landing page links it as "Explore findings". See
 `python3 scripts/package_research.py`, run after `build_research.py` at the
 same commit, packages the research directory as one citable ZIP,
 `artifacts/fr3-research-<short revision>.zip` by default (`--research` and
-`--output` change the paths). Before writing anything it re-runs
+`--output` change the paths; `--game` selects the extracted game directory used
+for comparison). Before writing anything it re-runs
 `check_output()` and `verify_research()` on the directory, checks every
 `evidence/` file byte for byte against the `analysis/` file it was copied from
 as committed at the current producer revision (read with `git show`, so evidence
 copied from an uncommitted edit is refused), and checks that `index.html` names
-that revision and the `fr3.exe` SHA-256 in its `analysis/pe-metadata.json`. It
-needs a Git checkout. Any failure exits non-zero with nothing written. The ZIP holds one folder,
+that revision and the `fr3.exe` SHA-256 in its `analysis/pe-metadata.json`. It then
+rebuilds all six pages with the current generators and extracted game databases,
+reading every analysis input (including tags and verification metadata) from
+that Git revision into a temporary directory. Every page must match that fresh
+build byte for byte, so changing a finding or count while keeping the revision,
+notice and links intact is refused. It needs a Git checkout and the extracted
+game databases. Any failure leaves the destination unchanged. The ZIP holds one folder,
 `fr3-research-<short revision>/`, with every research file unchanged plus:
 
 - `MANIFEST.json`: the edition name, the full producer revision, the `fr3.exe`
@@ -398,9 +404,11 @@ is written to a temporary file beside the destination, reopened, checked with
 place. An existing destination is replaced only if it is a regular file named
 `fr3-research-*.zip`; a directory, a symlink or any other file is refused.
 
-The manifest proves which files the packet holds, which commit produced it and
-which pinned build the pages describe, and that the pages passed the checks
-listed. It does not prove more: the `fr3.exe` and demo archive hashes are copied
+The manifest records which files the packet holds, the committed analysis
+revision and pinned executable metadata, and the checks the pages passed. Page
+comparison uses the current generators and local extracted databases; it does
+not authenticate the generator source or those databases against that revision
+or the pinned executable. The `fr3.exe` and demo archive hashes are copied
 from the repository, not recomputed from the files; the instruction evidence is
 not re-derived and Ghidra is not re-run. Like the research directory, the
 packet holds game data and stays out of Git.

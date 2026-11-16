@@ -2,11 +2,12 @@
 
 Run it after scripts/build_research.py, at the same commit. It:
   1. checks the research directory (default artifacts/research) with build_research.check_output()
-     and build_research.verify_research(), so a hand-edited directory, or one holding a file
-     build_research.py does not write, is never packaged;
+     and build_research.verify_research(), refusing files build_research.py does not write;
   2. checks every evidence/ file byte for byte against the analysis/ file it was copied from, as committed
      at the producer revision (read with `git show`, so an uncommitted edit is refused, not packaged), and
      checks that the entrance page names that revision and the fr3.exe SHA-256 in its analysis/pe-metadata.json;
+     then rebuilds all pages with the current generators, the extracted game databases and committed analysis
+     inputs, refusing any page whose bytes differ (including hand-edited findings or counts);
   3. writes one ZIP, default artifacts/fr3-research-<short revision>.zip, holding a single folder
      fr3-research-<short revision>/ with every research file unchanged, a MANIFEST.json naming the input
      build, producer revision, Python version, the checks above and each file's size and SHA-256, and a
@@ -60,6 +61,8 @@ VERIFICATION = (
     "evidence files byte-identical to the committed analysis/ files at the producer revision",
     "entrance page names this manifest's producer revision and the fr3.exe SHA-256 in analysis/pe-metadata.json "
     "at that revision",
+    "all six pages byte-identical to a fresh build with the current generators, extracted game databases "
+    "and analysis inputs committed at the producer revision",
     "every packaged file re-hashed from the written ZIP against MANIFEST.json and SHA256SUMS",
     "fr3.exe and the demo archive not re-hashed: their hashes are copied from analysis/pe-metadata.json and "
     "scripts/fr3_common.py",
@@ -124,7 +127,7 @@ def committed_pe(analysis, revision):
     return pe
 
 
-def read_research(research, analysis, revision, pe):
+def read_research(research, analysis, revision, pe, game=build_research.DEFAULT_GAME):
     """Run every pre-packaging check; return {path under the research directory: bytes}."""
     build_research.check_output(research)
     build_research.verify_research(research)
@@ -142,6 +145,25 @@ def read_research(research, analysis, revision, pe):
             f"{INDEX_PAGE} was not built at revision {revision}: rebuild with scripts/build_research.py")
     require(f"SHA-256 <code>{e(pe['sha256'])}</code>" in index,
             f"{INDEX_PAGE} does not name the fr3.exe SHA-256 in analysis/pe-metadata.json: {pe['sha256']}")
+    # A digest stored beside the HTML could be edited with it. Compare against an independent rebuild,
+    # reading even the non-published inputs (tags and verification) from Git rather than the working tree.
+    inputs = {"pe-metadata.json", "tags.json", "verification.json",
+              *(name.removeprefix(f"{build_research.EVIDENCE_DIR}/") for name in build_research.OUTPUT_FILES
+                if name.startswith(f"{build_research.EVIDENCE_DIR}/"))}
+    with tempfile.TemporaryDirectory() as temporary:
+        root = Path(temporary)
+        snapshot = root / "analysis"
+        for name in sorted(inputs):
+            data = committed(analysis, revision, name)
+            require(data is not None, f"analysis/{name} is not committed at revision {revision}")
+            target = snapshot / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        rebuilt = root / "research"
+        build_research.build(game, rebuilt, snapshot, revision=revision)
+        changed = [name for name in build_research.RESEARCH_PAGES if files[name] != (rebuilt / name).read_bytes()]
+        require(not changed, "Research pages differ from a fresh build with committed analysis inputs: "
+                + ", ".join(changed))
     return files
 
 
@@ -204,7 +226,8 @@ def check_zip(path, edition, files):
     return len(archived)
 
 
-def package(research=DEFAULT_RESEARCH, output=None, analysis=ANALYSIS, revision=None, epoch=None):
+def package(research=DEFAULT_RESEARCH, output=None, analysis=ANALYSIS, revision=None, epoch=None,
+            game=build_research.DEFAULT_GAME):
     """Check the research directory, write and self-check the packet; return (path, entry count, size)."""
     research, analysis = Path(research), Path(analysis)
     revision = revision or producer_revision()
@@ -215,7 +238,7 @@ def package(research=DEFAULT_RESEARCH, output=None, analysis=ANALYSIS, revision=
     require(research.is_dir() and not research.is_symlink(),
             f"Research directory does not exist: {research} (run scripts/build_research.py first)")
     pe = committed_pe(analysis, revision)
-    files = read_research(research, analysis, revision, pe)
+    files = read_research(research, analysis, revision, pe, game)
     entries = dict(files)
     entries[MANIFEST] = render_manifest(edition, revision, pe, files)
     entries[SUMS] = render_sums(entries)
@@ -239,12 +262,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--research", type=Path, default=DEFAULT_RESEARCH,
                         help="Research directory built by scripts/build_research.py (default: %(default)s)")
+    parser.add_argument("--game", type=Path, default=build_research.DEFAULT_GAME,
+                        help="Extracted game directory used for a fresh page comparison (default: %(default)s)")
     parser.add_argument("--output", type=Path,
                         help="ZIP to write; an existing file is replaced only if it is named fr3-research-*.zip "
                              f"(default: {DEFAULT_DIR}/fr3-research-<short revision>.zip)")
     args = parser.parse_args()
     try:
-        destination, count, size = package(args.research, args.output)
+        destination, count, size = package(args.research, args.output, game=args.game)
     except (ValueError, KeyError, TypeError, OSError, zipfile.BadZipFile) as error:
         raise SystemExit(f"package_research.py: {error}") from None
     print(f"Packaged and verified {count} files ({count - 2} research files plus {MANIFEST} and {SUMS}): "
