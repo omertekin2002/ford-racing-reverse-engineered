@@ -368,6 +368,42 @@ publishes it under `research/` beside the browser preview, at
 preview's landing page links it as "Explore findings". See
 [the browser guide](browser.md#research-findings) for the build and takedown.
 
+### Research packet
+
+`python3 scripts/package_research.py`, run after `build_research.py` at the
+same commit, packages the research directory as one citable ZIP,
+`artifacts/fr3-research-<short revision>.zip` by default (`--research` and
+`--output` change the paths). Before writing anything it re-runs
+`check_output()` and `verify_research()` on the directory, checks every
+`evidence/` file byte for byte against the committed `analysis/` file it was
+copied from, and checks that `index.html` names the current producer revision
+and the `fr3.exe` SHA-256 in `analysis/pe-metadata.json`; any failure exits
+non-zero with nothing written. The ZIP holds one folder,
+`fr3-research-<short revision>/`, with every research file unchanged plus:
+
+- `MANIFEST.json`: the edition name, the full producer revision, the `fr3.exe`
+  SHA-256 and PE timestamp from `analysis/pe-metadata.json`, the pinned demo
+  archive SHA-256 and size from `scripts/fr3_common.py`, the Python and zlib
+  versions, the list of checks the script ran, and each research file's size and
+  SHA-256;
+- `SHA256SUMS`, covering every other file in the folder, so
+  `sha256sum -c SHA256SUMS` run inside the extracted folder checks it.
+
+The ZIP is deterministic: sorted entries, mode 0644, compression level 9 and one
+timestamp for every entry, `SOURCE_DATE_EPOCH` if set, otherwise 1980-01-01. The
+same research directory, revision, Python and zlib give a byte-identical ZIP. It
+is written to a temporary file beside the destination, reopened, checked with
+`testzip()` and re-hashed against both manifests, and only then renamed into
+place. An existing destination is replaced only if it is a regular file named
+`fr3-research-*.zip`; a directory, a symlink or any other file is refused.
+
+The manifest proves which files the packet holds, which commit produced it and
+which pinned build the pages describe, and that the pages passed the checks
+listed. It does not prove more: the `fr3.exe` and demo archive hashes are copied
+from the repository, not recomputed from the files; the instruction evidence is
+not re-derived and Ghidra is not re-run. Like the research directory, the
+packet holds game data and stays out of Git.
+
 ## Validation and limits
 
 [Verification results](../analysis/verification.json) cover the exact executable,
