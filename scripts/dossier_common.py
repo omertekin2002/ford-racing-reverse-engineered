@@ -1,6 +1,6 @@
 """HTML and input helpers shared by the offline dossier generators.
 
-scripts/tyre_dossier.py, scripts/record_dossier.py and scripts/pcg_catalogue.py write static pages
+scripts/tyre_dossier.py, scripts/record_dossier.py, scripts/pcg_catalogue.py and scripts/routine_index.py write static pages
 with inline CSS, no JavaScript and no external resources other than the two links in
 the rights-holder notice. Every piece of input text goes through e() before it reaches
 the page. scripts/build_research.py writes all of them, plus the entrance page, into
@@ -36,10 +36,12 @@ summary { cursor: pointer; }
 # "Explore findings" entrance that scripts/build_research.py writes.
 INDEX_PAGE = "index.html"
 PAGES = ((INDEX_PAGE, "Explore findings"), ("engines.html", "Engines"), ("gearboxes.html", "Gearboxes"),
-         ("tyres.html", "Tyres"), ("pcg.html", "PCG catalogue"))
+         ("tyres.html", "Tyres"), ("pcg.html", "PCG catalogue"), ("routines.html", "Routines"))
 # The external links a research page may carry; both sit in the rights-holder notice.
 NOTICE_LINKS = (DEMO_PAGE, ISSUES_PAGE)
 NOTICE_ID = "rights-notice"
+# The notice's heading. A page whose anchors come from its data must reserve both ids.
+NOTICE_TITLE_ID = "rights-title"
 UNTAGGED_NOTE = " kept verbatim, not applied"
 
 
@@ -102,8 +104,8 @@ def rights_notice():
 
     Every research page carries it before its main content; scripts/build_research.py checks that.
     """
-    return (f'<aside id="{NOTICE_ID}" class="rights" aria-labelledby="rights-title">'
-            '<h2 id="rights-title">Unofficial research findings</h2>'
+    return (f'<aside id="{NOTICE_ID}" class="rights" aria-labelledby="{NOTICE_TITLE_ID}">'
+            f'<h2 id="{NOTICE_TITLE_ID}">Unofficial research findings</h2>'
             "<p>This fan project is not affiliated with or endorsed by the rights holders. "
             f"{e(RIGHTS_CREDIT)}</p>"
             f'<p><a href="{e(DEMO_PAGE)}" rel="noopener">Get the official demo download</a> · Rights holders can '

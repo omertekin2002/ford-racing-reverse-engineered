@@ -3,13 +3,14 @@
 Run it after scripts/acquire_demo.py has extracted the demo. It:
   1. parses ENGDATA.DAT, GEARDATA.DAT and TYREDATA.DAT with scripts/text_database.py
      into a temporary working directory, so no parsed JSON lands in the output;
-  2. writes tyres.html, engines.html, gearboxes.html and pcg.html with
-     scripts/tyre_dossier.py, scripts/record_dossier.py and scripts/pcg_catalogue.py;
+  2. writes tyres.html, engines.html, gearboxes.html, pcg.html and routines.html with
+     scripts/tyre_dossier.py, scripts/record_dossier.py, scripts/pcg_catalogue.py and
+     scripts/routine_index.py;
   3. copies every committed analysis/ file those pages link to into
      <output>/evidence/, keeping its path under analysis/, and points the pages there;
-  4. writes <output>/index.html, which links the four pages with their record and
-     graphic counts, the fr3.exe SHA-256 and the producer revision;
-  5. checks the directory with verify_research(): all five pages exist, each carries
+  4. writes <output>/index.html, which links the five pages with their record,
+     graphic and routine counts, the fr3.exe SHA-256 and the producer revision;
+  5. checks the directory with verify_research(): all six pages exist, each carries
      the rights-holder notice before its main content, none has a <script> or an
      external resource, every local link resolves to a file inside the output, and
      the directory holds no file other than the ones this script writes.
@@ -29,6 +30,7 @@ import urllib.parse
 from dossier_common import (INDEX_PAGE, NOTICE_ID, NOTICE_LINKS, PAGES, e, load_json, page_start, producer_revision)
 import pcg_catalogue
 import record_dossier
+import routine_index
 from text_database import REPO_ROOT, load_known_tags, require, write_databases
 import tyre_dossier
 from verify_web import RIGHTS_CREDIT
@@ -45,9 +47,15 @@ TYRE_EVIDENCE = {"accessors": tyre_dossier.ACCESSORS_ASM.relative_to(ANALYSIS),
 PCG_EVIDENCE = {"index": pcg_catalogue.PCG_INDEX.relative_to(ANALYSIS),
                 "manifest": pcg_catalogue.MANIFEST.relative_to(ANALYSIS),
                 "asm": pcg_catalogue.VIEW_ASM.relative_to(ANALYSIS)}
+# routine_index.py's hrefs keys: its three inputs and every committed .asm file, all of which it links.
+ROUTINE_EVIDENCE = {"status": routine_index.STATUS.relative_to(ANALYSIS),
+                    "pseudocode": routine_index.PSEUDOCODE.relative_to(ANALYSIS),
+                    "evidence": routine_index.FIELD_EVIDENCE.relative_to(ANALYSIS),
+                    **{name: (routine_index.SELECTED / name).relative_to(ANALYSIS) for name in routine_index.ASM_FILES}}
 # Every path this script writes under the output directory, and the directories that hold them.
 OUTPUT_FILES = frozenset({*RESEARCH_PAGES, *(f"{EVIDENCE_DIR}/{relative.as_posix()}"
-                                            for relative in (*TYRE_EVIDENCE.values(), *PCG_EVIDENCE.values()))})
+                                            for relative in (*TYRE_EVIDENCE.values(), *PCG_EVIDENCE.values(),
+                                                             *ROUTINE_EVIDENCE.values()))})
 OUTPUT_DIRS = frozenset(parent.as_posix() for name in OUTPUT_FILES for parent in Path(name).parents
                         if parent != Path("."))
 STYLE_URL = re.compile(r"url\s*\(|@import", re.I)
@@ -90,7 +98,10 @@ def render_index(counts, pe, revision, evidence):
              "byte-checked instruction sites behind each one.", f'{counts["tyres"]} tyre records'),
             ("pcg.html", "PCG catalogue", "Every PCG graphics collection and graphic: header fields, byte spans and "
              "decoding status. No pixel data is decoded.",
-             f'{counts["pcg_collections"]} collections, {counts["pcg_graphics"]} graphics'))
+             f'{counts["pcg_collections"]} collections, {counts["pcg_graphics"]} graphics'),
+            ("routines.html", "Routines", "Each analyst-labelled routine's signature, Ghidra pseudocode, bounded "
+             "disassembly and the byte-checked instruction sites in it. Labels are analyst-assigned, not original "
+             "symbols.", f'{counts["routines"]} annotated routines'))
     table = "".join(f'<tr><td><a href="{e(page)}">{e(title)}</a></td><td>{text}</td><td>{e(count)}</td></tr>'
                     for page, title, text, count in rows)
     files = "".join(f'<li><a href="{e(href)}"><code>{e(href)}</code></a></li>' for href in evidence)
@@ -131,7 +142,12 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
         counts["pcg_collections"], counts["pcg_graphics"] = pcg_catalogue.build(
             analysis / PCG_EVIDENCE["index"], analysis / PCG_EVIDENCE["manifest"], pe_path,
             analysis / "verification.json", staging / pcg_catalogue.PAGE, revision, hrefs=pcg_hrefs, entrance=True)
-        evidence = sorted({*tyre_hrefs.values(), *pcg_hrefs.values()})
+        routine_hrefs = copy_evidence(analysis, staging, ROUTINE_EVIDENCE)
+        counts["routines"], _, _ = routine_index.build(
+            analysis / ROUTINE_EVIDENCE["status"], analysis / ROUTINE_EVIDENCE["pseudocode"], analysis / "selected",
+            analysis / ROUTINE_EVIDENCE["evidence"], pe_path, staging / routine_index.PAGE, revision,
+            hrefs=routine_hrefs, entrance=True)
+        evidence = sorted({*tyre_hrefs.values(), *pcg_hrefs.values(), *routine_hrefs.values()})
         index = render_index(counts, load_json(pe_path, "PE metadata"), revision, evidence)
         (staging / INDEX_PAGE).write_text(index, encoding="utf-8")
         verify_research(staging)
@@ -264,8 +280,8 @@ def main():
     except (ValueError, KeyError, TypeError, AttributeError, OSError) as error:
         raise SystemExit(f"build_research.py: {error}") from None
     print(f"Wrote {len(RESEARCH_PAGES)} verified pages to {args.output}: {counts['engines']} engines, "
-          f"{counts['gearboxes']} gearboxes, {counts['tyres']} tyres, {counts['pcg_collections']} PCG collections "
-          f"and {counts['pcg_graphics']} graphics")
+          f"{counts['gearboxes']} gearboxes, {counts['tyres']} tyres, {counts['pcg_collections']} PCG collections, "
+          f"{counts['pcg_graphics']} graphics and {counts['routines']} routines")
 
 
 if __name__ == "__main__":

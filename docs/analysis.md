@@ -300,29 +300,62 @@ the extra bytes disagree with the span, the payload base disagrees with the
 formula above, a collection has no manifest entry, the totals disagree with
 `verification.json`, or the PE metadata has no `sha256`.
 
+### Routine index
+
+`python3 scripts/routine_index.py` writes `artifacts/dossier/routines.html`
+beside the other dossier pages. Like the PCG catalogue it needs no demo, network
+or Ghidra: it reads only the committed
+[annotated status](../analysis/annotated/status.json),
+[pseudocode](../analysis/annotated/selected.c), the bounded `.asm` files and
+[field evidence](../analysis/selected/field-evidence.json) under
+`analysis/selected/`, and the PE metadata. A summary table lists the 25 routines
+in `status.json` order with entry VA, analyst label, signature, return and
+parameter storage and whether they decompiled, with the error text where one
+did not. Each routine then gets a section anchored by its label (for example
+`#fr3_load_tyre_database`) with its `selected.c` block, escaped, in a collapsed
+`<pre>`; links to the disassembly files whose export span (start included, end
+excluded) holds its entry VA; and the byte-checked sites placed under it. The
+six tyre accessors share `tyre_table_accessors.asm`, so a site in a file that
+holds several routine entries is listed under the routine with the nearest entry
+VA at or below it. That is a placement rule of the page, not an established
+routine boundary. The nine reader routines (`fr3_read_integer` and the like)
+lie in no committed span. The four files that hold no routine entry
+(`allocate_database_record`, `create_database`, `fill_memory` and
+`fill_memory_body`) get their own sections, and any site in no span, or before
+every routine entry in its file, is listed apart; today there is none. Each of
+the 32 sites is shown exactly once. The page says that every label is
+analyst-assigned, not an original symbol, and that the pseudocode is Ghidra
+output with unresolved callees and inferred types. The script exits non-zero
+without writing the page when an input is missing or malformed, the routines or
+labels in `selected.c` disagree with the decompiled routines in `status.json`,
+an `.asm` file lacks its `; Analyst label: <name>; export span
+0x<start>..0x<end>` header or the span is empty or reversed, a site's VA repeats,
+a site would be shown zero times or more than once, or the PE metadata has no
+`sha256`.
+
 ### Research directory
 
 `python3 scripts/build_research.py`, run after `acquire_demo.py`, builds all of
 the pages above into one self-contained directory, `artifacts/research/` by
 default (`--game` and `--output` change the paths). It parses the three text
 databases with `text_database.py` into a temporary working directory, so no
-parsed JSON is published, and runs the tyre, engine and gearbox and PCG
-generators with their usual checks. The `analysis/` files the pages link to,
-the tyre accessor and loader disassembly, `field-evidence.json`, the PCG view
-disassembly, `pcg-index.json` and `unpacked-manifest.json`, are copied unchanged
+parsed JSON is published, and runs the tyre, engine and gearbox, PCG and
+routine generators with their usual checks. The `analysis/` files the pages link
+to, all 15 bounded `.asm` files, `field-evidence.json`, `pcg-index.json`,
+`unpacked-manifest.json` and the annotated `status.json` and `selected.c`, are copied unchanged
 to `evidence/` under their `analysis/` paths, and the pages link there instead
 of into the repository. It also writes `index.html`, the "Explore findings"
-entrance: it links the four pages with a one-line description and the engine,
-gearbox and tyre record counts and the PCG collection and graphic counts, all
-computed from the inputs, and shows the `fr3.exe` SHA-256 and the producer
+entrance: it links the five pages with a one-line description and the engine,
+gearbox and tyre record counts, the PCG collection and graphic counts and the
+annotated routine count, all computed from the inputs, and shows the `fr3.exe` SHA-256 and the producer
 revision. Values are shown as declared, and unresolved items stay labelled
 unresolved.
 
 Every research page, the entrance included, carries the browser preview's
 rights-holder notice (the credit, the official demo link and the removal-request
-link) before its main content, and a link bar to the other four pages. The pages
+link) before its main content, and a link bar to the other five pages. The pages
 are built in a staging directory next to the output; `verify_research()` then
-checks that all five exist, that each has the notice before its `<h1>`, that
+checks that all six exist, that each has the notice before its `<h1>`, that
 none has a `<script>`, CSS `url()` or `@import`, or any external link or
 resource other than the notice's two links, that every local link, fragment
 included, resolves to a file and id inside the directory, and that the directory
@@ -334,6 +367,51 @@ publishes it under `research/` beside the browser preview, at
 <https://omertekin2002.github.io/ford-racing-reverse-engineered/research/>; the
 preview's landing page links it as "Explore findings". See
 [the browser guide](browser.md#research-findings) for the build and takedown.
+
+### Research packet
+
+`python3 scripts/package_research.py`, run after `build_research.py` at the
+same commit, packages the research directory as one citable ZIP,
+`artifacts/fr3-research-<short revision>.zip` by default (`--research` and
+`--output` change the paths; `--game` selects the extracted game directory used
+for comparison). Before writing anything it re-runs
+`check_output()` and `verify_research()` on the directory, checks every
+`evidence/` file byte for byte against the `analysis/` file it was copied from
+as committed at the current producer revision (read with `git show`, so evidence
+copied from an uncommitted edit is refused), and checks that `index.html` names
+that revision and the `fr3.exe` SHA-256 in its `analysis/pe-metadata.json`. It then
+rebuilds all six pages with the current generators and extracted game databases,
+reading every analysis input (including tags and verification metadata) from
+that Git revision into a temporary directory. Every page must match that fresh
+build byte for byte, so changing a finding or count while keeping the revision,
+notice and links intact is refused. It needs a Git checkout and the extracted
+game databases. Any failure leaves the destination unchanged. The ZIP holds one folder,
+`fr3-research-<short revision>/`, with every research file unchanged plus:
+
+- `MANIFEST.json`: the edition name, the full producer revision, the `fr3.exe`
+  SHA-256 and PE timestamp from the committed `analysis/pe-metadata.json`, the pinned demo
+  archive SHA-256 and size from `scripts/fr3_common.py`, the Python and zlib
+  versions, the list of checks the script ran, and each research file's size and
+  SHA-256;
+- `SHA256SUMS`, covering every other file in the folder, so
+  `sha256sum -c SHA256SUMS` run inside the extracted folder checks it.
+
+The ZIP is deterministic: sorted entries, mode 0644, compression level 9 and one
+timestamp for every entry, `SOURCE_DATE_EPOCH` if set, otherwise 1980-01-01. The
+same research directory, revision, Python and zlib give a byte-identical ZIP. It
+is written to a temporary file beside the destination, reopened, checked with
+`testzip()` and re-hashed against both manifests, and only then renamed into
+place. An existing destination is replaced only if it is a regular file named
+`fr3-research-*.zip`; a directory, a symlink or any other file is refused.
+
+The manifest records which files the packet holds, the committed analysis
+revision and pinned executable metadata, and the checks the pages passed. Page
+comparison uses the current generators and local extracted databases; it does
+not authenticate the generator source or those databases against that revision
+or the pinned executable. The `fr3.exe` and demo archive hashes are copied
+from the repository, not recomputed from the files; the instruction evidence is
+not re-derived and Ghidra is not re-run. Like the research directory, the
+packet holds game data and stays out of Git.
 
 ## Validation and limits
 
