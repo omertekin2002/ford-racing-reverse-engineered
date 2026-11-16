@@ -375,14 +375,15 @@ same commit, packages the research directory as one citable ZIP,
 `artifacts/fr3-research-<short revision>.zip` by default (`--research` and
 `--output` change the paths). Before writing anything it re-runs
 `check_output()` and `verify_research()` on the directory, checks every
-`evidence/` file byte for byte against the committed `analysis/` file it was
-copied from, and checks that `index.html` names the current producer revision
-and the `fr3.exe` SHA-256 in `analysis/pe-metadata.json`; any failure exits
-non-zero with nothing written. The ZIP holds one folder,
+`evidence/` file byte for byte against the `analysis/` file it was copied from
+as committed at the current producer revision (read with `git show`, so evidence
+copied from an uncommitted edit is refused), and checks that `index.html` names
+that revision and the `fr3.exe` SHA-256 in its `analysis/pe-metadata.json`. It
+needs a Git checkout. Any failure exits non-zero with nothing written. The ZIP holds one folder,
 `fr3-research-<short revision>/`, with every research file unchanged plus:
 
 - `MANIFEST.json`: the edition name, the full producer revision, the `fr3.exe`
-  SHA-256 and PE timestamp from `analysis/pe-metadata.json`, the pinned demo
+  SHA-256 and PE timestamp from the committed `analysis/pe-metadata.json`, the pinned demo
   archive SHA-256 and size from `scripts/fr3_common.py`, the Python and zlib
   versions, the list of checks the script ran, and each research file's size and
   SHA-256;

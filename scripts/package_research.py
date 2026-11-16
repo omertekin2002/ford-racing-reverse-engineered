@@ -4,8 +4,9 @@ Run it after scripts/build_research.py, at the same commit. It:
   1. checks the research directory (default artifacts/research) with build_research.check_output()
      and build_research.verify_research(), so a hand-edited directory, or one holding a file
      build_research.py does not write, is never packaged;
-  2. checks every evidence/ file byte for byte against the committed analysis/ file it was copied from,
-     and checks that the entrance page names this commit and the fr3.exe SHA-256 in analysis/pe-metadata.json;
+  2. checks every evidence/ file byte for byte against the analysis/ file it was copied from, as committed
+     at the producer revision (read with `git show`, so an uncommitted edit is refused, not packaged), and
+     checks that the entrance page names that revision and the fr3.exe SHA-256 in its analysis/pe-metadata.json;
   3. writes one ZIP, default artifacts/fr3-research-<short revision>.zip, holding a single folder
      fr3-research-<short revision>/ with every research file unchanged, a MANIFEST.json naming the input
      build, producer revision, Python version, the checks above and each file's size and SHA-256, and a
@@ -27,13 +28,14 @@ import os
 from pathlib import Path
 import platform
 import re
+import subprocess
 import tempfile
 import time
 import zipfile
 import zlib
 
 import build_research
-from dossier_common import INDEX_PAGE, e, load_json, producer_revision
+from dossier_common import INDEX_PAGE, e, producer_revision
 from fr3_common import ARCHIVE_SHA256, ARCHIVE_SIZE
 from text_database import REPO_ROOT, require
 
@@ -55,8 +57,9 @@ VERIFICATION = (
     "research directory holds only files build_research.py writes, checked by check_output()",
     "research pages verified by verify_research(): all six present, each with the rights-holder notice before "
     "its content, no <script>, no external resource, every local link resolving inside the directory",
-    "evidence files byte-identical to the committed analysis/ files",
-    "entrance page names this manifest's producer revision and the fr3.exe SHA-256 in analysis/pe-metadata.json",
+    "evidence files byte-identical to the committed analysis/ files at the producer revision",
+    "entrance page names this manifest's producer revision and the fr3.exe SHA-256 in analysis/pe-metadata.json "
+    "at that revision",
     "every packaged file re-hashed from the written ZIP against MANIFEST.json and SHA256SUMS",
     "fr3.exe and the demo archive not re-hashed: their hashes are copied from analysis/pe-metadata.json and "
     "scripts/fr3_common.py",
@@ -99,10 +102,30 @@ def check_destination(destination, research):
             f"Refusing to write the packet inside the research directory: {destination}")
 
 
+def committed(analysis, revision, relative):
+    """Return analysis/<relative> as committed at revision, or None if Git has no such file there."""
+    try:
+        result = subprocess.run(["git", "-C", str(analysis), "show", f"{revision}:./{relative}"],
+                                capture_output=True, check=False, timeout=30)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return result.stdout if result.returncode == 0 else None
+
+
+def committed_pe(analysis, revision):
+    """Return analysis/pe-metadata.json as committed at revision."""
+    require(re.fullmatch(r"[0-9a-f]{40,64}", revision),
+            f"Producer revision is {revision!r}, not a Git commit: the packet can only cite committed analysis/ "
+            "files, so run it from a Git checkout")
+    data = committed(analysis, revision, "pe-metadata.json")
+    require(data is not None, f"analysis/pe-metadata.json is not committed at revision {revision}")
+    pe = json.loads(data)
+    require(isinstance(pe, dict) and pe.get("sha256"), "PE metadata has no sha256")
+    return pe
+
+
 def read_research(research, analysis, revision, pe):
     """Run every pre-packaging check; return {path under the research directory: bytes}."""
-    require(research.is_dir() and not research.is_symlink(),
-            f"Research directory does not exist: {research} (run scripts/build_research.py first)")
     build_research.check_output(research)
     build_research.verify_research(research)
     files = {path.relative_to(research).as_posix(): path.read_bytes()
@@ -110,10 +133,10 @@ def read_research(research, analysis, revision, pe):
     changed = []
     for name, data in files.items():
         if name.startswith(f"{build_research.EVIDENCE_DIR}/"):
-            original = analysis / name.removeprefix(f"{build_research.EVIDENCE_DIR}/")
-            if not original.is_file() or original.read_bytes() != data:
+            if committed(analysis, revision, name.removeprefix(f"{build_research.EVIDENCE_DIR}/")) != data:
                 changed.append(name)
-    require(not changed, "Evidence files differ from the committed analysis/ files: " + ", ".join(changed))
+    require(not changed, f"Evidence files differ from the analysis/ files committed at {revision}: "
+                         + ", ".join(changed))
     index = files[INDEX_PAGE].decode("utf-8")
     require(f"<dt>Producer revision</dt><dd><code>{e(revision)}</code>" in index,
             f"{INDEX_PAGE} was not built at revision {revision}: rebuild with scripts/build_research.py")
@@ -189,8 +212,9 @@ def package(research=DEFAULT_RESEARCH, output=None, analysis=ANALYSIS, revision=
     destination = Path(output) if output is not None else DEFAULT_DIR / f"{edition}.zip"
     epoch = source_date_epoch() if epoch is None else epoch
     check_destination(destination, research)
-    pe = load_json(analysis / "pe-metadata.json", "PE metadata")
-    require(isinstance(pe, dict) and pe.get("sha256"), "PE metadata has no sha256")
+    require(research.is_dir() and not research.is_symlink(),
+            f"Research directory does not exist: {research} (run scripts/build_research.py first)")
+    pe = committed_pe(analysis, revision)
     files = read_research(research, analysis, revision, pe)
     entries = dict(files)
     entries[MANIFEST] = render_manifest(edition, revision, pe, files)
