@@ -50,6 +50,13 @@ jobs:
       - name: Build the research pages into the site
         # Before build_web.py, so SHA256SUMS covers every file under research/.
         run: python3 scripts/build_research.py --output artifacts/web/research
+      - name: Package the research pages as a citable download
+        # After the pages are built and before build_web.py, so SHA256SUMS covers the packet. The commit time
+        # stamps its entries; the packet's folder and MANIFEST.json name the revision.
+        run: |
+          export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+          python3 scripts/package_research.py --research artifacts/web/research \
+            --output artifacts/web/downloads/fr3-research-latest.zip
       - name: Compile and build the static site
         run: python3 scripts/build_web.py --jobs 2
       - name: Verify packaged assets and project-page paths

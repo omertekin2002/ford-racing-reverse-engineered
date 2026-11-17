@@ -24,7 +24,10 @@ The new tyre analysis reconstructs its 88-byte record and table allocations.
 - **Research findings:** open
   [Explore findings](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/),
   the engine, gearbox, tyre, PCG catalogue and routines pages built from the demo in the
-  same Pages workflow and published beside the preview under `research/`.
+  same Pages workflow and published beside the preview under `research/`. The
+  [research packet](https://omertekin2002.github.io/ford-racing-reverse-engineered/downloads/fr3-research-latest.zip)
+  is an offline ZIP of those pages with a `MANIFEST.json` naming their revision,
+  input build and the checks they passed; it is rebuilt on every deploy.
 
 Read [the verified findings and limitations](docs/analysis.md). This is an
 analysis package, not restored original source or a runnable replacement game.
@@ -35,8 +38,9 @@ and [runtime validation](docs/release-validation.md).
 A static [browser preview and GitHub Pages workflow](docs/browser.md) package
 the same demo with Boxedwine's WebAssembly JIT and Wine's WebGL runtime.
 The workflow also builds the research pages into the site's `research/`
-directory. Pushes to `main` build, verify and deploy the site; manual runs of the
-workflow deploy only with **deploy** checked. Build and browser validation are
+directory and packages them as `downloads/fr3-research-latest.zip`. Pushes to
+`main` build, verify and deploy the site; manual runs of the workflow deploy
+only with **deploy** checked. Build and browser validation are
 described in the browser guide.
 
 ## Reproduce
@@ -230,7 +234,7 @@ the PE virtual-address reader, file identity checks and tool-path resolution. Th
 the strict engine, gearbox and tyre text-database parser: its accepted grammar and each
 rejected construct, and tyre table inheritance resolution. They check the tyre dossier's anchors and links, its
 address-matched evidence trails, its escaping and each input disagreement it refuses, and the engine and gearbox
-dossiers' anchors, unresolved labels, escaping and the malformed inputs they refuse. The PCG catalogue tests run the script on the committed `analysis/` files and check every input disagreement it refuses. The routine index tests check its sections, escaping and site placement on synthetic routines, run it on the committed files, and check each refusal: `selected.c` and `status.json` disagreeing, a malformed `.asm` span header, and a site that would be dropped or shown twice. The research-directory tests build it from fixture game files, check its pages, notice, links and copied evidence, and check that the verifier rejects a missing page or notice, a broken local link, an external resource, a `<script>` and a file the build does not write. The research-packet tests package a fixture research directory, check its folder, `MANIFEST.json` and `SHA256SUMS` (with `sha256sum -c` where installed) and that two runs give byte-identical ZIPs, and check that a missing directory, a page without the notice, an extra file, changed evidence, evidence copied from an uncommitted `analysis/` edit and a directory or symlink destination are refused with nothing written. For demo acquisition they cover, without network access, the
+dossiers' anchors, unresolved labels, escaping and the malformed inputs they refuse. The PCG catalogue tests run the script on the committed `analysis/` files and check every input disagreement it refuses. The routine index tests check its sections, escaping and site placement on synthetic routines, run it on the committed files, and check each refusal: `selected.c` and `status.json` disagreeing, a malformed `.asm` span header, and a site that would be dropped or shown twice. The research-directory tests build it from fixture game files, check its pages, notice, links and copied evidence, and check that the verifier rejects a missing page or notice, a broken local link, an external resource, a `<script>` and a file the build does not write. The research-packet tests package a fixture research directory, check its folder, `MANIFEST.json` and `SHA256SUMS` (with `sha256sum -c` where installed) and that two runs give byte-identical ZIPs, and check that a missing directory, a page without the notice, an extra file, changed evidence, evidence copied from an uncommitted `analysis/` edit and a directory or symlink destination are refused with nothing written. The site-verifier packet tests lay a fixture packet beside a published `research/` and check that a missing linked packet, one absent from the site's `SHA256SUMS`, one built at another revision, one whose page differs from `research/`, and one with an extra or missing file are each refused with a specific message, and that a site with neither a packet nor a link to one still passes. For demo acquisition they cover, without network access, the
 download-link filter, HTTPS-only fetches and redirects, the 12-URL cap, identity-checked
 archive writes and ZIP extraction safety (unsafe paths, symlinks, size limit, existing
 files). The separate verification command checks the actual demo,
