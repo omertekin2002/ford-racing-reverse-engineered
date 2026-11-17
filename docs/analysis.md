@@ -413,6 +413,16 @@ from the repository, not recomputed from the files; the instruction evidence is
 not re-derived and Ghidra is not re-run. Like the research directory, the
 packet holds game data and stays out of Git.
 
+The Pages workflow runs it on every deploy, on the published `research/`
+directory, with `SOURCE_DATE_EPOCH` set to the commit time, and publishes the
+packet at the stable URL
+<https://omertekin2002.github.io/ford-racing-reverse-engineered/downloads/fr3-research-latest.zip>,
+linked from the preview's landing page. The URL always serves the latest
+deploy's packet; its folder name and `MANIFEST.json` say which revision it is.
+`verify_web.py` checks that the published packet holds exactly the published
+`research/` files at the revision `research/index.html` names; see
+[the browser guide](browser.md#research-findings).
+
 ## Validation and limits
 
 [Verification results](../analysis/verification.json) cover the exact executable,
