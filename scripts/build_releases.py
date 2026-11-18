@@ -1,11 +1,13 @@
 """Build Linux/macOS Wine compatibility packages from the verified public demo."""
 import argparse
+import collections
 import gzip
 import hashlib
 import json
 import os
 from pathlib import Path
 import plistlib
+import re
 import shutil
 import stat
 import subprocess
@@ -23,6 +25,44 @@ WINE_LICENSE = (
     "wine-11.0-COPYING.LIB",
     "e237fa56668030e928551ddd60f05df5fe957f75eab874bbd017e085ed722e7c",
 )
+
+
+def git_output(repository, *args):
+    """Return Git's stdout for args run in repository, or None if Git is missing or fails."""
+    try:
+        result = subprocess.run(["git", "-C", str(repository), *args], capture_output=True, text=True,
+                                check=False, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return result.stdout if result.returncode == 0 else None
+
+
+def source_identity(repository, allow_dirty=False):
+    """Return (source_revision, dirty) for the checkout that builds the packages.
+
+    source_revision is the full commit ID of HEAD, as package_research.py records its producer revision.
+    A tree with uncommitted or untracked (non-ignored) changes, or one that is not the top of a Git
+    checkout, is refused unless allow_dirty is set; the packages then record dirty: true, and
+    source_revision is None when there is no commit to name.
+    """
+    repository = Path(repository).resolve()
+    top = git_output(repository, "rev-parse", "--show-toplevel")
+    revision = (git_output(repository, "rev-parse", "--verify", "--quiet", "HEAD^{commit}") or "").strip()
+    status = git_output(repository, "status", "--porcelain")
+    if top is None or Path(top.strip()).resolve() != repository or status is None \
+            or not re.fullmatch(r"[0-9a-f]{40,64}", revision):
+        if not allow_dirty:
+            raise ValueError(f"{repository} is not a Git checkout with a commit; the packages could not name "
+                             "their source revision. Build from a clone, or pass --allow-dirty to record "
+                             "dirty: true")
+        return (revision if re.fullmatch(r"[0-9a-f]{40,64}", revision) else None), True
+    if status.strip():
+        if not allow_dirty:
+            changed = ", ".join(line[3:] for line in status.splitlines()[:5])
+            raise ValueError(f"The checkout has uncommitted changes ({changed}); commit them so source_revision "
+                             "names what was built, or pass --allow-dirty to record dirty: true")
+        return revision, True
+    return revision, False
 
 
 def sha256(path):
@@ -84,6 +124,13 @@ def tar_tree(source, output):
             archive.add(source, arcname=source.name, filter=normalize)
 
 
+def tar_mode(entry):
+    """st_mode for a tar member: TarInfo.mode holds only the permission bits. A hard link reads as its file."""
+    kind = stat.S_IFLNK if entry.issym() else stat.S_IFDIR if entry.isdir() else \
+        stat.S_IFREG if entry.isreg() or entry.islnk() else 0
+    return kind | entry.mode
+
+
 def verify_archive(path):
     """Check payload hashes, Unix launch permissions and macOS symlink encoding."""
     if path.suffix == ".zip":
@@ -101,31 +148,77 @@ def verify_archive(path):
             verify_members(names, read, modes)
     else:
         with tarfile.open(path) as archive:
-            members = {entry.name: entry for entry in archive.getmembers()}
+            entries = archive.getmembers()
+            members = {entry.name: entry for entry in entries}
+
             def read(name):
-                with archive.extractfile(members[name]) as stream:
+                stream = archive.extractfile(members[name])
+                if stream is None:
+                    raise ValueError("Archive member is not a file: " + name)
+                with stream:
                     return stream.read()
-            verify_members(list(members), read, {name: entry.mode for name, entry in members.items()})
+            modes = {entry.name: tar_mode(entry) for entry in entries}
+            verify_members([entry.name for entry in entries], read, modes)
 
 
 def verify_members(names, read, modes):
+    """Check one archive's members: names in archive order, read(name) -> bytes, modes[name] -> st_mode."""
+    duplicates = sorted(name for name, count in collections.Counter(names).items() if count > 1)
+    if duplicates:
+        raise ValueError("Archive repeats member names: " + ", ".join(duplicates))
+    members = set(names)
     manifests = [name for name in names if name.endswith("/MANIFEST.sha256")]
     if len(manifests) != 1:
-        raise ValueError("Expected one payload manifest")
+        raise ValueError(f"Expected one payload manifest, found {len(manifests)}")
     prefix = manifests[0].rsplit("/", 1)[0] + "/"
     for line in read(manifests[0]).decode().splitlines():
-        expected, relative = line.split("  ", 1)
-        if hashlib.sha256(read(prefix + relative)).hexdigest() != expected:
+        expected, separator, relative = line.partition("  ")
+        if not separator or not re.fullmatch(r"[0-9a-f]{64}", expected) or not relative:
+            raise ValueError("Malformed payload manifest line: " + line)
+        name = prefix + relative
+        if name not in members or not stat.S_ISREG(modes[name]):
+            raise ValueError("Archive is missing a manifest file: " + relative)
+        if hashlib.sha256(read(name)).hexdigest() != expected:
             raise ValueError("Archive payload mismatch: " + relative)
-    for name in names:
-        if name.endswith(("/launch.sh", "/MacOS/ford-racing-3")) and not modes[name] & 0o111:
-            raise ValueError("Launcher lost execute permission")
-    plists = [name for name in names if name.endswith("/Contents/Info.plist")]
-    if plists:
-        info = plistlib.loads(read(plists[0]))
-        bundle = plists[0].rsplit("/", 1)[0]
-        if bundle + "/MacOS/" + info["CFBundleExecutable"] not in names:
-            raise ValueError("macOS bundle executable missing")
+    launchers = [name for name in names if name.endswith(("/launch.sh", "/MacOS/ford-racing-3"))]
+    if not any(name.endswith("/launch.sh") for name in launchers):
+        raise ValueError("Archive has no launch.sh")
+    for name in launchers:
+        if not modes[name] & 0o111:
+            raise ValueError("Launcher lost execute permission: " + name)
+    # The package's own bundle sits at <package>/<name>.app; bundles inside the Wine runtime are upstream's.
+    for plist in [name for name in names if name.endswith(".app/Contents/Info.plist") and name.count("/") == 3]:
+        info = plistlib.loads(read(plist))
+        executable = info.get("CFBundleExecutable") if isinstance(info, dict) else None
+        if not isinstance(executable, str) or not executable or "/" in executable:
+            raise ValueError("macOS Info.plist names no CFBundleExecutable")
+        if plist.rsplit("/", 1)[0] + "/MacOS/" + executable not in members:
+            raise ValueError("macOS bundle executable missing: " + executable)
+
+
+def package_metadata(platform, game_count, url, digest, revision, dirty):
+    """BUILD.json for one package; builds.json repeats it beside the archive's hash and size."""
+    return {
+        "version": VERSION, "platform": platform, "package_type": "Wine compatibility preview",
+        "game_file_count": game_count, "runtime_url": url, "runtime_archive_sha256": digest,
+        "native_source_port": False, "macos_signed": False if platform == "macos" else None,
+        "source_revision": revision, "dirty": dirty,
+    }
+
+
+def write_results(output, results):
+    """Write builds.json and SHA256SUMS for the packages just built.
+
+    A platform not rebuilt this time keeps its previous entry, unless that entry predates source_revision.
+    """
+    result_path = output / "builds.json"
+    previous = json.loads(result_path.read_text()) if result_path.exists() else []
+    built = {r["platform"] for r in results}
+    retained = [r for r in previous if r["platform"] not in built and "source_revision" in r]
+    results = sorted(retained + results, key=lambda r: r["platform"])
+    result_path.write_text(json.dumps(results, indent=2) + "\n")
+    (output / "SHA256SUMS").write_text("".join(f'{r["sha256"]}  {r["path"]}\n' for r in results))
+    return results
 
 
 def main():
@@ -135,8 +228,11 @@ def main():
     parser.add_argument("--cache", type=Path, default=download_cache(), help="Download cache (env FR3_CACHE; default: %(default)s)")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--platform", choices=["linux", "macos", "both"], default="both")
+    parser.add_argument("--allow-dirty", action="store_true",
+                        help="Build from uncommitted changes or a non-Git tree; the packages record dirty: true")
     args = parser.parse_args()
     repository = Path(__file__).resolve().parents[1]
+    revision, dirty = source_identity(repository, args.allow_dirty)
     output = (args.output or repository / "artifacts/releases").resolve()
     output.mkdir(parents=True, exist_ok=True)
     args.cache.mkdir(parents=True, exist_ok=True)
@@ -193,11 +289,7 @@ def main():
             shutil.copyfile(repository / "release/THIRD_PARTY.md", resources / "THIRD_PARTY.md")
             shutil.copyfile(repository / "docs/releases.md", package / "README.md")
             shutil.copyfile(repository / "docs/release-validation.md", package / "VALIDATION.md")
-            metadata = {
-                "version": VERSION, "platform": platform, "package_type": "Wine compatibility preview",
-                "game_file_count": game_count, "runtime_url": url, "runtime_archive_sha256": digest,
-                "native_source_port": False, "macos_signed": False if platform == "macos" else None,
-            }
+            metadata = package_metadata(platform, game_count, url, digest, revision, dirty)
             (resources / "BUILD.json").write_text(json.dumps(metadata, indent=2) + "\n")
             file_count = manifest(resources)
             subprocess.run(["bash", "-n", str(resources / "launch.sh")], check=True)
@@ -209,12 +301,7 @@ def main():
             results.append({"path": archive.name, "sha256": sha256(archive), "bytes": archive.stat().st_size,
                             "manifest_files": file_count, **metadata})
             print(f"Built and verified: {archive} ({archive.stat().st_size:,} bytes)", flush=True)
-    result_path = output / "builds.json"
-    previous = json.loads(result_path.read_text()) if result_path.exists() else []
-    retained = [result for result in previous if result["platform"] not in {r["platform"] for r in results}]
-    results = sorted(retained + results, key=lambda r: r["platform"])
-    result_path.write_text(json.dumps(results, indent=2) + "\n")
-    (output / "SHA256SUMS").write_text("".join(f'{r["sha256"]}  {r["path"]}\n' for r in results))
+    write_results(output, results)
 
 
 if __name__ == "__main__":
