@@ -1,0 +1,135 @@
+name: Wine compatibility packages
+
+# Builds and verifies the Linux and macOS Wine packages and keeps them as a short-lived workflow artifact.
+# It publishes nothing: no release, tag or deployment. A release is still created by the owner from these files.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - scripts/build_releases.py
+      - scripts/setup_release_tools.py
+      - scripts/fr3_common.py
+      - scripts/setup_tools.py
+      - scripts/acquire_demo.py
+      - release/**
+      - docs/releases.md
+      - docs/release-validation.md
+      - analysis/game-file-manifest.json
+      - .github/workflows/releases.yml
+  push:
+    branches: [main]
+    paths:
+      - scripts/build_releases.py
+      - scripts/setup_release_tools.py
+      - scripts/fr3_common.py
+      - scripts/setup_tools.py
+      - scripts/acquire_demo.py
+      - release/**
+      - docs/releases.md
+      - docs/release-validation.md
+      - analysis/game-file-manifest.json
+      - .github/workflows/releases.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wine-packages-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      RELEASES: artifacts/releases
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore pinned runtimes and demo downloads
+        # The default locations: ~/.cache/fr3/downloads and ~/.local/share/fr3-tools/runtime (see README).
+        # Every cached file is checked against its pinned SHA-256 again before use.
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/fr3/downloads
+            ~/.local/share/fr3-tools/runtime
+            inputs/fordracing3demo.zip
+          key: fr3-wine-packages-v1-${{ runner.os }}-${{ hashFiles('scripts/setup_release_tools.py', 'scripts/build_releases.py', 'scripts/acquire_demo.py') }}
+      - name: Install CAB extraction tool
+        run: sudo apt-get update && sudo apt-get install -y unshield
+      - name: Acquire and verify the public demo
+        run: python3 scripts/acquire_demo.py inputs --unshield unshield
+      - name: Prepare the pinned Wine runtimes
+        run: python3 scripts/setup_release_tools.py
+      - name: Build and verify both packages
+        # No --allow-dirty: the packages record the checked-out commit as source_revision.
+        run: python3 scripts/build_releases.py
+      - name: Check the release checksums
+        working-directory: ${{ env.RELEASES }}
+        run: sha256sum -c SHA256SUMS
+      - name: Re-verify the final archives
+        run: |
+          python3 - "$RELEASES" <<'EOF'
+          import json, sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts")
+          from build_releases import verify_archive
+          output = Path(sys.argv[1])
+          builds = json.loads((output / "builds.json").read_text())
+          files = sorted(p.name for p in output.iterdir())
+          expected = sorted([*(entry["path"] for entry in builds), "SHA256SUMS", "builds.json"])
+          if files != expected or sorted(entry["platform"] for entry in builds) != ["linux", "macos"]:
+              sys.exit(f"Unexpected release files: {files}")
+          for entry in builds:
+              if entry["dirty"] or len(entry["source_revision"] or "") < 40:
+                  sys.exit(f"{entry['path']} does not name a clean source revision")
+              verify_archive(output / entry["path"])
+              print(f"Verified {entry['path']}: {entry['bytes']:,} bytes, {entry['manifest_files']} manifest files, "
+                    f"source {entry['source_revision']}")
+          EOF
+      - name: Run the Linux launcher's own verification
+        run: |
+          package="$(jq -r '.[] | select(.platform == "linux") | .path' "$RELEASES/builds.json")"
+          expected="$(jq -r '.[] | select(.platform == "linux") | .manifest_files' "$RELEASES/builds.json")"
+          extracted="$RUNNER_TEMP/linux-package"
+          mkdir -p "$extracted"
+          tar -xzf "$RELEASES/$package" -C "$extracted"
+          cd "$extracted/${package%.tar.gz}"
+          ./launch.sh --verify > "$RUNNER_TEMP/launch-verify.log"
+          tail -n 3 "$RUNNER_TEMP/launch-verify.log"
+          checked="$(grep -c ': OK$' "$RUNNER_TEMP/launch-verify.log")"
+          echo "launch.sh --verify: $checked of $expected manifest files OK"
+          test "$checked" -eq "$expected"
+      - name: Summarize the build
+        run: |
+          {
+            echo '### Wine compatibility packages'
+            echo
+            echo '| Package | Bytes | Manifest files | Source revision |'
+            echo '|---|---:|---:|---|'
+            jq -r '.[] | "| `\(.path)` | \(.bytes) | \(.manifest_files) | `\(.source_revision)` |"' "$RELEASES/builds.json"
+            echo
+            echo '```'
+            cat "$RELEASES/SHA256SUMS"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload the packages, SHA256SUMS and builds.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: ford-racing-3-demo-wine-packages
+          path: |
+            artifacts/releases/*.tar.gz
+            artifacts/releases/*.zip
+            artifacts/releases/SHA256SUMS
+            artifacts/releases/builds.json
+          if-no-files-found: error
+          retention-days: 14
+          # The archives are already compressed.
+          compression-level: 0

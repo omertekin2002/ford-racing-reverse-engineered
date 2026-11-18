@@ -96,16 +96,59 @@ shared download cache. Both follow `FR3_TOOLS` and `FR3_CACHE`; see
 The builder checks every original demo file against the analysis manifest,
 extracts runtimes from pinned upstream archives, preserves executable modes
 and macOS symlinks, and checks all archive contents against their manifests.
-Outputs are written to `artifacts/releases/`.
+Outputs are written to `artifacts/releases/`: the two archives, `SHA256SUMS`
+and `builds.json`, which lists each archive's size, SHA-256 and manifest file
+count beside the package's `BUILD.json` fields.
+
+`BUILD.json` and every `builds.json` entry name the commit that was built in
+`source_revision` (the full `git rev-parse HEAD`) and record `dirty`. The
+builder refuses a checkout with uncommitted or untracked changes, or a tree
+that is not a Git checkout. Pass `--allow-dirty` to build one anyway; the
+packages then record `"dirty": true`, and `source_revision` is `null` when
+there is no commit to name.
+
+### Building in CI
+
+The **Wine compatibility packages** workflow
+(`.github/workflows/releases.yml`) runs the same steps on a GitHub-hosted
+Ubuntu runner: it acquires and verifies the public demo, installs the pinned
+runtimes, runs `build_releases.py`, checks `sha256sum -c SHA256SUMS`, verifies
+both archives again, extracts the Linux package and runs `./launch.sh --verify`
+in it. It runs on pull requests and pushes to `main` that change the builder,
+the launchers, these documents or the game-file manifest, and on demand:
+
+```sh
+gh workflow run releases.yml --repo omertekin2002/ford-racing-reverse-engineered --ref main
+```
+
+Each run uploads one workflow artifact, `ford-racing-3-demo-wine-packages`,
+holding exactly the two archives, `SHA256SUMS` and `builds.json`. It appears
+under **Artifacts** on the run's summary page and is kept for 14 days. Fetch
+and check it with:
+
+```sh
+gh run download <run-id> --repo omertekin2002/ford-racing-reverse-engineered \
+  --name ford-racing-3-demo-wine-packages --dir wine-packages
+cd wine-packages && sha256sum -c SHA256SUMS
+```
+
+A pull-request run builds GitHub's temporary merge commit, so its
+`source_revision` names that commit; a run on `main` names the `main` commit.
+The workflow has read-only repository access. It creates no release, tag or
+deployment and does not launch the game under Wine; see
+[runtime validation](release-validation.md) for what has been run.
 
 ### Publishing a release
 
-v0.1.0-preview was published from a local build with these steps:
+Publishing stays a manual step for the repository owner. v0.1.0-preview was
+published from a local build with these steps:
 
-1. Build both packages with the two commands above.
-2. In `artifacts/releases/`, check the archives with `sha256sum -c SHA256SUMS`.
+1. Build both packages with the two commands above, or download the artifact
+   of a green **Wine compatibility packages** run on `main`.
+2. In `artifacts/releases/` (or the downloaded directory), check the archives
+   with `sha256sum -c SHA256SUMS`.
 3. Extract the Linux package and run `./launch.sh --verify` in its directory.
-4. From `artifacts/releases/`, create a prerelease with the two archives and
+4. From that directory, create a prerelease with the two archives and
    the checksum file:
 
    ```sh
