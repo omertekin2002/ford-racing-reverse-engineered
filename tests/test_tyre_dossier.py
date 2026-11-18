@@ -208,7 +208,8 @@ class DossierPageTests(DossierTestCase):
 
     def test_repository_links_resolve_from_the_output(self):
         page = self.build()
-        targets = set(re.findall(r'href="([^"#][^"]*)"', page)) - {"engines.html", "gearboxes.html", "pcg.html", "routines.html",
+        targets = set(re.findall(r'href="([^"#][^"]*)"', page)) - {"engines.html", "gearboxes.html", "pcg.html", "routines.html", "questions.html",
+                                                                     "questions.html#sound-words",
                                                                      *NOTICE_LINKS}
         self.assertEqual({Path(os.path.normpath(self.output.parent / target)) for target in targets},
                          {tyre_dossier.ACCESSORS_ASM, tyre_dossier.LOADER_ASM, (self.root / "evidence.json").resolve()})
@@ -216,7 +217,8 @@ class DossierPageTests(DossierTestCase):
 
     def test_nav_bar_links_the_sibling_dossiers(self):
         self.assertIn('<nav>Research: <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | '
-                      '<strong>Tyres</strong> | <a href="pcg.html">PCG catalogue</a> | <a href="routines.html">Routines</a></nav>', self.build())
+                      '<strong>Tyres</strong> | <a href="pcg.html">PCG catalogue</a> | <a href="routines.html">Routines</a> | '
+                      '<a href="questions.html">Open questions</a></nav>', self.build())
 
     def test_input_text_is_escaped(self):
         text = TYRES.replace("CHILD", "EVILNAME").replace("FRONT", "EVILVALUE")

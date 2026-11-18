@@ -23,7 +23,7 @@ The new tyre analysis reconstructs its 88-byte record and table allocations.
   WebAssembly runtime. See the [browser guide](docs/browser.md).
 - **Research findings:** open
   [Explore findings](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/),
-  the engine, gearbox, tyre, PCG catalogue and routines pages built from the demo in the
+  the engine, gearbox, tyre, PCG catalogue, routines and open questions pages built from the demo in the
   same Pages workflow and published beside the preview under `research/`. The
   [research packet](https://omertekin2002.github.io/ford-racing-reverse-engineered/downloads/fr3-research-latest.zip)
   is an offline ZIP of those pages with a `MANIFEST.json` naming their revision,
@@ -102,12 +102,13 @@ headless script errors can be reported without a failing process exit code.
 | `analysis/selected/` | Instruction evidence and explicitly bounded disassembly |
 | `recovered/fr3_database_layouts.h` | Engine, gearbox and tyre in-memory layouts |
 | `artifacts/text-databases/` | Parsed engine, gearbox and tyre records from `scripts/text_database.py`, with source hashes |
-| `artifacts/research/` | Self-contained research directory from `scripts/build_research.py`: the "Explore findings" entrance page `index.html`, the five pages below, and the `analysis/` files they link to under `evidence/`; every page carries the rights-holder notice |
+| `artifacts/research/` | Self-contained research directory from `scripts/build_research.py`: the "Explore findings" entrance page `index.html`, the six pages below, and the `analysis/` files they link to under `evidence/`; every page carries the rights-holder notice |
 | `artifacts/fr3-research-<revision>.zip` | Citable research packet from `scripts/package_research.py`: the verified research directory in one folder, with a `MANIFEST.json` naming the input build, producer revision, Python version, the checks actually run and each file's SHA-256, plus `SHA256SUMS` |
 | `artifacts/dossier/tyres.html` | Offline tyre dossier from `scripts/tyre_dossier.py`: each tyre's declarations beside its five table sources and their byte-checked evidence |
 | `artifacts/dossier/engines.html`, `artifacts/dossier/gearboxes.html` | Offline engine and gearbox dossiers from `scripts/record_dossier.py`: each record's declarations as written, with inheritance and untagged lines labelled unresolved |
 | `artifacts/dossier/pcg.html` | Offline PCG catalogue from `scripts/pcg_catalogue.py`: every PCG collection and graphic, its header fields, byte spans and decoding status |
 | `artifacts/dossier/routines.html` | Offline routine index from `scripts/routine_index.py`: each of the 25 analyst-labelled routines with its signature, Ghidra pseudocode, bounded disassembly and byte-checked sites |
+| `artifacts/dossier/questions.html` | Offline "Open questions" page from `scripts/open_questions.py`: for `INDIGO`'s colon-less line, the tyre sound table's first fifteen words and the PCG extra bytes, what was observed, what depends on it, the untested alternatives and what evidence would decide it |
 | `artifacts/ghidra/` | Complete baseline C, function disassembly, function list and call edges |
 | `artifacts/fr3-demo-annotated.gzf` | Portable annotated Ghidra program |
 | `artifacts/fr3-analysis.zip` | Analysis bundle with SHA-256 manifest |
@@ -141,7 +142,7 @@ python3 scripts/text_database.py inputs/extracted/Program_Executable_Files --out
 
 `scripts/build_research.py` builds every research page in one step, after
 `acquire_demo.py`. It parses the text databases into a temporary directory,
-writes the tyre, engine, gearbox, PCG and routines pages described below plus an "Explore
+writes the tyre, engine, gearbox, PCG, routines and open questions pages described below plus an "Explore
 findings" entrance page, `index.html`, into `artifacts/research/`, and copies the
 committed `analysis/` files the pages link to into `artifacts/research/evidence/`,
 so the directory is self-contained. Every page carries the browser preview's
@@ -213,6 +214,22 @@ analyst-assigned, not an original symbol (see
 python3 scripts/routine_index.py
 ```
 
+`scripts/open_questions.py`, run after `text_database.py`, builds
+`artifacts/dossier/questions.html`, the "Open questions" page. It gives three
+findings the other pages label unresolved their own section: the colon-less
+`INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` (`#indigo`), the tyre sound
+table's leading words (`#sound-words`) and the extra bytes after `_loadbar` and
+`_loadbr2` (`#pcg-extra-bytes`). Each section shows what was observed, read
+from the parsed databases and committed `analysis/` files at build time, where
+the other pages depend on it, the alternatives the observations leave open
+(each labelled untested) and what evidence would decide it. It resolves
+nothing, and it exits non-zero when its inputs no longer show the question
+(see [the analysis notes](docs/analysis.md#open-questions)):
+
+```sh
+python3 scripts/open_questions.py
+```
+
 ## Validate without rebuilding
 
 ```sh
@@ -234,7 +251,7 @@ the PE virtual-address reader, file identity checks and tool-path resolution. Th
 the strict engine, gearbox and tyre text-database parser: its accepted grammar and each
 rejected construct, and tyre table inheritance resolution. They check the tyre dossier's anchors and links, its
 address-matched evidence trails, its escaping and each input disagreement it refuses, and the engine and gearbox
-dossiers' anchors, unresolved labels, escaping and the malformed inputs they refuse. The PCG catalogue tests run the script on the committed `analysis/` files and check every input disagreement it refuses. The routine index tests check its sections, escaping and site placement on synthetic routines, run it on the committed files, and check each refusal: `selected.c` and `status.json` disagreeing, a malformed `.asm` span header, and a site that would be dropped or shown twice. The research-directory tests build it from fixture game files, check its pages, notice, links and copied evidence, and check that the verifier rejects a missing page or notice, a broken local link, an external resource, a `<script>` and a file the build does not write. The research-packet tests package a fixture research directory, check its folder, `MANIFEST.json` and `SHA256SUMS` (with `sha256sum -c` where installed) and that two runs give byte-identical ZIPs, and check that a missing directory, a page without the notice, an extra file, changed evidence, evidence copied from an uncommitted `analysis/` edit and a directory or symlink destination are refused with nothing written. The site-verifier packet tests lay a fixture packet beside a published `research/` and check that a missing linked packet, one absent from the site's `SHA256SUMS`, one built at another revision, one whose page differs from `research/`, and one with an extra or missing file are each refused with a specific message, and that a site with neither a packet nor a link to one still passes. For demo acquisition they cover, without network access, the
+dossiers' anchors, unresolved labels, escaping and the malformed inputs they refuse. The PCG catalogue tests run the script on the committed `analysis/` files and check every input disagreement it refuses. The routine index tests check its sections, escaping and site placement on synthetic routines, run it on the committed files, and check each refusal: `selected.c` and `status.json` disagreeing, a malformed `.asm` span header, and a site that would be dropped or shown twice. The open questions tests check the page's three anchored sections and their four parts, that observed values follow synthetic inputs, that every reading is labelled untested, escaping, the engine, tyre and PCG pages' links to each question, and each refusal: `INDIGO` missing or without exactly one `INHERIT_TYPE DEFAULT_TRACK` line, the sound table's allocation or `+0x54` store missing from `field-evidence.json`, the tyre loader's table stores changed, and extra bytes on any graphics but `_loadbar` and `_loadbr2` at 1,024 bytes each. The research-directory tests build it from fixture game files, check its pages, notice, links and copied evidence, and check that the verifier rejects a missing page or notice, a broken local link, an external resource, a `<script>` and a file the build does not write. The research-packet tests package a fixture research directory, check its folder, `MANIFEST.json` and `SHA256SUMS` (with `sha256sum -c` where installed) and that two runs give byte-identical ZIPs, and check that a missing directory, a page without the notice, an extra file, changed evidence, evidence copied from an uncommitted `analysis/` edit and a directory or symlink destination are refused with nothing written. The site-verifier packet tests lay a fixture packet beside a published `research/` and check that a missing linked packet, one absent from the site's `SHA256SUMS`, one built at another revision, one whose page differs from `research/`, and one with an extra or missing file are each refused with a specific message, and that a site with neither a packet nor a link to one still passes. For demo acquisition they cover, without network access, the
 download-link filter, HTTPS-only fetches and redirects, the 12-URL cap, identity-checked
 archive writes and ZIP extraction safety (unsafe paths, symlinks, size limit, existing
 files). The separate verification command checks the actual demo,

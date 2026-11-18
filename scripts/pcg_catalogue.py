@@ -28,7 +28,8 @@ import argparse
 from pathlib import Path
 import re
 
-from dossier_common import STYLE, check_fields, check_pe, e, load_json, page_start, producer_revision, relative_href
+from dossier_common import (PCG_ANCHOR, STYLE, check_fields, check_pe, e, is_pcg_question, load_json, page_start,
+                            producer_revision, question_link, relative_href)
 from text_database import REPO_ROOT, require
 
 PAGE = "pcg.html"
@@ -159,7 +160,7 @@ def entry_row(collection, entry):
     extra = num(entry["extra_bytes"])
     if entry["extra_bytes"]:
         extra += (' <span class="label">unresolved</span>: what these bytes past the declared payload hold is not '
-                  "established")
+                  "established" + (f" ({question_link(PCG_ANCHOR, 'open question')})" if is_pcg_question(entry) else ""))
     status = decoding_status(entry)
     anchor = e(entry_id(collection, entry))
     return (f'<tr id="{anchor}"><td class="num"><a href="#{anchor}">{e(entry["index"])}</a></td>'

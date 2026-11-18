@@ -125,7 +125,8 @@ class RecordDossierPageTests(RecordDossierTestCase):
                 self.assertTrue(internal)
                 self.assertEqual([href for href in internal if href not in links.ids], [])
                 self.assertEqual({href for href in links.hrefs if not href.startswith("#")},
-                                 {"engines.html", "gearboxes.html", "tyres.html", "pcg.html", "routines.html", *NOTICE_LINKS}
+                                 {"engines.html", "gearboxes.html", "tyres.html", "pcg.html", "routines.html", "questions.html",
+                                  *NOTICE_LINKS}
                                  - {self.pages[prefix == "gearbox"].name})
 
     def test_inherit_type_links_to_the_parent_and_is_unresolved(self):
@@ -206,10 +207,12 @@ class RecordDossierPageTests(RecordDossierTestCase):
         engines, gearboxes = self.build()
         self.assertIn('<nav>Research: <strong>Engines</strong> | <a href="gearboxes.html">Gearboxes</a> | '
                       '<a href="tyres.html">Tyres</a> | <a href="pcg.html">PCG catalogue</a> | '
-                      '<a href="routines.html">Routines</a></nav>', engines)
+                      '<a href="routines.html">Routines</a> | '
+                      '<a href="questions.html">Open questions</a></nav>', engines)
         self.assertIn('<nav>Research: <a href="engines.html">Engines</a> | <strong>Gearboxes</strong> | '
                       '<a href="tyres.html">Tyres</a> | <a href="pcg.html">PCG catalogue</a> | '
-                      '<a href="routines.html">Routines</a></nav>', gearboxes)
+                      '<a href="routines.html">Routines</a> | '
+                      '<a href="questions.html">Open questions</a></nav>', gearboxes)
 
     def test_no_scripts_or_remote_resources(self):
         for page in self.build():

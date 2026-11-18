@@ -13,7 +13,9 @@ external resources. For each tyre it shows the declarations as written, the
 source record, INHERIT_TYPE path, source line, accessor and record offset of
 each of the five tables, a "Why?" trail of the byte-checked sites behind each
 table, and, for inheriting records, the scalar tags around INHERIT_TYPE labelled
-unresolved. No inherited scalar value is computed or shown.
+unresolved. No inherited scalar value is computed or shown. A note labels the
+sound table's leading words, before its START_RPM values, unresolved and links
+to their section on the Open questions page (scripts/open_questions.py).
 
 Evidence is matched by address, not claim text. A table's accessor sites are
 the field-evidence sites inside its accessor (ACCESSOR_SPAN bytes from the
@@ -32,7 +34,8 @@ import argparse
 from pathlib import Path
 
 import dossier_common
-from dossier_common import check_fields, check_pe, e, load_json, page_start, producer_revision, relative_href
+from dossier_common import (SOUND_ANCHOR, SOUND_NOTE_ID, check_fields, check_pe, e, load_json, page_start,
+                            producer_revision, question_link, relative_href)
 from text_database import REPO_ROOT, RESOLVED_TYRE_TABLES, check_table_provenance, require, scalar_inheritance, table_sources
 
 PAGE = "tyres.html"
@@ -257,7 +260,11 @@ def render(tyres, sites, pe, revision, hrefs, entrance=False):
         shown = ", ".join(f"{link(source, table)} {count}" for source, count in counts[table].items())
         parts.append(f'<tr><td>{e(TABLE_LABELS[table])}</td><td><code>{e(cited["accessor"])}</code> '
                      f'<code>+ {e(cited["record_offset"])}</code></td><td>{shown}</td></tr>')
-    parts.append('</table><h2>Summary</h2><table><tr><th>Tyre</th>'
+    parts.append(f'</table><div class="unresolved" id="{SOUND_NOTE_ID}"><p><span class="label">unresolved</span>: '
+                 "the sound information table's leading words, before its <code>START_RPM</code> values, are not "
+                 "shown here, and what they hold is not established "
+                 f"({question_link(SOUND_ANCHOR, 'open question')}).</p></div>")
+    parts.append('<h2>Summary</h2><table><tr><th>Tyre</th>'
                  + "".join(f"<th>{e(TABLE_LABELS[table])}</th>" for table in RESOLVED_TYRE_TABLES) + "</tr>")
     for record in records:
         name = record["type"]

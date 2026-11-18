@@ -10,7 +10,8 @@ inline CSS, no JavaScript and no external resources. For each record they show
 the declarations exactly as written, in line order: scalar values, multi-row
 fields such as TORQUE_ARRAY as row tables with their dimensions, :INHERIT_TYPE
 as a link to the parent labelled unresolved, and every untagged line verbatim
-labelled unresolved. Nothing is resolved: no parent value is copied into a
+labelled unresolved; INDIGO's colon-less line links to its section on the Open
+questions page (scripts/open_questions.py). Nothing is resolved: no parent value is copied into a
 child, and the meaning and units of the values are not interpreted.
 
 The script refuses to write either page, and exits non-zero, when an input is
@@ -21,8 +22,8 @@ an earlier record of the same file, or PE metadata without `sha256`.
 import argparse
 from pathlib import Path
 
-from dossier_common import (STYLE, anchor, check_fields, check_pe, declarations, e, link, load_json, page_start,
-                            producer_revision)
+from dossier_common import (INDIGO_ANCHOR, STYLE, anchor, check_fields, check_pe, declarations, e, is_indigo_line,
+                            link, load_json, page_start, producer_revision, question_link)
 from text_database import REPO_ROOT, require
 
 TORQUE = "TORQUE_ARRAY"
@@ -38,7 +39,14 @@ INHERIT_NOTE = (' <span class="label">unresolved</span>: how the game applies th
                 "none of its values are copied here")
 UNTAGGED_NOTE = (' kept verbatim, not applied <div class="unresolved"><span class="label">unresolved</span>: '
                  "this line has no colon, so the parser does not apply it; whether the game honours it is not "
-                 "established</div>")
+                 "established{}</div>")
+
+
+def untagged_note(record, item):
+    """The unresolved note after an untagged line; INDIGO's colon-less line links to its open question."""
+    if is_indigo_line(record, item):
+        return UNTAGGED_NOTE.format(" (" + question_link(INDIGO_ANCHOR, "open question") + ")")
+    return UNTAGGED_NOTE.format("")
 
 
 def scalar(item):
@@ -122,7 +130,7 @@ def render(database, kind, pe, revision, entrance=False):
                          'values this record ends up with is not established, so only its own declarations are '
                          'shown.</p></div>')
         parts.append(f"<h3>Declarations, as written</h3>"
-                     f"{declarations(record, prefix, INHERIT_NOTE, UNTAGGED_NOTE)}</section>")
+                     f"{declarations(record, prefix, INHERIT_NOTE, untagged_note)}</section>")
     parts.append("</body></html>\n")
     return "\n".join(parts)
 

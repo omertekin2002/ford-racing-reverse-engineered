@@ -1,6 +1,7 @@
 """HTML and input helpers shared by the offline dossier generators.
 
-scripts/tyre_dossier.py, scripts/record_dossier.py, scripts/pcg_catalogue.py and scripts/routine_index.py write static pages
+scripts/tyre_dossier.py, scripts/record_dossier.py, scripts/pcg_catalogue.py, scripts/routine_index.py and
+scripts/open_questions.py write static pages
 with inline CSS, no JavaScript and no external resources other than the two links in
 the rights-holder notice. Every piece of input text goes through e() before it reaches
 the page. scripts/build_research.py writes all of them, plus the entrance page, into
@@ -36,7 +37,19 @@ summary { cursor: pointer; }
 # "Explore findings" entrance that scripts/build_research.py writes.
 INDEX_PAGE = "index.html"
 PAGES = ((INDEX_PAGE, "Explore findings"), ("engines.html", "Engines"), ("gearboxes.html", "Gearboxes"),
-         ("tyres.html", "Tyres"), ("pcg.html", "PCG catalogue"), ("routines.html", "Routines"))
+         ("tyres.html", "Tyres"), ("pcg.html", "PCG catalogue"), ("routines.html", "Routines"),
+         ("questions.html", "Open questions"))
+# The open questions that scripts/open_questions.py writes up, and what each one is about. The engine, tyre and PCG
+# pages link their unresolved label for each case to its anchor on QUESTIONS_PAGE; open_questions.py refuses to
+# write the page when its inputs no longer show the case described here.
+QUESTIONS_PAGE = "questions.html"
+INDIGO_ANCHOR, SOUND_ANCHOR, PCG_ANCHOR = "indigo", "sound-words", "pcg-extra-bytes"
+INDIGO_RECORD = "INDIGO"
+INDIGO_TOKENS = ("INHERIT_TYPE", "DEFAULT_TRACK")
+PCG_QUESTION_ENTRIES = ("_loadbar", "_loadbr2")
+PCG_QUESTION_EXTRA = 1024
+# The id of the tyre page's note on the sound table's leading words.
+SOUND_NOTE_ID = "sound-table-words"
 # The external links a research page may carry; both sit in the rights-holder notice.
 NOTICE_LINKS = (DEMO_PAGE, ISSUES_PAGE)
 NOTICE_ID = "rights-notice"
@@ -99,6 +112,21 @@ def nav(current, entrance=False):
     return f'<nav>Research: {" | ".join(items)}</nav>'
 
 
+def question_link(anchor_id, text="open question"):
+    """Return a link to one section of the Open questions page, from a sibling research page."""
+    return f'<a href="{e(QUESTIONS_PAGE)}#{e(anchor_id)}">{e(text)}</a>'
+
+
+def is_indigo_line(record, item):
+    """True for the colon-less line the Open questions page writes up: INDIGO's untagged INDIGO_TOKENS."""
+    return record["type"] == INDIGO_RECORD and tuple(item["tokens"]) == INDIGO_TOKENS
+
+
+def is_pcg_question(entry):
+    """True for a PCG graphic whose extra bytes the Open questions page writes up."""
+    return entry["name"] in PCG_QUESTION_ENTRIES and entry["extra_bytes"] == PCG_QUESTION_EXTRA
+
+
 def rights_notice():
     """Return the rights-holder notice, worded as on the browser preview (web/index.html).
 
@@ -128,7 +156,8 @@ def declarations(record, prefix, inherit_note="", untagged_note=UNTAGGED_NOTE):
     """Return the record's fields, :SOUND_INFO entries and untagged lines as table rows, in line order.
 
     :INHERIT_TYPE links to the parent's `prefix` anchor, followed by inherit_note. Untagged lines are
-    shown verbatim followed by untagged_note. Both notes are HTML, not escaped here.
+    shown verbatim followed by untagged_note, or by untagged_note(record, item) when it is callable. Both notes are
+    HTML, not escaped here.
     """
     items = []
     for tag, field in record["fields"].items():
@@ -144,7 +173,8 @@ def declarations(record, prefix, inherit_note="", untagged_note=UNTAGGED_NOTE):
                  f'START_RPM <span class="num">{e(entry["start_rpm"])}</span>' + rows_table(entry["rows"]))
         items.append((entry["line"], ":SOUND_INFO", shown))
     for item in record.get("untagged", []):
-        items.append((item["line"], "(untagged)", f'<code>{e(" ".join(item["tokens"]))}</code>{untagged_note}'))
+        note = untagged_note(record, item) if callable(untagged_note) else untagged_note
+        items.append((item["line"], "(untagged)", f'<code>{e(" ".join(item["tokens"]))}</code>{note}'))
     body = "".join(f"<tr><td>{e(line)}</td><td><code>{e(tag)}</code></td><td>{shown}</td></tr>"
                    for line, tag, shown in sorted(items, key=lambda item: item[0]))
     return f"<table><tr><th>Line</th><th>Tag</th><th>Values</th></tr>{body}</table>"
