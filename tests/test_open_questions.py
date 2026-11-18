@@ -222,7 +222,7 @@ class QuestionsPageTests(QuestionsTestCase):
         self.assertIn('<a href="pcg.html#pcg-GRAPHICS-LOADING-graphics.pcg-e1">_loadbar</a></td>'
                       '<td><span class="num">400</span>', observed)
         self.assertIn("<code>_loadbar</code>: <code>+0x04</code>, <code>+0x08</code>, <code>+0x0c</code>, "
-                      "<code>+0x10</code>, <code>+0x14</code>, <code>+0x24</code>, <code>+0x28</code>, ", observed)
+                      "<code>+0x10</code>, <code>+0x14</code>, <code>+0x24</code>, <code>+0x28</code>; ", observed)
         self.assertEqual(observed.count('class="num differs"'), 14)
         self.assertEqual(observed.count("<tr><td class=\"num\">+0x"), 32)
 

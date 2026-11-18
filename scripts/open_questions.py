@@ -336,7 +336,7 @@ def pcg_section(case, hrefs, view):
                         for entry in entries)
         meaning = pcg_catalogue.ESTABLISHED_WORDS.get(i, pcg_catalogue.NOT_ESTABLISHED)
         words.append(f'<tr><td class="num">+0x{i * 4:02x}</td>{cells}<td>{e(meaning)}</td></tr>')
-    changed = ", ".join(f"<code>{e(entry['name'])}</code>: "
+    changed = "; ".join(f"<code>{e(entry['name'])}</code>: "
                         + (", ".join(f"<code>+0x{i * 4:02x}</code>" for i in sorted(differs[entry["index"]])) or "none")
                         for entry in extra)
     names = " and ".join(f"<code>{e(entry['name'])}</code>" for entry in extra)
