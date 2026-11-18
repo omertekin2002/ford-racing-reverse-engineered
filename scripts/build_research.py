@@ -3,14 +3,14 @@
 Run it after scripts/acquire_demo.py has extracted the demo. It:
   1. parses ENGDATA.DAT, GEARDATA.DAT and TYREDATA.DAT with scripts/text_database.py
      into a temporary working directory, so no parsed JSON lands in the output;
-  2. writes tyres.html, engines.html, gearboxes.html, pcg.html and routines.html with
-     scripts/tyre_dossier.py, scripts/record_dossier.py, scripts/pcg_catalogue.py and
-     scripts/routine_index.py;
+  2. writes tyres.html, engines.html, gearboxes.html, pcg.html, routines.html and
+     questions.html with scripts/tyre_dossier.py, scripts/record_dossier.py,
+     scripts/pcg_catalogue.py, scripts/routine_index.py and scripts/open_questions.py;
   3. copies every committed analysis/ file those pages link to into
      <output>/evidence/, keeping its path under analysis/, and points the pages there;
-  4. writes <output>/index.html, which links the five pages with their record,
-     graphic and routine counts, the fr3.exe SHA-256 and the producer revision;
-  5. checks the directory with verify_research(): all six pages exist, each carries
+  4. writes <output>/index.html, which links the six pages with their record,
+     graphic, routine and question counts, the fr3.exe SHA-256 and the producer revision;
+  5. checks the directory with verify_research(): all seven pages exist, each carries
      the rights-holder notice before its main content, none has a <script> or an
      external resource, every local link resolves to a file inside the output, and
      the directory holds no file other than the ones this script writes.
@@ -28,6 +28,7 @@ import tempfile
 import urllib.parse
 
 from dossier_common import (INDEX_PAGE, NOTICE_ID, NOTICE_LINKS, PAGES, e, load_json, page_start, producer_revision)
+import open_questions
 import pcg_catalogue
 import record_dossier
 import routine_index
@@ -52,10 +53,13 @@ ROUTINE_EVIDENCE = {"status": routine_index.STATUS.relative_to(ANALYSIS),
                     "pseudocode": routine_index.PSEUDOCODE.relative_to(ANALYSIS),
                     "evidence": routine_index.FIELD_EVIDENCE.relative_to(ANALYSIS),
                     **{name: (routine_index.SELECTED / name).relative_to(ANALYSIS) for name in routine_index.ASM_FILES}}
+# open_questions.py's hrefs keys: field evidence, the PCG index and the four .asm files it reads.
+QUESTION_EVIDENCE = dict(open_questions.EVIDENCE)
 # Every path this script writes under the output directory, and the directories that hold them.
 OUTPUT_FILES = frozenset({*RESEARCH_PAGES, *(f"{EVIDENCE_DIR}/{relative.as_posix()}"
                                             for relative in (*TYRE_EVIDENCE.values(), *PCG_EVIDENCE.values(),
-                                                             *ROUTINE_EVIDENCE.values()))})
+                                                             *ROUTINE_EVIDENCE.values(),
+                                                             *QUESTION_EVIDENCE.values()))})
 OUTPUT_DIRS = frozenset(parent.as_posix() for name in OUTPUT_FILES for parent in Path(name).parents
                         if parent != Path("."))
 STYLE_URL = re.compile(r"url\s*\(|@import", re.I)
@@ -101,7 +105,10 @@ def render_index(counts, pe, revision, evidence):
              f'{counts["pcg_collections"]} collections, {counts["pcg_graphics"]} graphics'),
             ("routines.html", "Routines", "Each analyst-labelled routine's signature, Ghidra pseudocode, bounded "
              "disassembly and the byte-checked instruction sites in it. Labels are analyst-assigned, not original "
-             "symbols.", f'{counts["routines"]} annotated routines'))
+             "symbols.", f'{counts["routines"]} annotated routines'),
+            ("questions.html", "Open questions", "Findings labelled unresolved elsewhere: what was observed, what "
+             "depends on each, the alternatives the observations leave open (all untested) and what evidence would "
+             "decide it. Nothing is resolved.", f'{counts["questions"]} open questions'))
     table = "".join(f'<tr><td><a href="{e(page)}">{e(title)}</a></td><td>{text}</td><td>{e(count)}</td></tr>'
                     for page, title, text, count in rows)
     files = "".join(f'<li><a href="{e(href)}"><code>{e(href)}</code></a></li>' for href in evidence)
@@ -131,6 +138,7 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
     try:
         tyre_hrefs = copy_evidence(analysis, staging, TYRE_EVIDENCE)
         pcg_hrefs = copy_evidence(analysis, staging, PCG_EVIDENCE)
+        question_hrefs = copy_evidence(analysis, staging, QUESTION_EVIDENCE)
         with tempfile.TemporaryDirectory() as work:
             work = Path(work)
             write_databases(game_dir, work, load_known_tags(analysis / "tags.json"))
@@ -139,6 +147,10 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
                                                   entrance=True),
                       **record_dossier.build(work / "engines.json", work / "gearboxes.json", pe_path, staging, revision,
                                                entrance=True)}
+            counts["questions"] = open_questions.build(
+                work / "engines.json", work / "tyres.json", analysis / QUESTION_EVIDENCE["evidence"],
+                analysis / QUESTION_EVIDENCE["pcg_index"], pe_path, staging / open_questions.PAGE, revision,
+                hrefs=question_hrefs, entrance=True, selected=analysis / "selected")
         counts["pcg_collections"], counts["pcg_graphics"] = pcg_catalogue.build(
             analysis / PCG_EVIDENCE["index"], analysis / PCG_EVIDENCE["manifest"], pe_path,
             analysis / "verification.json", staging / pcg_catalogue.PAGE, revision, hrefs=pcg_hrefs, entrance=True)
@@ -147,7 +159,8 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
             analysis / ROUTINE_EVIDENCE["status"], analysis / ROUTINE_EVIDENCE["pseudocode"], analysis / "selected",
             analysis / ROUTINE_EVIDENCE["evidence"], pe_path, staging / routine_index.PAGE, revision,
             hrefs=routine_hrefs, entrance=True)
-        evidence = sorted({*tyre_hrefs.values(), *pcg_hrefs.values(), *routine_hrefs.values()})
+        evidence = sorted({*tyre_hrefs.values(), *pcg_hrefs.values(), *routine_hrefs.values(),
+                           *question_hrefs.values()})
         index = render_index(counts, load_json(pe_path, "PE metadata"), revision, evidence)
         (staging / INDEX_PAGE).write_text(index, encoding="utf-8")
         verify_research(staging)
@@ -281,7 +294,7 @@ def main():
         raise SystemExit(f"build_research.py: {error}") from None
     print(f"Wrote {len(RESEARCH_PAGES)} verified pages to {args.output}: {counts['engines']} engines, "
           f"{counts['gearboxes']} gearboxes, {counts['tyres']} tyres, {counts['pcg_collections']} PCG collections, "
-          f"{counts['pcg_graphics']} graphics and {counts['routines']} routines")
+          f"{counts['pcg_graphics']} graphics, {counts['routines']} routines and {counts['questions']} open questions")
 
 
 if __name__ == "__main__":

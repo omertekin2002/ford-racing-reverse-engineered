@@ -165,7 +165,7 @@ class CataloguePageTests(CatalogueTestCase):
         self.assertNotIn("<script", page.lower())
         self.assertNotRegex(page.replace(rights_notice(), ""), r"https?://")
         files = {href for href in parsed.hrefs if not href.startswith("#")} - {"engines.html", "gearboxes.html",
-                                                                                 "tyres.html", "routines.html",
+                                                                                 "tyres.html", "routines.html", "questions.html",
                                                                                  *NOTICE_LINKS}
         self.assertEqual({Path(os.path.normpath(self.output.parent / href)) for href in files},
                          {pcg_catalogue.VIEW_ASM, (self.root / "pcg-index.json").resolve(),
@@ -173,7 +173,8 @@ class CataloguePageTests(CatalogueTestCase):
 
     def test_nav_bar(self):
         self.assertIn('<nav>Research: <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | '
-                      '<a href="tyres.html">Tyres</a> | <strong>PCG catalogue</strong> | <a href="routines.html">Routines</a></nav>', self.build())
+                      '<a href="tyres.html">Tyres</a> | <strong>PCG catalogue</strong> | <a href="routines.html">Routines</a> | '
+                      '<a href="questions.html">Open questions</a></nav>', self.build())
 
     def test_rights_notice_comes_before_the_main_content(self):
         page = self.build()

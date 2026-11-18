@@ -182,7 +182,7 @@ class PageTests(RoutineTestCase):
             self.assertIn(text, page)
         self.assertEqual(page.count(rights_notice()), 1)
         self.assertLess(page.index(rights_notice()), page.index("<h1>"))
-        self.assertIn('<a href="pcg.html">PCG catalogue</a> | <strong>Routines</strong></nav>', page)
+        self.assertIn('<a href="pcg.html">PCG catalogue</a> | <strong>Routines</strong> | <a href="questions.html">Open questions</a></nav>', page)
         self.assertNotIn("index.html", page)
 
     def test_anchors_are_unique_and_resolve(self):
