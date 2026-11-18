@@ -16,7 +16,9 @@ The new tyre analysis reconstructs its 88-byte record and table allocations.
   [v0.1.0-preview release](https://github.com/omertekin2002/ford-racing-reverse-engineered/releases/tag/v0.1.0-preview).
   They are Wine compatibility previews that run the unchanged public demo; the
   macOS package has not been tested on a Mac. See the
-  [release instructions](docs/releases.md).
+  [release instructions](docs/releases.md). A
+  [CI workflow](docs/releases.md#building-in-ci) rebuilds and verifies both
+  packages and keeps them as a downloadable workflow artifact.
 - **Browser:** open the
   [browser preview](https://omertekin2002.github.io/ford-racing-reverse-engineered/),
   an experimental build that runs the same demo through Boxedwine's
