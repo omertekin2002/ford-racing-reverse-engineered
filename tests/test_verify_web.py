@@ -9,17 +9,19 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from fr3_common import DEMO_PAGE
 from setup_web_tools import BOXEDWINE_REVISION, WINE_WEB_SHA256
 import verify_web
-from verify_web import (ISSUES_PAGE, RIGHTS_CREDIT, WASM_HEADER, links_to_research, verify, verify_archive,
-                        verify_build_record, verify_notice, verify_relative_urls, verify_research_site,
-                        verify_script_order, verify_sums)
+from verify_web import (ISSUES_PAGE, PACKET, RIGHTS_CREDIT, WASM_HEADER, links_to_packet, links_to_research, verify,
+                        verify_archive, verify_build_record, verify_notice, verify_packet, verify_relative_urls,
+                        verify_research_site, verify_script_order, verify_sums)
 
 import build_research
+import package_research
 from test_build_research import write_analysis, write_game
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,6 +47,13 @@ class VerifyNoticeTests(unittest.TestCase):
         html = (ROOT / "web/index.html").read_text(encoding="utf-8")
         self.assertIn('<a href="research/">Explore findings</a>', html)
         self.assertTrue(links_to_research(html))
+
+    def test_repository_page_links_to_packet_in_intro_and_footer(self):
+        html = (ROOT / "web/index.html").read_text(encoding="utf-8")
+        self.assertTrue(links_to_packet(html))
+        intro, footer = html.split("<footer>")
+        self.assertIn('<a href="downloads/fr3-research-latest.zip">Download the research packet</a>', intro)
+        self.assertIn('<a href="downloads/fr3-research-latest.zip">Research packet (ZIP)</a>', footer)
 
     def test_reject_missing_notice(self):
         with self.assertRaisesRegex(ValueError, "lacks the rights-holder notice"):
@@ -365,7 +374,7 @@ class VerifySiteTests(SiteTestCase):
 RESEARCH_LINK = '<a href="research/">Explore findings</a>'
 
 
-class ResearchSiteTests(unittest.TestCase):
+class ResearchSiteTestCase(unittest.TestCase):
     """A site with research/ built by build_research.py from fixture game files, as the Pages workflow lays it out."""
 
     @classmethod
@@ -396,6 +405,8 @@ class ResearchSiteTests(unittest.TestCase):
             verify(self.root, self.manifest)
         return output.getvalue()
 
+
+class ResearchSiteTests(ResearchSiteTestCase):
     def test_accept_site_with_research(self):
         files = self.research_files()
         self.assertIn("research/index.html", files)
@@ -464,6 +475,152 @@ class ResearchSiteTests(unittest.TestCase):
                                ('<a href="runtime/research/">x</a>', False), ("<p>research/</p>", False)):
             with self.subTest(html=html):
                 self.assertEqual(links_to_research(html), expected)
+
+
+PACKET_LINK = f'<a href="{PACKET}">Research packet</a>'
+PE = json.loads((ROOT / "analysis/pe-metadata.json").read_text())
+
+
+def write_packet(path, research, revision, edition=None, change=None):
+    """Write a packet of research/ the way package_research.py lays it out, without its Git checks.
+
+    change(files) may edit the {path: bytes} research files before the manifests are written over them.
+    """
+    files = {p.relative_to(research).as_posix(): p.read_bytes() for p in sorted(research.rglob("*")) if p.is_file()}
+    if change:
+        change(files)
+    edition = edition or package_research.edition_name(revision)
+    entries = dict(files)
+    entries[package_research.MANIFEST] = package_research.render_manifest(edition, revision, PE, files)
+    entries[package_research.SUMS] = package_research.render_sums(entries)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    package_research.write_zip(path, edition, entries, package_research.DEFAULT_EPOCH)
+
+
+class PacketSiteTests(ResearchSiteTestCase):
+    """The research site above, plus the packet of its research/ at downloads/, linked from index.html."""
+
+    REVISION = "0123abcd"
+
+    def setUp(self):
+        super().setUp()
+        self.packet = self.root / PACKET
+        self.repack()
+        index = self.root / "index.html"
+        index.write_text(index.read_text(encoding="utf-8").replace("</main>", PACKET_LINK + "</main>"),
+                         encoding="utf-8")
+        write_sums(self.root)
+
+    def repack(self, **kwargs):
+        kwargs.setdefault("revision", self.REVISION)
+        write_packet(self.packet, self.root / "research", **kwargs)
+        write_sums(self.root)
+
+    def refuse(self, pattern):
+        with self.assertRaisesRegex(ValueError, pattern):
+            self.verify()
+
+    def test_accept_site_with_packet(self):
+        files = self.research_files()
+        self.assertEqual(self.verify(), f"Verified static Pages build, rights notice, relative URLs, manifests and "
+                                        f"{len(files)} research files plus the research packet and all 2 original "
+                                        "demo files\n")
+        self.assertEqual(verify_packet(self.root, verify_sums(self.root)), len(files))
+
+    def test_accept_packet_written_by_package_research(self):
+        # The real packager's output, with its Git and fresh-build checks stubbed: only the layout matters here.
+        self.packet.unlink()
+        with mock.patch.object(package_research, "committed_pe", return_value=PE), \
+             mock.patch.object(package_research, "read_research",
+                               side_effect=lambda research, *_: {p.relative_to(research).as_posix(): p.read_bytes()
+                                                                 for p in sorted(research.rglob("*")) if p.is_file()}):
+            package_research.package(self.root / "research", self.packet, revision=self.REVISION,
+                                     epoch=package_research.DEFAULT_EPOCH)
+        write_sums(self.root)
+        self.verify()
+
+    def test_site_without_packet_or_link_still_passes(self):
+        index = self.root / "index.html"
+        index.write_text(index.read_text(encoding="utf-8").replace(PACKET_LINK, ""), encoding="utf-8")
+        shutil.rmtree(self.root / "downloads")
+        write_sums(self.root)
+        self.assertEqual(verify_packet(self.root, verify_sums(self.root)), 0)
+        self.assertNotIn("packet", self.verify())
+
+    def test_reject_missing_linked_packet(self):
+        self.packet.unlink()
+        write_sums(self.root)
+        self.refuse(r"index\.html links to downloads/fr3-research-latest\.zip but the site has no such file")
+
+    def test_reject_unlinked_packet_that_fails(self):
+        # The packet is checked whenever it exists, even if index.html does not link to it.
+        index = self.root / "index.html"
+        index.write_text(index.read_text(encoding="utf-8").replace(PACKET_LINK, ""), encoding="utf-8")
+        self.repack(revision="4567cdef")
+        self.refuse("was built at revision '4567cdef'")
+
+    def test_reject_packet_missing_from_sums(self):
+        sums = self.root / "SHA256SUMS"
+        sums.write_text("".join(line + "\n" for line in sums.read_text().splitlines() if not line.endswith(PACKET)))
+        self.refuse("SHA256SUMS does not list the research packet: downloads/fr3-research-latest.zip")
+
+    def test_reject_packet_with_different_revision(self):
+        self.repack(revision="4567cdef")
+        self.refuse(r"was built at revision '4567cdef', but research/index\.html names '0123abcd'")
+
+    def test_reject_packet_folder_not_named_for_revision(self):
+        self.repack(edition="fr3-research-other")
+        self.refuse(r"holds folder fr3-research-other/, expected fr3-research-0123abcd/")
+
+    def test_reject_packet_page_that_differs_from_research(self):
+        def change(files):
+            files["tyres.html"] = files["tyres.html"].replace(b"</body>", b"<p>edited</p></body>")
+        self.repack(change=change)
+        self.refuse("differs from the published research files: tyres.html")
+
+    def test_reject_packet_with_extra_file(self):
+        self.repack(change=lambda files: files.update({"notes.txt": b"not published"}))
+        self.refuse("holds files not published under research/: notes.txt")
+
+    def test_reject_packet_missing_file(self):
+        self.repack(change=lambda files: files.pop("pcg.html"))
+        self.refuse("lacks these research files: pcg.html")
+
+    def test_reject_packet_with_two_top_level_folders(self):
+        with zipfile.ZipFile(self.packet, "a") as archive:
+            archive.writestr("elsewhere/x.txt", b"x")
+        write_sums(self.root)
+        self.refuse("must hold exactly one top-level folder")
+
+    def test_reject_packet_without_manifest(self):
+        with zipfile.ZipFile(self.packet) as archive:
+            entries = {info.filename: archive.read(info) for info in archive.infolist()}
+        write_zip(self.packet, {name: data for name, data in entries.items() if not name.endswith("/MANIFEST.json")})
+        write_sums(self.root)
+        self.refuse(r"lacks fr3-research-0123abcd/MANIFEST\.json")
+
+    def test_reject_packet_whose_sums_disagree(self):
+        # Every research file matches, but the packet's own SHA256SUMS does not: check_zip catches it.
+        with zipfile.ZipFile(self.packet) as archive:
+            entries = {info.filename: archive.read(info) for info in archive.infolist()}
+        sums = f"{package_research.edition_name(self.REVISION)}/SHA256SUMS"
+        entries[sums] = entries[sums].replace(entries[sums][:64], b"0" * 64)
+        write_zip(self.packet, entries)
+        write_sums(self.root)
+        self.refuse("Packet content does not match SHA256SUMS")
+
+    def test_reject_corrupt_packet(self):
+        data = self.packet.read_bytes()
+        self.packet.write_bytes(data[:len(data) // 2])
+        write_sums(self.root)
+        self.refuse("is not a readable ZIP archive")
+
+    def test_links_to_packet(self):
+        for html, expected in ((PACKET_LINK, True), (f'<a href="./{PACKET}">x</a>', True),
+                               ('<a href="downloads/">x</a>', False), ('<a href="research/">x</a>', False),
+                               (f'<a href="https://example.com/{PACKET}">x</a>', False)):
+            with self.subTest(html=html):
+                self.assertEqual(links_to_packet(html), expected)
 
 
 if __name__ == "__main__":

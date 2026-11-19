@@ -248,10 +248,17 @@ the sites inside that table's accessor and the loader's byte-checked store
 sites, plus allocation-size sites where available. Sites are matched by address,
 not claim text. Inheriting records
 show their scalar tags around `INHERIT_TYPE` labelled unresolved, with no
-inherited values. The script exits non-zero instead of writing a page when a
+inherited values. The page links into the [routine index](#routine-index),
+`routines.html`, beside it: a "Loaded by" line links `fr3_load_tyre_database`,
+each "Why?" trail links its accessor's section and every site's
+`#site-<va>` row, and the scalar note links `0x00524090` to
+`fr3_copy_tyre_scalar_fields`. Each label is read from
+`analysis/annotated/status.json` by entry VA (`--status` changes the file). The
+script exits non-zero instead of writing a page when a
 record lacks a table, `resolved_tables` and `table_provenance` disagree, a path
-does not follow `INHERIT_TYPE`, or a cited accessor or offset has no matching
-byte-checked site. A shared table source does not make two tyres handle the
+does not follow `INHERIT_TYPE`, a cited accessor or offset has no matching
+byte-checked site, or a linked routine is missing from `status.json` (or, for
+the loader and scalar copy, labelled differently there). A shared table source does not make two tyres handle the
 same: their scalar fields can differ. The page is not committed because it holds
 game data; [`build_research.py`](#research-directory) builds it with the other
 research pages, for publishing per decision #46.
@@ -269,11 +276,18 @@ of the parent's values are copied into the child, because engine inheritance is
 not resolved. The colon-less `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` is
 shown verbatim as an untagged line, not as inheritance, with a note that whether
 the game honours it is not established. The meaning and units of the values,
-including the torque arrays, are not interpreted. The script exits non-zero
+including the torque arrays, are not interpreted. A "Loaded by" line near the
+top links the database's load and copy routines (`fr3_load_engine_database`
+`0x005227f0` and `fr3_copy_engine_record` `0x00522c80`, or
+`fr3_load_gearbox_database` `0x00523220` and `fr3_copy_gearbox_record`
+`0x00523470`) to their sections on `routines.html`, and each unresolved
+`:INHERIT_TYPE` note links the copy routine; the inheritance itself stays
+unresolved. The script exits non-zero
 without writing either page when an input is missing or malformed: records that
 are not a list or lack `type`, `line` or `fields`, duplicate record names, an
-`:INHERIT_TYPE` that does not name an earlier record of the same file, or PE
-metadata without `sha256`. The pages are not committed because they hold game
+`:INHERIT_TYPE` that does not name an earlier record of the same file, PE
+metadata without `sha256`, or a load or copy routine that is missing from
+`status.json` or labelled differently there. The pages are not committed because they hold game
 data; [`build_research.py`](#research-directory) builds them with the other
 research pages, for publishing per decision #46.
 
@@ -333,6 +347,53 @@ an `.asm` file lacks its `; Analyst label: <name>; export span
 a site would be shown zero times or more than once, or the PE metadata has no
 `sha256`.
 
+### Open questions
+
+`python3 scripts/open_questions.py`, run after `text_database.py`, writes
+`artifacts/dossier/questions.html` beside the other dossier pages. It gives
+three findings the other pages label unresolved their own anchored section,
+each in four parts. **Observed** shows values read at build time from the parsed
+`engines.json` and `tyres.json` and the committed `analysis/` files, never typed
+into the script. **Why it matters** links the places on the other pages that
+stay unresolved because of it. **Possible readings** lists only the
+alternatives the observations leave open, each labelled *untested*, unranked.
+**What would decide it** names the committed routine or the comparison that
+would settle it. The page resolves nothing and assigns no meaning to the
+unknown line, words or bytes.
+
+- `#indigo`: `INDIGO`'s record and untagged line with its line number and
+  tokens, the `ENGDATA.DAT` SHA-256, `INDIGO`'s own declarations, the
+  `DEFAULT_TRACK` record the line names and the records whose `:INHERIT_TYPE`
+  names it, and the tags `DEFAULT_TRACK` declares that `INDIGO` does not. It
+  points at the engine loader at `0x005227f0` and the call of
+  `copy_engine_record` it reads from `load_engine_database.asm`.
+- `#sound-words`: the byte-checked `0x2d0` allocation and `+0x54` store from
+  `field-evidence.json`, and the tyre loader's indexed stores into the table,
+  read from `load_tyre_database.asm` (at `+0x3c` and `+0x78`, each within three
+  instructions of loading the table address). Those two offsets and the
+  allocation size give the layout above: fifteen unknown words, fifteen
+  `START_RPM` values and fifteen rows of ten. It also lists each tyre's
+  `:SOUND_INFO` entry count and how many tyres read their table from each
+  source.
+- `#pcg-extra-bytes`: from `pcg-index.json`, the collection holding `_loadbar`
+  and `_loadbr2`, each graphic's offset, size, declared payload, span and extra
+  bytes, and all 32 header words side by side, marking each word whose value
+  differs from that word in every graphic of the collection without extra bytes.
+
+The engine page's note on `INDIGO`'s line, the tyre page's note on the sound
+table's leading words (`#sound-table-words`) and the PCG catalogue's
+extra-bytes label on the two graphics link to their section. The script exits
+non-zero without writing the page when an input is missing or malformed or no
+longer shows the question: `INDIGO` is missing, has no untagged line, more than
+one, or one whose tokens are not `INHERIT_TYPE DEFAULT_TRACK`; `DEFAULT_TRACK`
+is not a record; `field-evidence.json` lacks the allocation size or the `+0x54`
+store; the loader's indexed table stores are not at exactly two offsets that
+split the allocation into an unknown block, a `START_RPM` block of the same size
+and whole value rows; no tyre declares `:SOUND_INFO`; the graphics with extra
+bytes are not exactly `_loadbar` and `_loadbr2`, 1,024 bytes each, in one
+collection; the engine loader no longer calls the copy routine; an `.asm` file
+lacks its span header; or the PE metadata has no `sha256`.
+
 ### Research directory
 
 `python3 scripts/build_research.py`, run after `acquire_demo.py`, builds all of
@@ -340,25 +401,27 @@ the pages above into one self-contained directory, `artifacts/research/` by
 default (`--game` and `--output` change the paths). It parses the three text
 databases with `text_database.py` into a temporary working directory, so no
 parsed JSON is published, and runs the tyre, engine and gearbox, PCG and
-routine generators with their usual checks. The `analysis/` files the pages link
+routine and open questions generators with their usual checks. The `analysis/` files the pages link
 to, all 15 bounded `.asm` files, `field-evidence.json`, `pcg-index.json`,
 `unpacked-manifest.json` and the annotated `status.json` and `selected.c`, are copied unchanged
 to `evidence/` under their `analysis/` paths, and the pages link there instead
 of into the repository. It also writes `index.html`, the "Explore findings"
-entrance: it links the five pages with a one-line description and the engine,
-gearbox and tyre record counts, the PCG collection and graphic counts and the
-annotated routine count, all computed from the inputs, and shows the `fr3.exe` SHA-256 and the producer
+entrance: it links the six pages with a one-line description and the engine,
+gearbox and tyre record counts, the PCG collection and graphic counts, the
+annotated routine count and the open question count, all computed from the inputs, and shows the `fr3.exe` SHA-256 and the producer
 revision. Values are shown as declared, and unresolved items stay labelled
 unresolved.
 
 Every research page, the entrance included, carries the browser preview's
 rights-holder notice (the credit, the official demo link and the removal-request
-link) before its main content, and a link bar to the other five pages. The pages
+link) before its main content, and a link bar to the other six pages. The pages
 are built in a staging directory next to the output; `verify_research()` then
-checks that all six exist, that each has the notice before its `<h1>`, that
+checks that all seven exist, that each has the notice before its `<h1>`, that
 none has a `<script>`, CSS `url()` or `@import`, or any external link or
 resource other than the notice's two links, that every local link, fragment
-included, resolves to a file and id inside the directory, and that the directory
+included, resolves to a file and id inside the directory (so each record page's
+`routines.html#<label>` and `routines.html#site-<va>` link must name a section
+or site row on the routines page, built from the same `status.json`), and that the directory
 holds no file other than the ones the script writes. Only then does the
 staging directory replace the output; an existing output that holds anything
 else is left alone. The directory is not committed because it holds game data.
@@ -380,7 +443,7 @@ for comparison). Before writing anything it re-runs
 as committed at the current producer revision (read with `git show`, so evidence
 copied from an uncommitted edit is refused), and checks that `index.html` names
 that revision and the `fr3.exe` SHA-256 in its `analysis/pe-metadata.json`. It then
-rebuilds all six pages with the current generators and extracted game databases,
+rebuilds all seven pages with the current generators and extracted game databases,
 reading every analysis input (including tags and verification metadata) from
 that Git revision into a temporary directory. Every page must match that fresh
 build byte for byte, so changing a finding or count while keeping the revision,
@@ -412,6 +475,16 @@ or the pinned executable. The `fr3.exe` and demo archive hashes are copied
 from the repository, not recomputed from the files; the instruction evidence is
 not re-derived and Ghidra is not re-run. Like the research directory, the
 packet holds game data and stays out of Git.
+
+The Pages workflow runs it on every deploy, on the published `research/`
+directory, with `SOURCE_DATE_EPOCH` set to the commit time, and publishes the
+packet at the stable URL
+<https://omertekin2002.github.io/ford-racing-reverse-engineered/downloads/fr3-research-latest.zip>,
+linked from the preview's landing page. The URL always serves the latest
+deploy's packet; its folder name and `MANIFEST.json` say which revision it is.
+`verify_web.py` checks that the published packet holds exactly the published
+`research/` files at the revision `research/index.html` names; see
+[the browser guide](browser.md#research-findings).
 
 ## Validation and limits
 

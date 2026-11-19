@@ -7,13 +7,24 @@ Inputs, all produced elsewhere and only read here:
   * analysis/selected/field-evidence.json: instruction sites byte-checked
     against fr3.exe.
   * analysis/pe-metadata.json: the executable's identity.
+  * analysis/annotated/status.json: the analyst labels of the routines the page
+    links to on the sibling routines page (scripts/routine_index.py).
 
 The output is one static HTML file with inline CSS, no JavaScript and no
 external resources. For each tyre it shows the declarations as written, the
 source record, INHERIT_TYPE path, source line, accessor and record offset of
 each of the five tables, a "Why?" trail of the byte-checked sites behind each
 table, and, for inheriting records, the scalar tags around INHERIT_TYPE labelled
-unresolved. No inherited scalar value is computed or shown.
+unresolved. No inherited scalar value is computed or shown. A note labels the
+sound table's leading words, before its START_RPM values, unresolved and links
+to their section on the Open questions page (scripts/open_questions.py).
+
+The page links into the sibling routines page, routines.html: a "Loaded by"
+line links the tyre loader's section, each Why? trail links its accessor's
+section and every byte-checked site's row (#site-<va>), and the scalar note
+links the scalar copy's section. Every routine label comes from status.json by
+entry VA; the loader and the scalar copy must also carry the labels in
+LINKED_ROUTINES.
 
 Evidence is matched by address, not claim text. A table's accessor sites are
 the field-evidence sites inside its accessor (ACCESSOR_SPAN bytes from the
@@ -25,14 +36,18 @@ the evidence has them.
 
 The script refuses to write a page, and exits non-zero, when a record lacks one
 of the five tables, when `resolved_tables` and `table_provenance` disagree,
-when a provenance path does not follow INHERIT_TYPE, or when a cited accessor
-or record offset has no matching byte-checked site.
+when a provenance path does not follow INHERIT_TYPE, when a cited accessor
+or record offset has no matching byte-checked site, or when a routine the page
+links to is missing from status.json or, for the loader and scalar copy,
+labelled differently there.
 """
 import argparse
 from pathlib import Path
 
 import dossier_common
-from dossier_common import check_fields, check_pe, e, load_json, page_start, producer_revision, relative_href
+from dossier_common import (ROUTINE_STATUS, SOUND_ANCHOR, SOUND_NOTE_ID, check_fields, check_pe, e, load_json,
+                            page_start, producer_revision, question_link, relative_href, routine_label, routine_labels,
+                            routine_link, site_link)
 from text_database import REPO_ROOT, RESOLVED_TYRE_TABLES, check_table_provenance, require, scalar_inheritance, table_sources
 
 PAGE = "tyres.html"
@@ -44,6 +59,11 @@ LOADER_SPAN = (0x00523820, 0x00523dc0)
 # Loader sites that set a table's allocation size; they name no record offset (load_tyre_database.asm).
 LOADER_ALLOCATIONS = {"LONGITUDINAL_COMBINED_VALUES": 0x00523be2, "LATERAL_COMBINED_VALUES": 0x00523b60,
                       "sound_info": 0x00523a67}
+# The routines the page links by a fixed entry VA, with the label status.json must give each; a renamed routine
+# fails the build rather than shipping a link to a section the routines page does not have.
+LOADER_VA, SCALAR_COPY_VA = LOADER_SPAN[0], 0x00524090
+LINKED_ROUTINES = {LOADER_VA: ("tyre loader", "fr3_load_tyre_database"),
+                   SCALAR_COPY_VA: ("tyre scalar copy", "fr3_copy_tyre_scalar_fields")}
 TABLE_LABELS = {"LONGITUDINAL_COMBINED_VALUES": "Longitudinal", "LATERAL_COMBINED_VALUES": "Lateral",
                 "VERTICAL_LOAD": "Vertical load", "CAMBER_THRUST": "Camber thrust", "sound_info": "Sound info"}
 ACCESSORS_ASM = REPO_ROOT / "analysis/selected/tyre_table_accessors.asm"
@@ -197,12 +217,29 @@ def path_html(path, table):
     return " &rarr; ".join(link(hop, table) for hop in path)
 
 
+def check_routines(labels, sites, evidence):
+    """Check the routines and sites the page links to on the routines page; return {role or accessor: label}.
+
+    Each accessor's label is whatever status.json gives its entry VA. The loader and the scalar copy must carry
+    their LINKED_ROUTINES labels. Every linked site must be in field-evidence.json, where the routines page
+    anchors it.
+    """
+    routines = {role: routine_label(labels, va, role, expected) for va, (role, expected) in LINKED_ROUTINES.items()}
+    for table, accessor, _ in sites:
+        routines[accessor] = routine_label(labels, int(accessor, 16), f"{table} accessor {accessor}")
+    known = {site["va"] for site in evidence}
+    missing = sorted({site["va"] for found in sites.values() for group in found.values() for site in group} - known)
+    require(not missing, "These linked sites are not in field-evidence.json: "
+                         + ", ".join(f"0x{va:08x}" for va in missing))
+    return routines
+
+
 def site_rows(role, sites):
-    return "".join(f'<tr><td>{role}</td><td><code>0x{site["va"]:08x}</code></td><td><code>{e(site["bytes"])}</code></td>'
+    return "".join(f'<tr><td>{role}</td><td>{site_link(site["va"])}</td><td><code>{e(site["bytes"])}</code></td>'
                    f'<td>{e(site["claim"])}</td></tr>' for site in sites)
 
 
-def why_trail(name, table, entry, sites, by_name, hrefs, exe_sha256):
+def why_trail(name, table, entry, sites, by_name, hrefs, exe_sha256, routines):
     hops = []
     for hop in entry["path"][:-1]:
         inherit = by_name[hop]["fields"]["INHERIT_TYPE"]
@@ -211,7 +248,7 @@ def why_trail(name, table, entry, sites, by_name, hrefs, exe_sha256):
     hops.append(f"<li>{link(entry['source'])} declares {e(table)} on line {e(entry['source_line'])}.</li>")
     found = site_rows("accessor", sites["accessor"]) + site_rows("loader", sites["loader"])
     return (f'<details><summary>Why does {e(name)} read {e(TABLE_LABELS[table])} from {e(entry["source"])}?</summary>'
-            f'<p>The accessor at <code>{e(entry["accessor"])}</code> returns the table address at record '
+            f'<p>The accessor at {routine_link(routines[entry["accessor"]], entry["accessor"])} returns the table address at record '
             f'<code>+ {e(entry["record_offset"])}</code> when it is non-zero, and otherwise loads the inherited record '
             f'from <code>+ 0x14</code> and repeats the test (<a href="{e(hrefs["accessors"])}">accessor disassembly</a>, '
             f'<a href="{e(hrefs["loader"])}">loader disassembly</a>).</p><ol>{"".join(hops)}</ol>'
@@ -220,21 +257,21 @@ def why_trail(name, table, entry, sites, by_name, hrefs, exe_sha256):
             f'(<a href="{e(hrefs["evidence"])}">{e(Path(hrefs["evidence"]).name)}</a>).</p></details>')
 
 
-def scalar_section(entry):
+def scalar_section(entry, routines):
     def tags(scalars):
         return ", ".join(f"<code>{e(scalar['tag'])}</code> (line {e(scalar['line'])})" for scalar in scalars) or "none"
     inherit = entry["inherit_type"]
     return (f'<h3>Scalar inheritance</h3><div class="unresolved"><p><span class="label">{e(entry["status"])}</span>: '
             f'<code>:INHERIT_TYPE</code> {link(inherit["parent"])} on line {e(inherit["line"])}. The scalar copy at '
-            f'<code>0x00524090</code> runs when <code>INHERIT_TYPE</code> is parsed, so which scalar values this tyre '
+            f'{routine_link(routines["tyre scalar copy"], f"0x{SCALAR_COPY_VA:08x}")} runs when <code>INHERIT_TYPE</code> is parsed, so which scalar values this tyre '
             f'ends up with depends on tag order, which is not modelled. No inherited value is shown.</p>'
             f'<table><tr><th>Scalar tags before <code>INHERIT_TYPE</code></th><td>{tags(entry["scalars_before"])}</td></tr>'
             f'<tr><th>Scalar tags after <code>INHERIT_TYPE</code></th><td>{tags(entry["scalars_after"])}</td></tr>'
             f'</table></div>')
 
 
-def render(tyres, sites, pe, revision, hrefs, entrance=False):
-    """Return the dossier HTML. check_inputs() must have accepted tyres first."""
+def render(tyres, sites, pe, revision, hrefs, routines, entrance=False):
+    """Return the dossier HTML. check_inputs() and check_routines() must have accepted the inputs first."""
     records = tyres["records"]
     by_name = {record["type"]: record for record in records}
     provenance = tyres["table_provenance"]
@@ -244,7 +281,9 @@ def render(tyres, sites, pe, revision, hrefs, entrance=False):
              f'PE timestamp {e(pe.get("timestamp_header_utc", "unknown"))}</dd>',
              f'<dt>Tyre database</dt><dd><code>{e(tyres["source"])}</code> SHA-256 <code>{e(tyres["sha256"])}</code></dd>',
              f'<dt>Producer revision</dt><dd><code>{e(revision)}</code> (<code>scripts/tyre_dossier.py</code>)</dd>',
-             f'<dt>Records</dt><dd>{len(records)}</dd></dl>',
+             f'<dt>Records</dt><dd>{len(records)}</dd>',
+             f'<dt>Loaded by</dt><dd>{routine_link(routines["tyre loader"])} (<code>0x{LOADER_VA:08x}</code>); '
+             'on the routines page. Routine labels are analyst-assigned, not original symbols.</dd></dl>',
              '<p class="scope">Scope: this dossier covers only the five tables the game reads through its '
              'INHERIT_TYPE-following accessors (longitudinal, lateral, vertical load, camber thrust and sound '
              'information). Scalar fields, engine inheritance and the colon-less <code>INDIGO</code> line in '
@@ -257,7 +296,11 @@ def render(tyres, sites, pe, revision, hrefs, entrance=False):
         shown = ", ".join(f"{link(source, table)} {count}" for source, count in counts[table].items())
         parts.append(f'<tr><td>{e(TABLE_LABELS[table])}</td><td><code>{e(cited["accessor"])}</code> '
                      f'<code>+ {e(cited["record_offset"])}</code></td><td>{shown}</td></tr>')
-    parts.append('</table><h2>Summary</h2><table><tr><th>Tyre</th>'
+    parts.append(f'</table><div class="unresolved" id="{SOUND_NOTE_ID}"><p><span class="label">unresolved</span>: '
+                 "the sound information table's leading words, before its <code>START_RPM</code> values, are not "
+                 "shown here, and what they hold is not established "
+                 f"({question_link(SOUND_ANCHOR, 'open question')}).</p></div>")
+    parts.append('<h2>Summary</h2><table><tr><th>Tyre</th>'
                  + "".join(f"<th>{e(TABLE_LABELS[table])}</th>" for table in RESOLVED_TYRE_TABLES) + "</tr>")
     for record in records:
         name = record["type"]
@@ -282,18 +325,19 @@ def render(tyres, sites, pe, revision, hrefs, entrance=False):
         for table in RESOLVED_TYRE_TABLES:
             entry = provenance[name][table]
             found = sites[(table, entry["accessor"], entry["record_offset"])]
-            parts.append(why_trail(name, table, entry, found, by_name, hrefs, pe["sha256"]))
+            parts.append(why_trail(name, table, entry, found, by_name, hrefs, pe["sha256"], routines))
         if name in tyres["scalar_inheritance"]:
-            parts.append(scalar_section(tyres["scalar_inheritance"][name]))
+            parts.append(scalar_section(tyres["scalar_inheritance"][name], routines))
         parts.append("</section>")
     parts.append("</body></html>\n")
     return "\n".join(parts)
 
 
-def build(tyres_path, evidence_path, pe_path, output, revision=None, hrefs=None, entrance=False):
+def build(tyres_path, evidence_path, pe_path, output, revision=None, hrefs=None, entrance=False,
+          status_path=ROUTINE_STATUS):
     """Read the inputs, check them and write the dossier; return the number of records.
 
-    hrefs maps "accessors", "loader" and "evidence" to the links the page uses for its evidence files; by
+    status_path is the status.json whose labels the routines page beside `output` uses. hrefs maps "accessors", "loader" and "evidence" to the links the page uses for its evidence files; by
     default they are relative links from `output` to the files in this repository. entrance=True adds the
     entrance page to the nav bar, for scripts/build_research.py.
     """
@@ -302,9 +346,10 @@ def build(tyres_path, evidence_path, pe_path, output, revision=None, hrefs=None,
     pe = load_json(pe_path, "PE metadata")
     check_pe(pe)
     sites = check_inputs(tyres, evidence)
+    routines = check_routines(routine_labels(status_path), sites, evidence)
     hrefs = hrefs or {"accessors": relative_href(ACCESSORS_ASM, output), "loader": relative_href(LOADER_ASM, output),
                       "evidence": relative_href(Path(evidence_path).resolve(), output)}
-    page = render(tyres, sites, pe, revision or producer_revision(), hrefs, entrance)
+    page = render(tyres, sites, pe, revision or producer_revision(), hrefs, routines, entrance)
     Path(output).parent.mkdir(parents=True, exist_ok=True)
     Path(output).write_text(page, encoding="utf-8")
     return len(tyres["records"])
@@ -318,11 +363,13 @@ def main():
                         help="Byte-checked instruction sites (default: %(default)s)")
     parser.add_argument("--pe", type=Path, default=REPO_ROOT / "analysis/pe-metadata.json",
                         help="fr3.exe identity (default: %(default)s)")
+    parser.add_argument("--status", type=Path, default=ROUTINE_STATUS,
+                        help="Routine labels the page links to on routines.html (default: %(default)s)")
     parser.add_argument("--output", type=Path, default=REPO_ROOT / "artifacts/dossier/tyres.html",
                         help="HTML file to write; keep it out of Git, it holds game data (default: %(default)s)")
     args = parser.parse_args()
     try:
-        count = build(args.tyres, args.evidence, args.pe, args.output)
+        count = build(args.tyres, args.evidence, args.pe, args.output, status_path=args.status)
     except (ValueError, KeyError, TypeError, AttributeError, OSError) as error:
         raise SystemExit(f"tyre_dossier.py: {error}") from None
     print(f"Wrote {count} tyre records to {args.output}")

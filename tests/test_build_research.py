@@ -15,22 +15,26 @@ from fr3_common import DEMO_PAGE
 from text_database import DATABASES, REPO_ROOT
 from verify_web import ISSUES_PAGE, RIGHTS_CREDIT
 
-from test_pcg_catalogue import manifest, pcg_index, verification
-from test_record_dossier import ENGINES, GEARBOXES
-from test_tyre_dossier import TYRES
+from test_open_questions import QUESTION_ENGINES, question_manifest, question_pcg_index, question_verification
+from test_record_dossier import GEARBOXES
+from test_tyre_dossier import ACCESSOR_SITES, LOADER_SITES, TYRES
 
 SCRIPT = REPO_ROOT / "scripts/build_research.py"
 PE = json.loads((REPO_ROOT / "analysis/pe-metadata.json").read_text())
-PAGES = ("index.html", "engines.html", "gearboxes.html", "tyres.html", "pcg.html", "routines.html")
+PAGES = ("index.html", "engines.html", "gearboxes.html", "tyres.html", "pcg.html", "routines.html", "questions.html")
 ASM = tuple(sorted(f"evidence/selected/{path.name}" for path in (REPO_ROOT / "analysis/selected").glob("*.asm")))
 EVIDENCE = ("evidence/annotated/selected.c", "evidence/annotated/status.json", "evidence/pcg-index.json", *ASM,
             "evidence/selected/field-evidence.json", "evidence/unpacked-manifest.json")
-COUNTS = {"engines": 4, "gearboxes": 2, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 3, "routines": 25}
+COUNTS = {"engines": 7, "gearboxes": 2, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
+          "questions": 3}
 
 
 def write_game(root):
-    """Write the three text databases, with the demo's CRLF line ends, under root; return root."""
-    for stem, text in (("engines", ENGINES), ("gearboxes", GEARBOXES), ("tyres", TYRES)):
+    """Write the three text databases, with the demo's CRLF line ends, under root; return root.
+
+    The engines include INDIGO's colon-less line, which the Open questions page requires.
+    """
+    for stem, text in (("engines", QUESTION_ENGINES), ("gearboxes", GEARBOXES), ("tyres", TYRES)):
         path = root / DATABASES[stem]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(text.replace("\n", "\r\n").encode("ascii"))
@@ -38,13 +42,16 @@ def write_game(root):
 
 
 def write_analysis(root):
-    """Copy the committed analysis inputs the pages need, with a synthetic PCG index; return root."""
+    """Copy the committed analysis inputs the pages need, with a synthetic PCG index; return root.
+
+    The PCG index holds _loadbar and _loadbr2 with 1,024 extra bytes each, which the Open questions page requires.
+    """
     shutil.copytree(REPO_ROOT / "analysis/selected", root / "selected")
     shutil.copytree(REPO_ROOT / "analysis/annotated", root / "annotated")
     for name in ("pe-metadata.json", "tags.json"):
         shutil.copyfile(REPO_ROOT / "analysis" / name, root / name)
-    for name, data in (("pcg-index.json", pcg_index()), ("unpacked-manifest.json", manifest()),
-                       ("verification.json", verification())):
+    for name, data in (("pcg-index.json", question_pcg_index()), ("unpacked-manifest.json", question_manifest()),
+                       ("verification.json", question_verification())):
         (root / name).write_text(json.dumps(data), encoding="utf-8")
     return root
 
@@ -104,8 +111,8 @@ class BuildTests(ResearchTestCase):
     def test_entrance_page_shows_counts_identity_and_scope(self):
         self.build()
         index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
-        for text in ("4 engine records", "2 gearbox records", "3 tyre records", "2 collections, 3 graphics",
-                     "25 annotated routines",
+        for text in ("7 engine records", "2 gearbox records", "3 tyre records", "2 collections, 5 graphics",
+                     "25 annotated routines", "3 open questions",
                      f'SHA-256 <code>{PE["sha256"]}</code>', "<code>0123abcd</code>",
                      "Values are shown exactly as declared", "stays labelled unresolved"):
             self.assertIn(text, index)
@@ -130,6 +137,41 @@ class BuildTests(ResearchTestCase):
             "</body>", '<a href="routines.html#fr3_load_tyre_database">x</a></body>'), encoding="utf-8")
         build_research.verify_research(self.output)
 
+    def test_record_pages_link_routine_sections_and_site_rows(self):
+        self.build()
+        routines = (self.output / "routines.html").read_text(encoding="utf-8")
+        ids = set(re.findall(r'id="([^"]+)"', routines))
+        linked = {}
+        for page in ("tyres.html", "engines.html", "gearboxes.html"):
+            text = (self.output / page).read_text(encoding="utf-8")
+            linked[page] = set(re.findall(r'href="routines\.html#([^"]+)"', text))
+            self.assertTrue(linked[page], page)
+            self.assertEqual(linked[page] - ids, set(), page)
+        self.assertTrue({"fr3_load_tyre_database", "fr3_copy_tyre_scalar_fields", "fr3_get_tyre_longitudinal_table",
+                         "fr3_get_tyre_lateral_table", "fr3_get_tyre_vertical_load", "fr3_get_tyre_camber_thrust",
+                         "fr3_get_tyre_sound_info"} <= linked["tyres.html"])
+        sites = {fragment for fragment in linked["tyres.html"] if fragment.startswith("site-")}
+        self.assertEqual(sites, {f"site-{va:08x}" for group in (*ACCESSOR_SITES.values(), *LOADER_SITES.values())
+                                 for va in group})
+        self.assertEqual(linked["engines.html"], {"fr3_load_engine_database", "fr3_copy_engine_record"})
+        self.assertEqual(linked["gearboxes.html"], {"fr3_load_gearbox_database", "fr3_copy_gearbox_record"})
+
+    def test_renamed_linked_routine_refuses_the_build_and_keeps_the_previous_output(self):
+        self.build()
+        before = {name: (self.output / name).read_bytes() for name in files_under(self.output)}
+        # Renamed consistently in status.json and selected.c, so the routines page alone would still build.
+        for relative, old, new in (("annotated/status.json", '"fr3_copy_engine_record"', '"fr3_renamed"'),
+                                   ("annotated/selected.c", "/* 00522c80 fr3_copy_engine_record */",
+                                    "/* 00522c80 fr3_renamed */")):
+            path = self.analysis / relative
+            text = path.read_text(encoding="utf-8")
+            self.assertIn(old, text)
+            path.write_text(text.replace(old, new), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "status.json labels entry VA 0x00522c80, the engine copy routine this "
+                                                "page links to, 'fr3_renamed', not 'fr3_copy_engine_record'"):
+            self.build()
+        self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)}, before)
+
     def test_routine_refusal_keeps_the_previous_output(self):
         self.build()
         before = {name: (self.output / name).read_bytes() for name in files_under(self.output)}
@@ -143,13 +185,13 @@ class BuildTests(ResearchTestCase):
     def test_counts_come_from_the_inputs(self):
         (self.game / DATABASES["gearboxes"]).write_bytes(
             (GEARBOXES.replace(":END", ":TYPE EXTRA\n:CLUTCH_SPEED 0.5\n:END")).encode("ascii"))
-        (self.analysis / "pcg-index.json").write_text(json.dumps(pcg_index()[:1]), encoding="utf-8")
+        (self.analysis / "pcg-index.json").write_text(json.dumps(question_pcg_index()[1:]), encoding="utf-8")
         (self.analysis / "verification.json").write_text(
-            json.dumps({"pcg_collections_verified": 1, "pcg_entries_verified": 2}), encoding="utf-8")
-        self.assertEqual(self.build(), {**COUNTS, "gearboxes": 3, "pcg_collections": 1, "pcg_graphics": 2})
+            json.dumps({"pcg_collections_verified": 1, "pcg_entries_verified": 3}), encoding="utf-8")
+        self.assertEqual(self.build(), {**COUNTS, "gearboxes": 3, "pcg_collections": 1, "pcg_graphics": 3})
         index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
         self.assertIn("3 gearbox records", index)
-        self.assertIn("1 collections, 2 graphics", index)
+        self.assertIn("1 collections, 3 graphics", index)
 
     def test_replaces_a_previous_build(self):
         self.build()
@@ -194,7 +236,7 @@ class BuildTests(ResearchTestCase):
     def test_failed_build_keeps_the_previous_output(self):
         self.build()
         before = {name: (self.output / name).read_bytes() for name in files_under(self.output)}
-        (self.analysis / "verification.json").write_text(json.dumps({**verification(), "pcg_entries_verified": 9}))
+        (self.analysis / "verification.json").write_text(json.dumps({**question_verification(), "pcg_entries_verified": 9}))
         with self.assertRaisesRegex(ValueError, "verification.json verified 9"):
             self.build()
         self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)}, before)
@@ -291,6 +333,20 @@ class VerifierTests(unittest.TestCase):
         self.edit("routines.html", 'href="#fr3_read_float"', 'href="#fr3_nope"')
         self.reject("routines.html has a broken local link: '#fr3_nope' names no id in routines.html")
 
+    def test_record_page_links_to_a_missing_routines_fragment(self):
+        for page, old, new in (("engines.html", "routines.html#fr3_copy_engine_record", "routines.html#fr3_nope"),
+                               ("gearboxes.html", "routines.html#fr3_load_gearbox_database", "routines.html#fr3_nope"),
+                               ("tyres.html", "routines.html#fr3_get_tyre_sound_info", "routines.html#fr3_nope"),
+                               ("tyres.html", "routines.html#site-00523f10", "routines.html#site-00000000")):
+            with self.subTest(page=page, new=new):
+                self.setUp()
+                self.edit(page, f'href="{old}"', f'href="{new}"')
+                self.reject(f"{page} has a broken local link: '{new}' names no id in routines.html")
+        # The anchor goes missing on the routines page instead.
+        self.setUp()
+        self.edit("routines.html", 'id="site-00523f10"', 'id="site-gone"')
+        self.reject("tyres.html has a broken local link: 'routines.html#site-00523f10' names no id in routines.html")
+
     def test_external_resources(self):
         cases = (('<img src="https://example.com/x.png">', "links to an external resource: <img src="),
                  ('<link rel="stylesheet" href="//example.com/x.css">', "links to an external resource: <link href="),
@@ -363,9 +419,9 @@ class CommandTests(unittest.TestCase):
         output = self.root / "research"
         result = self.run_script("--game", str(write_game(self.root / "game")), "--output", str(output))
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("Wrote 6 verified pages", result.stdout)
-        self.assertIn("4 engines, 2 gearboxes, 3 tyres, 62 PCG collections, 654 graphics and 25 routines",
-                      result.stdout)
+        self.assertIn("Wrote 7 verified pages", result.stdout)
+        self.assertIn("7 engines, 2 gearboxes, 3 tyres, 62 PCG collections, 654 graphics, 25 routines and "
+                      "3 open questions", result.stdout)
         self.assertEqual(files_under(output), sorted((*PAGES, *EVIDENCE)))
         self.assertIn("62 collections, 654 graphics", (output / INDEX_PAGE).read_text(encoding="utf-8"))
 

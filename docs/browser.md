@@ -50,8 +50,8 @@ Per decision #46 the site also publishes the generated research pages under
 landing page links them as **Explore findings**. The directory holds what
 `scripts/build_research.py` writes (see
 [the analysis notes](analysis.md#research-directory)): the entrance page
-`index.html`, `engines.html`, `gearboxes.html`, `tyres.html`, `pcg.html` and
-`routines.html`, and the committed `analysis/` files they link to under
+`index.html`, `engines.html`, `gearboxes.html`, `tyres.html`, `pcg.html`,
+`routines.html` and `questions.html`, and the committed `analysis/` files they link to under
 `evidence/`. No parsed JSON
 or game file is published there. Every page carries the same rights-holder
 notice and official demo link as the preview, before its content.
@@ -66,9 +66,26 @@ other than the ones `build_research.py` writes), checks
 `research/index.html`'s relative URLs and requires every file under `research/`
 to be listed in `SHA256SUMS`.
 
-The research pages are taken down together with the preview if a rights holder
-objects: both are one Pages deployment, so disabling Pages or removing the
-deploy removes both.
+The workflow then packages those pages with `scripts/package_research.py` (see
+[the analysis notes](analysis.md#research-packet)) as
+`artifacts/web/downloads/fr3-research-latest.zip`, also before `build_web.py`,
+so `SHA256SUMS` lists it. It is published at the stable URL
+<https://omertekin2002.github.io/ford-racing-reverse-engineered/downloads/fr3-research-latest.zip>,
+linked from the landing page's intro and footer, and rebuilt on every deploy:
+an offline copy of the `research/` files in one `fr3-research-<short revision>/`
+folder, with a `MANIFEST.json` naming the producer revision, input build and
+checks it passed, and a `SHA256SUMS`. `SOURCE_DATE_EPOCH` is set to the commit
+time, so its entries carry that timestamp. When `index.html` links to the packet
+or the file exists, `verify_web.py` requires it to be listed in the site's
+`SHA256SUMS`, to pass a ZIP integrity test, to hold exactly one top-level folder
+named for the revision `research/index.html` names, with `MANIFEST.json` and
+`SHA256SUMS`, to name that producer revision in `MANIFEST.json`, and to hold
+exactly the files published under `research/`, byte for byte, each matching both
+of its manifests. Older revisions' packets are not kept on the site.
+
+The research pages and the packet are taken down together with the preview if a
+rights holder objects: all are one Pages deployment, so disabling Pages or
+removing the deploy removes them all.
 
 ## Build locally
 
@@ -84,6 +101,8 @@ can replace the system `unshield`.
 python3 scripts/setup_web_tools.py
 python3 scripts/acquire_demo.py inputs --unshield unshield
 python3 scripts/build_research.py --output artifacts/web/research
+python3 scripts/package_research.py --research artifacts/web/research \
+  --output artifacts/web/downloads/fr3-research-latest.zip
 python3 scripts/build_web.py --jobs 4
 python3 scripts/verify_web.py artifacts/web
 python3 -m http.server 8000 --directory artifacts/web

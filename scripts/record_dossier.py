@@ -4,41 +4,62 @@ Inputs, all produced elsewhere and only read here:
   * engines.json and gearboxes.json from scripts/text_database.py: `records`,
     plus the ENGDATA.DAT or GEARDATA.DAT path and SHA-256.
   * analysis/pe-metadata.json: the executable's identity.
+  * analysis/annotated/status.json: the analyst labels of the load and copy
+    routines the pages link to on the sibling routines page.
 
 The output is two static HTML files, engines.html and gearboxes.html, with
 inline CSS, no JavaScript and no external resources. For each record they show
 the declarations exactly as written, in line order: scalar values, multi-row
 fields such as TORQUE_ARRAY as row tables with their dimensions, :INHERIT_TYPE
 as a link to the parent labelled unresolved, and every untagged line verbatim
-labelled unresolved. Nothing is resolved: no parent value is copied into a
+labelled unresolved; INDIGO's colon-less line links to its section on the Open
+questions page (scripts/open_questions.py). Nothing is resolved: no parent value is copied into a
 child, and the meaning and units of the values are not interpreted.
+
+A "Loaded by" line near the top of each page links its database's load and
+copy routines to their sections on the routines page (scripts/routine_index.py),
+and each record's unresolved :INHERIT_TYPE note links the copy routine. The
+routines are looked up in status.json by the entry VAs in DATABASES and must
+carry the labels given there.
 
 The script refuses to write either page, and exits non-zero, when an input is
 missing or malformed: `records` that are not a list, a record without `type`,
 `line` or `fields`, duplicate record names, an :INHERIT_TYPE that does not name
-an earlier record of the same file, or PE metadata without `sha256`.
+an earlier record of the same file, PE metadata without `sha256`, or a load or
+copy routine that is missing from status.json or labelled differently there.
 """
 import argparse
 from pathlib import Path
 
-from dossier_common import (STYLE, anchor, check_fields, check_pe, declarations, e, link, load_json, page_start,
-                            producer_revision)
+from dossier_common import (INDIGO_ANCHOR, ROUTINE_STATUS, STYLE, anchor, check_fields, check_pe, declarations, e,
+                            is_indigo_line, link, load_json, page_start, producer_revision, question_link,
+                            routine_label, routine_labels, routine_link)
 from text_database import REPO_ROOT, require
 
 TORQUE = "TORQUE_ARRAY"
-# Per database: the default input, the output page, the anchor prefix and the wording.
+# Per database: the default input, the output page, the anchor prefix, the wording, and the entry VA and status.json
+# label of its load and copy routines, which the page links to on the routines page.
 DATABASES = {
     "engines": {"input": REPO_ROOT / "artifacts/text-databases/engines.json", "page": "engines.html",
-                "prefix": "engine", "title": "engine", "file": "ENGDATA.DAT"},
+                "prefix": "engine", "title": "engine", "file": "ENGDATA.DAT",
+                "load": (0x005227f0, "fr3_load_engine_database"), "copy": (0x00522c80, "fr3_copy_engine_record")},
     "gearboxes": {"input": REPO_ROOT / "artifacts/text-databases/gearboxes.json", "page": "gearboxes.html",
-                  "prefix": "gearbox", "title": "gearbox", "file": "GEARDATA.DAT"},
+                  "prefix": "gearbox", "title": "gearbox", "file": "GEARDATA.DAT",
+                  "load": (0x00523220, "fr3_load_gearbox_database"), "copy": (0x00523470, "fr3_copy_gearbox_record")},
 }
 EXTRA_STYLE = "section.record { border-top: 2px solid #888; margin-top: 2em; }\n"
 INHERIT_NOTE = (' <span class="label">unresolved</span>: how the game applies this parent is not established; '
                 "none of its values are copied here")
 UNTAGGED_NOTE = (' kept verbatim, not applied <div class="unresolved"><span class="label">unresolved</span>: '
                  "this line has no colon, so the parser does not apply it; whether the game honours it is not "
-                 "established</div>")
+                 "established{}</div>")
+
+
+def untagged_note(record, item):
+    """The unresolved note after an untagged line; INDIGO's colon-less line links to its open question."""
+    if is_indigo_line(record, item):
+        return UNTAGGED_NOTE.format(" (" + question_link(INDIGO_ANCHOR, "open question") + ")")
+    return UNTAGGED_NOTE.format("")
 
 
 def scalar(item):
@@ -74,12 +95,26 @@ def check_records(database, label):
         names.add(name)
 
 
+def check_routines(labels):
+    """Check each database's load and copy routines against status.json; return {kind: {"load", "copy": label}}."""
+    return {kind: {role: routine_label(labels, spec[role][0], f'{spec["title"]} {role} routine', spec[role][1])
+                   for role in ("load", "copy")}
+            for kind, spec in DATABASES.items()}
+
+
+def routine_ref(spec, routines, role):
+    return f"{routine_link(routines[role])} (<code>0x{spec[role][0]:08x}</code>)"
+
+
 def shape(field):
     return f'{len(field["rows"])} &times; {len(field["rows"][0])}' if field["rows"] else "inline"
 
 
-def render(database, kind, pe, revision, entrance=False):
-    """Return one dossier page. check_records() must have accepted the database first."""
+def render(database, kind, pe, revision, routines, entrance=False):
+    """Return one dossier page. check_records() and check_routines() must have accepted the inputs first.
+
+    routines maps "load" and "copy" to the labels of this database's routines.
+    """
     spec = DATABASES[kind]
     prefix, title = spec["prefix"], spec["title"]
     records = database["records"]
@@ -92,7 +127,10 @@ def render(database, kind, pe, revision, entrance=False):
              f'<dt>{title.capitalize()} database</dt><dd><code>{e(database["source"])}</code> '
              f'SHA-256 <code>{e(database["sha256"])}</code></dd>',
              f'<dt>Producer revision</dt><dd><code>{e(revision)}</code> (<code>scripts/record_dossier.py</code>)</dd>',
-             f'<dt>Records</dt><dd>{len(records)}</dd></dl>',
+             f'<dt>Records</dt><dd>{len(records)}</dd>',
+             f'<dt>Loaded by</dt><dd>{routine_ref(spec, routines, "load")}; record copy '
+             f'{routine_ref(spec, routines, "copy")}; on the routines page. Routine labels are analyst-assigned, not '
+             'original symbols.</dd></dl>',
              f'<p class="scope">Scope: values are shown exactly as declared in <code>{e(spec["file"])}</code>. '
              'Engine inheritance (<code>:INHERIT_TYPE</code>) and scalar fields are unresolved: no parent value is '
              'copied into a child, and a shared parent does not make two engines behave identically. The meaning and '
@@ -120,17 +158,19 @@ def render(database, kind, pe, revision, entrance=False):
             parts.append(f'<div class="unresolved"><p><span class="label">unresolved</span>: <code>:INHERIT_TYPE</code> '
                          f'{link(prefix, inherit["values"][0])} on line {e(inherit["line"])}. Which of the parent\'s '
                          'values this record ends up with is not established, so only its own declarations are '
-                         'shown.</p></div>')
+                         f'shown. This database\'s record copy routine is {routine_link(routines["copy"])}.</p></div>')
         parts.append(f"<h3>Declarations, as written</h3>"
-                     f"{declarations(record, prefix, INHERIT_NOTE, UNTAGGED_NOTE)}</section>")
+                     f"{declarations(record, prefix, INHERIT_NOTE, untagged_note)}</section>")
     parts.append("</body></html>\n")
     return "\n".join(parts)
 
 
-def build(engines_path, gearboxes_path, pe_path, output_dir, revision=None, entrance=False):
+def build(engines_path, gearboxes_path, pe_path, output_dir, revision=None, entrance=False,
+          status_path=ROUTINE_STATUS):
     """Read and check every input, then write both pages; return the record count per database.
 
-    entrance=True adds the entrance page to the nav bar, for scripts/build_research.py.
+    status_path is the status.json whose labels the routines page beside the pages uses. entrance=True adds the
+    entrance page to the nav bar, for scripts/build_research.py.
     """
     databases = {"engines": load_json(engines_path, "Engine database (run scripts/text_database.py first)"),
                  "gearboxes": load_json(gearboxes_path, "Gearbox database (run scripts/text_database.py first)")}
@@ -138,8 +178,10 @@ def build(engines_path, gearboxes_path, pe_path, output_dir, revision=None, entr
     check_pe(pe)
     for kind, database in databases.items():
         check_records(database, f"{kind}.json")
+    routines = check_routines(routine_labels(status_path))
     revision = revision or producer_revision()
-    pages = {kind: render(database, kind, pe, revision, entrance) for kind, database in databases.items()}
+    pages = {kind: render(database, kind, pe, revision, routines[kind], entrance)
+             for kind, database in databases.items()}
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     for kind, page in pages.items():
         (Path(output_dir) / DATABASES[kind]["page"]).write_text(page, encoding="utf-8")
@@ -154,12 +196,14 @@ def main():
                         help="gearboxes.json written by scripts/text_database.py (default: %(default)s)")
     parser.add_argument("--pe", type=Path, default=REPO_ROOT / "analysis/pe-metadata.json",
                         help="fr3.exe identity (default: %(default)s)")
+    parser.add_argument("--status", type=Path, default=ROUTINE_STATUS,
+                        help="Routine labels the pages link to on routines.html (default: %(default)s)")
     parser.add_argument("--output-dir", type=Path, default=REPO_ROOT / "artifacts/dossier",
                         help="Directory for engines.html and gearboxes.html, next to tyres.html; keep it out of Git, "
                              "the pages hold game data (default: %(default)s)")
     args = parser.parse_args()
     try:
-        counts = build(args.engines, args.gearboxes, args.pe, args.output_dir)
+        counts = build(args.engines, args.gearboxes, args.pe, args.output_dir, status_path=args.status)
     except (ValueError, KeyError, TypeError, AttributeError, OSError) as error:
         raise SystemExit(f"record_dossier.py: {error}") from None
     print(f"Wrote {counts['engines']} engine and {counts['gearboxes']} gearbox records to {args.output_dir}")

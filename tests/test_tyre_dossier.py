@@ -13,8 +13,8 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from dossier_common import NOTICE_LINKS, rights_notice
 import tyre_dossier
-from text_database import (REPO_ROOT, RESOLVED_TYRE_TABLES, TYRE_TABLES, parse, resolve_tyre_tables,
-                           scalar_inheritance, tyre_table_provenance)
+from text_database import (REPO_ROOT, RESOLVED_TYRE_TABLES, TYRE_TABLE_ACCESSORS, TYRE_TABLES, parse,
+                           resolve_tyre_tables, scalar_inheritance, tyre_table_provenance)
 
 TAGS = {"INHERIT_TYPE", "RADIUS", "WIDTH", "LOCATION_TYPE", "SOUND_INFO", "START_RPM", *TYRE_TABLES}
 # ROOT declares every table, MID overrides VERTICAL_LOAD, CHILD declares a scalar on each side of INHERIT_TYPE.
@@ -59,8 +59,26 @@ LOADER_SITES = {"LONGITUDINAL_COMBINED_VALUES": [0x00523be2, 0x00523bfb],
                 "LATERAL_COMBINED_VALUES": [0x00523b60, 0x00523b7d],
                 "VERTICAL_LOAD": [0x005239a9], "CAMBER_THRUST": [0x00523ce6],
                 "sound_info": [0x00523a67, 0x00523a89]}
-SITE_ROW = re.compile(r"<tr><td>(accessor|loader)</td><td><code>0x([0-9a-f]{8})</code></td>"
-                      r"<td><code>([0-9a-f]+)</code></td><td>(.*?)</td></tr>")
+# Each site row's VA links its own row on the routines page.
+SITE_ROW = re.compile(r'<tr><td>(accessor|loader)</td><td><a href="routines\.html#site-([0-9a-f]{8})"><code>0x\2</code>'
+                      r"</a></td><td><code>([0-9a-f]+)</code></td><td>(.*?)</td></tr>")
+STATUS = json.loads((REPO_ROOT / "analysis/annotated/status.json").read_text())
+# The routine each table's accessor is, by its status.json label.
+ACCESSOR_LABELS = {"LONGITUDINAL_COMBINED_VALUES": "fr3_get_tyre_longitudinal_table",
+                   "LATERAL_COMBINED_VALUES": "fr3_get_tyre_lateral_table",
+                   "VERTICAL_LOAD": "fr3_get_tyre_vertical_load", "CAMBER_THRUST": "fr3_get_tyre_camber_thrust",
+                   "sound_info": "fr3_get_tyre_sound_info"}
+
+
+def status_with(entry_va, label=None):
+    """The committed status.json with the routine at entry_va relabelled, or removed when label is None."""
+    status = copy.deepcopy(STATUS)
+    if label is None:
+        return [item for item in status if item["entry_va"] != entry_va]
+    for item in status:
+        if item["entry_va"] == entry_va:
+            item["label"] = label
+    return status
 
 
 def tyres_json(text=TYRES):
@@ -93,15 +111,16 @@ class DossierTestCase(unittest.TestCase):
         path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
         return path
 
-    def build(self, tyres=None, evidence=EVIDENCE, pe=PE):
+    def build(self, tyres=None, evidence=EVIDENCE, pe=PE, status=STATUS):
         tyres = tyres_json() if tyres is None else tyres
         tyre_dossier.build(self.write("tyres.json", tyres), self.write("evidence.json", evidence),
-                           self.write("pe.json", pe), self.output, revision="0123abcd")
+                           self.write("pe.json", pe), self.output, revision="0123abcd",
+                           status_path=self.write("status.json", status))
         return self.output.read_text(encoding="utf-8")
 
-    def reject(self, fragment, tyres=None, evidence=EVIDENCE):
+    def reject(self, fragment, tyres=None, evidence=EVIDENCE, status=STATUS):
         with self.assertRaises(ValueError) as caught:
-            self.build(tyres, evidence)
+            self.build(tyres, evidence, status=status)
         self.assertIn(fragment, str(caught.exception))
         self.assertFalse(self.output.exists())
 
@@ -159,6 +178,41 @@ class DossierPageTests(DossierTestCase):
         self.assertIn("<code>0x00523e70</code>", trail)
         self.assertIn(PE["sha256"], trail)
 
+    def test_why_trail_links_its_accessor_and_sites_to_the_routines_page(self):
+        page = self.build()
+        labels = {item["label"] for item in STATUS}
+        evidence = {site["va"] for site in EVIDENCE}
+        for name in NAMES:
+            for table in RESOLVED_TYRE_TABLES:
+                with self.subTest(name=name, table=table):
+                    trail = why(page, name, table)
+                    accessor = TYRE_TABLE_ACCESSORS[table]["accessor"]
+                    self.assertIn(f'The accessor at <a href="routines.html#{ACCESSOR_LABELS[table]}"><code>{accessor}'
+                                  "</code></a> returns", trail)
+                    rows = SITE_ROW.findall(trail)
+                    self.assertTrue(rows)
+                    self.assertTrue({int(va, 16) for _, va, _, _ in rows} <= evidence)
+                    # Every routines-page link in the trail is a site row or a status.json label.
+                    for fragment in re.findall(r'href="routines\.html#([^"]+)"', trail):
+                        self.assertTrue(fragment in labels or re.fullmatch(r"site-[0-9a-f]{8}", fragment), fragment)
+
+    def test_loaded_by_and_scalar_copy_link_their_routines(self):
+        page = self.build()
+        header = page[:page.index("<h2>")]
+        self.assertIn('<dt>Loaded by</dt><dd><a href="routines.html#fr3_load_tyre_database">'
+                      "<code>fr3_load_tyre_database</code></a> (<code>0x00523820</code>); on the routines page.", header)
+        scalars = section(page, "CHILD")[section(page, "CHILD").index("<h3>Scalar inheritance</h3>"):]
+        self.assertIn('The scalar copy at <a href="routines.html#fr3_copy_tyre_scalar_fields"><code>0x00524090</code>'
+                      "</a> runs when <code>INHERIT_TYPE</code> is parsed", scalars)
+        self.assertIn('<span class="label">unresolved</span>', scalars)
+        self.assertIn("No inherited value is shown.", scalars)
+
+    def test_accessor_labels_come_from_status_json(self):
+        page = self.build(status=status_with("00523e70", "fr3_relabelled_accessor"))
+        trail = why(page, "CHILD", "CAMBER_THRUST")
+        self.assertIn('<a href="routines.html#fr3_relabelled_accessor"><code>0x00523e70</code></a>', trail)
+        self.assertNotIn("fr3_get_tyre_camber_thrust", page)
+
     def test_matching_uses_addresses_not_claim_text(self):
         evidence = [{**site, "claim": f"reworded {index}"} for index, site in enumerate(EVIDENCE)]
         rows = SITE_ROW.findall(why(self.build(evidence=evidence), "CHILD", "VERTICAL_LOAD"))
@@ -208,15 +262,18 @@ class DossierPageTests(DossierTestCase):
 
     def test_repository_links_resolve_from_the_output(self):
         page = self.build()
-        targets = set(re.findall(r'href="([^"#][^"]*)"', page)) - {"engines.html", "gearboxes.html", "pcg.html", "routines.html",
-                                                                     *NOTICE_LINKS}
+        targets = {target for target in re.findall(r'href="([^"#][^"]*)"', page)
+                   if not target.startswith("routines.html#")} - {"engines.html", "gearboxes.html", "pcg.html",
+                                                                   "routines.html", "questions.html",
+                                                                   "questions.html#sound-words", *NOTICE_LINKS}
         self.assertEqual({Path(os.path.normpath(self.output.parent / target)) for target in targets},
                          {tyre_dossier.ACCESSORS_ASM, tyre_dossier.LOADER_ASM, (self.root / "evidence.json").resolve()})
         self.assertIn('evidence.json</a>).</p>', page)
 
     def test_nav_bar_links_the_sibling_dossiers(self):
         self.assertIn('<nav>Research: <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | '
-                      '<strong>Tyres</strong> | <a href="pcg.html">PCG catalogue</a> | <a href="routines.html">Routines</a></nav>', self.build())
+                      '<strong>Tyres</strong> | <a href="pcg.html">PCG catalogue</a> | <a href="routines.html">Routines</a> | '
+                      '<a href="questions.html">Open questions</a></nav>', self.build())
 
     def test_input_text_is_escaped(self):
         text = TYRES.replace("CHILD", "EVILNAME").replace("FRONT", "EVILVALUE")
@@ -337,6 +394,34 @@ class DossierRejectTests(DossierTestCase):
                     child["scalars_after"].append(child["scalars_before"].pop())
                 self.reject("scalar_inheritance disagrees with record declarations", tyres)
 
+    def test_linked_routine_missing_from_status_json(self):
+        for entry_va, role in (("00523820", "tyre loader"), ("00524090", "tyre scalar copy"),
+                               ("00523f10", "sound_info accessor 0x00523f10")):
+            with self.subTest(role=role):
+                self.reject(f"status.json has no routine at entry VA 0x{entry_va}, the {role} this page links to",
+                            status=status_with(entry_va))
+
+    def test_linked_routine_renamed_in_status_json(self):
+        for entry_va, role, label in (("00523820", "tyre loader", "fr3_load_tyre_database"),
+                                      ("00524090", "tyre scalar copy", "fr3_copy_tyre_scalar_fields")):
+            with self.subTest(role=role):
+                self.reject(f"status.json labels entry VA 0x{entry_va}, the {role} this page links to, "
+                            f"'fr3_renamed', not '{label}'", status=status_with(entry_va, "fr3_renamed"))
+
+    def test_malformed_status_json(self):
+        self.reject("status.json must be a non-empty list", status={})
+        status = copy.deepcopy(STATUS)
+        status[0]["label"] = "not an anchor"
+        self.reject("is not usable as an anchor", status=status)
+
+    def test_linked_site_missing_from_field_evidence(self):
+        labels = {int(item["entry_va"], 16): item["label"] for item in STATUS}
+        sites = {("VERTICAL_LOAD", "0x00523e50", "0x4c"): {"accessor": [{"va": 0x00523e52}], "loader": [{"va": 0x1234}]}}
+        with self.assertRaisesRegex(ValueError, "These linked sites are not in field-evidence.json: 0x00001234"):
+            tyre_dossier.check_routines(labels, sites, EVIDENCE)
+        sites[("VERTICAL_LOAD", "0x00523e50", "0x4c")]["loader"] = []
+        self.assertEqual(tyre_dossier.check_routines(labels, sites, EVIDENCE)["0x00523e50"], "fr3_get_tyre_vertical_load")
+
     def test_missing_input(self):
         tyres = copy.deepcopy(tyres_json())
         del tyres["table_provenance"]
@@ -377,9 +462,9 @@ class DossierCommandTests(DossierTestCase):
         result = self.run_script("--help")
         self.assertEqual(result.returncode, 0)
         text = " ".join(result.stdout.split())
-        for flag in ("--tyres", "--evidence", "--pe", "--output"):
+        for flag in ("--tyres", "--evidence", "--pe", "--status", "--output"):
             self.assertIn(flag, text)
-        for default in ("tyres.json", "field-evidence.json", "pe-metadata.json", "tyres.html"):
+        for default in ("tyres.json", "field-evidence.json", "pe-metadata.json", "status.json", "tyres.html"):
             self.assertRegex(text.replace("- ", "-"), rf"default: [^)]*{re.escape(default)}\)")
 
     def test_cli_writes_the_page(self):
@@ -387,6 +472,14 @@ class DossierCommandTests(DossierTestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Wrote 3 tyre records", result.stdout)
         self.assertIn('id="tyre-CHILD"', self.output.read_text())
+
+    def test_cli_refuses_a_renamed_linked_routine(self):
+        result = self.run_script("--tyres", str(self.write("tyres.json", tyres_json())), "--output", str(self.output),
+                                 "--status", str(self.write("status.json", status_with("00524090", "fr3_renamed"))))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("tyre_dossier.py: status.json labels entry VA 0x00524090", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertFalse(self.output.exists())
 
     def test_cli_fails_loudly(self):
         tyres = tyres_json()
