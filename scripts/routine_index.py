@@ -33,14 +33,15 @@ from collections import Counter
 from pathlib import Path
 import re
 
-from dossier_common import (NOTICE_ID, NOTICE_TITLE_ID, STYLE, check_fields, check_pe, e, load_json, page_start,
-                            producer_revision, relative_href)
+from dossier_common import (NOTICE_ID, NOTICE_TITLE_ID, ROUTINE_STATUS, ROUTINES_PAGE, STYLE, check_pe, check_status,
+                            e, load_json, page_start, producer_revision, relative_href)
+import dossier_common
 from text_database import REPO_ROOT, require
 from tyre_dossier import check_evidence
 
-PAGE = "routines.html"
+PAGE = ROUTINES_PAGE
 ANALYSIS = REPO_ROOT / "analysis"
-STATUS = ANALYSIS / "annotated/status.json"
+STATUS = ROUTINE_STATUS
 PSEUDOCODE = ANALYSIS / "annotated/selected.c"
 SELECTED = ANALYSIS / "selected"
 FIELD_EVIDENCE = SELECTED / "field-evidence.json"
@@ -53,36 +54,11 @@ ASM_FILES = ("allocate_database_record.asm", "build_pcg_view.asm", "copy_engine_
              "fill_memory_body.asm", "free_tyre_tables.asm", "load_compressed_resource.asm",
              "load_directx_libraries.asm", "load_engine_database.asm", "load_gearbox_database.asm",
              "load_tyre_database.asm", "tyre_table_accessors.asm")
-STATUS_FIELDS = {"entry_va": str, "label": str, "signature": str, "return_storage": str, "parameter_storage": list,
-                 "decompiled": bool, "error": str}
-ENTRY_VA = re.compile(r"[0-9a-f]{8}")
-# Labels become anchors, so they are limited to characters that need no escaping in a URL fragment.
-LABEL = re.compile(r"[A-Za-z_][A-Za-z0-9_.-]*")
 BLOCK_HEADER = re.compile(r"^/\* ([0-9a-f]{8}) (\S+) \*/$", re.M)
 ASM_HEADER = re.compile(r"; Analyst label: (\S+); export span 0x([0-9a-f]{8})\.\.0x([0-9a-f]{8})")
 EXTRA_STYLE = """section.routine, section.asm { border-top: 2px solid #888; margin-top: 2em; }
 pre { background: #f7f7f7; border: 1px solid #e2e2e2; overflow-x: auto; padding: 0.5em; }
 """
-
-
-def check_status(status):
-    """Check status.json; return its routines in order, each with its entry VA as an integer under "va"."""
-    require(isinstance(status, list) and status, "status.json must be a non-empty list")
-    routines, vas, labels = [], set(), set()
-    for i, item in enumerate(status):
-        where = f"status.json[{i}]"
-        check_fields(item, STATUS_FIELDS, where)
-        require(ENTRY_VA.fullmatch(item["entry_va"]), f"{where}.entry_va must be 8 lowercase hex digits: "
-                                                      f"{item['entry_va']!r}")
-        require(LABEL.fullmatch(item["label"]), f"{where}.label {item['label']!r} is not usable as an anchor")
-        require(all(isinstance(value, str) for value in item["parameter_storage"]),
-                f"{where}.parameter_storage must be a list of strings")
-        require(item["entry_va"] not in vas, f"status.json lists entry VA {item['entry_va']} twice")
-        require(item["label"] not in labels, f"status.json lists label {item['label']!r} twice")
-        vas.add(item["entry_va"])
-        labels.add(item["label"])
-        routines.append({**item, "va": int(item["entry_va"], 16)})
-    return routines
 
 
 def pseudocode_blocks(text):
@@ -184,7 +160,8 @@ def file_anchor(name):
 
 
 def site_anchor(site):
-    return f"site-{site['va']:08x}"
+    """The site's id, which the tyre page's dossier_common.site_link() links to."""
+    return dossier_common.site_anchor(site["va"])
 
 
 def sites_table(sites):

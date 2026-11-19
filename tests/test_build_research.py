@@ -17,7 +17,7 @@ from verify_web import ISSUES_PAGE, RIGHTS_CREDIT
 
 from test_open_questions import QUESTION_ENGINES, question_manifest, question_pcg_index, question_verification
 from test_record_dossier import GEARBOXES
-from test_tyre_dossier import TYRES
+from test_tyre_dossier import ACCESSOR_SITES, LOADER_SITES, TYRES
 
 SCRIPT = REPO_ROOT / "scripts/build_research.py"
 PE = json.loads((REPO_ROOT / "analysis/pe-metadata.json").read_text())
@@ -136,6 +136,41 @@ class BuildTests(ResearchTestCase):
         index.write_text(index.read_text(encoding="utf-8").replace(
             "</body>", '<a href="routines.html#fr3_load_tyre_database">x</a></body>'), encoding="utf-8")
         build_research.verify_research(self.output)
+
+    def test_record_pages_link_routine_sections_and_site_rows(self):
+        self.build()
+        routines = (self.output / "routines.html").read_text(encoding="utf-8")
+        ids = set(re.findall(r'id="([^"]+)"', routines))
+        linked = {}
+        for page in ("tyres.html", "engines.html", "gearboxes.html"):
+            text = (self.output / page).read_text(encoding="utf-8")
+            linked[page] = set(re.findall(r'href="routines\.html#([^"]+)"', text))
+            self.assertTrue(linked[page], page)
+            self.assertEqual(linked[page] - ids, set(), page)
+        self.assertTrue({"fr3_load_tyre_database", "fr3_copy_tyre_scalar_fields", "fr3_get_tyre_longitudinal_table",
+                         "fr3_get_tyre_lateral_table", "fr3_get_tyre_vertical_load", "fr3_get_tyre_camber_thrust",
+                         "fr3_get_tyre_sound_info"} <= linked["tyres.html"])
+        sites = {fragment for fragment in linked["tyres.html"] if fragment.startswith("site-")}
+        self.assertEqual(sites, {f"site-{va:08x}" for group in (*ACCESSOR_SITES.values(), *LOADER_SITES.values())
+                                 for va in group})
+        self.assertEqual(linked["engines.html"], {"fr3_load_engine_database", "fr3_copy_engine_record"})
+        self.assertEqual(linked["gearboxes.html"], {"fr3_load_gearbox_database", "fr3_copy_gearbox_record"})
+
+    def test_renamed_linked_routine_refuses_the_build_and_keeps_the_previous_output(self):
+        self.build()
+        before = {name: (self.output / name).read_bytes() for name in files_under(self.output)}
+        # Renamed consistently in status.json and selected.c, so the routines page alone would still build.
+        for relative, old, new in (("annotated/status.json", '"fr3_copy_engine_record"', '"fr3_renamed"'),
+                                   ("annotated/selected.c", "/* 00522c80 fr3_copy_engine_record */",
+                                    "/* 00522c80 fr3_renamed */")):
+            path = self.analysis / relative
+            text = path.read_text(encoding="utf-8")
+            self.assertIn(old, text)
+            path.write_text(text.replace(old, new), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "status.json labels entry VA 0x00522c80, the engine copy routine this "
+                                                "page links to, 'fr3_renamed', not 'fr3_copy_engine_record'"):
+            self.build()
+        self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)}, before)
 
     def test_routine_refusal_keeps_the_previous_output(self):
         self.build()
@@ -297,6 +332,20 @@ class VerifierTests(unittest.TestCase):
         self.setUp()
         self.edit("routines.html", 'href="#fr3_read_float"', 'href="#fr3_nope"')
         self.reject("routines.html has a broken local link: '#fr3_nope' names no id in routines.html")
+
+    def test_record_page_links_to_a_missing_routines_fragment(self):
+        for page, old, new in (("engines.html", "routines.html#fr3_copy_engine_record", "routines.html#fr3_nope"),
+                               ("gearboxes.html", "routines.html#fr3_load_gearbox_database", "routines.html#fr3_nope"),
+                               ("tyres.html", "routines.html#fr3_get_tyre_sound_info", "routines.html#fr3_nope"),
+                               ("tyres.html", "routines.html#site-00523f10", "routines.html#site-00000000")):
+            with self.subTest(page=page, new=new):
+                self.setUp()
+                self.edit(page, f'href="{old}"', f'href="{new}"')
+                self.reject(f"{page} has a broken local link: '{new}' names no id in routines.html")
+        # The anchor goes missing on the routines page instead.
+        self.setUp()
+        self.edit("routines.html", 'id="site-00523f10"', 'id="site-gone"')
+        self.reject("tyres.html has a broken local link: 'routines.html#site-00523f10' names no id in routines.html")
 
     def test_external_resources(self):
         cases = (('<img src="https://example.com/x.png">', "links to an external resource: <img src="),
