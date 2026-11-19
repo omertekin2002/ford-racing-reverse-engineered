@@ -1,4 +1,5 @@
 """Synthetic engine and gearbox dossier tests; these use no game data."""
+import copy
 import hashlib
 from html.parser import HTMLParser
 import json
@@ -46,6 +47,22 @@ GEARBOXES = """:TYPE ROAD_OLD
 ENGINE_NAMES = ["BASE", "CHILD", "GRANDCHILD", "LONER"]
 PE = json.loads((REPO_ROOT / "analysis/pe-metadata.json").read_text())
 BASE_VALUES = ("777.25", "FRONT", "6500", "100.5", "200.5", "150.5")
+STATUS = json.loads((REPO_ROOT / "analysis/annotated/status.json").read_text())
+# Each page's load and copy routines: entry VA and status.json label.
+ROUTINES = {"engine": {"load": ("005227f0", "fr3_load_engine_database"), "copy": ("00522c80", "fr3_copy_engine_record")},
+            "gearbox": {"load": ("00523220", "fr3_load_gearbox_database"),
+                        "copy": ("00523470", "fr3_copy_gearbox_record")}}
+
+
+def status_with(entry_va, label=None):
+    """The committed status.json with the routine at entry_va relabelled, or removed when label is None."""
+    status = copy.deepcopy(STATUS)
+    if label is None:
+        return [item for item in status if item["entry_va"] != entry_va]
+    for item in status:
+        if item["entry_va"] == entry_va:
+            item["label"] = label
+    return status
 
 
 def database(text, source):
@@ -98,17 +115,18 @@ class RecordDossierTestCase(unittest.TestCase):
         path.write_text(data if isinstance(data, str) else json.dumps(data, ensure_ascii=False), encoding="utf-8")
         return path
 
-    def build(self, engines=None, gearboxes=None, pe=PE):
+    def build(self, engines=None, gearboxes=None, pe=PE, status=STATUS):
         engines = engines_json() if engines is None else engines
         gearboxes = gearboxes_json() if gearboxes is None else gearboxes
         counts = record_dossier.build(self.write("engines.json", engines), self.write("gearboxes.json", gearboxes),
-                                      self.write("pe.json", pe), self.output, revision="0123abcd")
+                                      self.write("pe.json", pe), self.output, revision="0123abcd",
+                                      status_path=self.write("status.json", status))
         self.assertEqual(counts, {"engines": len(engines["records"]), "gearboxes": len(gearboxes["records"])})
         return tuple(page.read_text(encoding="utf-8") for page in self.pages)
 
-    def reject(self, fragment, engines=None, gearboxes=None, pe=PE):
+    def reject(self, fragment, engines=None, gearboxes=None, pe=PE, status=STATUS):
         with self.assertRaises(ValueError) as caught:
-            self.build(engines, gearboxes, pe)
+            self.build(engines, gearboxes, pe, status)
         self.assertIn(fragment, str(caught.exception))
         for page in self.pages:
             self.assertFalse(page.exists(), page)
@@ -124,10 +142,37 @@ class RecordDossierPageTests(RecordDossierTestCase):
                 internal = [href[1:] for href in links.hrefs if href.startswith("#")]
                 self.assertTrue(internal)
                 self.assertEqual([href for href in internal if href not in links.ids], [])
+                routines = {f"routines.html#{label}" for _, label in ROUTINES[prefix].values()}
                 self.assertEqual({href for href in links.hrefs if not href.startswith("#")},
                                  {"engines.html", "gearboxes.html", "tyres.html", "pcg.html", "routines.html", "questions.html",
-                                  *NOTICE_LINKS}
+                                  *routines, *NOTICE_LINKS}
                                  - {self.pages[prefix == "gearbox"].name})
+
+    def test_loaded_by_links_the_load_and_copy_routines(self):
+        for page, prefix in zip(self.build(), ("engine", "gearbox"), strict=True):
+            with self.subTest(prefix=prefix):
+                header = page[:page.index("<h2>")]
+                (load_va, load), (copy_va, copied) = ROUTINES[prefix]["load"], ROUTINES[prefix]["copy"]
+                self.assertIn(f'<dt>Loaded by</dt><dd><a href="routines.html#{load}"><code>{load}</code></a> '
+                              f'(<code>0x{load_va}</code>); record copy <a href="routines.html#{copied}"><code>{copied}'
+                              f"</code></a> (<code>0x{copy_va}</code>); on the routines page.", header)
+                labels = {item["label"] for item in STATUS}
+                for fragment in re.findall(r'href="routines\.html#([^"]+)"', page):
+                    self.assertIn(fragment, labels)
+
+    def test_inherit_note_links_the_copy_routine_and_stays_unresolved(self):
+        engines, _ = self.build()
+        for name, parent, line in (("CHILD", "BASE", 10), ("GRANDCHILD", "CHILD", 13)):
+            with self.subTest(name=name):
+                note = section(engines, "engine", name)
+                note = note[note.index('<div class="unresolved">'):]
+                note = note[:note.index("</div>")]
+                self.assertIn(f'<span class="label">unresolved</span>: <code>:INHERIT_TYPE</code> '
+                              f'<a href="#engine-{parent}">{parent}</a> on line {line}.', note)
+                self.assertIn("is not established, so only its own declarations are shown.", note)
+                self.assertIn("This database's record copy routine is "
+                              '<a href="routines.html#fr3_copy_engine_record"><code>fr3_copy_engine_record</code></a>.',
+                              note)
 
     def test_inherit_type_links_to_the_parent_and_is_unresolved(self):
         engines, _ = self.build()
@@ -300,6 +345,26 @@ class RecordDossierRejectTests(RecordDossierTestCase):
             with self.subTest(pe=type(pe).__name__):
                 self.reject("PE metadata has no sha256", pe=pe)
 
+    def test_routine_missing_from_status_json(self):
+        for prefix, roles in ROUTINES.items():
+            for role, (entry_va, _) in roles.items():
+                with self.subTest(prefix=prefix, role=role):
+                    self.reject(f"status.json has no routine at entry VA 0x{entry_va}, the {prefix} {role} routine "
+                                "this page links to", status=status_with(entry_va))
+
+    def test_routine_renamed_in_status_json(self):
+        for prefix, roles in ROUTINES.items():
+            for role, (entry_va, label) in roles.items():
+                with self.subTest(prefix=prefix, role=role):
+                    self.reject(f"status.json labels entry VA 0x{entry_va}, the {prefix} {role} routine this page "
+                                f"links to, 'fr3_renamed', not '{label}'", status=status_with(entry_va, "fr3_renamed"))
+
+    def test_malformed_status_json(self):
+        self.reject("status.json must be a non-empty list", status=[])
+        status = copy.deepcopy(STATUS)
+        status[1]["label"] = status[0]["label"]
+        self.reject(f"status.json lists label {status[0]['label']!r} twice", status=status)
+
     def test_missing_input(self):
         with self.assertRaises(ValueError) as caught:
             record_dossier.build(self.root / "absent.json", self.write("gearboxes.json", gearboxes_json()),
@@ -311,12 +376,22 @@ class RecordDossierRejectTests(RecordDossierTestCase):
 class RecordDossierCommandTests(RecordDossierTestCase):
     SCRIPT = REPO_ROOT / "scripts/record_dossier.py"
 
-    def run_script(self, engines, gearboxes=None, env=None):
+    def run_script(self, engines, gearboxes=None, env=None, extra=()):
         gearboxes = gearboxes_json() if gearboxes is None else gearboxes
         engines_path = self.write("engines.json", engines) if not isinstance(engines, Path) else engines
         return subprocess.run([sys.executable, str(self.SCRIPT), "--engines", str(engines_path),
                                "--gearboxes", str(self.write("gearboxes.json", gearboxes)),
-                               "--output-dir", str(self.output)], capture_output=True, text=True, check=False, env=env)
+                               "--output-dir", str(self.output), *extra], capture_output=True, text=True, check=False,
+                              env=env)
+
+    def test_cli_refuses_a_missing_linked_routine(self):
+        result = self.run_script(engines_json(), extra=("--status", str(self.write("status.json",
+                                                                                   status_with("00523470")))))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("record_dossier.py: status.json has no routine at entry VA 0x00523470", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        for page in self.pages:
+            self.assertFalse(page.exists())
 
     def test_cli_writes_both_pages(self):
         result = self.run_script(engines_json())
@@ -348,10 +423,10 @@ class RecordDossierCommandTests(RecordDossierTestCase):
         result = subprocess.run([sys.executable, str(self.SCRIPT), "--help"], capture_output=True, text=True, check=False)
         self.assertEqual(result.returncode, 0)
         text = " ".join(result.stdout.split()).replace("- ", "-")
-        for flag in ("--engines", "--gearboxes", "--pe", "--output-dir"):
+        for flag in ("--engines", "--gearboxes", "--pe", "--status", "--output-dir"):
             self.assertIn(flag, text)
         for default in ("artifacts/text-databases/engines.json", "artifacts/text-databases/gearboxes.json",
-                        "pe-metadata.json", "artifacts/dossier"):
+                        "pe-metadata.json", "analysis/annotated/status.json", "artifacts/dossier"):
             self.assertRegex(text, rf"default: [^)]*{re.escape(default)}\)")
 
 

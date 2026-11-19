@@ -6,11 +6,18 @@ with inline CSS, no JavaScript and no external resources other than the two link
 the rights-holder notice. Every piece of input text goes through e() before it reaches
 the page. scripts/build_research.py writes all of them, plus the entrance page, into
 one directory.
+
+The tyre, engine and gearbox pages link the routines and byte-checked sites they cite
+to their sections on the sibling routines page with routine_link() and site_link().
+They look each routine's label up in analysis/annotated/status.json by entry VA with
+routine_labels() and routine_label(), which refuse a routine that is missing or
+labelled differently there, so a broken link fails the build instead of shipping.
 """
 import html
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 
 from fr3_common import DEMO_PAGE
@@ -48,6 +55,14 @@ INDIGO_RECORD = "INDIGO"
 INDIGO_TOKENS = ("INHERIT_TYPE", "DEFAULT_TRACK")
 PCG_QUESTION_ENTRIES = ("_loadbar", "_loadbr2")
 PCG_QUESTION_EXTRA = 1024
+# The routines page (scripts/routine_index.py), the analyst-labelled routines it indexes, and the checks on them.
+ROUTINES_PAGE = "routines.html"
+ROUTINE_STATUS = REPO_ROOT / "analysis/annotated/status.json"
+STATUS_FIELDS = {"entry_va": str, "label": str, "signature": str, "return_storage": str, "parameter_storage": list,
+                 "decompiled": bool, "error": str}
+ENTRY_VA = re.compile(r"[0-9a-f]{8}")
+# Labels become anchors, so they are limited to characters that need no escaping in a URL fragment.
+LABEL = re.compile(r"[A-Za-z_][A-Za-z0-9_.-]*")
 # The id of the tyre page's note on the sound table's leading words.
 SOUND_NOTE_ID = "sound-table-words"
 # The external links a research page may carry; both sit in the rights-holder notice.
@@ -115,6 +130,63 @@ def nav(current, entrance=False):
 def question_link(anchor_id, text="open question"):
     """Return a link to one section of the Open questions page, from a sibling research page."""
     return f'<a href="{e(QUESTIONS_PAGE)}#{e(anchor_id)}">{e(text)}</a>'
+
+
+def site_anchor(va):
+    """The routines page's id for the byte-checked site at `va`."""
+    return f"site-{va:08x}"
+
+
+def routine_link(label, text=None):
+    """Return a link to one routine's section on the routines page, from a sibling research page.
+
+    The link text, `label` unless `text` is given, is shown as code.
+    """
+    return f'<a href="{e(ROUTINES_PAGE)}#{e(label)}"><code>{e(label if text is None else text)}</code></a>'
+
+
+def site_link(va):
+    """Return a link to the byte-checked site at `va` on the routines page, showing its VA."""
+    return f'<a href="{e(ROUTINES_PAGE)}#{e(site_anchor(va))}"><code>0x{va:08x}</code></a>'
+
+
+def check_status(status):
+    """Check status.json; return its routines in order, each with its entry VA as an integer under "va"."""
+    require(isinstance(status, list) and status, "status.json must be a non-empty list")
+    routines, vas, labels = [], set(), set()
+    for i, item in enumerate(status):
+        where = f"status.json[{i}]"
+        check_fields(item, STATUS_FIELDS, where)
+        require(ENTRY_VA.fullmatch(item["entry_va"]), f"{where}.entry_va must be 8 lowercase hex digits: "
+                                                      f"{item['entry_va']!r}")
+        require(LABEL.fullmatch(item["label"]), f"{where}.label {item['label']!r} is not usable as an anchor")
+        require(all(isinstance(value, str) for value in item["parameter_storage"]),
+                f"{where}.parameter_storage must be a list of strings")
+        require(item["entry_va"] not in vas, f"status.json lists entry VA {item['entry_va']} twice")
+        require(item["label"] not in labels, f"status.json lists label {item['label']!r} twice")
+        vas.add(item["entry_va"])
+        labels.add(item["label"])
+        routines.append({**item, "va": int(item["entry_va"], 16)})
+    return routines
+
+
+def routine_labels(status_path):
+    """Read and check status.json as the routines page does; return {entry VA as an integer: label}."""
+    return {routine["va"]: routine["label"]
+            for routine in check_status(load_json(status_path, "Annotated status (analysis/annotated/status.json)"))}
+
+
+def routine_label(labels, va, role, expected=None):
+    """Return the label status.json gives the routine at entry VA `va`, which a page links as its `role`.
+
+    Refuse when status.json has no routine there, or, when `expected` is given, labels it differently: the page
+    would link a section the routines page does not have, or name a routine it does not show.
+    """
+    require(va in labels, f"status.json has no routine at entry VA 0x{va:08x}, the {role} this page links to "
+                          "on the routines page")
+    require(expected is None or labels[va] == expected,
+            f"status.json labels entry VA 0x{va:08x}, the {role} this page links to, {labels[va]!r}, not {expected!r}")
+    return labels[va]
 
 
 def is_indigo_line(record, item):

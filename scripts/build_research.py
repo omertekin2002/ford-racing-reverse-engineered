@@ -12,8 +12,10 @@ Run it after scripts/acquire_demo.py has extracted the demo. It:
      graphic, routine and question counts, the fr3.exe SHA-256 and the producer revision;
   5. checks the directory with verify_research(): all seven pages exist, each carries
      the rights-holder notice before its main content, none has a <script> or an
-     external resource, every local link resolves to a file inside the output, and
-     the directory holds no file other than the ones this script writes.
+     external resource, every local link resolves to a file inside the output, every
+     link to another page's fragment, such as the tyre, engine and gearbox pages'
+     links to routines.html#<label> and routines.html#site-<va>, names an id on that
+     page, and the directory holds no file other than the ones this script writes.
 
 The pages are built in a staging directory next to the output and only replace it
 once they pass. An existing output directory is replaced only when it holds nothing
@@ -142,11 +144,13 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
         with tempfile.TemporaryDirectory() as work:
             work = Path(work)
             write_databases(game_dir, work, load_known_tags(analysis / "tags.json"))
+            # The tyre, engine and gearbox pages link routines.html, so they read the same status.json it does.
+            status_path = analysis / ROUTINE_EVIDENCE["status"]
             counts = {"tyres": tyre_dossier.build(work / "tyres.json", analysis / TYRE_EVIDENCE["evidence"], pe_path,
                                                   staging / tyre_dossier.PAGE, revision, hrefs=tyre_hrefs,
-                                                  entrance=True),
+                                                  entrance=True, status_path=status_path),
                       **record_dossier.build(work / "engines.json", work / "gearboxes.json", pe_path, staging, revision,
-                                               entrance=True)}
+                                               entrance=True, status_path=status_path)}
             counts["questions"] = open_questions.build(
                 work / "engines.json", work / "tyres.json", analysis / QUESTION_EVIDENCE["evidence"],
                 analysis / QUESTION_EVIDENCE["pcg_index"], pe_path, staging / open_questions.PAGE, revision,

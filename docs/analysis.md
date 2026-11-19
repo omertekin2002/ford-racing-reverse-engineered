@@ -248,10 +248,17 @@ the sites inside that table's accessor and the loader's byte-checked store
 sites, plus allocation-size sites where available. Sites are matched by address,
 not claim text. Inheriting records
 show their scalar tags around `INHERIT_TYPE` labelled unresolved, with no
-inherited values. The script exits non-zero instead of writing a page when a
+inherited values. The page links into the [routine index](#routine-index),
+`routines.html`, beside it: a "Loaded by" line links `fr3_load_tyre_database`,
+each "Why?" trail links its accessor's section and every site's
+`#site-<va>` row, and the scalar note links `0x00524090` to
+`fr3_copy_tyre_scalar_fields`. Each label is read from
+`analysis/annotated/status.json` by entry VA (`--status` changes the file). The
+script exits non-zero instead of writing a page when a
 record lacks a table, `resolved_tables` and `table_provenance` disagree, a path
-does not follow `INHERIT_TYPE`, or a cited accessor or offset has no matching
-byte-checked site. A shared table source does not make two tyres handle the
+does not follow `INHERIT_TYPE`, a cited accessor or offset has no matching
+byte-checked site, or a linked routine is missing from `status.json` (or, for
+the loader and scalar copy, labelled differently there). A shared table source does not make two tyres handle the
 same: their scalar fields can differ. The page is not committed because it holds
 game data; [`build_research.py`](#research-directory) builds it with the other
 research pages, for publishing per decision #46.
@@ -269,11 +276,18 @@ of the parent's values are copied into the child, because engine inheritance is
 not resolved. The colon-less `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` is
 shown verbatim as an untagged line, not as inheritance, with a note that whether
 the game honours it is not established. The meaning and units of the values,
-including the torque arrays, are not interpreted. The script exits non-zero
+including the torque arrays, are not interpreted. A "Loaded by" line near the
+top links the database's load and copy routines (`fr3_load_engine_database`
+`0x005227f0` and `fr3_copy_engine_record` `0x00522c80`, or
+`fr3_load_gearbox_database` `0x00523220` and `fr3_copy_gearbox_record`
+`0x00523470`) to their sections on `routines.html`, and each unresolved
+`:INHERIT_TYPE` note links the copy routine; the inheritance itself stays
+unresolved. The script exits non-zero
 without writing either page when an input is missing or malformed: records that
 are not a list or lack `type`, `line` or `fields`, duplicate record names, an
-`:INHERIT_TYPE` that does not name an earlier record of the same file, or PE
-metadata without `sha256`. The pages are not committed because they hold game
+`:INHERIT_TYPE` that does not name an earlier record of the same file, PE
+metadata without `sha256`, or a load or copy routine that is missing from
+`status.json` or labelled differently there. The pages are not committed because they hold game
 data; [`build_research.py`](#research-directory) builds them with the other
 research pages, for publishing per decision #46.
 
@@ -405,7 +419,9 @@ are built in a staging directory next to the output; `verify_research()` then
 checks that all seven exist, that each has the notice before its `<h1>`, that
 none has a `<script>`, CSS `url()` or `@import`, or any external link or
 resource other than the notice's two links, that every local link, fragment
-included, resolves to a file and id inside the directory, and that the directory
+included, resolves to a file and id inside the directory (so each record page's
+`routines.html#<label>` and `routines.html#site-<va>` link must name a section
+or site row on the routines page, built from the same `status.json`), and that the directory
 holds no file other than the ones the script writes. Only then does the
 staging directory replace the output; an existing output that holds anything
 else is left alone. The directory is not committed because it holds game data.
