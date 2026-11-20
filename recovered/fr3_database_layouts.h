@@ -1,11 +1,12 @@
 /* In-memory layouts for the SHA-256-pinned Windows demo.
  * Gearbox layout uses the supplied report and loader/copy instructions.
- * Every Fr3EngineRecord offset from +0x14 on is byte-checked: the engine loader
+ * Every Fr3EngineRecord field from +0x14 on is byte-checked: the engine loader
  * 0x005227f0 stores each one when it parses its tag, INHERIT_TYPE stores the
  * parent at +0x18, and the copy 0x00522c80 copies all of them but +0x18
  * (ENGINE_FIELD_STORES and ENGINE_COPY in scripts/text_database.py, sites in
  * analysis/selected/field-evidence.json). The field names are analyst labels;
- * derived_rpm (+0x2c) and inverse_turbo_mass (+0xa4) are computed by the loader.
+ * derived_rpm (+0x2c, stored only under conditions) and inverse_turbo_mass
+ * (+0xa4) are computed by the loader. Padding is not byte-checked.
  * Tyre layout was reconstructed here from loader 0x00523820 and accessors.
  * All address fields represent 32-bit game addresses, never native pointers.
  */

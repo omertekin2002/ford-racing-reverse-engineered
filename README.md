@@ -299,7 +299,7 @@ python3 scripts/verify_findings.py . --level instructions
 | Level | Needs | Proves |
 | --- | --- | --- |
 | `data` | `inputs/` from `acquire_demo.py` | The archive's SHA-256 and the mirror's MD5, the `fr3.exe` identity, every file in `analysis/game-file-manifest.json`, the tag registry in `analysis/tags.json`, every compressed resource in `analysis/unpacked-manifest.json`, every PCG index and its two trailing-byte exceptions, the engine, gearbox and tyre text-database checks and the tyre table dimensions |
-| `instructions` | `inputs/fr3.exe` | The PE build metadata and import counts, all 189 `field-evidence.json` sites byte-checked against `fr3.exe`, and `analysis/selected/` matching, byte for byte, a fresh `extract_selected.py` export written to a temporary directory |
+| `instructions` | `inputs/fr3.exe` | The PE build metadata and import counts, all 194 `field-evidence.json` sites byte-checked against `fr3.exe`, and `analysis/selected/` matching, byte for byte, a fresh `extract_selected.py` export written to a temporary directory |
 | `full` (default) | both of the above, plus the Ghidra outputs from `scripts/run_analysis.py` and `gcc` | Everything above, plus the Ghidra baseline and C export counts, the 25 annotated exports, the fresh snapshot import and the C layout assertions; only this level rewrites `analysis/verification.json` |
 
 `data` and `instructions` never write to the checkout. A level whose inputs are

@@ -821,7 +821,9 @@ class TyreTableAccessorByteEvidenceTests(unittest.TestCase):
 ENGINE_DISPATCH = 0x00522856
 ENGINE_NEXT_TAG = 0x00522848
 ENGINE_DEFAULT = 0x00522878
-RECORD_WRITE = re.compile(r"(?:fstp|fst|mov) (dword|byte) ptr \[(edi|edx) \+ (0x[0-9a-f]+)\], ?.*|fstp (dword) ptr \[(edi|edx) \+ (0x[0-9a-f]+)\]")
+# Any instruction whose first operand is memory at [edi +/- n] or [edx +/- n] and that writes it.
+RECORD_WRITE = re.compile(r"(?:mov|fstp?|fistp?|fbstp|inc|dec|add|sub|and|or|xor|neg|not) (byte|word|dword|qword) ptr "
+                          r"\[(edi|edx) ([+-]) (0x[0-9a-f]+)\](?:, .*)?")
 SIGNED_JUMPS = {"jl": lambda c: c < 0, "jle": lambda c: c <= 0, "jg": lambda c: c > 0, "jge": lambda c: c >= 0,
                 "je": lambda c: c == 0, "jne": lambda c: c != 0}
 
@@ -883,8 +885,8 @@ def record_writes(lines, reached):
     for va, text in lines:
         match = RECORD_WRITE.fullmatch(text) if va in reached else None
         if match:
-            width, base, offset = [group for group in match.groups() if group]
-            writes[va] = (width, base, int(offset, 16))
+            width, base, sign, offset = match.groups()
+            writes[va] = (width, base, int(offset, 16) * (-1 if sign == "-" else 1))
     return writes
 
 
@@ -930,6 +932,14 @@ class EngineDispatchTests(unittest.TestCase):
         self.assertEqual(compares, [(ENGINE_DISPATCH, 0x10)])
         self.assertEqual(record_writes(lines, reached), {ENGINE_DISPATCH + 11: ("dword", "edi", 0x98)})
         self.assertIsNone(engine_dispatch(lines, 0x11)[1])
+
+    def test_record_write_pattern_covers_every_write_form(self):
+        lines = [(1, "fst dword ptr [edi + 0x2c]"), (2, "fistp dword ptr [edi - 0x4]"), (3, "inc byte ptr [edi + 0x94]"),
+                 (4, "mov word ptr [edx + 0x38], ax"), (5, "mov eax, dword ptr [edi + 0x30]"),
+                 (6, "fld dword ptr [edi + 0x30]"), (7, "fstp dword ptr [ebp - 0x2c]")]
+        self.assertEqual(record_writes(lines, {va for va, _ in lines}),
+                         {1: ("dword", "edi", 0x2c), 2: ("dword", "edi", -4), 3: ("byte", "edi", 0x94),
+                          4: ("word", "edx", 0x38)})
 
 
 def drifted(table, path, value):
@@ -1027,7 +1037,8 @@ class EngineEvidenceTests(unittest.TestCase):
         self.assertIn("the copy writes offsets no mapped tag stores: +0x18..+0x1b", problems)
         self.assertIn("the copy writes the name or the parent address: +0x18..+0x1b", problems)
         problems = self.problems(stores=drifted(ENGINE_FIELD_STORES, ("MAX_AIRFLOW",), None))
-        self.assertEqual(problems, ["the copy writes offsets no mapped tag stores: +0x9c..+0x9f"])
+        self.assertEqual(problems, ["byte-checked record store at 0x005228a2 (d99f9c000000) is in no mapped tag",
+                                    "the copy writes offsets no mapped tag stores: +0x9c..+0x9f"])
 
     def test_stored_offset_the_copy_misses_is_reported(self):
         problems = self.problems(engine_copy=drifted(ENGINE_COPY, ("offsets", "0xac"), None))
@@ -1043,6 +1054,32 @@ class EngineEvidenceTests(unittest.TestCase):
         wrong = [{**site, "bytes": "8b4220"} if site["va"] == 0x00522c97 else site for site in self.evidence]
         self.assertReports("copy store at 0x00522c9a has no byte-checked load of parent + 0x1c into eax",
                            self.problems(wrong))
+        # A lea into EAX between `mov al, [edx + 0x14]` and `mov [ebx + 0x14], al` overwrites AL.
+        clobbered = [{**site, "bytes": "8d423c"} if site["va"] == 0x00522c8e else site for site in self.evidence]
+        self.assertReports("copy store at 0x00522c91 has no byte-checked load of parent + 0x14 into al",
+                           self.problems(clobbered))
+
+    def test_store_sites_must_be_complete_and_belong_to_their_tag(self):
+        stores = drifted(ENGINE_FIELD_STORES, ("CAPACITY", "offsets", "0x34", "sites"), [])
+        problems = self.problems(stores=stores)
+        self.assertIn("CAPACITY + 0x34: no store sites", problems)
+        self.assertIn("byte-checked record store at 0x00522be0 (d95f34) is in no mapped tag", problems)
+        stores = drifted(ENGINE_FIELD_STORES, ("TURBO_MASS", "offsets", "0xa4", "sites"), ["0x00522a48"])
+        self.assertEqual(self.problems(stores=stores),
+                         ["byte-checked record store at 0x00522c4e (c787a40000000000803f) is in no mapped tag"])
+        # Swapping two tags' offsets, sites and fields keeps every offset consistent; only the claims tell them apart.
+        stores = copy.deepcopy(ENGINE_FIELD_STORES)
+        stores["FUEL_CUTOFF"]["offsets"], stores["ENGINE_BRAKING"]["offsets"] = (
+            stores["ENGINE_BRAKING"]["offsets"], stores["FUEL_CUTOFF"]["offsets"])
+        problems = self.problems(stores=stores)
+        self.assertReports("FUEL_CUTOFF + 0x20: the claim at 0x00522ada is not about FUEL_CUTOFF", problems)
+        self.assertReports("ENGINE_BRAKING + 0x1c: the claim at 0x00522b15 is not about ENGINE_BRAKING", problems)
+
+    def test_copy_must_keep_ecx(self):
+        self.assertReports("Engine copy saves ECX: no byte-checked engine copy site at 0x00522c81",
+                           self.problems(self.without(0x00522c81)))
+        self.assertReports("Engine copy restores ECX: no byte-checked engine copy site at 0x00522d69",
+                           self.problems(self.without(0x00522d69)))
 
     def test_copied_bytes_equal_stored_bytes(self):
         stored = text_database.engine_stored_bytes(ENGINE_FIELD_STORES)
@@ -1078,7 +1115,7 @@ class EngineDecoderTests(unittest.TestCase):
     def test_decoder_agrees_with_capstone_on_every_engine_site(self):
         decoded = dict(decoded_evidence())
         engine = [(va, raw) for va, raw, _ in EVIDENCE if ENGINE_LOADER_SPAN[0] <= va < ENGINE_COPY["span"][1]]
-        self.assertEqual(len(engine), 125)
+        self.assertEqual(len(engine), 130)
         for va, raw in engine:
             mine = memory_operand(raw)
             if mine is None:
@@ -1129,7 +1166,7 @@ class EngineLayoutTests(unittest.TestCase):
 
     def test_header_provenance_names_the_byte_checked_engine_offsets(self):
         self.assertNotIn("Engine/gearbox layouts use the supplied report", ENGINE_HEADER)
-        self.assertIn("Every Fr3EngineRecord offset from +0x14 on is byte-checked", ENGINE_HEADER)
+        self.assertIn("Every Fr3EngineRecord field from +0x14 on is byte-checked", ENGINE_HEADER)
 
 
 class UnmappedEngineTagTests(unittest.TestCase):

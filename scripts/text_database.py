@@ -67,8 +67,8 @@ registry ID, the dispatch's `cmp eax, <id>` site and its payload offsets, each
 with the Fr3EngineRecord field, width (dword or byte) and store sites.
 TORQUE_ARRAY zero-fills an 18-slot block at +0x3c, stores each row's second
 column into it, reads its row count from the MAX_RPM value at +0x30 present when
-the tag is parsed, and writes a derived +0x2c; TURBO_MASS writes a derived
-reciprocal at +0xa4. ENGINE_COPY records INHERIT_TYPE: the parent lookup, the
+the tag is parsed, and may write a derived +0x2c (both stores are conditional);
+TURBO_MASS writes a derived reciprocal at +0xa4. ENGINE_COPY records INHERIT_TYPE: the parent lookup, the
 call to the copy at 0x00522c80 with the parent in EDX and the record in EAX,
 the parent store at +0x18, and the copy's byte, dword and 0x48-byte block moves.
 engine_evidence_problems() checks both against field-evidence.json and requires
@@ -207,6 +207,8 @@ ENGINE_FIELD_STORES = {
     "MAX_DELTA_FUELFLOW": {"id": 0xad, "compare": "0x005228bc",
                            "offsets": {"0xac": _store("max_delta_fuel_flow", ["0x005228d0"])}},
 }
+# Both +0x2c stores are conditional (the jumps at 0x00522980, 0x005229b6 and 0x005229e9), so +0x2c can keep what an
+# earlier INHERIT_TYPE copied, or zero. Every store site's field-evidence.json claim starts with its tag's name.
 # INHERIT_TYPE in the engine loader and the copy it calls (copy_engine_record.asm). The loader looks the parent up by
 # name, passes it in EDX and the record in EAX to the copy, then stores the parent at +0x18. The copy keeps the record
 # in EBX and writes `offsets` (each a load of parent + n into AL/EAX followed by a store at record + n) and the
@@ -220,6 +222,8 @@ ENGINE_COPY = {
     "call": "0x00522b47",
     "parent_store": {"offset": "0x18", "field": "inherited_address", "site": "0x00522b4c"},
     "span": (0x00522C80, 0x00522D6C),
+    # The copy saves and restores ECX, so the parent address kept there survives to the +0x18 store.
+    "keeps_ecx": {"push": "0x00522c81", "pop": "0x00522d69"},
     "record_in_ebx": "0x00522c84",
     "offsets": {"0x14": "byte", **{f"0x{offset:x}": "dword" for offset in range(0x1c, 0x3c, 4)},
                 **{f"0x{offset:x}": "dword" for offset in range(0x84, 0x94, 4)}, "0x94": "byte", "0x95": "byte",
@@ -680,6 +684,13 @@ MEMORY_OPCODES = {0x89: ("store", "dword"), 0x88: ("store", "byte"), 0xc7: ("sto
 X87_D9 = {0: ("load", "dword"), 2: ("store", "dword"), 3: ("store", "dword")}  # fld, fst, fstp m32
 
 
+def register_family(register):
+    """Return the 32-bit register a register name belongs to (al and ah -> eax); other values unchanged."""
+    if register in BYTE_REGISTERS:
+        return REGISTERS[BYTE_REGISTERS.index(register) % 4]
+    return register
+
+
 def memory_operand(raw):
     """Decode one `[base + disp]` instruction from its hex bytes, or return None for any other form.
 
@@ -763,11 +774,14 @@ def engine_evidence_problems(evidence, tag_ids, stores=None, copy=None):
     argument setup, call and +0x18 store must have the exact bytes. In the copy every store at [ebx + n] needs a
     byte-checked load of parent [edx + n] into the same register just before it, the pairs must be exactly
     ENGINE_COPY's offsets, and the block must be the documented movsd/movsb sequence. The bytes the copy writes
-    must equal the bytes the mapped tags store and exclude the name and +0x18.
+    must equal the bytes the mapped tags store and exclude the name and +0x18. Each tag needs at least one store
+    site per offset, each store site's claim must start with its tag's name, and every byte-checked write to the
+    record ([edi + n], or a TORQUE_ARRAY row's [edx + n]) in the loader must be a mapped site.
     """
     stores = ENGINE_FIELD_STORES if stores is None else stores
     copy = ENGINE_COPY if copy is None else copy
     by_va = {site["va"]: site["bytes"] for site in evidence}
+    claims = {site["va"]: site.get("claim", "") for site in evidence}
     problems = []
 
     def site(label, va, span=ENGINE_LOADER_SPAN):
@@ -803,8 +817,12 @@ def engine_evidence_problems(evidence, tag_ids, stores=None, copy=None):
         for offset, store in entry["offsets"].items():
             value = int(offset, 16)
             base, disp = ("edx", value - 4) if "slots" in store else ("edi", value)
+            if not store["sites"]:
+                problems.append(f"{tag} + {offset}: no store sites")
             for va in store["sites"]:
                 operand(f"{tag} + {offset}", va, {"kind": "store", "width": store["width"], "base": base, "disp": disp})
+                if int(va, 16) in by_va and not claims[int(va, 16)].startswith(tag + " "):
+                    problems.append(f"{tag} + {offset}: the claim at {va} is not about {tag}: {claims[int(va, 16)]!r}")
             if "slots" in store:
                 fill, rows = entry["zero_fill"], entry["row_pointer"]
                 exact(f"{tag} zero-fill size", fill["size"],
@@ -834,8 +852,17 @@ def engine_evidence_problems(evidence, tag_ids, stores=None, copy=None):
     parent = copy["parent_store"]
     operand(f"INHERIT_TYPE + {parent['offset']}", parent["site"],
             {"kind": "store", "width": "dword", "base": "edi", "disp": int(parent["offset"], 16), "register": "ecx"})
+    mapped = {int(va, 16) for entry in stores.values() for store in entry["offsets"].values() for va in store["sites"]}
+    mapped.add(int(parent["site"], 16))
+    for va, raw in sorted(by_va.items()):
+        decoded = memory_operand(raw)
+        if (ENGINE_LOADER_SPAN[0] <= va < ENGINE_LOADER_SPAN[1] and decoded and decoded["kind"] == "store"
+                and decoded["base"] in ("edi", "edx") and va not in mapped):
+            problems.append(f"byte-checked record store at 0x{va:08x} ({raw}) is in no mapped tag")
 
     span = copy["span"]
+    exact("Engine copy saves ECX", copy["keeps_ecx"]["push"], "51", span)
+    exact("Engine copy restores ECX", copy["keeps_ecx"]["pop"], "59", span)
     exact("Engine copy record register", copy["record_in_ebx"], "89c3", span)
     inside = sorted((va, raw) for va, raw in by_va.items() if span[0] <= va < span[1])
     pairs = {}
@@ -854,7 +881,8 @@ def engine_evidence_problems(evidence, tag_ids, stores=None, copy=None):
             if previous == want:
                 found = True
                 break
-            if not previous or previous["kind"] != "lea" or previous["register"] == decoded["register"]:
+            if (not previous or previous["kind"] != "lea"
+                    or register_family(previous["register"]) == register_family(decoded["register"])):
                 break
             end = before
         if found:

@@ -108,7 +108,7 @@ fields, or handle the other text files. The meaning of the
 sound table's first fifteen words, described below, is still unknown.
 
 The engine loader at `0x005227f0` allocates a `0xb0`-byte payload, and the gearbox
-loader at `0x00523220` allocates `0x34` bytes. Every engine payload offset from
+loader at `0x00523220` allocates `0x34` bytes. Every engine payload field from
 `+0x14` on is now byte-checked (see the next section). The gearbox layout is
 still transcribed from the earlier report and supported by its loader and copy
 routines. The engine record's derived `+0x2c` and `+0xa4` values and the
@@ -146,14 +146,14 @@ handler that writes only the offsets listed. `ENGINE_FIELD_STORES` in
 [`field-evidence.json`](../analysis/selected/field-evidence.json) byte-checks
 every compare and store against `fr3.exe`:
 
-| Tag | ID | Compare | Offset | Width | Store | Derived |
+| Tag | ID | Compare | Offset | Width | Store | Notes |
 |---|---|---|---|---|---|---|
 | `LOCATION_TYPE` | `0xa5` | `0x00522b54` | `+0x14` | byte | `0x00522b70` | enum word from the table at `0x00597408` |
 | `FUEL_CUTOFF` | `0x8a` | `0x00522ae2` | `+0x1c` | float | `0x00522b15` | |
 | `ENGINE_BRAKING` | `0x7f` | `0x0052285d` | `+0x20` | float | `0x00522ada` | |
 | `TORQUE_MODIFIER` | `0x119` | `0x00522a00` | `+0x24` | float | `0x00522a0e` | |
 | `ROUGHNESS` | `0xe4` | `0x005228f6` | `+0x28` | float | `0x0052290e` | |
-| `TORQUE_ARRAY` | `0x118` | `0x005228ef` | `+0x3c`, 18 slots | float | `0x00522969` | `+0x2c` at `0x005229c1` and `0x005229f8` |
+| `TORQUE_ARRAY` | `0x118` | `0x005228ef` | `+0x3c`, 18 slots | float | `0x00522969` | may derive `+0x2c` at `0x005229c1` or `0x005229f8` |
 | `MAX_RPM` | `0xb0` | `0x005228b1` | `+0x30` | float | `0x00522a76` | |
 | `CAPACITY` | `0x37` | `0x00522bd0` | `+0x34` | float | `0x00522be0` | |
 | `TICKOVER_RPM` | `0x112` | `0x00522a53` | `+0x38` | float | `0x00522a65` | |
@@ -165,7 +165,7 @@ every compare and store against `fr3.exe`:
 | `NUMBER_OF_CYLINDERS` | `0xc6` | `0x00522a97` | `+0x95` | byte | `0x00522aa9` | |
 | `ASPIRATION_TYPE` | `0x10` | `0x00522ba9` | `+0x98` | dword | `0x00522bc5` | enum word from the table at `0x005973f8` |
 | `MAX_AIRFLOW` | `0xab` | `0x00522856` | `+0x9c` | float | `0x005228a2` | |
-| `TURBO_MASS` | `0x15b` | `0x00522a16` | `+0xa0` | float | `0x00522a28` | `+0xa4` at `0x00522a48` or `0x00522c4e` |
+| `TURBO_MASS` | `0x15b` | `0x00522a16` | `+0xa0` | float | `0x00522a28` | derives `+0xa4` at `0x00522a48` or `0x00522c4e` |
 | `MAX_FUELFLOW` | `0xae` | `0x00522ab4` | `+0xa8` | float | `0x00522ac6` | |
 | `MAX_DELTA_FUELFLOW` | `0xad` | `0x005228bc` | `+0xac` | float | `0x005228d0` | |
 
@@ -180,8 +180,14 @@ Two handlers do more than store the declared value:
   keeps the first column only in a stack temporary (`0x00522961`) and stores the
   second at `+0x3c + 4 * row`, through a pointer that starts at the record and
   steps by 4 (`0x00522952`, `0x0052295b`, `0x00522969`). The loop compares only
-  with that count, not with the 18 slots. Afterwards it writes a derived `+0x2c`
-  (`0x005229c1`, `0x005229f8`).
+  with that count, not with the 18 slots. Afterwards it may write a derived
+  `+0x2c`, but both stores are conditional. `0x005229c1` runs only for a row
+  whose value beats the best so far, and not at all when `MAX_RPM` is not above
+  zero (`0x00522980`, `0x005229b6`). `0x005229f8` runs only when `+0x2c` and
+  `+0x30` differ by less than the float at `0x00581d20` (`0x005229e9`). When
+  neither runs, `+0x2c` keeps what an earlier `INHERIT_TYPE` copied, or zero.
+  Like the row count, this uses `+0x30` as it is when the tag is parsed: a later
+  `MAX_RPM` does not re-derive it.
 - `TURBO_MASS` stores `+0xa0`, then writes `1 / (+0xa0)` at `+0xa4`
   (`0x00522a48`), or `1.0` when `+0xa0` is zero (`0x00522c4e`).
 
@@ -192,7 +198,9 @@ up by it (`call 0x00522d70` at `0x00522b3c`). It keeps the parent in `ECX` and
 passes it in `EDX`, with the record in `EAX` (`0x00522b41`–`0x00522b45`), to
 [the engine copy](../analysis/selected/copy_engine_record.asm)
 (`call 0x00522c80` at `0x00522b47`), then stores the parent at `+0x18`
-(`0x00522b4c`). The copy keeps the record in `EBX` and moves, from the parent:
+(`0x00522b4c`). The copy saves and restores `ECX` (`0x00522c81`, `0x00522d69`),
+so that store writes the parent. The copy keeps the record in `EBX` and moves,
+from the parent:
 
 | Copied | How | Sites |
 |---|---|---|
@@ -213,7 +221,9 @@ the copied offsets with their widths and the block.
 - `engine_evidence_problems()` checks that each compare immediate equals the
   tag's ID in `analysis/tags.json`. Every cited site must be in
   `field-evidence.json`, inside its routine, and decode as the listed store,
-  zero-fill, enum table or `INHERIT_TYPE` setup. Every copy store must follow a
+  zero-fill, enum table or `INHERIT_TYPE` setup. Each offset needs at least one
+  store site, each store site's claim must name its tag, and every byte-checked
+  write to the record in the loader must be a mapped site. Every copy store must follow a
   load of the same parent offset into the same register. The copy must move
   exactly `ENGINE_COPY`'s offsets, and the bytes it writes must equal the bytes
   the mapped tags store, without the name or `+0x18`.
@@ -227,8 +237,8 @@ the copied offsets with their widths and the block.
   `INHERIT_TYPE` and `END`. Otherwise verification fails and names the tag. All
   21 tags in the demo are covered: the 20 above plus `INHERIT_TYPE`.
 
-A synthetic test also follows the compare tree in the committed
-`load_engine_database.asm`. Each mapped ID reaches its handler through the
+A unit test also follows the compare tree in the committed
+`load_engine_database.asm`, so it runs without the demo. Each mapped ID reaches its handler through the
 listed compare, and each handler writes exactly the mapped sites. Every other
 registry ID reaches the default branch.
 
@@ -411,7 +421,7 @@ from two levels up:
 Engine inheritance in `ENGDATA.DAT` and the colon-less
 `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` remain unresolved.
 
-The tyre sites among the [189 byte-checked instruction sites](../analysis/selected/field-evidence.json)
+The tyre sites among the [194 byte-checked instruction sites](../analysis/selected/field-evidence.json)
 and [the loader's disassembly](../analysis/selected/load_tyre_database.asm)
 preserve the concrete evidence for these new findings.
 
@@ -518,7 +528,7 @@ lie in no committed span. The four files that hold no routine entry
 (`allocate_database_record`, `create_database`, `fill_memory` and
 `fill_memory_body`) get their own sections, and any site in no span, or before
 every routine entry in its file, is listed apart; today there is none. Each of
-the 189 sites is shown exactly once. The page says that every label is
+the 194 sites is shown exactly once. The page says that every label is
 analyst-assigned, not an original symbol, and that the pseudocode is Ghidra
 output with unresolved callees and inferred types. The script exits non-zero
 without writing the page when an input is missing or malformed, the routines or
@@ -744,7 +754,7 @@ holds game data and stays out of Git.
 [Verification results](../analysis/verification.json) cover the exact executable,
 all game files, all tags, all identified compressed resources, every PCG index,
 the selected instruction sites, table dimensions, export counts and C layout
-assertions. All 189 instruction sites were byte-checked against the pinned
+assertions. All 194 instruction sites were byte-checked against the pinned
 `fr3.exe` at `field_instruction_sites_verified_utc`, with the comparison
 `verify_findings.py` makes; the other results date from `verified_utc`. Nine parser tests additionally reject malformed synthetic
 resources, and eight helper tests cover virtual-address bounds and file identity checks.
