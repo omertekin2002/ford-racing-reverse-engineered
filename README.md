@@ -57,8 +57,35 @@ From the repository checkout:
 ```sh
 python3 scripts/setup_tools.py
 "${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python scripts/run_analysis.py
+"${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python scripts/build_research.py
 "${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python scripts/package_analysis.py
 ```
+
+`package_analysis.py` does not need Ghidra. With only the acquired demo and a
+built research directory, at a clean commit, it writes the reproduction bundle
+`artifacts/fr3-analysis-<short revision>.zip`:
+
+```sh
+python3 scripts/acquire_demo.py inputs
+python3 scripts/build_research.py
+python3 scripts/package_analysis.py
+```
+
+The bundle holds one folder, `fr3-analysis-<short revision>/`, in layers: the
+source (`README.md`, `ruff.toml`, `scripts/`, `tests/`, `recovered/`, `docs/`
+and `analysis/`, read from Git at the producer revision), the parsed engine,
+gearbox and tyre databases in `text-databases/`, the checked research pages in
+`research/` and, only when they match the committed verification record, the
+Ghidra outputs in `artifacts/`. Its `MANIFEST.json` names the input build, the
+producer revision, the tool versions and each verification level: `read`,
+`data` and `instructions` are run while packaging, and `full` is `performed`
+only in the sense that the packaged Ghidra outputs match the committed
+`analysis/verification.json`; Ghidra is not re-run. Without those outputs
+`full` is `unavailable`, naming the missing paths and the commands that recover
+them. Uncommitted changes under the source paths, a stale research page, a
+failing check or a Ghidra output that differs from the record refuse the build
+and leave any previous bundle in place (see
+[the analysis notes](docs/analysis.md#analysis-bundle)).
 
 `setup_tools.py` installs pinned, checksum-verified Ghidra 10.3.3, Java 17,
 Unshield and Python dependencies in the tool root. It requires Python 3.12+,
@@ -118,12 +145,14 @@ headless script errors can be reported without a failing process exit code.
 | `artifacts/dossier/questions.html` | Offline "Open questions" page from `scripts/open_questions.py`: for `INDIGO`'s colon-less line, the tyre sound table's first fifteen words and the PCG extra bytes, what was observed, what depends on it, the untested alternatives and what evidence would decide it |
 | `artifacts/ghidra/` | Complete baseline C, function disassembly, function list and call edges |
 | `artifacts/fr3-demo-annotated.gzf` | Portable annotated Ghidra program |
-| `artifacts/fr3-analysis.zip` | Analysis bundle with SHA-256 manifest |
+| `artifacts/fr3-analysis-<revision>.zip` | Deterministic reproduction bundle from `scripts/package_analysis.py`: committed source, parsed databases, checked research pages and, when they match the committed verification record, the Ghidra outputs, with a `MANIFEST.json` naming the input build, producer revision, tool versions and the verification levels performed or unavailable, plus `SHA256SUMS` |
 | `inputs/` | Original demo archive, installer extraction and verified executable |
 
 `inputs/` and `artifacts/` are ignored by Git. The analysis bundle includes the
-portable program, derived exports and reproduction tools; it excludes the demo
-ZIP, game assets and working project database. Import the `.gzf` into a new
+reproduction tools, parsed databases and research pages, plus the portable
+program and baseline exports when they match the verification record; it
+excludes `inputs/` (the demo ZIP, game assets and `fr3.exe`), decoded resources,
+`artifacts/pe/`, `artifacts/logs/` and the working project database. Import the `.gzf` into a new
 Ghidra 10.3.3 project to browse the annotations. No experimental compiler
 specification is needed for this snapshot.
 
