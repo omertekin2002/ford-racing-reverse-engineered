@@ -31,7 +31,10 @@ The new tyre analysis reconstructs its 88-byte record and table allocations.
   same Pages workflow and published beside the preview under `research/`. The
   [research packet](https://omertekin2002.github.io/ford-racing-reverse-engineered/downloads/fr3-research-latest.zip)
   is an offline ZIP of those pages with a `MANIFEST.json` naming their revision,
-  input build and the checks they passed; it is rebuilt on every deploy.
+  input build and the checks they passed; it is rebuilt on every deploy. The
+  entrance page also answers
+  [whether road, offroad and track tyres use different tables](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/#tyre-tables),
+  generated from the tyre table provenance with one traced example.
 
 Read [the verified findings and limitations](docs/analysis.md). This is an
 analysis package, not restored original source or a runnable replacement game.

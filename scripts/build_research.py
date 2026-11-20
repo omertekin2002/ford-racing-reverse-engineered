@@ -9,7 +9,9 @@ Run it after scripts/acquire_demo.py has extracted the demo. It:
   3. copies every committed analysis/ file those pages link to into
      <output>/evidence/, keeping its path under analysis/, and points the pages there;
   4. writes <output>/index.html, which links the six pages with their record,
-     graphic, routine and question counts, the fr3.exe SHA-256 and the producer revision;
+     graphic, routine and question counts, the fr3.exe SHA-256 and the producer revision,
+     and answers "Do road, offroad and track tyres use different tables?" in its
+     #tyre-tables section, generated from tyres.json by scripts/research_answers.py;
   5. checks the directory with verify_research(): all seven pages exist, each carries
      the rights-holder notice before its main content, none has a <script> or an
      external resource, every local link resolves to a file inside the output, every
@@ -29,10 +31,12 @@ import shutil
 import tempfile
 import urllib.parse
 
-from dossier_common import (INDEX_PAGE, NOTICE_ID, NOTICE_LINKS, PAGES, e, load_json, page_start, producer_revision)
+from dossier_common import (INDEX_PAGE, NOTICE_ID, NOTICE_LINKS, PAGES, e, load_json, page_start, producer_revision,
+                            routine_labels)
 import open_questions
 import pcg_catalogue
 import record_dossier
+import research_answers
 import routine_index
 from text_database import REPO_ROOT, load_known_tags, require, write_databases
 import tyre_dossier
@@ -94,8 +98,8 @@ def copy_evidence(analysis, staging, files):
     return hrefs
 
 
-def render_index(counts, pe, revision, evidence):
-    """Return the "Explore findings" entrance page."""
+def render_index(counts, pe, revision, evidence, answers=""):
+    """Return the "Explore findings" entrance page; `answers` is the HTML of its answered questions."""
     rows = (("engines.html", "Engines", "Each engine record's declarations as written. <code>:INHERIT_TYPE</code> "
              "parents and untagged lines are labelled unresolved.", f'{counts["engines"]} engine records'),
             ("gearboxes.html", "Gearboxes", "Each gearbox record's declarations as written.",
@@ -123,6 +127,7 @@ def render_index(counts, pe, revision, evidence):
         f"<dt>Producer revision</dt><dd><code>{e(revision)}</code> (<code>scripts/build_research.py</code>)</dd></dl>",
         '<p class="scope">Values are shown exactly as declared in the demo\'s files. Anything whose meaning or effect '
         "in the game is not established stays labelled unresolved; these pages do not fill it in.</p>",
+        answers,
         f"<h2>Pages</h2><table><tr><th>Page</th><th>What it shows</th><th>Count</th></tr>{table}</table>",
         "<h2>Evidence files</h2><p>Copied unchanged from the repository's <code>analysis/</code> directory; "
         f"the pages link to them.</p><ul>{files}</ul>",
@@ -156,6 +161,11 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
                 work / "engines.json", work / "tyres.json", analysis / QUESTION_EVIDENCE["evidence"],
                 analysis / QUESTION_EVIDENCE["pcg_index"], pe_path, staging / open_questions.PAGE, revision,
                 hrefs=question_hrefs, entrance=True, selected=analysis / "selected")
+            # tyre_dossier.build() has accepted tyres.json and the field evidence; the answer reuses both.
+            answers = research_answers.tyre_tables_section(
+                load_json(work / "tyres.json", "Tyre database"),
+                load_json(analysis / TYRE_EVIDENCE["evidence"], "Field evidence"), routine_labels(status_path),
+                tyre_hrefs)
         counts["pcg_collections"], counts["pcg_graphics"] = pcg_catalogue.build(
             analysis / PCG_EVIDENCE["index"], analysis / PCG_EVIDENCE["manifest"], pe_path,
             analysis / "verification.json", staging / pcg_catalogue.PAGE, revision, hrefs=pcg_hrefs, entrance=True)
@@ -166,7 +176,7 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
             hrefs=routine_hrefs, entrance=True)
         evidence = sorted({*tyre_hrefs.values(), *pcg_hrefs.values(), *routine_hrefs.values(),
                            *question_hrefs.values()})
-        index = render_index(counts, load_json(pe_path, "PE metadata"), revision, evidence)
+        index = render_index(counts, load_json(pe_path, "PE metadata"), revision, evidence, answers)
         (staging / INDEX_PAGE).write_text(index, encoding="utf-8")
         verify_research(staging)
         if output.exists():
