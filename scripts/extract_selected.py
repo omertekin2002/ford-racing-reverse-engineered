@@ -95,30 +95,38 @@ EVIDENCE = [
 ]
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("executable", type=Path)
-    parser.add_argument("output", type=Path)
-    args = parser.parse_args()
-    data = verified_exe(args.executable)
+def export_selected(data, output):
+    """Write the bounded disassembly and field-evidence.json for the verified executable bytes into output.
+
+    Returns the number of exported spans and the verified evidence list.
+    """
     pe = pefile.PE(data=data)
     decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
-    args.output.mkdir(parents=True, exist_ok=True)
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=True)
     for start, end, name in ROUTINES:
         raw = read_va(pe, data, start, end - start)
         text = f"; Analyst label: {name}; export span 0x{start:08x}..0x{end:08x}\n"
         text += "; Linear decoding may include padding or neighboring code. Check branch targets and function-based Ghidra output.\n"
         text += "\n".join(f"{i.address:08x} {i.bytes.hex():<24} {i.mnemonic} {i.op_str}" for i in decoder.disasm(raw, start))
-        (args.output / f"{name}.asm").write_text(text + "\n")
+        (output / f"{name}.asm").write_text(text + "\n")
     evidence = []
     for va, expected, claim in EVIDENCE:
         raw = read_va(pe, data, va, len(bytes.fromhex(expected)))
         if raw.hex() != expected:
             raise ValueError(f"Instruction mismatch at 0x{va:08x}")
         evidence.append({"va": va, "bytes": expected, "claim": claim})
-    (args.output / "field-evidence.json").write_text(json.dumps(evidence, indent=2) + "\n")
-    print(f"Exported {len(ROUTINES)} spans and verified {len(evidence)} instruction sites")
+    (output / "field-evidence.json").write_text(json.dumps(evidence, indent=2) + "\n")
+    return len(ROUTINES), evidence
 
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("executable", type=Path)
+    parser.add_argument("output", type=Path)
+    args = parser.parse_args()
+    spans, evidence = export_selected(verified_exe(args.executable), args.output)
+    print(f"Exported {spans} spans and verified {len(evidence)} instruction sites")
 
 if __name__ == "__main__":
     main()
