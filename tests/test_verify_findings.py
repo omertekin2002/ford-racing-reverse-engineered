@@ -116,6 +116,21 @@ class DispatchTests(unittest.TestCase):
         self.assertEqual(data["failure"], {"check": "field_instruction_sites", "message": "planted mismatch in field_instruction_sites"})
         self.assertEqual([check["name"] for check in data["checks_performed"]], ["executable_identity", "pe_build_metadata"])
 
+    def test_missing_committed_file_is_a_named_failure(self):
+        checkout = Checkout(self)
+        report = checkout.root / "report.json"
+        checks = recording_checks([])
+        checks["field_instruction_sites"] = verify_findings.check_field_instruction_sites
+        with mock.patch.object(verify_findings.Context, "executable", b"stand-in"), \
+                mock.patch.object(verify_findings.Context, "pe", object()):
+            code, _, stderr = checkout.run("--level", "instructions", "--report", str(report), checks=checks)
+        self.assertEqual(code, EXIT_FAILED)
+        self.assertNotIn("Traceback", stderr)
+        self.assertIn("check field_instruction_sites", stderr)
+        self.assertIn("analysis/selected/field-evidence.json", stderr)
+        data = json.loads(report.read_text())
+        self.assertEqual((data["result"], data["failure"]["check"]), ("failed", "field_instruction_sites"))
+
 
 class UnavailableLevelTests(unittest.TestCase):
     def assert_unavailable(self, checkout, level, *expected):

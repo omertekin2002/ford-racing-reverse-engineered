@@ -336,7 +336,8 @@ def run_checks(ctx, level, checks=None):
     for name in LEVELS[level]["checks"]:
         try:
             counts = checks[name](ctx)
-        except (ValueError, subprocess.CalledProcessError) as error:
+        # OSError: a committed analysis/ file the check reads is missing or unreadable.
+        except (ValueError, OSError, subprocess.CalledProcessError) as error:
             raise CheckFailed(name, str(error), performed) from error
         performed.append((name, counts))
     return performed
