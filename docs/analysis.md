@@ -570,6 +570,68 @@ deploy's packet; its folder name and `MANIFEST.json` say which revision it is.
 `research/` files at the revision `research/index.html` names; see
 [the browser guide](browser.md#research-findings).
 
+### Analysis bundle
+
+`python3 scripts/package_analysis.py` packages a layered reproduction bundle,
+`artifacts/fr3-analysis-<short revision>.zip` by default (`--research` and
+`--output` change the paths). It needs a clean Git checkout, the acquired demo
+and the research directory from `build_research.py` built at the same commit;
+it does not need Ghidra. The ZIP holds one folder,
+`fr3-analysis-<short revision>/`, with these layers:
+
+- **Source:** `README.md`, `ruff.toml` and the tracked files under `scripts/`,
+  `tests/`, `recovered/`, `docs/` and `analysis/`, read from Git at the producer
+  revision (`git ls-tree` and `git cat-file`). Any modified, staged, deleted or
+  untracked file under those paths refuses the build, so the bundle never holds
+  an edit its revision does not.
+- **Text databases:** `text-databases/engines.json`, `gearboxes.json` and
+  `tyres.json`, regenerated from the extracted demo with
+  `text_database.write_databases()`.
+- **Research:** the research directory unchanged under `research/`, after
+  `package_research.read_research()` has checked it as the research packet
+  does, including a byte-for-byte comparison with a fresh build at the revision.
+- **Ghidra (optional):** `artifacts/ghidra/` (the five files `ExportFord.java`
+  writes) and `artifacts/fr3-demo-annotated.gzf`, only when all are present and
+  `decompiled.c` and the `.gzf` match `baseline_c_sha256` and
+  `annotated_snapshot_sha256` in the committed `analysis/verification.json`, and
+  `status.json` matches the committed `analysis/baseline-status.json`. The other
+  three export files are packaged as found; the record does not cover them.
+
+`MANIFEST.json` names the edition, the producer revision, the `fr3.exe` SHA-256
+and PE timestamp from the committed `analysis/pe-metadata.json`, the pinned demo
+archive SHA-256 and size, the Python, zlib, pefile and capstone versions, the
+layers, each packaged file's path, size and SHA-256, and four verification
+levels, each `performed` or `unavailable` with the checks and their counts:
+
+| Level | What the bundle did |
+| --- | --- |
+| `read` | Checked the research pages with `read_research()` |
+| `data` | Ran `verify_findings.py`'s `data` checks in-process on the acquired demo |
+| `instructions` | Ran `verify_findings.py`'s `instructions` checks in-process on `inputs/fr3.exe` |
+| `full` | Compared the Ghidra outputs' hashes with the committed verification record of `verified_utc`; Ghidra and the `full` checks are **not** re-run |
+
+When any Ghidra output is missing, `full` is `unavailable`: the manifest names
+the missing paths and the recovery commands (`scripts/setup_tools.py`, then
+`scripts/run_analysis.py`, then `scripts/verify_findings.py`, then committing
+the regenerated `analysis/` before rebuilding the research pages and the
+bundle, since the full verification rewrites `analysis/verification.json`), and
+no Ghidra output is packaged. A present output whose hash differs from the record refuses
+the build instead of being left out. `SHA256SUMS` covers every other file, so
+`sha256sum -c SHA256SUMS` passes inside the extracted folder.
+
+The bundle never holds `inputs/` (the demo archive, its extraction or
+`fr3.exe`), decoded resources, `artifacts/pe/`, `artifacts/logs/` or a Ghidra
+project, and a final guard refuses any `.exe`, `.dll` or PE file. It is
+deterministic in the same way as the research packet: sorted entries, mode
+0644, compression level 9 and the `SOURCE_DATE_EPOCH` or 1980-01-01 timestamp,
+so two runs at the same revision with the same inputs, Python and zlib give a
+byte-identical ZIP. It is written to a temporary file, reopened and re-hashed
+against both manifests, and renamed into place; only a previous
+`fr3-analysis-*.zip` is overwritten. A missing demo or research directory exits
+3 with the command that provides it; a failing check exits 1 naming the level
+and check, and any refusal leaves the previous bundle in place. The bundle
+holds game data and stays out of Git.
+
 ## Validation and limits
 
 [Verification results](../analysis/verification.json) cover the exact executable,
