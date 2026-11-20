@@ -2,7 +2,7 @@
 
 Inputs, all produced elsewhere and only read here:
   * tyres.json from scripts/text_database.py: `records`, `resolved_tables`,
-    `table_provenance` and `scalar_inheritance`, plus the TYREDATA.DAT path and
+    `table_provenance` and `effective_scalars`, plus the TYREDATA.DAT path and
     SHA-256.
   * analysis/selected/field-evidence.json: instruction sites byte-checked
     against fr3.exe.
@@ -14,15 +14,20 @@ The output is one static HTML file with inline CSS, no JavaScript and no
 external resources. For each tyre it shows the declarations as written, the
 source record, INHERIT_TYPE path, source line, accessor and record offset of
 each of the five tables, a "Why?" trail of the byte-checked sites behind each
-table, and, for inheriting records, the scalar tags around INHERIT_TYPE labelled
-unresolved. No inherited scalar value is computed or shown. A note labels the
+table, and, for inheriting records, each mapped scalar field's effective
+declaration with its status (declared, inherited or zero-filled), source record
+and line (linked to that record's declaration row), INHERIT_TYPE path, payload
+offsets and the byte-checked store and copy sites behind it. Zero-filled fields
+get no value, and scalar tags without a byte-checked store are labelled
+unmapped with no value. Values are the declared text, not physical quantities.
+A note labels the
 sound table's leading words, before its START_RPM values, unresolved and links
 to their section on the Open questions page (scripts/open_questions.py).
 
 The page links into the sibling routines page, routines.html: a "Loaded by"
 line links the tyre loader's section, each Why? trail links its accessor's
-section and every byte-checked site's row (#site-<va>), and the scalar note
-links the scalar copy's section. Every routine label comes from status.json by
+section and every byte-checked site's row (#site-<va>), and each scalar section
+links the scalar copy's section and its store, call and copy sites' rows. Every routine label comes from status.json by
 entry VA; the loader and the scalar copy must also carry the labels in
 LINKED_ROUTINES.
 
@@ -37,7 +42,9 @@ the evidence has them.
 The script refuses to write a page, and exits non-zero, when a record lacks one
 of the five tables, when `resolved_tables` and `table_provenance` disagree,
 when a provenance path does not follow INHERIT_TYPE, when a cited accessor
-or record offset has no matching byte-checked site, or when a routine the page
+or record offset has no matching byte-checked site, when `effective_scalars`
+disagrees with the record declarations or TYRE_SCALAR_STORES lacks matching
+byte-checked store, call or copy sites, or when a routine the page
 links to is missing from status.json or, for the loader and scalar copy,
 labelled differently there.
 """
@@ -45,10 +52,12 @@ import argparse
 from pathlib import Path
 
 import dossier_common
-from dossier_common import (ROUTINE_STATUS, SOUND_ANCHOR, SOUND_NOTE_ID, check_fields, check_pe, e, load_json,
-                            page_start, producer_revision, question_link, relative_href, routine_label, routine_labels,
-                            routine_link, site_link)
-from text_database import REPO_ROOT, RESOLVED_TYRE_TABLES, check_table_provenance, require, scalar_inheritance, table_sources
+from dossier_common import (ROUTINE_STATUS, SOUND_ANCHOR, SOUND_NOTE_ID, check_fields, check_pe, e, line_anchor,
+                            load_json, page_start, producer_revision, question_link, relative_href, routine_label,
+                            routine_labels, routine_link, site_link)
+from text_database import (REPO_ROOT, RESOLVED_TYRE_TABLES, SCALAR_COPY_CALL, SCALAR_COPY_SPAN, TYRE_SCALAR_STORES,
+                           ZERO_FILLED, check_effective_scalars, check_table_provenance, effective_scalars, require,
+                           scalar_evidence_problems, table_sources)
 
 PAGE = "tyres.html"
 # Each table accessor ends before the next routine starts 0x20 bytes later (tyre_table_accessors.asm).
@@ -61,7 +70,8 @@ LOADER_ALLOCATIONS = {"LONGITUDINAL_COMBINED_VALUES": 0x00523be2, "LATERAL_COMBI
                       "sound_info": 0x00523a67}
 # The routines the page links by a fixed entry VA, with the label status.json must give each; a renamed routine
 # fails the build rather than shipping a link to a section the routines page does not have.
-LOADER_VA, SCALAR_COPY_VA = LOADER_SPAN[0], 0x00524090
+LOADER_VA, SCALAR_COPY_VA = LOADER_SPAN[0], SCALAR_COPY_SPAN[0]
+SCALAR_STATUSES = ("declared", "inherited", ZERO_FILLED)
 LINKED_ROUTINES = {LOADER_VA: ("tyre loader", "fr3_load_tyre_database"),
                    SCALAR_COPY_VA: ("tyre scalar copy", "fr3_copy_tyre_scalar_fields")}
 TABLE_LABELS = {"LONGITUDINAL_COMBINED_VALUES": "Longitudinal", "LATERAL_COMBINED_VALUES": "Lateral",
@@ -131,7 +141,7 @@ def table_evidence(evidence, table, accessor, record_offset):
 
 def check_input_shapes(tyres):
     check_fields(tyres, {"source": str, "sha256": str, "records": list, "resolved_tables": dict,
-                         "table_provenance": dict, "scalar_inheritance": dict}, "tyres.json")
+                         "table_provenance": dict, "effective_scalars": dict}, "tyres.json")
     for i, record in enumerate(tyres["records"]):
         label = f"tyres.json.records[{i}]"
         check_fields(record, {"type": str, "line": int, "fields": dict}, label)
@@ -161,11 +171,17 @@ def check_input_shapes(tyres):
             label = f"tyres.json.table_provenance.{name}.{table}"
             check_fields(entry, {"source": str, "source_line": int, "accessor": str, "record_offset": str, "path": list}, label)
             require(all(isinstance(hop, str) for hop in entry["path"]), f"{label}.path must contain record names")
-    for name, entry in tyres["scalar_inheritance"].items():
-        label = f"tyres.json.scalar_inheritance.{name}"
-        check_fields(entry, {"status": str, "inherit_type": dict, "scalars_before": list, "scalars_after": list}, label)
+    for name, entry in tyres["effective_scalars"].items():
+        label = f"tyres.json.effective_scalars.{name}"
+        check_fields(entry, {"inherit_type": dict, "fields": dict, "overwritten": list, "unmapped": list}, label)
         check_fields(entry["inherit_type"], {"line": int, "parent": str}, f"{label}.inherit_type")
-        for key in ("scalars_before", "scalars_after"):
+        for tag, field in entry["fields"].items():
+            check_fields(field, {"status": str, "path": list, "offsets": list}, f"{label}.fields.{tag}")
+            require(field["status"] in SCALAR_STATUSES, f"{label}.fields.{tag}.status {field['status']!r} is not one of "
+                                                        + ", ".join(SCALAR_STATUSES))
+            if field["status"] != ZERO_FILLED:
+                check_fields(field, {"values": list, "source": str, "source_line": int}, f"{label}.fields.{tag}")
+        for key in ("overwritten", "unmapped"):
             for i, scalar in enumerate(entry[key]):
                 check_fields(scalar, {"tag": str, "line": int}, f"{label}.{key}[{i}]")
 
@@ -197,12 +213,36 @@ def check_inputs(tyres, evidence):
                 sites[key] = table_evidence(evidence, *key)
     check_table_provenance(records, provenance)
     inheriting = {record["type"] for record in records if "INHERIT_TYPE" in record["fields"]}
-    scalars = tyres["scalar_inheritance"]
-    require(set(scalars) == inheriting, "scalar_inheritance does not list exactly the records with INHERIT_TYPE")
-    require(all(entry.get("status") == "unresolved" for entry in scalars.values()),
-            "scalar_inheritance has an entry not labelled unresolved")
-    require(scalars == scalar_inheritance(records), "scalar_inheritance disagrees with record declarations")
+    scalars = tyres["effective_scalars"]
+    require(set(scalars) == inheriting, "effective_scalars does not list exactly the records with INHERIT_TYPE")
+    problems = scalar_evidence_problems(evidence)
+    require(not problems, "Tyre scalar stores lack byte-checked evidence: " + "; ".join(problems))
+    require(scalars == effective_scalars(records), "effective_scalars disagrees with record declarations")
+    check_effective_scalars(records, scalars)
     return sites
+
+
+def copy_sites(evidence):
+    """Return {payload offset: [load VA, store VA]} for the scalar copy's byte-checked load/store pairs."""
+    pairs = {}
+    for site in evidence:
+        raw = site["bytes"]
+        if SCALAR_COPY_SPAN[0] <= site["va"] < SCALAR_COPY_SPAN[1] and len(raw) == 6 and raw[:4] in ("8b4a", "8948"):
+            pairs.setdefault(f"0x{int(raw[4:], 16):02x}", []).append(site["va"])
+    return {offset: sorted(vas) for offset, vas in pairs.items()}
+
+
+def store_sites(tag):
+    """The byte-checked loader sites behind one tag's stores, in address order: the stores and any scale sites."""
+    entry = TYRE_SCALAR_STORES[tag]
+    sites = [site for sites in entry["offsets"].values() for site in sites] + list(entry.get("scale_sites", {}).values())
+    return sorted(int(site, 16) for site in sites)
+
+
+def scalar_site_vas(evidence):
+    """Every site VA a scalar section links: the mapped stores, the INHERIT_TYPE call and the copy pairs."""
+    stores = {va for tag in TYRE_SCALAR_STORES for va in store_sites(tag)}
+    return stores | {SCALAR_COPY_CALL} | {va for vas in copy_sites(evidence).values() for va in vas}
 
 
 def anchor(name, table=None):
@@ -228,7 +268,8 @@ def check_routines(labels, sites, evidence):
     for table, accessor, _ in sites:
         routines[accessor] = routine_label(labels, int(accessor, 16), f"{table} accessor {accessor}")
     known = {site["va"] for site in evidence}
-    missing = sorted({site["va"] for found in sites.values() for group in found.values() for site in group} - known)
+    linked = {site["va"] for found in sites.values() for group in found.values() for site in group}
+    missing = sorted((linked | scalar_site_vas(evidence)) - known)
     require(not missing, "These linked sites are not in field-evidence.json: "
                          + ", ".join(f"0x{va:08x}" for va in missing))
     return routines
@@ -257,21 +298,57 @@ def why_trail(name, table, entry, sites, by_name, hrefs, exe_sha256, routines):
             f'(<a href="{e(hrefs["evidence"])}">{e(Path(hrefs["evidence"]).name)}</a>).</p></details>')
 
 
-def scalar_section(entry, routines):
-    def tags(scalars):
-        return ", ".join(f"<code>{e(scalar['tag'])}</code> (line {e(scalar['line'])})" for scalar in scalars) or "none"
+def site_links(vas):
+    return ", ".join(site_link(va) for va in vas)
+
+
+def scalar_row(tag, field, copies):
+    stores = store_sites(tag)
+    offsets = ", ".join(f"<code>+ {e(offset)}</code>" for offset in field["offsets"])
+    copied = site_links(va for offset in field["offsets"] for va in copies[offset])
+    if field["status"] == ZERO_FILLED:
+        value, source = f'<span class="label">{e(ZERO_FILLED)}</span>', "none along the path"
+    else:
+        value = f'<span class="num">{e(" ".join(map(str, field["values"])))}</span>'
+        source = (f'<a href="#{e(line_anchor("tyre", field["source"], field["source_line"]))}">{e(field["source"])} '
+                  f'line {e(field["source_line"])}</a>')
+    scaled = (f' (scaled by the float at <code>{e(TYRE_SCALAR_STORES[tag]["scaled_by"])}</code> when stored)'
+              if "scaled_by" in TYRE_SCALAR_STORES[tag] else "")
+    return (f'<tr><td><code>{e(tag)}</code>{scaled}</td><td>{offsets}</td><td>{value}</td><td>{e(field["status"])}</td>'
+            f'<td>{source}</td><td>{path_html(field["path"], None)}</td><td>{site_links(stores)}</td>'
+            f'<td>{copied}</td></tr>')
+
+
+def scalar_section(name, entry, copies, routines):
     inherit = entry["inherit_type"]
-    return (f'<h3>Scalar inheritance</h3><div class="unresolved"><p><span class="label">{e(entry["status"])}</span>: '
-            f'<code>:INHERIT_TYPE</code> {link(inherit["parent"])} on line {e(inherit["line"])}. The scalar copy at '
-            f'{routine_link(routines["tyre scalar copy"], f"0x{SCALAR_COPY_VA:08x}")} runs when <code>INHERIT_TYPE</code> is parsed, so which scalar values this tyre '
-            f'ends up with depends on tag order, which is not modelled. No inherited value is shown.</p>'
-            f'<table><tr><th>Scalar tags before <code>INHERIT_TYPE</code></th><td>{tags(entry["scalars_before"])}</td></tr>'
-            f'<tr><th>Scalar tags after <code>INHERIT_TYPE</code></th><td>{tags(entry["scalars_after"])}</td></tr>'
-            f'</table></div>')
+    copy = routine_link(routines["tyre scalar copy"], f"0x{SCALAR_COPY_VA:08x}")
+    parts = [f'<h3>Scalar fields</h3><p><code>:INHERIT_TYPE</code> {link(inherit["parent"])} is on line '
+             f'{e(inherit["line"])}. When the loader parses it, it calls the scalar copy at {copy} '
+             f'({site_link(SCALAR_COPY_CALL)}), which copies the parent\'s eleven dwords <code>+ 0x18</code> to '
+             f'<code>+ 0x40</code> over this record\'s. So each field holds {e(name)}\'s own declaration when that '
+             'follows <code>INHERIT_TYPE</code>, and otherwise the parent\'s effective value at copy time. Values are '
+             'the declarations as written, not physical quantities. The loader multiplies the two grip numbers by '
+             'a global float when it stores them, so a copied grip value is the already-scaled one; that scale is '
+             'not applied here.</p>'
+             '<table><tr><th>Tag</th><th>Offsets</th><th>Effective declaration</th><th>Status</th><th>Source</th>'
+             '<th>Path</th><th>Store sites</th><th>Copy sites</th></tr>']
+    parts += [scalar_row(tag, field, copies) for tag, field in entry["fields"].items()]
+    parts.append("</table>")
+    if entry["overwritten"]:
+        items = ", ".join(f'<code>{e(item["tag"])}</code> (line {e(item["line"])})' for item in entry["overwritten"])
+        parts.append(f"<p>Declared before <code>INHERIT_TYPE</code> and overwritten by the copy: {items}.</p>")
+    if entry["unmapped"]:
+        items = ", ".join(f'<code>{e(item["tag"])}</code> (line {e(item["line"])})' for item in entry["unmapped"])
+        parts.append(f'<div class="unresolved"><p><span class="label">unmapped</span>: no byte-checked store is known '
+                     f"for {items}, so no effective value is given.</p></div>")
+    return "".join(parts)
 
 
-def render(tyres, sites, pe, revision, hrefs, routines, entrance=False):
-    """Return the dossier HTML. check_inputs() and check_routines() must have accepted the inputs first."""
+def render(tyres, sites, copies, pe, revision, hrefs, routines, entrance=False):
+    """Return the dossier HTML. check_inputs() and check_routines() must have accepted the inputs first.
+
+    copies is copy_sites(evidence): the scalar copy's load and store sites per payload offset.
+    """
     records = tyres["records"]
     by_name = {record["type"]: record for record in records}
     provenance = tyres["table_provenance"]
@@ -284,11 +361,13 @@ def render(tyres, sites, pe, revision, hrefs, routines, entrance=False):
              f'<dt>Records</dt><dd>{len(records)}</dd>',
              f'<dt>Loaded by</dt><dd>{routine_link(routines["tyre loader"])} (<code>0x{LOADER_VA:08x}</code>); '
              'on the routines page. Routine labels are analyst-assigned, not original symbols.</dd></dl>',
-             '<p class="scope">Scope: this dossier covers only the five tables the game reads through its '
+             '<p class="scope">Scope: this dossier covers the five tables the game reads through its '
              'INHERIT_TYPE-following accessors (longitudinal, lateral, vertical load, camber thrust and sound '
-             'information). Scalar fields, engine inheritance and the colon-less <code>INDIGO</code> line in '
-             '<code>ENGDATA.DAT</code> are unresolved. Two tyres that share a table source do not necessarily handle '
-             'identically: their scalar fields and other tables can differ.</p>']
+             'information) and, for each inheriting tyre, which declaration ends up in each scalar field with a '
+             'byte-checked store. Scalar values are shown as declared: their units and physical meaning are not '
+             'interpreted, and the grip scale global\'s runtime value is not applied. Engine inheritance and the '
+             'colon-less <code>INDIGO</code> line in <code>ENGDATA.DAT</code> are unresolved. Two tyres that share a '
+             'table source do not necessarily handle identically: their scalar fields can differ.</p>']
     counts = table_sources(tyres["resolved_tables"])
     parts.append('<h2>Table sources</h2><table><tr><th>Table</th><th>Accessor</th><th>Records per source</th></tr>')
     for table in RESOLVED_TYRE_TABLES:
@@ -312,7 +391,8 @@ def render(tyres, sites, pe, revision, hrefs, routines, entrance=False):
         name = record["type"]
         parts.append(f'<section class="tyre" id="{e(anchor(name))}"><h2>{e(name)}</h2>'
                      f'<p>Declared at line {e(record["line"])} of <code>{e(tyres["source"])}</code>.</p>'
-                     f'<h3>Declarations, as written</h3>{dossier_common.declarations(record, "tyre")}<h3>Table sources</h3>'
+                     f'<h3>Declarations, as written</h3>{dossier_common.declarations(record, "tyre", row_ids=True)}'
+                     '<h3>Table sources</h3>'
                      '<table><tr><th>Table</th><th>Source</th><th>Path</th><th>Source line</th><th>Accessor</th>'
                      '<th>Record offset</th></tr>')
         for table in RESOLVED_TYRE_TABLES:
@@ -326,8 +406,8 @@ def render(tyres, sites, pe, revision, hrefs, routines, entrance=False):
             entry = provenance[name][table]
             found = sites[(table, entry["accessor"], entry["record_offset"])]
             parts.append(why_trail(name, table, entry, found, by_name, hrefs, pe["sha256"], routines))
-        if name in tyres["scalar_inheritance"]:
-            parts.append(scalar_section(tyres["scalar_inheritance"][name], routines))
+        if name in tyres["effective_scalars"]:
+            parts.append(scalar_section(name, tyres["effective_scalars"][name], copies, routines))
         parts.append("</section>")
     parts.append("</body></html>\n")
     return "\n".join(parts)
@@ -349,7 +429,7 @@ def build(tyres_path, evidence_path, pe_path, output, revision=None, hrefs=None,
     routines = check_routines(routine_labels(status_path), sites, evidence)
     hrefs = hrefs or {"accessors": relative_href(ACCESSORS_ASM, output), "loader": relative_href(LOADER_ASM, output),
                       "evidence": relative_href(Path(evidence_path).resolve(), output)}
-    page = render(tyres, sites, pe, revision or producer_revision(), hrefs, routines, entrance)
+    page = render(tyres, sites, copy_sites(evidence), pe, revision or producer_revision(), hrefs, routines, entrance)
     Path(output).parent.mkdir(parents=True, exist_ok=True)
     Path(output).write_text(page, encoding="utf-8")
     return len(tyres["records"])

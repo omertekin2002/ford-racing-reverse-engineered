@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import build_research
 from dossier_common import INDEX_PAGE, NOTICE_LINKS, rights_notice
 from fr3_common import DEMO_PAGE
-from text_database import DATABASES, REPO_ROOT
+from text_database import DATABASES, REPO_ROOT, SCALAR_COPY_CALL, SCALAR_COPY_SPAN, TYRE_SCALAR_STORES
 from verify_web import ISSUES_PAGE, RIGHTS_CREDIT
 
 from test_open_questions import QUESTION_ENGINES, question_manifest, question_pcg_index, question_verification
@@ -129,7 +129,7 @@ class BuildTests(ResearchTestCase):
                      "evidence/selected/field-evidence.json", *ASM):
             self.assertIn(f'href="{href}"', routines)
         self.assertEqual(routines.count('<section class="routine"'), 25)
-        self.assertEqual(routines.count('<tr class="site"'), 32)
+        self.assertEqual(routines.count('<tr class="site"'), 64)
         self.assertIn('<a href="index.html">Explore findings</a>', routines)
         # Each routine's anchor is a real id: verify_research() accepts a deep link to it from another page.
         index = self.output / INDEX_PAGE
@@ -151,7 +151,15 @@ class BuildTests(ResearchTestCase):
                          "fr3_get_tyre_lateral_table", "fr3_get_tyre_vertical_load", "fr3_get_tyre_camber_thrust",
                          "fr3_get_tyre_sound_info"} <= linked["tyres.html"])
         sites = {fragment for fragment in linked["tyres.html"] if fragment.startswith("site-")}
-        self.assertEqual(sites, {f"site-{va:08x}" for group in (*ACCESSOR_SITES.values(), *LOADER_SITES.values())
+        # The tables' accessor and loader sites, and the scalar sections' store, INHERIT_TYPE call and copy sites.
+        scalar = {int(site, 16) for entry in TYRE_SCALAR_STORES.values()
+                  for site in [*(va for vas in entry["offsets"].values() for va in vas),
+                               *entry.get("scale_sites", {}).values()]}
+        copies = {site["va"] for site in json.loads((REPO_ROOT / "analysis/selected/field-evidence.json").read_text())
+                  if SCALAR_COPY_SPAN[0] <= site["va"] < SCALAR_COPY_SPAN[1] and site["bytes"] != "c3"}
+        self.assertEqual(len(copies), 22)
+        self.assertEqual(sites, {f"site-{va:08x}" for group in (*ACCESSOR_SITES.values(), *LOADER_SITES.values(),
+                                                                 scalar, {SCALAR_COPY_CALL}, copies)
                                  for va in group})
         self.assertEqual(linked["engines.html"], {"fr3_load_engine_database", "fr3_copy_engine_record"})
         self.assertEqual(linked["gearboxes.html"], {"fr3_load_gearbox_database", "fr3_copy_gearbox_record"})

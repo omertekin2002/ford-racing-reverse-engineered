@@ -224,12 +224,17 @@ def rows_table(rows):
     return f'<table class="rows">{body}</table>'
 
 
-def declarations(record, prefix, inherit_note="", untagged_note=UNTAGGED_NOTE):
+def line_anchor(prefix, name, line):
+    """The id of the declarations row for line `line` of record `name`, when declarations() gives rows ids."""
+    return anchor(prefix, name, f"line-{line}")
+
+
+def declarations(record, prefix, inherit_note="", untagged_note=UNTAGGED_NOTE, row_ids=False):
     """Return the record's fields, :SOUND_INFO entries and untagged lines as table rows, in line order.
 
     :INHERIT_TYPE links to the parent's `prefix` anchor, followed by inherit_note. Untagged lines are
     shown verbatim followed by untagged_note, or by untagged_note(record, item) when it is callable. Both notes are
-    HTML, not escaped here.
+    HTML, not escaped here. row_ids=True gives each row the id line_anchor(prefix, record name, line).
     """
     items = []
     for tag, field in record["fields"].items():
@@ -247,6 +252,8 @@ def declarations(record, prefix, inherit_note="", untagged_note=UNTAGGED_NOTE):
     for item in record.get("untagged", []):
         note = untagged_note(record, item) if callable(untagged_note) else untagged_note
         items.append((item["line"], "(untagged)", f'<code>{e(" ".join(item["tokens"]))}</code>{note}'))
-    body = "".join(f"<tr><td>{e(line)}</td><td><code>{e(tag)}</code></td><td>{shown}</td></tr>"
+    def row(line):
+        return f' id="{e(line_anchor(prefix, record["type"], line))}"' if row_ids else ""
+    body = "".join(f"<tr{row(line)}><td>{e(line)}</td><td><code>{e(tag)}</code></td><td>{shown}</td></tr>"
                    for line, tag, shown in sorted(items, key=lambda item: item[0]))
     return f"<table><tr><th>Line</th><th>Tag</th><th>Values</th></tr>{body}</table>"

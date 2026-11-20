@@ -97,10 +97,12 @@ grammar, not the indentation, decides that `:TYPE` names a sample inside an
 entry and a record outside one. The parser keeps each record's entries in file
 order and checks the row count against `:VALUE`.
 
-The parser resolves tyre inheritance for the five tables only, as described in
-[Tyre table inheritance](#tyre-table-inheritance). It does not resolve engine
-inheritance, scalar fields or the colon-less `INDIGO` line, map other fields to
-the C layout offsets below, or handle the other text files. The meaning of the
+The parser resolves tyre inheritance for the five tables, as described in
+[Tyre table inheritance](#tyre-table-inheritance), and for the scalar fields
+with a byte-checked store, as described in
+[Tyre scalar inheritance](#tyre-scalar-inheritance). It does not resolve engine
+inheritance or the colon-less `INDIGO` line, map other fields to the C layout
+offsets below, or handle the other text files. The meaning of the
 sound table's first fifteen words, described below, is still unknown.
 
 The engine loader at `0x005227f0` allocates a `0xb0`-byte payload, and the gearbox
@@ -157,8 +159,10 @@ branches read ten index/value pairs. The sound table has values starting at
 `+0x78`, with 15 rows of ten floats, and `START_RPM` values at `+0x3c`.
 The meaning of its first fifteen words remains unknown.
 
-The scalar-copy helper at `0x00524090` copies selected physical values from
-`+0x18` to `+0x40` rather than deep-copying tables. The grip scaling global's
+The scalar-copy helper at `0x00524090` copies the eleven dwords `+0x18` to
+`+0x40`, every scalar field above, from the parent record to the inheriting
+one, and leaves the name, `+0x14` and the table addresses alone; see
+[Tyre scalar inheritance](#tyre-scalar-inheritance). The grip scaling global's
 runtime value and physical units remain unverified; the table dimensions do not
 prove the force equations.
 
@@ -224,17 +228,83 @@ table, and ends at a record that declares the table on `source_line`. It also
 compares every source with one derived separately, in file order, from each
 record's own tables and its parent's sources.
 
-Scalar fields are not resolved: the copy at `0x00524090` runs when
-`INHERIT_TYPE` is parsed, so the result depends on tag order, which is not
-modelled. `tyres.json` labels this under `scalar_inheritance`: each of the 108
-records with `:INHERIT_TYPE` gets `status: "unresolved"`, its `INHERIT_TYPE`
-line and parent, and the scalar tags (neither a table nor `INHERIT_TYPE`) it
-declares before and after that line, in file order. No inherited value is
-computed. In the demo every one of those records declares its scalars after
-`INHERIT_TYPE`; `verify_text_databases()` checks this and the 108 records. Engine inheritance in `ENGDATA.DAT` and the colon-less
-`INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` also remain unresolved.
+### Tyre scalar inheritance
 
-[Thirty-two byte-checked instruction sites](../analysis/selected/field-evidence.json)
+Scalar fields are not read through accessors. The loader stores each scalar
+tag in the payload as it parses it, and `INHERIT_TYPE` copies them, so the
+result depends on tag order. The model `effective_scalars()` in the parser
+applies rests on these byte-checked facts:
+
+- The loader stores each tag at the offsets in the payload table above.
+  `TYRE_SCALAR_STORES` in the parser lists, for each tag, its offsets and the
+  `field-evidence.json` store sites; `RADIUS` and `MASS` also write their
+  reciprocals at `+0x3c` and `+0x38`.
+- The two grip numbers are stored, loaded again, multiplied by the float at
+  `0x00597484` and stored back (`0x00523937`–`0x00523945` and
+  `0x00523ca8`–`0x00523cb6`), so the value a child copies is the scaled one.
+- The `INHERIT_TYPE` branch passes the parent in `EDX` and the current record in
+  `EAX` (`0x00523b35`, `0x00523b37`) to `call 0x00524090` at `0x00523b3a`, and
+  then stores the parent at `+0x14` (`0x00523b42`).
+- [The scalar copy](../analysis/selected/copy_tyre_scalar_fields.asm) is eleven
+  load/store pairs, `mov ecx, [edx + n]` then `mov [eax + n], ecx`, for each
+  dword from `+0x18` to `+0x40`, followed by `pop ecx` and `ret`
+  (`0x00524091`–`0x005240d4`).
+- The record allocator zero-fills each payload (see above), and `INHERIT_TYPE`
+  can only name an earlier record, which is fully parsed by then.
+
+So, in file order, each record starts at zero; each scalar tag stores its
+declaration; `INHERIT_TYPE` overwrites all eleven dwords with the parent's
+current values. A field ends up holding the record's own declaration when it
+follows `INHERIT_TYPE`, and otherwise the parent's effective value at copy
+time, recursively. A declaration made before `INHERIT_TYPE` is overwritten.
+The model assumes nothing else writes these offsets after the copy. In the
+loader's export span the only other stores at these displacements are indexed
+writes into the sound table loaded from `+0x54` (`0x00523b10`, `0x00523d81`,
+`0x00523da5`); code outside the loader that might write a loaded record later
+is not examined.
+
+`tyres.json` records this under `effective_scalars`. For each of the 108
+records with `:INHERIT_TYPE` it gives the `INHERIT_TYPE` line and parent and,
+for each tag in `TYRE_SCALAR_STORES`, the payload `offsets` and a `status`:
+
+- `declared`: the record's own declaration, after `INHERIT_TYPE`, wins;
+- `inherited`: the value comes from an ancestor;
+- `not declared (zero-filled)`: no record along the chain declares it, so the
+  field stays zero. No value is given.
+
+For `declared` and `inherited` fields it gives the declared text `values`, the
+`source` record, its `source_line` in `TYREDATA.DAT` and the `path` of records
+from the tyre to the source. `overwritten` lists declarations made before
+`INHERIT_TYPE`, and `unmapped` lists scalar tags with no byte-checked store
+(for example `LOCATION_TYPE`, whose registry ID `0xa5` reaches the loader's
+default branch); neither gets a value. Values are the declarations as written:
+no units, physical meaning or grip scale value is applied.
+
+`verify_text_databases()` checks, on the real demo, that every store, the
+scale loads and multiplies, the call and every copy pair in
+`TYRE_SCALAR_STORES` match a site in `field-evidence.json` (and that the
+copied offsets are exactly `+0x18` to `+0x40`). It then derives each
+effective field a second way, parent first by recursion over earlier records,
+and compares it with the file-order replay; any `INHERIT_TYPE` naming a later or
+missing record, or any difference, fails. In the demo every inheriting record
+declares its scalars after `INHERIT_TYPE`, none declares an unmapped tag and no
+field is zero-filled, because `DEFAULT_ROAD`, `DEFAULT_OFFROAD` and
+`DEFAULT_TRACK` declare all nine tags. Of the 972 fields, 366 are declared by
+the record itself and 606 come from its direct parent; none in the demo comes
+from two levels up:
+
+| Tag | Declared | Inherited |
+|---|---|---|
+| `ROAD_MAGIC_GRIP_NUMBER`, `RADIUS`, `WIDTH` | 108 each | 0 |
+| `OFFROAD_MAGIC_GRIP_NUMBER` | 26 | 82 |
+| `TYRE_PATCH_LENGTH` | 6 | 102 |
+| `MASS` | 4 | 104 |
+| `WET_MAGIC_GRIP_PERCENTAGE`, `TYRE_GRIP_DEPTH`, `ROLLING_RESISTANCE` | 2 each | 106 each |
+
+Engine inheritance in `ENGDATA.DAT` and the colon-less
+`INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` remain unresolved.
+
+[Sixty-four byte-checked instruction sites](../analysis/selected/field-evidence.json)
 and [the loader's disassembly](../analysis/selected/load_tyre_database.asm)
 preserve the concrete evidence for these new findings.
 
@@ -247,17 +317,21 @@ tables above, and a "Why?" trail of the field-evidence sites behind each table:
 the sites inside that table's accessor and the loader's byte-checked store
 sites, plus allocation-size sites where available. Sites are matched by address,
 not claim text. Inheriting records
-show their scalar tags around `INHERIT_TYPE` labelled unresolved, with no
-inherited values. The page links into the [routine index](#routine-index),
+show, for each mapped scalar tag, its effective declaration, status, source
+record and line (linked to that line's row in the source's declarations),
+`INHERIT_TYPE` path, payload offsets, and links to its store and copy sites.
+Zero-filled fields show the label and no value, and unmapped tags stay labelled
+`unmapped` with no value. The page links into the [routine index](#routine-index),
 `routines.html`, beside it: a "Loaded by" line links `fr3_load_tyre_database`,
 each "Why?" trail links its accessor's section and every site's
-`#site-<va>` row, and the scalar note links `0x00524090` to
-`fr3_copy_tyre_scalar_fields`. Each label is read from
+`#site-<va>` row, and each scalar section links `0x00524090` to
+`fr3_copy_tyre_scalar_fields` and its `INHERIT_TYPE` call at `0x00523b3a`. Each label is read from
 `analysis/annotated/status.json` by entry VA (`--status` changes the file). The
 script exits non-zero instead of writing a page when a
 record lacks a table, `resolved_tables` and `table_provenance` disagree, a path
 does not follow `INHERIT_TYPE`, a cited accessor or offset has no matching
-byte-checked site, or a linked routine is missing from `status.json` (or, for
+byte-checked site, `effective_scalars` disagrees with the declarations or a
+scalar store, the call or a copy pair has no matching site, or a linked routine is missing from `status.json` (or, for
 the loader and scalar copy, labelled differently there). A shared table source does not make two tyres handle the
 same: their scalar fields can differ. The page is not committed because it holds
 game data; [`build_research.py`](#research-directory) builds it with the other
@@ -491,7 +565,7 @@ deploy's packet; its folder name and `MANIFEST.json` say which revision it is.
 [Verification results](../analysis/verification.json) cover the exact executable,
 all game files, all tags, all identified compressed resources, every PCG index,
 the selected instruction sites, table dimensions, export counts and C layout
-assertions. All 32 instruction sites were byte-checked against the pinned
+assertions. All 64 instruction sites were byte-checked against the pinned
 `fr3.exe` at `field_instruction_sites_verified_utc`, with the comparison
 `verify_findings.py` makes; the other results date from `verified_utc`. Nine parser tests additionally reject malformed synthetic
 resources, and eight helper tests cover virtual-address bounds and file identity checks.

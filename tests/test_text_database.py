@@ -11,10 +11,13 @@ from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import text_database
-from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, RESOLVED_TYRE_TABLES, SOUND_INFO_COUNTS,
-                           TYRE_TABLE_ACCESSORS, TYRE_TABLE_SOURCES, TYRE_TABLES, TextDatabaseError,
-                           check_table_provenance, parse, read_database, resolve_tyre_tables, scalar_inheritance,
-                           sources_in_file_order, table_sources, tyre_table_provenance, verify_text_databases)
+from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, RESOLVED_TYRE_TABLES, SCALAR_COPY_CALL, SCALAR_COPY_OFFSETS,
+                           SCALAR_COPY_SPAN, SOUND_INFO_COUNTS, TYRE_SCALAR_COUNTS, TYRE_SCALAR_STORES,
+                           TYRE_TABLE_ACCESSORS, TYRE_TABLE_SOURCES, TYRE_TABLES, UNMAPPED, ZERO_FILLED,
+                           TextDatabaseError, check_effective_scalars, check_table_provenance, effective_scalars,
+                           load_field_evidence, parse, read_database, resolve_tyre_tables, scalar_counts,
+                           scalar_evidence_problems, scalars_by_recursion, sources_in_file_order, table_sources,
+                           tyre_table_provenance, verify_text_databases)
 
 # Only the disassembly tests need capstone, and extract_selected also imports pefile.
 try:
@@ -24,7 +27,7 @@ except ImportError:
     capstone = None
 
 TAGS = {"CAPACITY", "LOCATION_TYPE", "INHERIT_TYPE", "TORQUE_ARRAY", "MAX_RPM", "ENGINE_BRAKING", *GEARBOX_TAGS,
-        "RADIUS", "WIDTH", "MASS", "ROLLING_RESISTANCE", "SOUND_INFO", "START_RPM", *TYRE_TABLES}
+        *TYRE_SCALAR_STORES, "SOUND_INFO", "START_RPM", *TYRE_TABLES}
 VALID = """//////////////////////
 // Banner comment
 //////////////////////
@@ -461,7 +464,8 @@ class TyreTableProvenanceTests(unittest.TestCase):
         records = parse_tyres(tyre_record("ROOT", **ALL), tyre_record("CHILD", "ROOT"))
         before = copy.deepcopy(records)
         tyre_table_provenance(records)
-        scalar_inheritance(records)
+        effective_scalars(records)
+        scalars_by_recursion(records)
         self.assertEqual(records, before)
 
 
@@ -509,21 +513,189 @@ class CheckTableProvenanceTests(unittest.TestCase):
         self.reject("table set mismatch", lambda p: p["MID"].pop("sound_info"))
 
 
-class ScalarInheritanceTests(unittest.TestCase):
-    def test_tags_before_and_after_inherit_type(self):
-        records = parse_tyres(tyre_record("ROOT", **ALL),
-                              ":TYPE CHILD\n:WIDTH 0.2\n:RADIUS 0.3\n:VERTICAL_LOAD\n0 1.0\n:INHERIT_TYPE ROOT\n"
-                              + SOUND + ":MASS 9\n:CAMBER_THRUST\n0 1.0\n:ROLLING_RESISTANCE 0.01\n")
-        self.assertEqual(scalar_inheritance(records), {"CHILD": {
-            "status": "unresolved", "inherit_type": {"line": 21, "parent": "ROOT"},
-            "scalars_before": [{"tag": "WIDTH", "line": 17}, {"tag": "RADIUS", "line": 18}],
-            "scalars_after": [{"tag": "MASS", "line": 28}, {"tag": "ROLLING_RESISTANCE", "line": 31}]}})
+def offsets(tag):
+    return list(TYRE_SCALAR_STORES[tag]["offsets"])
 
-    def test_record_without_inherit_type_has_no_entry(self):
-        records = parse_tyres(":TYPE ROOT\n:RADIUS 0.3\n", tyre_record("CHILD", "ROOT"))
-        self.assertEqual(scalar_inheritance(records), {"CHILD": {
-            "status": "unresolved", "inherit_type": {"line": 4, "parent": "ROOT"},
-            "scalars_before": [], "scalars_after": []}})
+
+def declared(tag, source, line, values, path):
+    status = "declared" if path == [source] else "inherited"
+    return {"status": status, "values": values, "source": source, "source_line": line, "path": path,
+            "offsets": offsets(tag)}
+
+
+class EffectiveScalarsTests(unittest.TestCase):
+    def fields(self, records, name):
+        effective = effective_scalars(records)
+        # Every case also checks the independent derivation agrees with the file-order replay.
+        check_effective_scalars(records, effective)
+        return effective[name]["fields"]
+
+    def test_declaration_before_inherit_type_is_overwritten_by_the_parent(self):
+        records = parse_tyres(":TYPE ROOT\n:WIDTH 0.2\n", ":TYPE CHILD\n:WIDTH 0.9\n:RADIUS 0.4\n:INHERIT_TYPE ROOT\n")
+        entry = effective_scalars(records)["CHILD"]
+        self.assertEqual(entry["fields"]["WIDTH"], declared("WIDTH", "ROOT", 2, [0.2], ["CHILD", "ROOT"]))
+        # ROOT never declares RADIUS, so the copy overwrites CHILD's with ROOT's zero.
+        self.assertEqual(entry["fields"]["RADIUS"], {"status": ZERO_FILLED, "path": ["CHILD", "ROOT"],
+                                                     "offsets": ["0x28", "0x3c"]})
+        self.assertEqual(entry["overwritten"], [{"tag": "WIDTH", "line": 4, "values": [0.9]},
+                                                {"tag": "RADIUS", "line": 5, "values": [0.4]}])
+        check_effective_scalars(records, effective_scalars(records))
+
+    def test_declaration_after_inherit_type_overrides_the_parent(self):
+        records = parse_tyres(":TYPE ROOT\n:MASS 30\n:WIDTH 0.2\n", ":TYPE CHILD\n:INHERIT_TYPE ROOT\n:MASS 45.0\n")
+        fields = self.fields(records, "CHILD")
+        self.assertEqual(fields["MASS"], declared("MASS", "CHILD", 6, [45.0], ["CHILD"]))
+        self.assertEqual(fields["WIDTH"], declared("WIDTH", "ROOT", 3, [0.2], ["CHILD", "ROOT"]))
+        self.assertEqual(effective_scalars(records)["CHILD"]["overwritten"], [])
+
+    def test_multi_level_chain(self):
+        records = parse_tyres(":TYPE ROOT\n:RADIUS 0.3\n:WIDTH 0.2\n", ":TYPE MID\n:INHERIT_TYPE ROOT\n:WIDTH 0.25\n",
+                              ":TYPE LEAF\n:INHERIT_TYPE MID\n:ROAD_MAGIC_GRIP_NUMBER 37.4\n")
+        fields = self.fields(records, "LEAF")
+        self.assertEqual(fields["RADIUS"], declared("RADIUS", "ROOT", 2, [0.3], ["LEAF", "MID", "ROOT"]))
+        self.assertEqual(fields["WIDTH"], declared("WIDTH", "MID", 6, [0.25], ["LEAF", "MID"]))
+        self.assertEqual(fields["ROAD_MAGIC_GRIP_NUMBER"],
+                         declared("ROAD_MAGIC_GRIP_NUMBER", "LEAF", 9, [37.4], ["LEAF"]))
+
+    def test_a_parent_declaration_the_copy_overwrote_is_not_inherited(self):
+        records = parse_tyres(":TYPE ROOT\n", ":TYPE MID\n:RADIUS 0.5\n:INHERIT_TYPE ROOT\n",
+                              ":TYPE LEAF\n:INHERIT_TYPE MID\n")
+        self.assertEqual(self.fields(records, "LEAF")["RADIUS"]["status"], ZERO_FILLED)
+
+    def test_field_nobody_declares_is_zero_filled_without_a_value(self):
+        records = parse_tyres(":TYPE ROOT\n:RADIUS 0.3\n", ":TYPE MID\n:INHERIT_TYPE ROOT\n",
+                              ":TYPE LEAF\n:INHERIT_TYPE MID\n")
+        fields = self.fields(records, "LEAF")
+        self.assertEqual(fields["TYRE_GRIP_DEPTH"], {"status": ZERO_FILLED, "path": ["LEAF", "MID", "ROOT"],
+                                                     "offsets": ["0x24"]})
+        self.assertEqual(list(fields), list(TYRE_SCALAR_STORES))
+        self.assertTrue(all("values" not in field for tag, field in fields.items() if tag != "RADIUS"))
+
+    def test_unmapped_tag_gets_no_value(self):
+        records = parse_tyres(":TYPE ROOT\n:LOCATION_TYPE FRONT\n",
+                              ":TYPE CHILD\n:INHERIT_TYPE ROOT\n:LOCATION_TYPE REAR\n:WIDTH 0.2\n")
+        entry = effective_scalars(records)["CHILD"]
+        self.assertEqual(entry["unmapped"], [{"tag": "LOCATION_TYPE", "line": 5, "status": UNMAPPED}])
+        self.assertNotIn("LOCATION_TYPE", entry["fields"])
+        self.assertNotIn("LOCATION_TYPE", TYRE_SCALAR_STORES)
+
+    def test_tables_and_records_without_inherit_type_are_left_out(self):
+        records = parse_tyres(tyre_record("ROOT", **ALL), tyre_record("CHILD", "ROOT", ["VERTICAL_LOAD"]))
+        entry = effective_scalars(records)
+        self.assertEqual(list(entry), ["CHILD"])
+        self.assertEqual(entry["CHILD"]["inherit_type"], {"line": 17, "parent": "ROOT"})
+        self.assertFalse(set(entry["CHILD"]["fields"]) & set(TYRE_TABLES))
+        self.assertEqual((entry["CHILD"]["overwritten"], entry["CHILD"]["unmapped"]), ([], []))
+
+    def test_inherit_type_naming_a_later_or_missing_record_is_refused(self):
+        # parse() already refuses these; build the records by hand so the resolver's own checks run.
+        def records(parent):
+            return [{"type": "A", "line": 1, "fields": {"INHERIT_TYPE": {"line": 2, "values": [parent], "rows": []}}},
+                    {"type": "B", "line": 3, "fields": {"RADIUS": {"line": 4, "values": [0.3], "rows": []}}}]
+        for parent in ("B", "MISSING", "A"):
+            for resolve in (effective_scalars, scalars_by_recursion):
+                with self.subTest(parent=parent, resolve=resolve.__name__), \
+                        self.assertRaisesRegex(TextDatabaseError, "which is not an earlier record"):
+                    resolve(records(parent))
+
+    def test_independent_derivation_catches_a_planted_mismatch(self):
+        records = parse_tyres(":TYPE ROOT\n:RADIUS 0.3\n:WIDTH 0.2\n", ":TYPE MID\n:INHERIT_TYPE ROOT\n:WIDTH 0.25\n",
+                              ":TYPE LEAF\n:INHERIT_TYPE MID\n")
+        plants = {"value": lambda f: f["WIDTH"].update(values=[0.2]),
+                  "source": lambda f: f["WIDTH"].update(source="ROOT", source_line=3, path=["LEAF", "MID", "ROOT"]),
+                  "status": lambda f: f["RADIUS"].update(status="declared"),
+                  "zero-filled": lambda f: f.update(MASS={**f["RADIUS"], "offsets": ["0x34", "0x38"]}),
+                  "missing tag": lambda f: f.pop("MASS")}
+        for name, plant in plants.items():
+            with self.subTest(plant=name):
+                effective = effective_scalars(records)
+                plant(effective["LEAF"]["fields"])
+                with self.assertRaisesRegex(ValueError, "disagrees with the parent-first derivation: LEAF"):
+                    check_effective_scalars(records, effective)
+        effective = effective_scalars(records)
+        del effective["MID"]
+        with self.assertRaisesRegex(ValueError, "Tyre effective scalar record set mismatch"):
+            check_effective_scalars(records, effective)
+
+    def test_scalar_counts(self):
+        records = parse_tyres(":TYPE ROOT\n:RADIUS 0.3\n", ":TYPE A\n:INHERIT_TYPE ROOT\n:RADIUS 0.4\n",
+                              ":TYPE B\n:INHERIT_TYPE ROOT\n")
+        counts = scalar_counts(effective_scalars(records))
+        self.assertEqual(counts["RADIUS"], {"declared": 1, "inherited": 1})
+        self.assertEqual(counts["MASS"], {ZERO_FILLED: 2})
+
+
+def site_va(site):
+    return int(site, 16)
+
+
+@unittest.skipIf(capstone is None, "needs capstone and pefile from scripts/requirements.txt")
+class TyreScalarStoreEvidenceTests(unittest.TestCase):
+    def setUp(self):
+        self.evidence = load_field_evidence()
+
+    def test_committed_evidence_agrees_with_the_store_table(self):
+        self.assertEqual(scalar_evidence_problems(self.evidence), [])
+
+    def test_cited_sites_decode_as_float_stores_at_their_offsets(self):
+        decoded = dict(decoded_evidence())
+        for tag, entry in TYRE_SCALAR_STORES.items():
+            for offset, sites in entry["offsets"].items():
+                for site in sites:
+                    with self.subTest(tag=tag, site=site):
+                        self.assertRegex(decoded[site_va(site)], rf"fstp? dword ptr \[eax \+ {offset}\]")
+            if "scaled_by" in entry:
+                self.assertEqual(decoded[site_va(entry["scale_sites"]["load"])],
+                                 f"fld dword ptr [{entry['scaled_by'].replace('0x00', '0x')}]")
+                offset, = entry["offsets"]
+                self.assertEqual(decoded[site_va(entry["scale_sites"]["multiply"])], f"fmul dword ptr [eax + {offset}]")
+
+    def test_call_and_copy_decode_as_documented(self):
+        decoded = dict(decoded_evidence())
+        self.assertEqual(decoded[SCALAR_COPY_CALL], f"call 0x{SCALAR_COPY_SPAN[0]:x}")
+        self.assertEqual(decoded[SCALAR_COPY_CALL - 5], "mov edx, eax")
+        self.assertEqual(decoded[SCALAR_COPY_CALL - 3], "mov eax, dword ptr [ebp - 0x18]")
+        copy_sites = [(va, text) for va, text in decoded_evidence() if SCALAR_COPY_SPAN[0] <= va < SCALAR_COPY_SPAN[1]]
+        # The pairs run without a gap from just after `push ecx` to the `ret` that follows `pop ecx`.
+        self.assertEqual([va for va, _ in copy_sites], [*range(SCALAR_COPY_SPAN[0] + 1, SCALAR_COPY_SPAN[0] + 0x43, 3),
+                                                         SCALAR_COPY_SPAN[0] + 0x44])
+        self.assertEqual(copy_sites[-1][1], "ret ")
+        pairs = list(zip(copy_sites[:-1:2], copy_sites[1:-1:2], strict=True))
+        copied = []
+        for (_, load), (_, store) in pairs:
+            offset = re.fullmatch(r"mov ecx, dword ptr \[edx \+ (0x[0-9a-f]+)\]", load)[1]
+            self.assertEqual(store, f"mov dword ptr [eax + {offset}], ecx")
+            copied.append(int(offset, 16))
+        self.assertEqual(sorted(copied), list(SCALAR_COPY_OFFSETS))
+
+    def test_every_copied_dword_belongs_to_one_mapped_tag(self):
+        mapped = [int(offset, 16) for entry in TYRE_SCALAR_STORES.values() for offset in entry["offsets"]]
+        self.assertEqual(sorted(mapped), list(SCALAR_COPY_OFFSETS))
+
+    def test_drifted_store_table_or_missing_sites_are_reported(self):
+        def drift(tag, offsets):
+            stores = copy.deepcopy(TYRE_SCALAR_STORES)
+            stores[tag]["offsets"] = offsets
+            return scalar_evidence_problems(self.evidence, stores)
+        self.assertIn("RADIUS + 0x2c: site 0x00523900 (d95028) is not a float store at [eax + 0x2c]",
+                      drift("RADIUS", {"0x2c": ["0x00523900"], "0x3c": ["0x00523907"]}))
+        self.assertIn("WIDTH + 0x30: no byte-checked tyre loader site at 0x00523a36",
+                      drift("WIDTH", {"0x30": ["0x00523a36"]}))
+        self.assertIn("MASS + 0x44: site 0x00523c83 (d95034) is not a float store at [eax + 0x44]",
+                      drift("MASS", {"0x44": ["0x00523c83"], "0x38": ["0x00523c8a"]}))
+        removals = {0x00523b3a: "no byte-checked call from 0x00523b3a to 0x00524090",
+                    0x005240c1: "copy store at 0x005240c4 has no byte-checked load of parent + 0x40",
+                    0x005240c4: "are not exactly +0x18..+0x40",
+                    0x00523ca8: "OFFROAD_MAGIC_GRIP_NUMBER: no byte-checked load of its scale global 0x00597484 at "
+                                "0x00523ca8",
+                    0x00523942: "ROAD_MAGIC_GRIP_NUMBER: no byte-checked fmul by its scale global at 0x00523942",
+                    0x00523a4a: "ROLLING_RESISTANCE + 0x40: no byte-checked tyre loader site at 0x00523a4a"}
+        for va, fragment in removals.items():
+            with self.subTest(va=f"0x{va:08x}"):
+                problems = scalar_evidence_problems([site for site in self.evidence if site["va"] != va])
+                self.assertTrue(any(fragment in problem for problem in problems), problems)
+        moved = [{**site, "va": site["va"] + 0x1000} if site["va"] == 0x00523a35 else site for site in self.evidence]
+        self.assertIn("WIDTH + 0x30: no byte-checked tyre loader site at 0x00523a35", scalar_evidence_problems(moved))
 
 
 ASM_LINE = re.compile(r"([0-9a-f]{8}) [0-9a-f]+ +(.*?) *\Z")
@@ -666,6 +838,12 @@ def gearbox_file(tags=GEARBOX_TAGS):
 
 # Mirror the demo: 72 further tyres inherit DEFAULT_ROAD, 22 DEFAULT_OFFROAD and 12 DEFAULT_TRACK.
 DEMO_PARENTS = ["DEFAULT_ROAD"] * 72 + ["DEFAULT_OFFROAD"] * 22 + ["DEFAULT_TRACK"] * 12
+# Mirror the demo's scalar declarations: the three defaults declare every mapped tag, and each further tyre
+# declares the road grip number, radius and width, plus these extra tags (by its index in DEMO_PARENTS).
+COMMON_SCALARS = ("ROAD_MAGIC_GRIP_NUMBER", "RADIUS", "WIDTH")
+EXTRA_SCALARS = {**{i: ("TYRE_PATCH_LENGTH",) for i in range(4)}, 4: ("OFFROAD_MAGIC_GRIP_NUMBER",),
+                 5: ("OFFROAD_MAGIC_GRIP_NUMBER",),
+                 **{72 + i: ("OFFROAD_MAGIC_GRIP_NUMBER",) + (("MASS",) if i < 2 else ()) for i in range(22)}}
 
 
 def tyre_file(sounds=SOUND_INFO_COUNTS, parents=DEMO_PARENTS, scalar_first=()):
@@ -675,7 +853,9 @@ def tyre_file(sounds=SOUND_INFO_COUNTS, parents=DEMO_PARENTS, scalar_first=()):
     for i, name in enumerate(names):
         # Like the demo, scalars follow INHERIT_TYPE unless scalar_first names the record.
         inherit = [f":INHERIT_TYPE {parents[i]}"] if parents[i] else []
-        lines += [f":TYPE {name}"] + ([":RADIUS 0.3", *inherit] if name in scalar_first else [*inherit, ":RADIUS 0.3"])
+        tags = TYRE_SCALAR_STORES if i < 3 else COMMON_SCALARS + EXTRA_SCALARS.get(i - 3, ())
+        scalars = [f":{tag} 0.3" for tag in tags]
+        lines += [f":TYPE {name}"] + ([*scalars, *inherit] if name in scalar_first else [*inherit, *scalars])
         if i == 0:
             lines += [":LONGITUDINAL_COMBINED_VALUES"] + ["\t".join(["0.5"] * 11)] * 9
             lines += [":LATERAL_COMBINED_VALUES"] + ["\t".join(["0.5"] * 21)] * 10
@@ -713,7 +893,8 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.assertEqual(summary["tyre_inheritances"], 108)
         self.assertEqual(summary["tyre_tables"], TYRE_TABLES)
         self.assertEqual(summary["tyre_table_sources"], TYRE_TABLE_SOURCES)
-        self.assertEqual(summary["tyre_scalar_inheritance_records"], 108)
+        self.assertEqual(summary["tyre_effective_scalar_records"], 108)
+        self.assertEqual(summary["tyre_effective_scalar_counts"], TYRE_SCALAR_COUNTS)
         self.assertEqual(summary["sound_info_entries"], 40)
         self.assertEqual(summary["sound_info_per_record"], SOUND_INFO_COUNTS)
 
@@ -759,7 +940,7 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         tyres = json.loads((output / "tyres.json").read_text())
         expected = read_database(self.game, text_database.DATABASES["tyres"], TAGS, sound_info=True)
         self.assertEqual(list(tyres), ["source", "sha256", "records", "resolved_tables", "table_provenance",
-                                       "scalar_inheritance"])
+                                       "effective_scalars"])
         self.assertEqual(tyres["records"], expected["records"])
         self.assertEqual(tyres["resolved_tables"], resolve_tyre_tables(expected["records"]))
         self.assertEqual(tyres["resolved_tables"]["TYRE100"]["VERTICAL_LOAD"], "DEFAULT_TRACK")
@@ -769,13 +950,14 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.assertTrue(text.startswith(json.dumps(legacy, indent=2, allow_nan=False)[:-2] + ",\n"))
         self.assertEqual(tyres["table_provenance"], tyre_table_provenance(expected["records"]))
         self.assertEqual(tyres["table_provenance"]["TYRE100"]["VERTICAL_LOAD"],
-                         {"source": "DEFAULT_TRACK", "path": ["TYRE100", "DEFAULT_TRACK"], "source_line": 466,
+                         {"source": "DEFAULT_TRACK", "path": ["TYRE100", "DEFAULT_TRACK"], "source_line": 490,
                           "accessor": "0x00523e50", "record_offset": "0x4c"})
         self.assertEqual(len(tyres["table_provenance"]), 109)
         self.assertTrue(all(len(tables) == 5 for tables in tyres["table_provenance"].values()))
-        self.assertEqual(tyres["scalar_inheritance"], scalar_inheritance(expected["records"]))
-        self.assertEqual(len(tyres["scalar_inheritance"]), 108)
-        self.assertNotIn("DEFAULT_ROAD", tyres["scalar_inheritance"])
+        self.assertEqual(tyres["effective_scalars"], effective_scalars(expected["records"]))
+        self.assertEqual(len(tyres["effective_scalars"]), 108)
+        self.assertNotIn("DEFAULT_ROAD", tyres["effective_scalars"])
+        self.assertEqual(tyres["effective_scalars"]["TYRE100"]["fields"]["MASS"]["path"], ["TYRE100", "DEFAULT_TRACK"])
         self.assertNotIn("resolved_tables", json.loads((output / "engines.json").read_text()))
 
     def test_reject_bad_table_provenance(self):
@@ -802,13 +984,45 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Tyre scalars declared before INHERIT_TYPE: TYRE5"):
             verify_text_databases(self.game, TAGS)
 
-    def test_reject_wrong_scalar_inheritance_records(self):
+    def test_reject_wrong_effective_scalar_records(self):
         def tampered(records):
-            entries = scalar_inheritance(records)
+            entries = effective_scalars(records)
             del entries["TYRE5"]
             return entries
-        with mock.patch.object(text_database, "scalar_inheritance", tampered), \
-                self.assertRaisesRegex(ValueError, "Tyre scalar inheritance record set mismatch"):
+        with mock.patch.object(text_database, "effective_scalars", tampered), \
+                self.assertRaisesRegex(ValueError, "Tyre effective scalar record set mismatch"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_effective_scalars_that_disagree_with_the_independent_derivation(self):
+        # Pointing one field at another source keeps every status count, so only the derivation catches it.
+        def tampered(records):
+            entries = effective_scalars(records)
+            entries["TYRE100"]["fields"]["MASS"].update(source="DEFAULT_ROAD", source_line=7)
+            return entries
+        with mock.patch.object(text_database, "effective_scalars", tampered), \
+                self.assertRaisesRegex(ValueError, "disagrees with the parent-first derivation: TYRE100 MASS"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_wrong_effective_scalar_counts(self):
+        self.write("tyres", tyre_file().replace(":TYPE TYRE0\r\n:INHERIT_TYPE DEFAULT_ROAD\r\n",
+                                                ":TYPE TYRE0\r\n:INHERIT_TYPE DEFAULT_ROAD\r\n:MASS 1.0\r\n"))
+        with self.assertRaisesRegex(ValueError, "Tyre effective scalar counts mismatch"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_unmapped_scalar_tag(self):
+        self.write("tyres", tyre_file().replace(":TYPE TYRE7\r\n:INHERIT_TYPE DEFAULT_ROAD\r\n",
+                                                ":TYPE TYRE7\r\n:INHERIT_TYPE DEFAULT_ROAD\r\n:LOCATION_TYPE FRONT\r\n"))
+        with self.assertRaisesRegex(ValueError, "Tyre scalar tags without a byte-checked store: TYRE7"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_scalar_store_without_evidence(self):
+        evidence = [site for site in load_field_evidence() if site["va"] != 0x00523a35]
+        with self.assertRaisesRegex(ValueError, "Tyre scalar stores lack byte-checked evidence: WIDTH \\+ 0x30"):
+            verify_text_databases(self.game, TAGS, evidence)
+
+    def test_reads_the_committed_evidence_by_default(self):
+        with mock.patch.object(text_database, "load_field_evidence", return_value=[]), \
+                self.assertRaisesRegex(ValueError, "Tyre scalar stores lack byte-checked evidence"):
             verify_text_databases(self.game, TAGS)
 
     def test_reject_wrong_engine_count(self):
