@@ -215,8 +215,11 @@ class BundleTests(BundleTestCase):
         full = levels["full"]
         self.assertEqual(full["missing"], list(GHIDRA_FILES))
         recovery = " ".join(full["recovery"])
-        for command in ("scripts/setup_tools.py", "scripts/run_analysis.py", "scripts/verify_findings.py"):
+        for command in ("scripts/setup_tools.py", "scripts/run_analysis.py", "scripts/verify_findings.py",
+                        "git add analysis && git commit", "scripts/build_research.py", "scripts/package_analysis.py"):
             self.assertIn(command, recovery)
+        # Commit the rewritten verification record before rebuilding the pages that name the commit.
+        self.assertLess(recovery.index("git commit"), recovery.index("build_research.py"))
         self.assertIn("not re-run", full["summary"])
         listed = [entry["path"] for entry in manifest["files"]]
         self.assertEqual(listed, sorted(set(files) - {"MANIFEST.json", "SHA256SUMS"}))

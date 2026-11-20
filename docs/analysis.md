@@ -612,8 +612,10 @@ levels, each `performed` or `unavailable` with the checks and their counts:
 
 When any Ghidra output is missing, `full` is `unavailable`: the manifest names
 the missing paths and the recovery commands (`scripts/setup_tools.py`, then
-`scripts/run_analysis.py`, then `scripts/verify_findings.py`), and no Ghidra
-output is packaged. A present output whose hash differs from the record refuses
+`scripts/run_analysis.py`, then `scripts/verify_findings.py`, then committing
+the regenerated `analysis/` before rebuilding the research pages and the
+bundle, since the full verification rewrites `analysis/verification.json`), and
+no Ghidra output is packaged. A present output whose hash differs from the record refuses
 the build instead of being left out. `SHA256SUMS` covers every other file, so
 `sha256sum -c SHA256SUMS` passes inside the extracted folder.
 

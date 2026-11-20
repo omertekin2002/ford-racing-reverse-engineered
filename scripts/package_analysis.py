@@ -67,8 +67,11 @@ GHIDRA_EXPORTS = ("artifacts/ghidra/calls.tsv", GHIDRA_C, "artifacts/ghidra/disa
                   "artifacts/ghidra/functions.tsv", GHIDRA_STATUS)
 GHIDRA_FILES = (*GHIDRA_EXPORTS, GHIDRA_SNAPSHOT)
 TOOLS_PYTHON = '"${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python'
+# The full verification rewrites analysis/verification.json, which the bundle refuses uncommitted, and the research
+# pages name the commit they were built at: commit analysis/ before rebuilding them.
 FULL_RECOVERY = ("python3 scripts/setup_tools.py", f"{TOOLS_PYTHON} scripts/run_analysis.py",
-                 f"{TOOLS_PYTHON} scripts/verify_findings.py .")
+                 f"{TOOLS_PYTHON} scripts/verify_findings.py .", "git add analysis && git commit",
+                 "python3 scripts/build_research.py", "python3 scripts/package_analysis.py")
 # Paths and names that must never be packaged, whatever produced them.
 EXCLUDED_PREFIXES = ("inputs/", "artifacts/pe/", "artifacts/logs/", "artifacts/unpacked/", "artifacts/project/",
                      "artifacts/verification-project/")

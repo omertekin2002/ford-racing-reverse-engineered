@@ -57,9 +57,17 @@ From the repository checkout:
 ```sh
 python3 scripts/setup_tools.py
 "${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python scripts/run_analysis.py
+git status analysis    # review what run_analysis.py regenerated, then:
+git add analysis && git commit
 "${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python scripts/build_research.py
 "${FR3_TOOLS:-${XDG_DATA_HOME:-$HOME/.local/share}/fr3-tools}"/venv/bin/python scripts/package_analysis.py
 ```
+
+`run_analysis.py` ends with the full verification, which rewrites
+`analysis/verification.json` (at least its `verified_utc`). The bundle refuses
+uncommitted changes under `analysis/`, and the research pages name the commit
+they were built at, so commit the regenerated `analysis/` before
+`build_research.py`, not after.
 
 `package_analysis.py` does not need Ghidra. With only the acquired demo and a
 built research directory, at a clean commit, it writes the reproduction bundle
