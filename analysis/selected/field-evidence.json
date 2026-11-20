@@ -15,9 +15,24 @@
     "claim": "Reciprocal radius store at payload + 0x3c"
   },
   {
+    "va": 5388599,
+    "bytes": "d90584745900",
+    "claim": "ROAD_MAGIC_GRIP_NUMBER loads the grip scale global at 0x00597484"
+  },
+  {
     "va": 5388607,
     "bytes": "d95818",
     "claim": "ROAD_MAGIC_GRIP_NUMBER initial store at + 0x18"
+  },
+  {
+    "va": 5388610,
+    "bytes": "d84818",
+    "claim": "ROAD_MAGIC_GRIP_NUMBER multiplied by the global loaded from 0x00597484 at 0x00523937"
+  },
+  {
+    "va": 5388613,
+    "bytes": "d95818",
+    "claim": "ROAD_MAGIC_GRIP_NUMBER scaled value stored back at + 0x18"
   },
   {
     "va": 5388634,
@@ -60,6 +75,21 @@
     "claim": "SOUND_INFO allocation address store at + 0x54"
   },
   {
+    "va": 5389109,
+    "bytes": "89c2",
+    "claim": "INHERIT_TYPE passes the parent record address in EDX to the scalar copy"
+  },
+  {
+    "va": 5389111,
+    "bytes": "8b45e8",
+    "claim": "INHERIT_TYPE passes the current record address in EAX to the scalar copy"
+  },
+  {
+    "va": 5389114,
+    "bytes": "e851050000",
+    "claim": "INHERIT_TYPE calls the scalar copy at 0x00524090"
+  },
+  {
     "va": 5389122,
     "bytes": "894814",
     "claim": "INHERIT_TYPE stores record address at + 0x14"
@@ -95,9 +125,24 @@
     "claim": "Reciprocal mass store at + 0x38"
   },
   {
+    "va": 5389480,
+    "bytes": "d90584745900",
+    "claim": "OFFROAD_MAGIC_GRIP_NUMBER loads the grip scale global at 0x00597484"
+  },
+  {
     "va": 5389488,
     "bytes": "d9581c",
     "claim": "OFFROAD_MAGIC_GRIP_NUMBER initial store at + 0x1c"
+  },
+  {
+    "va": 5389491,
+    "bytes": "d8481c",
+    "claim": "OFFROAD_MAGIC_GRIP_NUMBER multiplied by the global loaded from 0x00597484 at 0x00523ca8"
+  },
+  {
+    "va": 5389494,
+    "bytes": "d9581c",
+    "claim": "OFFROAD_MAGIC_GRIP_NUMBER scaled value stored back at + 0x1c"
   },
   {
     "va": 5389542,
@@ -158,5 +203,120 @@
     "va": 5390119,
     "bytes": "8b4054",
     "claim": "SOUND_INFO accessor returns record + 0x54"
+  },
+  {
+    "va": 5390481,
+    "bytes": "8b4a24",
+    "claim": "Scalar copy loads the INHERIT_TYPE parent (EDX) + 0x24 into ECX"
+  },
+  {
+    "va": 5390484,
+    "bytes": "894824",
+    "claim": "Scalar copy stores that dword (ECX) at record (EAX) + 0x24"
+  },
+  {
+    "va": 5390487,
+    "bytes": "8b4a2c",
+    "claim": "Scalar copy loads the INHERIT_TYPE parent (EDX) + 0x2c into ECX"
+  },
+  {
+    "va": 5390490,
+    "bytes": "89482c",
+    "claim": "Scalar copy stores that dword (ECX) at record (EAX) + 0x2c"
+  },
+  {
+    "va": 5390493,
+    "bytes": "8b4a28",
+    "claim": "Scalar copy loads the INHERIT_TYPE parent (EDX) + 0x28 into ECX"
+  },
+  {
+    "va": 5390496,
+    "bytes": "894828",
+    "claim": "Scalar copy stores that dword (ECX) at record (EAX) + 0x28"
+  },
+  {
+    "va": 5390499,
+    "bytes": "8b4a30",
+    "claim": "Scalar copy loads the INHERIT_TYPE parent (EDX) + 0x30 into ECX"
+  },
+  {
+    "va": 5390502,
+    "bytes": "894830",
+    "claim": "Scalar copy stores that dword (ECX) at record (EAX) + 0x30"
+  },
+  {
+    "va": 5390505,
+    "bytes": "8b4a34",
+    "claim": "Scalar copy loads the INHERIT_TYPE parent (EDX) + 0x34 into ECX"
+  },
+  {
+    "va": 5390508,
+    "bytes": "894834",
+    "claim": "Scalar copy stores that dword (ECX) at record (EAX) + 0x34"
+  },
+  {
+    "va": 5390511,
+    "bytes": "8b4a18",
+    "claim": "Scalar copy loads the INHERIT_TYPE parent (EDX) + 0x18 into ECX"
+  },
+  {
+    "va": 5390514,
+    "bytes": "894818",
+    "claim": "Scalar copy stores that dword (ECX) at record (EAX) + 0x18"
+  },
+  {
+    "va": 5390517,
+    "bytes": "8b4a20",
+    "claim": "Scalar copy loads the INHERIT_TYPE parent (EDX) + 0x20 into ECX"
+  },
+  {
+    "va": 5390520,
+    "bytes": "894820",
+    "claim": "Scalar copy stores that dword (ECX) at record (EAX) + 0x20"
+  },
+  {
+    "va": 5390523,
+    "bytes": "8b4a1c",
+    "claim": "Scalar copy loads the INHERIT_TYPE parent (EDX) + 0x1c into ECX"
+  },
+  {
+    "va": 5390526,
+    "bytes": "89481c",
+    "claim": "Scalar copy stores that dword (ECX) at record (EAX) + 0x1c"
+  },
+  {
+    "va": 5390529,
+    "bytes": "8b4a40",
+    "claim": "Scalar copy loads the INHERIT_TYPE parent (EDX) + 0x40 into ECX"
+  },
+  {
+    "va": 5390532,
+    "bytes": "894840",
+    "claim": "Scalar copy stores that dword (ECX) at record (EAX) + 0x40"
+  },
+  {
+    "va": 5390535,
+    "bytes": "8b4a3c",
+    "claim": "Scalar copy loads the INHERIT_TYPE parent (EDX) + 0x3c into ECX"
+  },
+  {
+    "va": 5390538,
+    "bytes": "89483c",
+    "claim": "Scalar copy stores that dword (ECX) at record (EAX) + 0x3c"
+  },
+  {
+    "va": 5390541,
+    "bytes": "8b4a38",
+    "claim": "Scalar copy loads the INHERIT_TYPE parent (EDX) + 0x38 into ECX"
+  },
+  {
+    "va": 5390544,
+    "bytes": "894838",
+    "claim": "Scalar copy stores that dword (ECX) at record (EAX) + 0x38"
+  },
+  {
+    "va": 5390548,
+    "bytes": "c3",
+    "claim": "Scalar copy returns after its eleventh store (ECX restored at 0x005240d3)"
   }
 ]

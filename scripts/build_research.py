@@ -100,8 +100,9 @@ def render_index(counts, pe, revision, evidence):
              "parents and untagged lines are labelled unresolved.", f'{counts["engines"]} engine records'),
             ("gearboxes.html", "Gearboxes", "Each gearbox record's declarations as written.",
              f'{counts["gearboxes"]} gearbox records'),
-            ("tyres.html", "Tyres", "Each tyre's declarations beside the source of its five resolved tables and the "
-             "byte-checked instruction sites behind each one.", f'{counts["tyres"]} tyre records'),
+            ("tyres.html", "Tyres", "Each tyre's declarations beside the source of its five resolved tables, the "
+             "declaration each inheriting tyre's scalar fields end up with, and the byte-checked instruction sites "
+             "behind each.", f'{counts["tyres"]} tyre records'),
             ("pcg.html", "PCG catalogue", "Every PCG graphics collection and graphic: header fields, byte spans and "
              "decoding status. No pixel data is decoded.",
              f'{counts["pcg_collections"]} collections, {counts["pcg_graphics"]} graphics'),
