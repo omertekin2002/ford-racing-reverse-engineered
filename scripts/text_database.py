@@ -60,8 +60,23 @@ zero-filled and given no value; a scalar tag with no byte-checked store is
 labelled unmapped and given no value. Values stay the declared text values: no
 units, and no grip scaling applied. scalar_evidence_problems() checks
 TYRE_SCALAR_STORES and the copy against field-evidence.json, and
-scalars_by_recursion() derives the same fields a second way. Engine inheritance
-and the colon-less INDIGO line stay unresolved.
+scalars_by_recursion() derives the same fields a second way.
+
+ENGINE_FIELD_STORES maps each engine tag the loader at 0x005227f0 stores to its
+registry ID, the dispatch's `cmp eax, <id>` site and its payload offsets, each
+with the Fr3EngineRecord field, width (dword or byte) and store sites.
+TORQUE_ARRAY zero-fills an 18-slot block at +0x3c, stores each row's second
+column into it, reads its row count from the MAX_RPM value at +0x30 present when
+the tag is parsed, and may write a derived +0x2c (both stores are conditional);
+TURBO_MASS writes a derived reciprocal at +0xa4. ENGINE_COPY records INHERIT_TYPE: the parent lookup, the
+call to the copy at 0x00522c80 with the parent in EDX and the record in EAX,
+the parent store at +0x18, and the copy's byte, dword and 0x48-byte block moves.
+engine_evidence_problems() checks both against field-evidence.json and requires
+the copied bytes to equal the stored ones, name and +0x18 excluded;
+engine_layout_problems() checks every mapped offset against
+recovered/fr3_database_layouts.h; unmapped_engine_tags() names any engine tag in
+use with no mapped store. Nothing resolves engine inheritance yet: engines.json
+holds the records as parsed, and the colon-less INDIGO line stays unresolved.
 """
 import argparse
 import hashlib
@@ -137,6 +152,93 @@ TYRE_SCALAR_COUNTS = {
     "MASS": {"declared": 4, "inherited": 104},
     "ROLLING_RESISTANCE": {"declared": 2, "inherited": 106},
 }
+
+
+def _store(field, sites, width="dword", **extra):
+    return {"field": field, "width": width, "sites": sites, **extra}
+
+
+# Each engine tag the loader at 0x005227f0 stores (load_engine_database.asm): its registry ID, the dispatch's
+# `cmp eax, <id>` site, and the payload offsets it writes, each with the Fr3EngineRecord field at that offset, the
+# width and the field-evidence.json store sites. `derived` offsets hold a value the handler computes rather than the
+# declared one. TORQUE_ARRAY zero-fills 18 slots at +0x3c, then stores one slot per row (each row's second column)
+# through a row pointer that starts at the record and steps by 4, so the store is `[edx + 0x38]`. Its row count comes
+# from the MAX_RPM value at +0x30 when the tag is parsed. LOCATION_TYPE and ASPIRATION_TYPE pass an enum word table.
+ENGINE_FIELD_STORES = {
+    "LOCATION_TYPE": {"id": 0xa5, "compare": "0x00522b54",
+                      "offsets": {"0x14": _store("location_type", ["0x00522b70"], "byte")},
+                      "enum_table": {"va": "0x00597408", "site": "0x00522b64"}},
+    "FUEL_CUTOFF": {"id": 0x8a, "compare": "0x00522ae2", "offsets": {"0x1c": _store("fuel_cutoff", ["0x00522b15"])}},
+    "ENGINE_BRAKING": {"id": 0x7f, "compare": "0x0052285d",
+                       "offsets": {"0x20": _store("engine_braking", ["0x00522ada"])}},
+    "TORQUE_MODIFIER": {"id": 0x119, "compare": "0x00522a00",
+                        "offsets": {"0x24": _store("torque_modifier", ["0x00522a0e"])}},
+    "ROUGHNESS": {"id": 0xe4, "compare": "0x005228f6", "offsets": {"0x28": _store("roughness", ["0x0052290e"])}},
+    "TORQUE_ARRAY": {"id": 0x118, "compare": "0x005228ef",
+                     "offsets": {"0x2c": _store("derived_rpm", ["0x005229c1", "0x005229f8"], derived=True),
+                                 "0x3c": _store("torque", ["0x00522969"], slots=18)},
+                     "zero_fill": {"size": "0x0052291c", "destination": "0x00522921", "value": "0x00522924",
+                                   "call": "0x00522926"},
+                     "row_count": {"offset": "0x30", "site": "0x0052292b"},
+                     "row_pointer": {"start": "0x00522952", "step": "0x0052295b"}},
+    "MAX_RPM": {"id": 0xb0, "compare": "0x005228b1", "offsets": {"0x30": _store("max_rpm", ["0x00522a76"])}},
+    "CAPACITY": {"id": 0x37, "compare": "0x00522bd0", "offsets": {"0x34": _store("capacity", ["0x00522be0"])}},
+    "TICKOVER_RPM": {"id": 0x112, "compare": "0x00522a53",
+                     "offsets": {"0x38": _store("tickover_rpm", ["0x00522a65"])}},
+    "MAX_TURBO_PRESSURE": {"id": 0xb1, "compare": "0x00522a7e",
+                           "offsets": {"0x84": _store("max_turbo_pressure", ["0x00522a8c"])}},
+    "FLYWHEEL_MASS": {"id": 0x87, "compare": "0x00522ae9", "offsets": {"0x88": _store("flywheel_mass", ["0x00522b01"])}},
+    "FLYWHEEL_RADIUS": {"id": 0x88, "compare": "0x00522b78",
+                        "offsets": {"0x8c": _store("flywheel_radius", ["0x00522b8a"])}},
+    "ACCELERATOR_SPEED": {"id": 0x1, "compare": "0x00522866",
+                          "offsets": {"0x90": _store("accelerator_speed", ["0x00522b9e"])}},
+    "NUMBER_OF_TURBOS": {"id": 0xc8, "compare": "0x005228aa",
+                         "offsets": {"0x94": _store("turbo_count", ["0x005228e4"], "byte")}},
+    "NUMBER_OF_CYLINDERS": {"id": 0xc6, "compare": "0x00522a97",
+                            "offsets": {"0x95": _store("cylinder_count", ["0x00522aa9"], "byte")}},
+    "ASPIRATION_TYPE": {"id": 0x10, "compare": "0x00522ba9",
+                        "offsets": {"0x98": _store("aspiration_type", ["0x00522bc5"])},
+                        "enum_table": {"va": "0x005973f8", "site": "0x00522bb9"}},
+    "MAX_AIRFLOW": {"id": 0xab, "compare": "0x00522856", "offsets": {"0x9c": _store("max_airflow", ["0x005228a2"])}},
+    "TURBO_MASS": {"id": 0x15b, "compare": "0x00522a16",
+                   "offsets": {"0xa0": _store("turbo_mass", ["0x00522a28"]),
+                               "0xa4": _store("inverse_turbo_mass", ["0x00522a48", "0x00522c4e"], derived=True)}},
+    "MAX_FUELFLOW": {"id": 0xae, "compare": "0x00522ab4", "offsets": {"0xa8": _store("max_fuel_flow", ["0x00522ac6"])}},
+    "MAX_DELTA_FUELFLOW": {"id": 0xad, "compare": "0x005228bc",
+                           "offsets": {"0xac": _store("max_delta_fuel_flow", ["0x005228d0"])}},
+}
+# Both +0x2c stores are conditional (the jumps at 0x00522980, 0x005229b6 and 0x005229e9), so +0x2c can keep what an
+# earlier INHERIT_TYPE copied, or zero. Every store site's field-evidence.json claim starts with its tag's name.
+# INHERIT_TYPE in the engine loader and the copy it calls (copy_engine_record.asm). The loader looks the parent up by
+# name, passes it in EDX and the record in EAX to the copy, then stores the parent at +0x18. The copy keeps the record
+# in EBX and writes `offsets` (each a load of parent + n into AL/EAX followed by a store at record + n) and the
+# `block` with a repeated movsd of size >> 2 dwords and a repeated movsb of size & 3 bytes. It leaves the name and
+# +0x18 alone.
+ENGINE_LOADER_SPAN = (0x005227F0, 0x00522C80)
+ENGINE_COPY = {
+    "tag": "INHERIT_TYPE", "id": 0x9c, "compare": "0x00522b1d",
+    "find_parent": {"call": "0x00522b3c", "target": "0x00522d70"},
+    "arguments": {"parent_in_ecx": "0x00522b41", "parent_in_edx": "0x00522b43", "record_in_eax": "0x00522b45"},
+    "call": "0x00522b47",
+    "parent_store": {"offset": "0x18", "field": "inherited_address", "site": "0x00522b4c"},
+    "span": (0x00522C80, 0x00522D6C),
+    # The copy saves and restores ECX, so the parent address kept there survives to the +0x18 store.
+    "keeps_ecx": {"push": "0x00522c81", "pop": "0x00522d69"},
+    "record_in_ebx": "0x00522c84",
+    "offsets": {"0x14": "byte", **{f"0x{offset:x}": "dword" for offset in range(0x1c, 0x3c, 4)},
+                **{f"0x{offset:x}": "dword" for offset in range(0x84, 0x94, 4)}, "0x94": "byte", "0x95": "byte",
+                **{f"0x{offset:x}": "dword" for offset in range(0x98, 0xb0, 4)}},
+    "block": {"offset": "0x3c", "size": 0x48,
+              "sites": {"size": "0x00522c86", "source": "0x00522c8e", "destination": "0x00522c94",
+                        "keep_size": "0x00522cc8", "dword_count": "0x00522cca", "movsd": "0x00522ccd",
+                        "remainder": "0x00522ccf", "remainder_mask": "0x00522cd1", "movsb": "0x00522cd4"}},
+}
+FILL_MEMORY = 0x00534690
+ENGINE_RECORD_SIZE = 0xb0
+# The name the record-creating branch reads into the payload's first 0x14 bytes; the copy must not write it.
+ENGINE_NAME_BYTES = 0x14
+# ENGDATA.DAT words that are not stored fields: INHERIT_TYPE is the copy above; TYPE and END are not fields.
+ENGINE_UNSTORED_TAGS = frozenset({"TYPE", "INHERIT_TYPE", "END"})
 GEARBOX_TAGS = frozenset({"CLUTCH_SPEED", "CLUTCH_MAX_POWER", "TRANSMISSION_TYPE", "TORQUE_SHIFT", "DRIVE_TYPE",
                           "DRIVE_SPLIT", "DIFF_TYPE", "ANTI_WHEELSPIN", "ANTI_WHEELSKID"})
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -574,6 +676,307 @@ def scalar_evidence_problems(evidence, stores=None):
     return problems
 
 
+REGISTERS = ("eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi")
+BYTE_REGISTERS = ("al", "cl", "dl", "bl", "ah", "ch", "dh", "bh")
+# Opcodes with a ModRM memory operand that the engine evidence uses, as (kind, width); 0xd9 depends on ModRM.reg.
+MEMORY_OPCODES = {0x89: ("store", "dword"), 0x88: ("store", "byte"), 0xc7: ("store", "dword"),
+                  0x8b: ("load", "dword"), 0x8a: ("load", "byte"), 0x8d: ("lea", None)}
+X87_D9 = {0: ("load", "dword"), 2: ("store", "dword"), 3: ("store", "dword")}  # fld, fst, fstp m32
+
+
+def register_family(register):
+    """Return the 32-bit register a register name belongs to (al and ah -> eax); other values unchanged."""
+    if register in BYTE_REGISTERS:
+        return REGISTERS[BYTE_REGISTERS.index(register) % 4]
+    return register
+
+
+def memory_operand(raw):
+    """Decode one `[base + disp]` instruction from its hex bytes, or return None for any other form.
+
+    Handles mov/lea with a register (0x88, 0x89, 0x8a, 0x8b, 0x8d), `mov dword [base + disp], imm32` (0xc7 /0) and
+    fld/fst/fstp m32 (0xd9 /0, /2, /3), with an 8- or 32-bit displacement and no SIB byte. Returns kind
+    (store, load or lea), width (byte, dword or None for lea), base, disp and register (the other operand: a
+    register name, `st0` or the immediate).
+    """
+    data = bytes.fromhex(raw)
+    if len(data) < 3:
+        return None
+    opcode, modrm = data[0], data[1]
+    mod, reg, rm = modrm >> 6, (modrm >> 3) & 7, modrm & 7
+    if mod not in (1, 2) or rm == 4:
+        return None
+    size = 1 if mod == 1 else 4
+    disp, rest = int.from_bytes(data[2:2 + size], "little", signed=True), data[2 + size:]
+    if opcode == 0xd9 and reg in X87_D9 and not rest:
+        (kind, width), register = X87_D9[reg], "st0"
+    elif opcode == 0xc7 and reg == 0 and len(rest) == 4:
+        (kind, width), register = MEMORY_OPCODES[opcode], int.from_bytes(rest, "little")
+    elif opcode in MEMORY_OPCODES and opcode != 0xc7 and not rest:
+        kind, width = MEMORY_OPCODES[opcode]
+        register = (BYTE_REGISTERS if width == "byte" else REGISTERS)[reg]
+    else:
+        return None
+    return {"kind": kind, "width": width, "base": REGISTERS[rm], "disp": disp, "register": register}
+
+
+def compare_immediate(raw):
+    """Return the immediate of `cmp eax, imm32` (3d) or `cmp eax, imm8` (83 f8), sign-extended, else None."""
+    data = bytes.fromhex(raw)
+    if len(data) == 5 and data[0] == 0x3d:
+        return int.from_bytes(data[1:], "little", signed=True)
+    if len(data) == 3 and data[:2] == b"\x83\xf8":
+        return int.from_bytes(data[2:], "little", signed=True)
+    return None
+
+
+def call_bytes(site, target):
+    """Return the hex bytes of `call target` (e8 rel32) placed at site."""
+    return "e8" + ((target - (site + 5)) & 0xFFFFFFFF).to_bytes(4, "little").hex()
+
+
+def byte_ranges(offsets):
+    """Format a set of byte offsets as `+0x18..+0x1b, +0x30..+0x33` runs."""
+    runs = []
+    for offset in sorted(offsets):
+        if runs and runs[-1][1] == offset - 1:
+            runs[-1][1] = offset
+        else:
+            runs.append([offset, offset])
+    return ", ".join(f"+0x{start:02x}" if start == end else f"+0x{start:02x}..+0x{end:02x}" for start, end in runs)
+
+
+def engine_stored_bytes(stores):
+    """Return {payload byte offset: tag} for every byte ENGINE_FIELD_STORES says a tag writes."""
+    stored = {}
+    for tag, entry in stores.items():
+        for offset, store in entry["offsets"].items():
+            size = (1 if store["width"] == "byte" else 4) * store.get("slots", 1)
+            stored.update({byte: tag for byte in range(int(offset, 16), int(offset, 16) + size)})
+    return stored
+
+
+def engine_copy_bytes(copy):
+    """Return the set of payload byte offsets ENGINE_COPY says the copy writes."""
+    copied = {byte for offset, width in copy["offsets"].items()
+              for byte in range(int(offset, 16), int(offset, 16) + (1 if width == "byte" else 4))}
+    block = int(copy["block"]["offset"], 16)
+    return copied | set(range(block, block + copy["block"]["size"]))
+
+
+def engine_evidence_problems(evidence, tag_ids, stores=None, copy=None):
+    """List every way ENGINE_FIELD_STORES and ENGINE_COPY lack matching byte-checked sites.
+
+    tag_ids maps tag names to analysis/tags.json registry IDs. Every cited site must be in field-evidence.json
+    inside the engine loader (or, for the copy's own instructions, inside the copy). Each tag's compare must be
+    `cmp eax, <its registry ID>`; each store a write of its width at [edi + offset] (a TORQUE_ARRAY row at
+    [edx + offset - 4], after `mov edx, edi` and `add edx, 4`); the zero-fill, enum tables, the INHERIT_TYPE
+    argument setup, call and +0x18 store must have the exact bytes. In the copy every store at [ebx + n] needs a
+    byte-checked load of parent [edx + n] into the same register just before it, the pairs must be exactly
+    ENGINE_COPY's offsets, and the block must be the documented movsd/movsb sequence. The bytes the copy writes
+    must equal the bytes the mapped tags store and exclude the name and +0x18. Each tag needs at least one store
+    site per offset, each store site's claim must start with its tag's name, and every byte-checked write to the
+    record ([edi + n], or a TORQUE_ARRAY row's [edx + n]) in the loader must be a mapped site.
+    """
+    stores = ENGINE_FIELD_STORES if stores is None else stores
+    copy = ENGINE_COPY if copy is None else copy
+    by_va = {site["va"]: site["bytes"] for site in evidence}
+    claims = {site["va"]: site.get("claim", "") for site in evidence}
+    problems = []
+
+    def site(label, va, span=ENGINE_LOADER_SPAN):
+        raw = by_va.get(int(va, 16))
+        if raw is None or not span[0] <= int(va, 16) < span[1]:
+            problems.append(f"{label}: no byte-checked {'engine loader' if span == ENGINE_LOADER_SPAN else 'engine copy'} "
+                            f"site at {va}")
+            return None
+        return raw
+
+    def exact(label, va, expected, span=ENGINE_LOADER_SPAN):
+        raw = site(label, va, span)
+        if raw is not None and raw != expected:
+            problems.append(f"{label}: site {va} ({raw}) is not {expected}")
+
+    def operand(label, va, expected, span=ENGINE_LOADER_SPAN):
+        raw = site(label, va, span)
+        decoded = raw and memory_operand(raw)
+        if raw is not None and (not decoded or any(decoded[key] != value for key, value in expected.items())):
+            shown = ", ".join(f"{key} {value if isinstance(value, str) else hex(value)}" for key, value in expected.items())
+            problems.append(f"{label}: site {va} ({raw}) is not a {shown} instruction")
+
+    def compare(tag, entry):
+        if tag_ids.get(tag) != entry["id"]:
+            registered = "no registry ID" if tag not in tag_ids else f"registry ID 0x{tag_ids[tag]:x}"
+            problems.append(f"{tag}: analysis/tags.json gives {registered}, the map says 0x{entry['id']:x}")
+        raw = site(f"{tag} compare", entry["compare"])
+        if raw is not None and compare_immediate(raw) != entry["id"]:
+            problems.append(f"{tag}: compare site {entry['compare']} ({raw}) is not cmp eax, 0x{entry['id']:x}")
+
+    for tag, entry in stores.items():
+        compare(tag, entry)
+        for offset, store in entry["offsets"].items():
+            value = int(offset, 16)
+            base, disp = ("edx", value - 4) if "slots" in store else ("edi", value)
+            if not store["sites"]:
+                problems.append(f"{tag} + {offset}: no store sites")
+            for va in store["sites"]:
+                operand(f"{tag} + {offset}", va, {"kind": "store", "width": store["width"], "base": base, "disp": disp})
+                if int(va, 16) in by_va and not claims[int(va, 16)].startswith(tag + " "):
+                    problems.append(f"{tag} + {offset}: the claim at {va} is not about {tag}: {claims[int(va, 16)]!r}")
+            if "slots" in store:
+                fill, rows = entry["zero_fill"], entry["row_pointer"]
+                exact(f"{tag} zero-fill size", fill["size"],
+                      "bb" + (store["slots"] * 4).to_bytes(4, "little").hex())
+                operand(f"{tag} zero-fill destination", fill["destination"],
+                        {"kind": "lea", "register": "eax", "base": "edi", "disp": value})
+                exact(f"{tag} zero-fill value", fill["value"], "31d2")
+                exact(f"{tag} zero-fill call", fill["call"], call_bytes(int(fill["call"], 16), FILL_MEMORY))
+                exact(f"{tag} row pointer start", rows["start"], "89fa")
+                exact(f"{tag} row pointer step", rows["step"], "83c204")
+        if "row_count" in entry:
+            count = entry["row_count"]
+            operand(f"{tag} row count", count["site"],
+                    {"kind": "load", "width": "dword", "base": "edi", "disp": int(count["offset"], 16)})
+            if not any(count["offset"] in other["offsets"] for name, other in stores.items() if name != tag):
+                problems.append(f"{tag}: its row count offset {count['offset']} is not a mapped store")
+        if "enum_table" in entry:
+            table = entry["enum_table"]
+            exact(f"{tag} enum table", table["site"], "ba" + int(table["va"], 16).to_bytes(4, "little").hex())
+
+    compare(copy["tag"], copy)
+    find = copy["find_parent"]
+    exact("INHERIT_TYPE parent lookup", find["call"], call_bytes(int(find["call"], 16), int(find["target"], 16)))
+    for key, expected in (("parent_in_ecx", "89c1"), ("parent_in_edx", "89c2"), ("record_in_eax", "89f8")):
+        exact(f"INHERIT_TYPE {key.replace('_', ' ')}", copy["arguments"][key], expected)
+    exact("INHERIT_TYPE copy call", copy["call"], call_bytes(int(copy["call"], 16), copy["span"][0]))
+    parent = copy["parent_store"]
+    operand(f"INHERIT_TYPE + {parent['offset']}", parent["site"],
+            {"kind": "store", "width": "dword", "base": "edi", "disp": int(parent["offset"], 16), "register": "ecx"})
+    mapped = {int(va, 16) for entry in stores.values() for store in entry["offsets"].values() for va in store["sites"]}
+    mapped.add(int(parent["site"], 16))
+    for va, raw in sorted(by_va.items()):
+        decoded = memory_operand(raw)
+        if (ENGINE_LOADER_SPAN[0] <= va < ENGINE_LOADER_SPAN[1] and decoded and decoded["kind"] == "store"
+                and decoded["base"] in ("edi", "edx") and va not in mapped):
+            problems.append(f"byte-checked record store at 0x{va:08x} ({raw}) is in no mapped tag")
+
+    span = copy["span"]
+    exact("Engine copy saves ECX", copy["keeps_ecx"]["push"], "51", span)
+    exact("Engine copy restores ECX", copy["keeps_ecx"]["pop"], "59", span)
+    exact("Engine copy record register", copy["record_in_ebx"], "89c3", span)
+    inside = sorted((va, raw) for va, raw in by_va.items() if span[0] <= va < span[1])
+    pairs = {}
+    for index, (va, raw) in enumerate(inside):
+        decoded = memory_operand(raw)
+        if not decoded or decoded["kind"] != "store" or decoded["base"] != "ebx":
+            continue
+        want = {"kind": "load", "width": decoded["width"], "base": "edx", "disp": decoded["disp"],
+                "register": decoded["register"]}
+        found, end = False, va
+        # Walk back over contiguous byte-checked sites; only a lea of another register may sit between the pair.
+        for before, raw_before in reversed(inside[:index]):
+            if before + len(raw_before) // 2 != end:
+                break
+            previous = memory_operand(raw_before)
+            if previous == want:
+                found = True
+                break
+            if (not previous or previous["kind"] != "lea"
+                    or register_family(previous["register"]) == register_family(decoded["register"])):
+                break
+            end = before
+        if found:
+            pairs[f"0x{decoded['disp']:x}"] = decoded["width"]
+        else:
+            problems.append(f"copy store at 0x{va:08x} has no byte-checked load of parent + 0x{decoded['disp']:02x} "
+                            f"into {decoded['register']} before it")
+    for offset in sorted(set(pairs) | set(copy["offsets"]), key=lambda text: int(text, 16)):
+        if offset not in pairs:
+            problems.append(f"ENGINE_COPY + {offset}: no byte-checked load/store pair in the copy")
+        elif offset not in copy["offsets"]:
+            problems.append(f"copy pair at + {offset} is not in ENGINE_COPY")
+        elif pairs[offset] != copy["offsets"][offset]:
+            problems.append(f"ENGINE_COPY + {offset}: the copy moves a {pairs[offset]}, not a {copy['offsets'][offset]}")
+    block = copy["block"]
+    offset, sites = int(block["offset"], 16), block["sites"]
+    exact("Engine copy block size", sites["size"], "b9" + block["size"].to_bytes(4, "little").hex(), span)
+    operand("Engine copy block source", sites["source"], {"kind": "lea", "register": "esi", "base": "edx", "disp": offset}, span)
+    operand("Engine copy block destination", sites["destination"],
+            {"kind": "lea", "register": "edi", "base": "ebx", "disp": offset}, span)
+    for key, expected in (("keep_size", "89c8"), ("dword_count", "c1e902"), ("movsd", "f2a5"), ("remainder", "8ac8"),
+                          ("remainder_mask", "80e103"), ("movsb", "f2a4")):
+        exact(f"Engine copy block {key.replace('_', ' ')}", sites[key], expected, span)
+
+    stored, copied = set(engine_stored_bytes(stores)), engine_copy_bytes(copy)
+    if copied - stored:
+        problems.append("the copy writes offsets no mapped tag stores: " + byte_ranges(copied - stored))
+    if stored - copied:
+        problems.append("mapped stores the copy misses: " + byte_ranges(stored - copied))
+    parent_bytes = set(range(int(parent["offset"], 16), int(parent["offset"], 16) + 4))
+    untouchable = set(range(ENGINE_NAME_BYTES)) | parent_bytes
+    if copied & untouchable:
+        problems.append("the copy writes the name or the parent address: " + byte_ranges(copied & untouchable))
+    return problems
+
+
+LAYOUT_MEMBER = re.compile(r"\b(char|uint8_t|uint32_t|float) (\w+)(?:\[(\d+)\])?;")
+LAYOUT_SIZES = {"char": 1, "uint8_t": 1, "uint32_t": 4, "float": 4}
+
+
+def struct_layout(header, name):
+    """Return ({member: (offset, size)}, total size) for `typedef struct {...} <name>;` in the C header text."""
+    end = header.index(f"}} {name};")
+    body = header[:end].rsplit("typedef struct {", 1)[1]
+    members, offset = {}, 0
+    for kind, member, count in LAYOUT_MEMBER.findall(body):
+        size = LAYOUT_SIZES[kind]
+        offset = (offset + size - 1) // size * size
+        members[member] = (offset, size * int(count or 1))
+        offset += size * int(count or 1)
+    return members, offset
+
+
+def engine_layout_problems(header, stores=None, copy=None):
+    """List every mapped engine offset that disagrees with Fr3EngineRecord in recovered/fr3_database_layouts.h.
+
+    Each mapped field (and the INHERIT_TYPE parent address) must be at its offset with its width (18 floats for
+    the torque slots), and the header must `_Static_assert` that offset.
+    """
+    stores = ENGINE_FIELD_STORES if stores is None else stores
+    copy = ENGINE_COPY if copy is None else copy
+    members, size = struct_layout(header, "Fr3EngineRecord")
+    problems = [] if size == ENGINE_RECORD_SIZE else [f"Fr3EngineRecord is 0x{size:x} bytes, not 0x{ENGINE_RECORD_SIZE:x}"]
+    asserted = {field: int(value, 16) for field, value in
+                re.findall(r"_Static_assert\(offsetof\(Fr3EngineRecord, (\w+)\) == (0x[0-9a-fA-F]+)", header)}
+    expected = [(tag, offset, store["field"], (1 if store["width"] == "byte" else 4) * store.get("slots", 1))
+                for tag, entry in stores.items() for offset, store in entry["offsets"].items()]
+    expected.append((copy["tag"], copy["parent_store"]["offset"], copy["parent_store"]["field"], 4))
+    for tag, offset, field, width in expected:
+        label = f"{tag} + {offset}"
+        if field not in members:
+            problems.append(f"{label}: Fr3EngineRecord has no field {field}")
+            continue
+        at, length = members[field]
+        if at != int(offset, 16):
+            problems.append(f"{label}: Fr3EngineRecord.{field} is at +0x{at:02x}")
+        elif length != width:
+            problems.append(f"{label}: Fr3EngineRecord.{field} is {length} bytes, the map stores {width}")
+        if asserted.get(field) != int(offset, 16):
+            problems.append(f"{label}: the header does not _Static_assert offsetof(Fr3EngineRecord, {field}) == {offset}")
+    return problems
+
+
+def unmapped_engine_tags(records, stores=None):
+    """Return {tag: (record, line)} for each engine tag in use, beyond TYPE/INHERIT_TYPE/END, with no mapped store."""
+    stores = ENGINE_FIELD_STORES if stores is None else stores
+    unmapped = {}
+    for record in records:
+        for tag, field in record["fields"].items():
+            if tag not in stores and tag not in ENGINE_UNSTORED_TAGS:
+                unmapped.setdefault(tag, (record["type"], field["line"]))
+    return dict(sorted(unmapped.items()))
+
+
 def load_field_evidence(path=REPO_ROOT / "analysis/selected/field-evidence.json"):
     return json.loads(Path(path).read_text())
 
@@ -630,6 +1033,14 @@ def load_known_tags(path=REPO_ROOT / "analysis/tags.json"):
     return {tag["name"] for tag in json.loads(Path(path).read_text())}
 
 
+def load_tag_ids(path=REPO_ROOT / "analysis/tags.json"):
+    return {tag["name"]: tag["id"] for tag in json.loads(Path(path).read_text())}
+
+
+def load_layout_header(path=REPO_ROOT / "recovered/fr3_database_layouts.h"):
+    return Path(path).read_text()
+
+
 def read_database(game_dir, relative, known_tags, sound_info=False):
     data = (Path(game_dir) / relative).read_bytes()
     return {"source": relative, "sha256": hashlib.sha256(data).hexdigest(),
@@ -652,10 +1063,11 @@ def table_dimensions(records, tag):
     return {"blocks": len(blocks), "rows": rows, "columns": columns}
 
 
-def verify_text_databases(game_dir, known_tags, evidence=None):
+def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, header=None):
     """Check the parsed demo databases against the counts observed in the data.
 
-    evidence is the field-evidence.json site list; by default the committed one is read.
+    evidence is the field-evidence.json site list, tag_ids the analysis/tags.json name-to-ID map and header the
+    text of recovered/fr3_database_layouts.h; by default the committed ones are read.
     """
     engines = read_database(game_dir, DATABASES["engines"], known_tags)["records"]
     gearboxes = read_database(game_dir, DATABASES["gearboxes"], known_tags)["records"]
@@ -668,6 +1080,14 @@ def verify_text_databases(game_dir, known_tags, evidence=None):
                 for field in torque), "Torque array shape mismatch")
     inherits = [record for record in engines if "INHERIT_TYPE" in record["fields"]]
     require(len(inherits) == 51, f"Engine inheritance count mismatch: {len(inherits)}")
+    evidence = load_field_evidence() if evidence is None else evidence
+    problems = engine_evidence_problems(evidence, load_tag_ids() if tag_ids is None else tag_ids)
+    require(not problems, "Engine stores lack byte-checked evidence: " + "; ".join(problems))
+    problems = engine_layout_problems(load_layout_header() if header is None else header)
+    require(not problems, "Engine stores disagree with recovered/fr3_database_layouts.h: " + "; ".join(problems))
+    unmapped = unmapped_engine_tags(engines)
+    require(not unmapped, "Engine tags without a byte-checked store: "
+            + ", ".join(f"{tag} (first in {name}, line {line})" for tag, (name, line) in unmapped.items()))
     for record in gearboxes:
         require(set(record["fields"]) == GEARBOX_TAGS, "Gearbox tag set mismatch: " + record["type"])
     require(len(tyres) == 109, f"Tyre record count mismatch: {len(tyres)}")
@@ -688,7 +1108,7 @@ def verify_text_databases(game_dir, known_tags, evidence=None):
     check_table_provenance(tyres, provenance)
     require({name: {table: entry["source"] for table, entry in tables.items()} for name, tables in provenance.items()}
             == expected, "Tyre table provenance disagrees with INHERIT_TYPE resolved in file order")
-    problems = scalar_evidence_problems(load_field_evidence() if evidence is None else evidence)
+    problems = scalar_evidence_problems(evidence)
     require(not problems, "Tyre scalar stores lack byte-checked evidence: " + "; ".join(problems))
     scalars = effective_scalars(tyres)
     require(set(scalars) == {record["type"] for record in tyre_inherits}, "Tyre effective scalar record set mismatch")
@@ -705,6 +1125,7 @@ def verify_text_databases(game_dir, known_tags, evidence=None):
     require(untagged == [{"record": "INDIGO", "line": 1410, "tokens": ["INHERIT_TYPE", "DEFAULT_TRACK"]}],
             "Untagged line set mismatch")
     return {"engine_records": len(engines), "gearbox_records": len(gearboxes), "torque_arrays": len(torque),
+            "engine_mapped_tags": len(ENGINE_FIELD_STORES),
             "torque_rows": [min(len(f["rows"]) for f in torque), max(len(f["rows"]) for f in torque)],
             "engine_inheritances": len(inherits), "gearbox_tags": sorted(GEARBOX_TAGS), "untagged_lines": untagged,
             "tyre_records": len(tyres), "tyre_inheritances": len(tyre_inherits), "tyre_tables": tables,

@@ -173,10 +173,12 @@ def check_field_instruction_sites(ctx):
 
 
 def check_text_databases(ctx):
-    summary = verify_text_databases(ctx.game, {tag["name"] for tag in ctx.tags}, ctx.field_evidence)
+    summary = verify_text_databases(ctx.game, {tag["name"] for tag in ctx.tags}, ctx.field_evidence,
+                                    {tag["name"]: tag["id"] for tag in ctx.tags},
+                                    (ctx.root / "recovered/fr3_database_layouts.h").read_text())
     ctx.verified["text_databases"] = summary
     return {key: summary[key] for key in ("engine_records", "gearbox_records", "tyre_records", "torque_arrays",
-                                          "tyre_effective_scalar_records", "sound_info_entries")}
+                                          "engine_mapped_tags", "tyre_effective_scalar_records", "sound_info_entries")}
 
 
 def check_tyre_table_dimensions(ctx):

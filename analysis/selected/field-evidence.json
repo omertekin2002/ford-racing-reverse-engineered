@@ -1,5 +1,655 @@
 [
   {
+    "va": 5384196,
+    "bytes": "bab0000000",
+    "claim": "Engine payload allocation size: EDX = 0xb0"
+  },
+  {
+    "va": 5384278,
+    "bytes": "3dab000000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0xab (MAX_AIRFLOW)"
+  },
+  {
+    "va": 5384285,
+    "bytes": "83f87f",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0x7f (ENGINE_BRAKING)"
+  },
+  {
+    "va": 5384294,
+    "bytes": "83f801",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0x1 (ACCELERATOR_SPEED)"
+  },
+  {
+    "va": 5384354,
+    "bytes": "d99f9c000000",
+    "claim": "MAX_AIRFLOW float store (fstp) at record (EDI) + 0x9c"
+  },
+  {
+    "va": 5384362,
+    "bytes": "3dc8000000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0xc8 (NUMBER_OF_TURBOS)"
+  },
+  {
+    "va": 5384369,
+    "bytes": "3db0000000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0xb0 (MAX_RPM)"
+  },
+  {
+    "va": 5384380,
+    "bytes": "3dad000000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0xad (MAX_DELTA_FUELFLOW)"
+  },
+  {
+    "va": 5384400,
+    "bytes": "d99fac000000",
+    "claim": "MAX_DELTA_FUELFLOW float store (fstp) at record (EDI) + 0xac"
+  },
+  {
+    "va": 5384420,
+    "bytes": "888794000000",
+    "claim": "NUMBER_OF_TURBOS stores the integer reader's low byte (AL) at record (EDI) + 0x94"
+  },
+  {
+    "va": 5384431,
+    "bytes": "3d18010000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0x118 (TORQUE_ARRAY)"
+  },
+  {
+    "va": 5384438,
+    "bytes": "3de4000000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0xe4 (ROUGHNESS)"
+  },
+  {
+    "va": 5384462,
+    "bytes": "d95f28",
+    "claim": "ROUGHNESS float store (fstp) at record (EDI) + 0x28"
+  },
+  {
+    "va": 5384476,
+    "bytes": "bb48000000",
+    "claim": "TORQUE_ARRAY fill size: EBX = 0x48 (18 dwords)"
+  },
+  {
+    "va": 5384481,
+    "bytes": "8d473c",
+    "claim": "TORQUE_ARRAY fill destination: EAX = record (EDI) + 0x3c"
+  },
+  {
+    "va": 5384484,
+    "bytes": "31d2",
+    "claim": "TORQUE_ARRAY fill value: EDX = 0"
+  },
+  {
+    "va": 5384486,
+    "bytes": "e8651d0100",
+    "claim": "TORQUE_ARRAY calls the fill routine at 0x00534690, zeroing + 0x3c..+0x83 before it reads any row"
+  },
+  {
+    "va": 5384491,
+    "bytes": "d94730",
+    "claim": "TORQUE_ARRAY loads the current MAX_RPM value at + 0x30 to derive its row count"
+  },
+  {
+    "va": 5384530,
+    "bytes": "89fa",
+    "claim": "TORQUE_ARRAY row pointer starts at EDX = record (EDI)"
+  },
+  {
+    "va": 5384539,
+    "bytes": "83c204",
+    "claim": "TORQUE_ARRAY advances the row pointer by 4 (EDX += 4) for each row"
+  },
+  {
+    "va": 5384545,
+    "bytes": "d95dd4",
+    "claim": "TORQUE_ARRAY stores each row's first column to the stack temporary [ebp - 0x2c], not to the record"
+  },
+  {
+    "va": 5384553,
+    "bytes": "d95a38",
+    "claim": "TORQUE_ARRAY stores each row's second column at EDX + 0x38, which is record + 0x3c + 4 * row"
+  },
+  {
+    "va": 5384576,
+    "bytes": "7356",
+    "claim": "TORQUE_ARRAY jumps to 0x005229d8, past the + 0x2c search and its store at 0x005229c1, when 0 is not below MAX_RPM"
+  },
+  {
+    "va": 5384630,
+    "bytes": "730c",
+    "claim": "TORQUE_ARRAY jumps to 0x005229c4, past the + 0x2c store at 0x005229c1, unless this row's value beats the best so far"
+  },
+  {
+    "va": 5384638,
+    "bytes": "8b45e8",
+    "claim": "TORQUE_ARRAY loads the loop's current RPM value from [ebp - 0x18] into EAX"
+  },
+  {
+    "va": 5384641,
+    "bytes": "89472c",
+    "claim": "TORQUE_ARRAY derived store of that value (EAX) at record (EDI) + 0x2c"
+  },
+  {
+    "va": 5384681,
+    "bytes": "0f8359feffff",
+    "claim": "TORQUE_ARRAY jumps back to the next tag, past the + 0x2c store at 0x005229f8, unless |+ 0x2c - + 0x30| is below the float at 0x00581d20"
+  },
+  {
+    "va": 5384687,
+    "bytes": "d94730",
+    "claim": "TORQUE_ARRAY loads MAX_RPM at + 0x30"
+  },
+  {
+    "va": 5384690,
+    "bytes": "d805241d5800",
+    "claim": "TORQUE_ARRAY adds the float at 0x00581d24"
+  },
+  {
+    "va": 5384696,
+    "bytes": "d95f2c",
+    "claim": "TORQUE_ARRAY derived store of that sum at record (EDI) + 0x2c"
+  },
+  {
+    "va": 5384704,
+    "bytes": "3d19010000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0x119 (TORQUE_MODIFIER)"
+  },
+  {
+    "va": 5384718,
+    "bytes": "d95f24",
+    "claim": "TORQUE_MODIFIER float store (fstp) at record (EDI) + 0x24"
+  },
+  {
+    "va": 5384726,
+    "bytes": "3d5b010000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0x15b (TURBO_MASS)"
+  },
+  {
+    "va": 5384744,
+    "bytes": "d99fa0000000",
+    "claim": "TURBO_MASS float store (fstp) at record (EDI) + 0xa0"
+  },
+  {
+    "va": 5384750,
+    "bytes": "f787a0000000ffffff7f",
+    "claim": "TURBO_MASS tests + 0xa0 against 0x7fffffff (zero ignoring the sign bit)"
+  },
+  {
+    "va": 5384760,
+    "bytes": "0f8410020000",
+    "claim": "TURBO_MASS jumps to 0x00522c4e when + 0xa0 is zero"
+  },
+  {
+    "va": 5384766,
+    "bytes": "d987a0000000",
+    "claim": "TURBO_MASS loads + 0xa0"
+  },
+  {
+    "va": 5384772,
+    "bytes": "d9e8",
+    "claim": "TURBO_MASS loads 1.0"
+  },
+  {
+    "va": 5384774,
+    "bytes": "def1",
+    "claim": "TURBO_MASS divides 1.0 by the + 0xa0 value (fdivrp)"
+  },
+  {
+    "va": 5384776,
+    "bytes": "d99fa4000000",
+    "claim": "TURBO_MASS derived store of 1 / (+ 0xa0) at record (EDI) + 0xa4"
+  },
+  {
+    "va": 5384787,
+    "bytes": "3d12010000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0x112 (TICKOVER_RPM)"
+  },
+  {
+    "va": 5384805,
+    "bytes": "d95f38",
+    "claim": "TICKOVER_RPM float store (fstp) at record (EDI) + 0x38"
+  },
+  {
+    "va": 5384822,
+    "bytes": "d95f30",
+    "claim": "MAX_RPM float store (fstp) at record (EDI) + 0x30"
+  },
+  {
+    "va": 5384830,
+    "bytes": "3db1000000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0xb1 (MAX_TURBO_PRESSURE)"
+  },
+  {
+    "va": 5384844,
+    "bytes": "d99f84000000",
+    "claim": "MAX_TURBO_PRESSURE float store (fstp) at record (EDI) + 0x84"
+  },
+  {
+    "va": 5384855,
+    "bytes": "3dc6000000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0xc6 (NUMBER_OF_CYLINDERS)"
+  },
+  {
+    "va": 5384873,
+    "bytes": "888795000000",
+    "claim": "NUMBER_OF_CYLINDERS stores the integer reader's low byte (AL) at record (EDI) + 0x95"
+  },
+  {
+    "va": 5384884,
+    "bytes": "3dae000000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0xae (MAX_FUELFLOW)"
+  },
+  {
+    "va": 5384902,
+    "bytes": "d99fa8000000",
+    "claim": "MAX_FUELFLOW float store (fstp) at record (EDI) + 0xa8"
+  },
+  {
+    "va": 5384922,
+    "bytes": "d95f20",
+    "claim": "ENGINE_BRAKING float store (fstp) at record (EDI) + 0x20"
+  },
+  {
+    "va": 5384930,
+    "bytes": "3d8a000000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0x8a (FUEL_CUTOFF)"
+  },
+  {
+    "va": 5384937,
+    "bytes": "3d87000000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0x87 (FLYWHEEL_MASS)"
+  },
+  {
+    "va": 5384961,
+    "bytes": "d99f88000000",
+    "claim": "FLYWHEEL_MASS float store (fstp) at record (EDI) + 0x88"
+  },
+  {
+    "va": 5384981,
+    "bytes": "d95f1c",
+    "claim": "FUEL_CUTOFF float store (fstp) at record (EDI) + 0x1c"
+  },
+  {
+    "va": 5384989,
+    "bytes": "3d9c000000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0x9c (INHERIT_TYPE)"
+  },
+  {
+    "va": 5385020,
+    "bytes": "e82f020000",
+    "claim": "INHERIT_TYPE calls 0x00522d70 to look up the parent record by the name just read"
+  },
+  {
+    "va": 5385025,
+    "bytes": "89c1",
+    "claim": "INHERIT_TYPE keeps the parent record address in ECX"
+  },
+  {
+    "va": 5385027,
+    "bytes": "89c2",
+    "claim": "INHERIT_TYPE passes the parent record address in EDX to the engine copy"
+  },
+  {
+    "va": 5385029,
+    "bytes": "89f8",
+    "claim": "INHERIT_TYPE passes the current record address (EDI) in EAX to the engine copy"
+  },
+  {
+    "va": 5385031,
+    "bytes": "e834010000",
+    "claim": "INHERIT_TYPE calls the engine copy at 0x00522c80"
+  },
+  {
+    "va": 5385036,
+    "bytes": "894f18",
+    "claim": "INHERIT_TYPE stores the parent record address (ECX) at + 0x18"
+  },
+  {
+    "va": 5385044,
+    "bytes": "3da5000000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0xa5 (LOCATION_TYPE)"
+  },
+  {
+    "va": 5385060,
+    "bytes": "ba08745900",
+    "claim": "LOCATION_TYPE passes the enum word table at 0x00597408 in EDX to the enum reader"
+  },
+  {
+    "va": 5385072,
+    "bytes": "884714",
+    "claim": "LOCATION_TYPE stores the enum reader's low byte (AL) at record (EDI) + 0x14"
+  },
+  {
+    "va": 5385080,
+    "bytes": "3d88000000",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0x88 (FLYWHEEL_RADIUS)"
+  },
+  {
+    "va": 5385098,
+    "bytes": "d99f8c000000",
+    "claim": "FLYWHEEL_RADIUS float store (fstp) at record (EDI) + 0x8c"
+  },
+  {
+    "va": 5385118,
+    "bytes": "d99f90000000",
+    "claim": "ACCELERATOR_SPEED float store (fstp) at record (EDI) + 0x90"
+  },
+  {
+    "va": 5385129,
+    "bytes": "83f810",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0x10 (ASPIRATION_TYPE)"
+  },
+  {
+    "va": 5385145,
+    "bytes": "baf8735900",
+    "claim": "ASPIRATION_TYPE passes the enum word table at 0x005973f8 in EDX to the enum reader"
+  },
+  {
+    "va": 5385157,
+    "bytes": "898798000000",
+    "claim": "ASPIRATION_TYPE stores the enum reader's result (EAX) at record (EDI) + 0x98"
+  },
+  {
+    "va": 5385168,
+    "bytes": "83f837",
+    "claim": "Engine tag dispatch compares the tag ID in EAX with 0x37 (CAPACITY)"
+  },
+  {
+    "va": 5385184,
+    "bytes": "d95f34",
+    "claim": "CAPACITY float store (fstp) at record (EDI) + 0x34"
+  },
+  {
+    "va": 5385219,
+    "bytes": "89c7",
+    "claim": "The record-creating branch keeps the record node returned by 0x0042eed0 in EDI"
+  },
+  {
+    "va": 5385231,
+    "bytes": "83c720",
+    "claim": "The record-creating branch advances EDI by 0x20 past the node header to the payload"
+  },
+  {
+    "va": 5385294,
+    "bytes": "c787a40000000000803f",
+    "claim": "TURBO_MASS derived store of 1.0 (0x3f800000) at record (EDI) + 0xa4 when + 0xa0 is zero"
+  },
+  {
+    "va": 5385345,
+    "bytes": "51",
+    "claim": "Engine copy saves ECX, which holds the INHERIT_TYPE parent address"
+  },
+  {
+    "va": 5385348,
+    "bytes": "89c3",
+    "claim": "Engine copy keeps the record address (EAX) in EBX"
+  },
+  {
+    "va": 5385350,
+    "bytes": "b948000000",
+    "claim": "Engine copy block size: ECX = 0x48 bytes"
+  },
+  {
+    "va": 5385355,
+    "bytes": "8a4214",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) byte + 0x14 into AL"
+  },
+  {
+    "va": 5385358,
+    "bytes": "8d723c",
+    "claim": "Engine copy block source: ESI = parent (EDX) + 0x3c"
+  },
+  {
+    "va": 5385361,
+    "bytes": "884314",
+    "claim": "Engine copy stores that byte (AL) at record (EBX) + 0x14"
+  },
+  {
+    "va": 5385364,
+    "bytes": "8d7b3c",
+    "claim": "Engine copy block destination: EDI = record (EBX) + 0x3c"
+  },
+  {
+    "va": 5385367,
+    "bytes": "8b421c",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x1c into EAX"
+  },
+  {
+    "va": 5385370,
+    "bytes": "89431c",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0x1c"
+  },
+  {
+    "va": 5385373,
+    "bytes": "8b4220",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x20 into EAX"
+  },
+  {
+    "va": 5385376,
+    "bytes": "894320",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0x20"
+  },
+  {
+    "va": 5385379,
+    "bytes": "8b4224",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x24 into EAX"
+  },
+  {
+    "va": 5385382,
+    "bytes": "894324",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0x24"
+  },
+  {
+    "va": 5385385,
+    "bytes": "8b4228",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x28 into EAX"
+  },
+  {
+    "va": 5385388,
+    "bytes": "894328",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0x28"
+  },
+  {
+    "va": 5385391,
+    "bytes": "8b422c",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x2c into EAX"
+  },
+  {
+    "va": 5385394,
+    "bytes": "89432c",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0x2c"
+  },
+  {
+    "va": 5385397,
+    "bytes": "8b4230",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x30 into EAX"
+  },
+  {
+    "va": 5385400,
+    "bytes": "894330",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0x30"
+  },
+  {
+    "va": 5385403,
+    "bytes": "8b4234",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x34 into EAX"
+  },
+  {
+    "va": 5385406,
+    "bytes": "894334",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0x34"
+  },
+  {
+    "va": 5385409,
+    "bytes": "8b4238",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x38 into EAX"
+  },
+  {
+    "va": 5385412,
+    "bytes": "894338",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0x38"
+  },
+  {
+    "va": 5385416,
+    "bytes": "89c8",
+    "claim": "Engine copy keeps the block size (ECX) in EAX"
+  },
+  {
+    "va": 5385418,
+    "bytes": "c1e902",
+    "claim": "Engine copy block dword count: ECX = 0x48 >> 2 = 0x12"
+  },
+  {
+    "va": 5385421,
+    "bytes": "f2a5",
+    "claim": "Engine copy repeats movsd ECX times (F2 prefix): 0x12 dwords from parent + 0x3c to record + 0x3c"
+  },
+  {
+    "va": 5385423,
+    "bytes": "8ac8",
+    "claim": "Engine copy block remainder: CL = AL, the low byte of 0x48"
+  },
+  {
+    "va": 5385425,
+    "bytes": "80e103",
+    "claim": "Engine copy block remainder: CL = CL & 3, which is 0 for 0x48"
+  },
+  {
+    "va": 5385428,
+    "bytes": "f2a4",
+    "claim": "Engine copy repeats movsb CL times (F2 prefix): no bytes for 0x48"
+  },
+  {
+    "va": 5385431,
+    "bytes": "8b8284000000",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x84 into EAX"
+  },
+  {
+    "va": 5385437,
+    "bytes": "898384000000",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0x84"
+  },
+  {
+    "va": 5385443,
+    "bytes": "8b8288000000",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x88 into EAX"
+  },
+  {
+    "va": 5385449,
+    "bytes": "898388000000",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0x88"
+  },
+  {
+    "va": 5385455,
+    "bytes": "8b828c000000",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x8c into EAX"
+  },
+  {
+    "va": 5385461,
+    "bytes": "89838c000000",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0x8c"
+  },
+  {
+    "va": 5385467,
+    "bytes": "8b8290000000",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x90 into EAX"
+  },
+  {
+    "va": 5385473,
+    "bytes": "898390000000",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0x90"
+  },
+  {
+    "va": 5385479,
+    "bytes": "8a8294000000",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) byte + 0x94 into AL"
+  },
+  {
+    "va": 5385485,
+    "bytes": "888394000000",
+    "claim": "Engine copy stores that byte (AL) at record (EBX) + 0x94"
+  },
+  {
+    "va": 5385491,
+    "bytes": "8a8295000000",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) byte + 0x95 into AL"
+  },
+  {
+    "va": 5385497,
+    "bytes": "888395000000",
+    "claim": "Engine copy stores that byte (AL) at record (EBX) + 0x95"
+  },
+  {
+    "va": 5385503,
+    "bytes": "8b8298000000",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x98 into EAX"
+  },
+  {
+    "va": 5385509,
+    "bytes": "898398000000",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0x98"
+  },
+  {
+    "va": 5385515,
+    "bytes": "8b829c000000",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x9c into EAX"
+  },
+  {
+    "va": 5385521,
+    "bytes": "89839c000000",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0x9c"
+  },
+  {
+    "va": 5385527,
+    "bytes": "8b82a0000000",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0xa0 into EAX"
+  },
+  {
+    "va": 5385533,
+    "bytes": "8983a0000000",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0xa0"
+  },
+  {
+    "va": 5385539,
+    "bytes": "8b82a4000000",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0xa4 into EAX"
+  },
+  {
+    "va": 5385545,
+    "bytes": "8983a4000000",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0xa4"
+  },
+  {
+    "va": 5385551,
+    "bytes": "8b82a8000000",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0xa8 into EAX"
+  },
+  {
+    "va": 5385557,
+    "bytes": "8983a8000000",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0xa8"
+  },
+  {
+    "va": 5385563,
+    "bytes": "8b82ac000000",
+    "claim": "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0xac into EAX"
+  },
+  {
+    "va": 5385569,
+    "bytes": "8983ac000000",
+    "claim": "Engine copy stores that dword (EAX) at record (EBX) + 0xac"
+  },
+  {
+    "va": 5385577,
+    "bytes": "59",
+    "claim": "Engine copy restores ECX, so the INHERIT_TYPE store at 0x00522b4c writes the parent address"
+  },
+  {
+    "va": 5385579,
+    "bytes": "c3",
+    "claim": "Engine copy returns after its last store at + 0xac"
+  },
+  {
     "va": 5388340,
     "bytes": "ba58000000",
     "claim": "Tyre payload allocation size: EDX = 0x58"
