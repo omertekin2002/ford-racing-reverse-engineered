@@ -579,6 +579,20 @@ assertions. All 64 instruction sites were byte-checked against the pinned
 `fr3.exe` at `field_instruction_sites_verified_utc`, with the comparison
 `verify_findings.py` makes; the other results date from `verified_utc`. Nine parser tests additionally reject malformed synthetic
 resources, and eight helper tests cover virtual-address bounds and file identity checks.
+`verify_findings.py` runs these checks at three levels (see
+[the README](../README.md#validate-without-rebuilding)). `--level data` needs
+only the demo from `acquire_demo.py` and checks the archive, executable, game
+files, tags, compressed resources, PCG indexes, text databases and tyre table
+dimensions. `--level instructions` needs only `inputs/fr3.exe`: it checks the
+PE build metadata and imports, byte-checks every `field-evidence.json` site,
+and regenerates the bounded disassembly with `extract_selected.py` into a
+temporary directory, failing on any line or file that differs from the
+committed `analysis/selected/`. `--level full`, the default and the only level
+that rewrites `verification.json`, adds the Ghidra baseline, annotated-export,
+snapshot-import and C layout checks, and needs `scripts/run_analysis.py`'s
+outputs and `gcc`. A level whose inputs are missing reports itself unavailable
+(exit code 3) instead of failing part-way, and `--report` records which checks
+a run performed and which levels it did not.
 The pinned installer was tested from a fresh temporary tool directory; its
 Ghidra probe decompiled the expected arithmetic expression.
 The default acquisition script also downloaded and extracted the demo into a
