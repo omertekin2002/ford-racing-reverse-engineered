@@ -1,7 +1,9 @@
 name: Wine compatibility packages
 
 # Builds and verifies the Linux and macOS Wine packages and keeps them as a short-lived workflow artifact.
-# It publishes nothing: no release, tag or deployment. A release is still created by the owner from these files.
+# A pushed tag v<VERSION> (VERSION in scripts/build_releases.py) also drafts a GitHub release holding exactly
+# those verified files. Only the draft-release job can write, and only on a tag push; it never edits an existing
+# release, pushes a tag or publishes. The owner reviews the draft and presses Publish (docs/releases.md).
 on:
   workflow_dispatch:
   pull_request:
@@ -11,6 +13,7 @@ on:
       - scripts/fr3_common.py
       - scripts/setup_tools.py
       - scripts/acquire_demo.py
+      - scripts/release_tag.py
       - release/**
       - docs/releases.md
       - docs/release-validation.md
@@ -18,12 +21,15 @@ on:
       - .github/workflows/releases.yml
   push:
     branches: [main]
+    # GitHub does not evaluate path filters for tag pushes, so a v* tag always runs; main keeps the filter.
+    tags: ['v*']
     paths:
       - scripts/build_releases.py
       - scripts/setup_release_tools.py
       - scripts/fr3_common.py
       - scripts/setup_tools.py
       - scripts/acquire_demo.py
+      - scripts/release_tag.py
       - release/**
       - docs/releases.md
       - docs/release-validation.md
@@ -45,6 +51,8 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    permissions:
+      contents: read
     env:
       RELEASES: artifacts/releases
     steps:
@@ -52,6 +60,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Check the tag matches VERSION
+        if: startsWith(github.ref, 'refs/tags/')
+        run: python3 scripts/release_tag.py check-tag "$GITHUB_REF"
       - name: Restore pinned runtimes and demo downloads
         # The default locations: ~/.cache/fr3/downloads and ~/.local/share/fr3-tools/runtime (see README).
         # Every cached file is checked against its pinned SHA-256 again before use.
@@ -94,6 +105,9 @@ jobs:
               print(f"Verified {entry['path']}: {entry['bytes']:,} bytes, {entry['manifest_files']} manifest files, "
                     f"source {entry['source_revision']}")
           EOF
+      - name: Check the packages name the tagged commit
+        if: startsWith(github.ref, 'refs/tags/')
+        run: python3 scripts/release_tag.py check-revision "$RELEASES/builds.json" "$GITHUB_SHA"
       - name: Run the Linux launcher's own verification
         run: |
           package="$(jq -r '.[] | select(.platform == "linux") | .path' "$RELEASES/builds.json")"
@@ -133,3 +147,35 @@ jobs:
           retention-days: 14
           # The archives are already compressed.
           compression-level: 0
+
+  draft-release:
+    # Tag pushes only. It creates a draft, never publishes, and refuses a tag that already has any release.
+    needs: build
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    env:
+      PACKAGES: wine-packages
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download the verified packages
+        uses: actions/download-artifact@v4
+        with:
+          name: ford-racing-3-demo-wine-packages
+          path: ${{ env.PACKAGES }}
+      - name: Check the release checksums
+        working-directory: ${{ env.PACKAGES }}
+        run: sha256sum -c SHA256SUMS
+      - name: Draft the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/release_tag.py draft "$PACKAGES" --tag "$GITHUB_REF_NAME" --sha "$GITHUB_SHA" \
+            --repo "$GITHUB_REPOSITORY" --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
