@@ -122,6 +122,45 @@ class BuildTests(ResearchTestCase):
         for relative in EVIDENCE:
             self.assertIn(relative, links)
 
+    def test_entrance_page_answers_the_tyre_tables_question(self):
+        self.build()
+        index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
+        start = index.index('<section id="tyre-tables">')
+        answer = index[start:index.index("</section>", start)]
+        self.assertLess(index.index("Values are shown exactly as declared"), start)
+        self.assertLess(start, index.index("<h2>Pages</h2>"))
+        text = " ".join(re.sub(r"<[^>]+>", " ", answer).split())
+        self.assertIn("the 3 tyres split across 2 records: 1 from ROOT and 2 from MID", text)
+        self.assertIn("Traced example: CHILD", text)
+        self.assertIn("MID and CHILD read all five tables from the same records", text)
+        # Every link in the answer names a page and id the build wrote.
+        links = re.findall(r'href="([^"#]+)#([^"]+)"', answer)
+        self.assertTrue(links)
+        for page, fragment in links:
+            self.assertIn(f'id="{fragment}"', (self.output / page).read_text(encoding="utf-8"), (page, fragment))
+
+    def test_tyre_tables_answer_follows_the_tyre_data(self):
+        # One more tyre inheriting MID changes the vertical load split the entrance page states.
+        (self.game / DATABASES["tyres"]).write_bytes(
+            TYRES.replace(":END", ":TYPE MORE\n:INHERIT_TYPE MID\n:END").replace("\n", "\r\n").encode("ascii"))
+        self.assertEqual(self.build(), {**COUNTS, "tyres": 4})
+        text = " ".join(re.sub(r"<[^>]+>", " ", (self.output / INDEX_PAGE).read_text(encoding="utf-8")).split())
+        self.assertIn("the 4 tyres split across 2 records: 1 from ROOT and 3 from MID", text)
+
+    def test_tyre_data_without_an_example_or_pair_refuses_the_build(self):
+        self.build()
+        before = {name: (self.output / name).read_bytes() for name in files_under(self.output)}
+        for old, new, message in ((":VERTICAL_LOAD\n0 2.0\n", "", "no worked example to trace"),
+                                  (":WIDTH 0.125", ":WIDTH 0.25", "cannot show where the comparison ends")):
+            with self.subTest(message=message):
+                self.assertIn(old, TYRES)
+                (self.game / DATABASES["tyres"]).write_bytes(
+                    TYRES.replace(old, new).replace("\n", "\r\n").encode("ascii"))
+                with self.assertRaisesRegex(ValueError, message):
+                    self.build()
+                self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)},
+                                 before)
+
     def test_routines_page_links_its_copied_evidence(self):
         self.build()
         routines = (self.output / "routines.html").read_text(encoding="utf-8")
@@ -354,6 +393,14 @@ class VerifierTests(unittest.TestCase):
         self.setUp()
         self.edit("routines.html", 'id="site-00523f10"', 'id="site-gone"')
         self.reject("tyres.html has a broken local link: 'routines.html#site-00523f10' names no id in routines.html")
+
+    def test_tyre_tables_answer_links_a_missing_anchor(self):
+        for page, anchor in (("tyres.html", "tyre-MID-line-21"), ("tyres.html", "tyre-CHILD-VERTICAL_LOAD"),
+                             ("routines.html", "site-005239a9"), ("routines.html", "fr3_get_tyre_vertical_load")):
+            with self.subTest(anchor=anchor):
+                self.setUp()
+                self.edit(page, f'id="{anchor}"', 'id="gone"')
+                self.reject(f"index.html has a broken local link: '{page}#{anchor}' names no id in {page}")
 
     def test_external_resources(self):
         cases = (('<img src="https://example.com/x.png">', "links to an external resource: <img src="),
