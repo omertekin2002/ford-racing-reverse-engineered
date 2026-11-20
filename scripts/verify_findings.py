@@ -77,7 +77,7 @@ def main():
     field_evidence = load(root / "analysis/selected/field-evidence.json")
     for item in field_evidence:
         require(read_va(pe, executable, item["va"], len(bytes.fromhex(item["bytes"]))).hex() == item["bytes"], "Field instruction mismatch")
-    text_databases = verify_text_databases(game, {tag["name"] for tag in tags})
+    text_databases = verify_text_databases(game, {tag["name"] for tag in tags}, field_evidence)
     tyre_tables = text_databases["tyre_tables"]
     table_counts = {tag: {"rows": tyre_tables[tag]["rows"], "columns": tyre_tables[tag]["columns"]}
                     for tag in ("LONGITUDINAL_COMBINED_VALUES", "LATERAL_COMBINED_VALUES")}

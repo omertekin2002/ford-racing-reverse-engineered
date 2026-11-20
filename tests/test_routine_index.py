@@ -330,7 +330,7 @@ class CommittedFilesTests(unittest.TestCase):
     def test_builds_from_the_committed_analysis_files(self):
         result = self.run_script("--output", str(self.output))
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("Wrote 25 routines, 15 disassembly files and 32 byte-checked sites", result.stdout)
+        self.assertIn("Wrote 25 routines, 15 disassembly files and 64 byte-checked sites", result.stdout)
         page = self.output.read_text(encoding="utf-8")
         committed = json.loads(routine_index.STATUS.read_text(encoding="utf-8"))
         self.assertEqual(page.count('<section class="routine"'), 25)
@@ -343,7 +343,9 @@ class CommittedFilesTests(unittest.TestCase):
         self.assertEqual(len(routine_index.ASM_FILES), 15)
         found = sections(page)
         self.assertEqual(site_vas(found["fr3_get_tyre_sound_info"]), ["00523f10", "00523f1c", "00523f27"])
-        self.assertEqual(len(site_vas(found["fr3_load_tyre_database"])), 21)
+        self.assertEqual(len(site_vas(found["fr3_load_tyre_database"])), 30)
+        # The scalar copy's eleven load/store pairs and its ret.
+        self.assertEqual(len(site_vas(found["fr3_copy_tyre_scalar_fields"])), 23)
         for name in ("fill_memory", "allocate_database_record", "create_database", "fill_memory_body"):
             self.assertIn(f"asm-{name}", found)
 

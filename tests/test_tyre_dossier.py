@@ -13,11 +13,12 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from dossier_common import NOTICE_LINKS, rights_notice
 import tyre_dossier
-from text_database import (REPO_ROOT, RESOLVED_TYRE_TABLES, TYRE_TABLE_ACCESSORS, TYRE_TABLES, parse,
-                           resolve_tyre_tables, scalar_inheritance, tyre_table_provenance)
+from text_database import (REPO_ROOT, RESOLVED_TYRE_TABLES, TYRE_SCALAR_STORES, TYRE_TABLE_ACCESSORS, TYRE_TABLES, parse,
+                           ZERO_FILLED, effective_scalars, resolve_tyre_tables, tyre_table_provenance)
 
 TAGS = {"INHERIT_TYPE", "RADIUS", "WIDTH", "LOCATION_TYPE", "SOUND_INFO", "START_RPM", *TYRE_TABLES}
-# ROOT declares every table, MID overrides VERTICAL_LOAD, CHILD declares a scalar on each side of INHERIT_TYPE.
+# ROOT declares every table, MID overrides VERTICAL_LOAD, CHILD declares a scalar on each side of INHERIT_TYPE
+# (so the copy overwrites its RADIUS with the one MID inherits from ROOT) and an unmapped LOCATION_TYPE.
 TYRES = """:TYPE ROOT
 :RADIUS 777.25
 :LOCATION_TYPE FRONT
@@ -44,6 +45,7 @@ TYRES = """:TYPE ROOT
 :RADIUS 0.5
 :INHERIT_TYPE MID
 :WIDTH 0.125
+:LOCATION_TYPE REAR
 :END
 """
 NAMES = ["ROOT", "MID", "CHILD"]
@@ -85,7 +87,7 @@ def tyres_json(text=TYRES):
     records = parse(text, TAGS, sound_info=True)
     return {"source": "DATA/ASCII/CARS/TYREDATA.DAT", "sha256": hashlib.sha256(text.encode()).hexdigest(),
             "records": records, "resolved_tables": resolve_tyre_tables(records),
-            "table_provenance": tyre_table_provenance(records), "scalar_inheritance": scalar_inheritance(records)}
+            "table_provenance": tyre_table_provenance(records), "effective_scalars": effective_scalars(records)}
 
 
 def section(page, name):
@@ -201,11 +203,9 @@ class DossierPageTests(DossierTestCase):
         header = page[:page.index("<h2>")]
         self.assertIn('<dt>Loaded by</dt><dd><a href="routines.html#fr3_load_tyre_database">'
                       "<code>fr3_load_tyre_database</code></a> (<code>0x00523820</code>); on the routines page.", header)
-        scalars = section(page, "CHILD")[section(page, "CHILD").index("<h3>Scalar inheritance</h3>"):]
-        self.assertIn('The scalar copy at <a href="routines.html#fr3_copy_tyre_scalar_fields"><code>0x00524090</code>'
-                      "</a> runs when <code>INHERIT_TYPE</code> is parsed", scalars)
-        self.assertIn('<span class="label">unresolved</span>', scalars)
-        self.assertIn("No inherited value is shown.", scalars)
+        scalars = section(page, "CHILD")[section(page, "CHILD").index("<h3>Scalar fields</h3>"):]
+        self.assertIn('it calls the scalar copy at <a href="routines.html#fr3_copy_tyre_scalar_fields"><code>0x00524090'
+                      '</code></a> (<a href="routines.html#site-00523b3a"><code>0x00523b3a</code></a>)', scalars)
 
     def test_accessor_labels_come_from_status_json(self):
         page = self.build(status=status_with("00523e70", "fr3_relabelled_accessor"))
@@ -218,19 +218,61 @@ class DossierPageTests(DossierTestCase):
         rows = SITE_ROW.findall(why(self.build(evidence=evidence), "CHILD", "VERTICAL_LOAD"))
         self.assertEqual([int(va, 16) for role, va, _, _ in rows if role == "accessor"], ACCESSOR_SITES["VERTICAL_LOAD"])
 
-    def test_scalar_inheritance_is_unresolved_and_shows_no_parent_values(self):
+    def scalar_rows(self, page, name):
+        body = section(page, name)
+        table = body[body.index("<h3>Scalar fields</h3>"):]
+        table = table[:table.index("</table>")]
+        return {match[1]: match[0] for match in re.finditer(r"<tr><td><code>(\w+)</code>.*?</tr>", table)}
+
+    def test_scalar_fields_show_each_effective_declaration_and_its_source(self):
         page = self.build()
-        self.assertNotIn("Scalar inheritance", section(page, "ROOT"))
-        self.assertIn("777.25", section(page, "ROOT"))
+        self.assertNotIn("Scalar fields", section(page, "ROOT"))
+        rows = self.scalar_rows(page, "CHILD")
+        self.assertEqual(list(rows), list(TYRE_SCALAR_STORES))
+        # CHILD's own RADIUS (line 24) comes before INHERIT_TYPE, so the copy replaces it with ROOT's via MID.
+        self.assertIn('<td><span class="num">777.25</span></td><td>inherited</td><td><a href="#tyre-ROOT-line-2">ROOT '
+                      'line 2</a></td><td><a href="#tyre-CHILD">CHILD</a> &rarr; <a href="#tyre-MID">MID</a> &rarr; '
+                      '<a href="#tyre-ROOT">ROOT</a></td>', rows["RADIUS"])
+        self.assertIn("<td><code>+ 0x28</code>, <code>+ 0x3c</code></td>", rows["RADIUS"])
+        self.assertIn('<td><span class="num">0.125</span></td><td>declared</td><td><a href="#tyre-CHILD-line-26">CHILD '
+                      'line 26</a></td><td><a href="#tyre-CHILD">CHILD</a></td>', rows["WIDTH"])
+        self.assertIn('<tr id="tyre-ROOT-line-2"><td>2</td><td><code>:RADIUS</code></td>', page)
+        self.assertIn('<tr id="tyre-CHILD-line-26"><td>26</td><td><code>:WIDTH</code></td>', page)
         child = section(page, "CHILD")
-        scalars = child[child.index("<h3>Scalar inheritance</h3>"):]
-        self.assertIn('<span class="label">unresolved</span>', scalars)
-        self.assertIn('href="#tyre-MID">MID</a> on line 25', scalars)
-        self.assertIn("<code>RADIUS</code> (line 24)</td>", scalars)
-        self.assertIn("<code>WIDTH</code> (line 26)</td>", scalars)
-        for parent_value in ("777.25", "0.25", "FRONT", "1500"):
-            self.assertNotIn(parent_value, child)
-        self.assertIn("0.5", child)
+        self.assertIn("overwritten by the copy: <code>RADIUS</code> (line 24).", child)
+        self.assertIn("is on line 25", child)
+        mid = self.scalar_rows(page, "MID")
+        self.assertIn('<a href="#tyre-ROOT-line-2">ROOT line 2</a>', mid["RADIUS"])
+
+    def test_zero_filled_and_unmapped_fields_get_no_value(self):
+        page = self.build()
+        rows = self.scalar_rows(page, "CHILD")
+        for tag in set(TYRE_SCALAR_STORES) - {"RADIUS", "WIDTH"}:
+            with self.subTest(tag=tag):
+                self.assertIn(f'<td><span class="label">{ZERO_FILLED}</span></td><td>{ZERO_FILLED}</td>'
+                              "<td>none along the path</td>", rows[tag])
+                self.assertNotIn('class="num"', rows[tag])
+        child = section(page, "CHILD")
+        self.assertIn('<div class="unresolved"><p><span class="label">unmapped</span>: no byte-checked store is known '
+                      "for <code>LOCATION_TYPE</code> (line 27), so no effective value is given.</p></div>", child)
+        self.assertNotIn("LOCATION_TYPE", self.scalar_rows(page, "CHILD"))
+
+    def test_scalar_rows_link_their_store_and_copy_sites(self):
+        page = self.build()
+        evidence = {site["va"]: site["bytes"] for site in EVIDENCE}
+        for tag, row in self.scalar_rows(page, "CHILD").items():
+            with self.subTest(tag=tag):
+                cells = re.findall(r"<td>(.*?)</td>", row)
+                stores = [int(va, 16) for va in re.findall(r"site-([0-9a-f]{8})", cells[-2])]
+                copies = [int(va, 16) for va in re.findall(r"site-([0-9a-f]{8})", cells[-1])]
+                self.assertTrue(set(stores + copies) <= set(evidence))
+                offsets = [int(offset, 16) for offset in TYRE_SCALAR_STORES[tag]["offsets"]]
+                self.assertEqual(sorted(evidence[va] for va in copies),
+                                 sorted([f"8948{offset:02x}" for offset in offsets]
+                                        + [f"8b4a{offset:02x}" for offset in offsets]))
+                self.assertTrue(all(evidence[va].startswith(("d9", "d8")) for va in stores))
+        self.assertIn("(scaled by the float at <code>0x00597484</code> when stored)",
+                      self.scalar_rows(page, "CHILD")["ROAD_MAGIC_GRIP_NUMBER"])
 
     def test_declarations_as_written(self):
         root = section(self.build(), "ROOT")
@@ -307,9 +349,13 @@ class DossierRejectTests(DossierTestCase):
             (("table_provenance", "CHILD"), [], "table_provenance.CHILD"),
             (("table_provenance", "CHILD", "VERTICAL_LOAD"), [], "table_provenance.CHILD.VERTICAL_LOAD"),
             (("table_provenance", "CHILD", "VERTICAL_LOAD", "path"), [[]], "VERTICAL_LOAD.path"),
-            (("scalar_inheritance", "CHILD"), {}, "scalar_inheritance.CHILD has no 'status'"),
-            (("scalar_inheritance", "CHILD", "inherit_type"), {}, "inherit_type has no 'line'"),
-            (("scalar_inheritance", "CHILD", "scalars_before"), [None], "scalars_before[0]"),
+            (("effective_scalars", "CHILD"), {}, "effective_scalars.CHILD has no 'inherit_type'"),
+            (("effective_scalars", "CHILD", "inherit_type"), {}, "inherit_type has no 'line'"),
+            (("effective_scalars", "CHILD", "fields", "WIDTH"), {}, "fields.WIDTH has no 'status'"),
+            (("effective_scalars", "CHILD", "fields", "WIDTH", "status"), "resolved", "is not one of declared"),
+            (("effective_scalars", "CHILD", "fields", "WIDTH", "source"), 7, "fields.WIDTH"),
+            (("effective_scalars", "CHILD", "overwritten"), [None], "overwritten[0]"),
+            (("effective_scalars", "CHILD", "unmapped"), [{}], "unmapped[0]"),
         ]
         for path, value, message in cases:
             with self.subTest(path=path):
@@ -371,28 +417,36 @@ class DossierRejectTests(DossierTestCase):
         tyres["table_provenance"]["CHILD"]["CAMBER_THRUST"]["path"] = ["CHILD", "ROOT"]
         self.reject("does not follow INHERIT_TYPE", tyres)
 
-    def test_scalar_inheritance_must_stay_unresolved(self):
+    def test_effective_scalars_must_list_every_inheriting_record(self):
         tyres = tyres_json()
-        tyres["scalar_inheritance"]["CHILD"]["status"] = "resolved"
-        self.reject("not labelled unresolved", tyres)
-        tyres = tyres_json()
-        del tyres["scalar_inheritance"]["MID"]
-        self.reject("scalar_inheritance does not list exactly", tyres)
+        del tyres["effective_scalars"]["MID"]
+        self.reject("effective_scalars does not list exactly", tyres)
 
-    def test_scalar_inheritance_must_match_the_declarations(self):
-        for mutation in ("parent", "line", "tag", "order"):
-            with self.subTest(mutation=mutation):
+    def test_effective_scalars_must_match_the_declarations(self):
+        mutations = {"value": lambda child: child["fields"]["WIDTH"].update(values=[0.25]),
+                     "source": lambda child: child["fields"]["RADIUS"].update(source="MID", path=["CHILD", "MID"]),
+                     "status": lambda child: child["fields"]["RADIUS"].update(status="declared"),
+                     "zero-filled": lambda child: child["fields"]["MASS"].update(values=[1.0], source="CHILD",
+                                                                                 source_line=24, status="declared"),
+                     "overwritten": lambda child: child["overwritten"].clear(),
+                     "unmapped": lambda child: child["unmapped"].clear(),
+                     "parent": lambda child: child["inherit_type"].update(parent="ROOT")}
+        for name, mutate in mutations.items():
+            with self.subTest(mutation=name):
                 tyres = tyres_json()
-                child = tyres["scalar_inheritance"]["CHILD"]
-                if mutation == "parent":
-                    child["inherit_type"]["parent"] = "NONEXISTENT"
-                elif mutation == "line":
-                    child["inherit_type"]["line"] = 999
-                elif mutation == "tag":
-                    child["scalars_before"][0]["tag"] = "WIDTH"
-                else:
-                    child["scalars_after"].append(child["scalars_before"].pop())
-                self.reject("scalar_inheritance disagrees with record declarations", tyres)
+                mutate(tyres["effective_scalars"]["CHILD"])
+                self.reject("effective_scalars disagrees with record declarations", tyres)
+
+    def test_scalar_store_and_copy_evidence_are_required(self):
+        for va, fragment in ((0x00523a35, "WIDTH + 0x30: no byte-checked tyre loader site at 0x00523a35"),
+                             (0x00523b3a, "no byte-checked call from 0x00523b3a to 0x00524090"),
+                             (0x005240c1, "copy store at 0x005240c4 has no byte-checked load of parent + 0x40")):
+            with self.subTest(va=f"0x{va:08x}"):
+                self.reject("Tyre scalar stores lack byte-checked evidence: ",
+                            evidence=[site for site in EVIDENCE if site["va"] != va])
+                with self.assertRaises(ValueError) as caught:
+                    self.build(evidence=[site for site in EVIDENCE if site["va"] != va])
+                self.assertIn(fragment, str(caught.exception))
 
     def test_linked_routine_missing_from_status_json(self):
         for entry_va, role in (("00523820", "tyre loader"), ("00524090", "tyre scalar copy"),

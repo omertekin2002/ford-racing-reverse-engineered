@@ -48,10 +48,20 @@ non-zero, and otherwise repeat the test on the record at +0x14 (INHERIT_TYPE).
 main() adds the result to tyres.json as `resolved_tables`. tyre_table_provenance()
 adds, as `table_provenance`, the INHERIT_TYPE path to each source, the source
 line and the accessor and offset the game reads through.
-scalar_inheritance() lists, as `scalar_inheritance`, the scalar tags each
-inheriting record declares before and after its INHERIT_TYPE line, labelled
-unresolved. Scalar fields, engine inheritance and the colon-less INDIGO line
-stay unresolved.
+effective_scalars() resolves, as `effective_scalars`, the scalar fields of each
+inheriting tyre. The loader stores each tag in TYRE_SCALAR_STORES at its payload
+offsets as it parses the tag, the record allocator zero-fills the payload, and at
+INHERIT_TYPE the loader calls 0x00524090, which copies the parent's eleven dwords
++0x18..+0x40 over the record's. effective_scalars() replays that in file order:
+a field holds the record's own declaration when it comes after INHERIT_TYPE,
+otherwise the parent's effective value at copy time, and a declaration before
+INHERIT_TYPE is overwritten. A field nobody along the chain declares is labelled
+zero-filled and given no value; a scalar tag with no byte-checked store is
+labelled unmapped and given no value. Values stay the declared text values: no
+units, and no grip scaling applied. scalar_evidence_problems() checks
+TYRE_SCALAR_STORES and the copy against field-evidence.json, and
+scalars_by_recursion() derives the same fields a second way. Engine inheritance
+and the colon-less INDIGO line stay unresolved.
 """
 import argparse
 import hashlib
@@ -88,6 +98,45 @@ TYRE_TABLE_SOURCES = {"LONGITUDINAL_COMBINED_VALUES": {"DEFAULT_ROAD": 109},
                       "LATERAL_COMBINED_VALUES": {"DEFAULT_ROAD": 109},
                       **{table: {"DEFAULT_ROAD": 73, "DEFAULT_OFFROAD": 23, "DEFAULT_TRACK": 13}
                          for table in ("VERTICAL_LOAD", "CAMBER_THRUST", "sound_info")}}
+# Each tyre scalar tag the loader stores, the payload offsets it writes and the field-evidence.json sites that
+# byte-check each store (load_tyre_database.asm). The two grip numbers are stored, multiplied in place by the
+# float at `scaled_by` and stored again, so the value a child copies is the scaled one; `scale_sites` are the
+# byte-checked load of that float and the multiply.
+TYRE_SCALAR_STORES = {
+    "ROAD_MAGIC_GRIP_NUMBER": {"offsets": {"0x18": ["0x0052393f", "0x00523945"]}, "scaled_by": "0x00597484",
+                               "scale_sites": {"load": "0x00523937", "multiply": "0x00523942"}},
+    "OFFROAD_MAGIC_GRIP_NUMBER": {"offsets": {"0x1c": ["0x00523cb0", "0x00523cb6"]}, "scaled_by": "0x00597484",
+                                  "scale_sites": {"load": "0x00523ca8", "multiply": "0x00523cb3"}},
+    "WET_MAGIC_GRIP_PERCENTAGE": {"offsets": {"0x20": ["0x00523a1b"]}},
+    "TYRE_GRIP_DEPTH": {"offsets": {"0x24": ["0x0052395a"]}},
+    "RADIUS": {"offsets": {"0x28": ["0x00523900"], "0x3c": ["0x00523907"]}},
+    "TYRE_PATCH_LENGTH": {"offsets": {"0x2c": ["0x0052397f"]}},
+    "WIDTH": {"offsets": {"0x30": ["0x00523a35"]}},
+    "MASS": {"offsets": {"0x34": ["0x00523c83"], "0x38": ["0x00523c8a"]}},
+    "ROLLING_RESISTANCE": {"offsets": {"0x40": ["0x00523a4a"]}},
+}
+# The tyre loader's export span, the INHERIT_TYPE call to the scalar copy and the copy's export span
+# (load_tyre_database.asm, copy_tyre_scalar_fields.asm).
+TYRE_LOADER_SPAN = (0x00523820, 0x00523DC0)
+SCALAR_COPY_CALL = 0x00523B3A
+SCALAR_COPY_SPAN = (0x00524090, 0x005240E0)
+# The scalar copy writes the eleven dwords +0x18..+0x40 and nothing else.
+SCALAR_COPY_OFFSETS = tuple(range(0x18, 0x44, 4))
+ZERO_FILLED = "not declared (zero-filled)"
+UNMAPPED = "unmapped"
+# How many of the 108 inheriting demo tyres end up with each status, per mapped tag. In the demo no field is
+# zero-filled, none is overwritten and no tag is unmapped.
+TYRE_SCALAR_COUNTS = {
+    "ROAD_MAGIC_GRIP_NUMBER": {"declared": 108},
+    "OFFROAD_MAGIC_GRIP_NUMBER": {"declared": 26, "inherited": 82},
+    "WET_MAGIC_GRIP_PERCENTAGE": {"declared": 2, "inherited": 106},
+    "TYRE_GRIP_DEPTH": {"declared": 2, "inherited": 106},
+    "RADIUS": {"declared": 108},
+    "TYRE_PATCH_LENGTH": {"declared": 6, "inherited": 102},
+    "WIDTH": {"declared": 108},
+    "MASS": {"declared": 4, "inherited": 104},
+    "ROLLING_RESISTANCE": {"declared": 2, "inherited": 106},
+}
 GEARBOX_TAGS = frozenset({"CLUTCH_SPEED", "CLUTCH_MAX_POWER", "TRANSMISSION_TYPE", "TORQUE_SHIFT", "DRIVE_TYPE",
                           "DRIVE_SPLIT", "DIFF_TYPE", "ANTI_WHEELSPIN", "ANTI_WHEELSKID"})
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -347,24 +396,186 @@ def tyre_table_provenance(records):
             for name, paths in tyre_table_paths(records).items()}
 
 
-def scalar_inheritance(records):
-    """List, for each tyre with :INHERIT_TYPE, the scalar tags it declares before and after that line.
+def scalar_tags(record):
+    """Return the record's scalar declarations in line order: every field but a table and INHERIT_TYPE."""
+    return sorted(((tag, field) for tag, field in record["fields"].items()
+                   if tag not in TYRE_TABLES and tag != "INHERIT_TYPE"), key=lambda item: item[1]["line"])
 
-    Only facts from the file: no inherited value is computed, because the copy at
-    0x00524090 depends on tag order, which is not modelled.
+
+def inherit_chain(record, by_name, order):
+    """Return the record names from the record up its INHERIT_TYPE chain, each parent earlier in the file."""
+    chain = [record["type"]]
+    current = record
+    while "INHERIT_TYPE" in current["fields"]:
+        inherit = current["fields"]["INHERIT_TYPE"]
+        parent = inherit["values"][0]
+        if parent not in by_name or order[parent] >= order[current["type"]]:
+            raise TextDatabaseError(inherit["line"], f"{current['type']!r} inherits {parent!r}, "
+                                                     "which is not an earlier record")
+        current = by_name[parent]
+        chain.append(parent)
+    return chain
+
+
+def scalar_field(tag, origin, chain):
+    """Return one effective scalar entry: where the field's value comes from, or that nobody declares it."""
+    entry = {"offsets": list(TYRE_SCALAR_STORES[tag]["offsets"])}
+    if origin is None:
+        return {"status": ZERO_FILLED, "path": chain, **entry}
+    status = "declared" if origin["source"] == chain[0] else "inherited"
+    return {"status": status, "values": origin["values"], "source": origin["source"],
+            "source_line": origin["source_line"], "path": origin["path"], **entry}
+
+
+def effective_scalars(records):
+    """Return, for each tyre with :INHERIT_TYPE, the declaration that ends up in each mapped scalar field.
+
+    Replays the loader in file order: each record starts zero-filled, each mapped tag stores its declaration,
+    and INHERIT_TYPE copies the parent's effective fields over all of the record's, so a declaration made
+    before it is overwritten (listed under `overwritten`). `path` runs from the record to the declaring source.
+    Scalar tags without a byte-checked store are listed under `unmapped` with no value. Records are not modified.
     """
+    by_name = {record["type"]: record for record in records}
+    order = {record["type"]: i for i, record in enumerate(records)}
+    state = {}
     entries = {}
     for record in records:
+        name = record["type"]
+        current, overwritten, unmapped = {}, [], []
+        events = scalar_tags(record)
         inherit = record["fields"].get("INHERIT_TYPE")
+        if inherit is not None:
+            events = sorted(events + [("INHERIT_TYPE", inherit)], key=lambda item: item[1]["line"])
+        for tag, field in events:
+            if tag == "INHERIT_TYPE":
+                parent = field["values"][0]
+                if parent not in state:
+                    raise TextDatabaseError(field["line"], f"{name!r} inherits {parent!r}, which is not an earlier record")
+                overwritten += [{"tag": key, "line": origin["source_line"], "values": origin["values"]}
+                                for key, origin in current.items()]
+                current = {key: {**origin, "path": [name, *origin["path"]]} for key, origin in state[parent].items()}
+            elif tag in TYRE_SCALAR_STORES:
+                current[tag] = {"source": name, "source_line": field["line"], "values": field["values"], "path": [name]}
+            else:
+                unmapped.append({"tag": tag, "line": field["line"], "status": UNMAPPED})
+        state[name] = current
         if inherit is None:
             continue
-        scalars = [{"tag": tag, "line": field["line"]} for tag, field in record["fields"].items()
-                   if tag not in TYRE_TABLES and tag != "INHERIT_TYPE"]
-        entries[record["type"]] = {
-            "status": "unresolved", "inherit_type": {"line": inherit["line"], "parent": inherit["values"][0]},
-            "scalars_before": [scalar for scalar in scalars if scalar["line"] < inherit["line"]],
-            "scalars_after": [scalar for scalar in scalars if scalar["line"] > inherit["line"]]}
+        chain = inherit_chain(record, by_name, order)
+        entries[name] = {"inherit_type": {"line": inherit["line"], "parent": inherit["values"][0]},
+                         "fields": {tag: scalar_field(tag, current.get(tag), chain) for tag in TYRE_SCALAR_STORES},
+                         "overwritten": sorted(overwritten, key=lambda item: item["line"]), "unmapped": unmapped}
     return entries
+
+
+def scalars_by_recursion(records):
+    """Derive each inheriting tyre's effective scalar fields a second way, independent of effective_scalars().
+
+    For each record and tag, parent first: the record's own declaration counts when it follows its
+    INHERIT_TYPE line (or the record has none); otherwise the field is whatever the parent ends up with.
+    """
+    by_name = {record["type"]: record for record in records}
+    order = {record["type"]: i for i, record in enumerate(records)}
+
+    def origin(name, tag):
+        record = by_name[name]
+        inherit = record["fields"].get("INHERIT_TYPE")
+        own = record["fields"].get(tag)
+        if own is not None and (inherit is None or own["line"] > inherit["line"]):
+            return {"source": name, "source_line": own["line"], "values": own["values"], "path": [name]}
+        if inherit is None:
+            return None
+        parent = inherit["values"][0]
+        if parent not in by_name or order[parent] >= order[name]:
+            raise TextDatabaseError(inherit["line"], f"{name!r} inherits {parent!r}, which is not an earlier record")
+        found = origin(parent, tag)
+        return found and {**found, "path": [name, *found["path"]]}
+
+    return {record["type"]: {tag: scalar_field(tag, origin(record["type"], tag),
+                                               inherit_chain(record, by_name, order))
+                             for tag in TYRE_SCALAR_STORES}
+            for record in records if "INHERIT_TYPE" in record["fields"]}
+
+
+def check_effective_scalars(records, effective):
+    """Compare effective_scalars() output with scalars_by_recursion(); refuse any difference."""
+    expected = scalars_by_recursion(records)
+    require(set(effective) == set(expected), "Tyre effective scalar record set mismatch")
+    for name, fields in expected.items():
+        for tag, entry in fields.items():
+            require(effective[name]["fields"].get(tag) == entry,
+                    f"Tyre effective scalar disagrees with the parent-first derivation: {name} {tag}")
+        require(set(effective[name]["fields"]) == set(fields), "Tyre effective scalar tag set mismatch: " + name)
+
+
+def scalar_counts(effective):
+    """Count, for each mapped tag, how many inheriting records end up with each status."""
+    counts = {tag: {} for tag in TYRE_SCALAR_STORES}
+    for entry in effective.values():
+        for tag, field in entry["fields"].items():
+            counts[tag][field["status"]] = counts[tag].get(field["status"], 0) + 1
+    return counts
+
+
+def disp8(text):
+    """Return the hex offset string `0x..` a disp8 operand byte encodes, as TYRE_SCALAR_STORES writes it."""
+    return f"0x{int(text, 16):02x}"
+
+
+def scalar_evidence_problems(evidence, stores=None):
+    """List every way TYRE_SCALAR_STORES and the scalar copy lack matching byte-checked sites.
+
+    Each cited site must be in field-evidence.json, inside the tyre loader, and be `fst`/`fstp dword [eax + off]`
+    at its offset; a scaled tag's scale_sites must be the `fld` of its global and an `fmul dword [eax + off]`.
+    The loader must call
+    0x00524090 at SCALAR_COPY_CALL, and inside the copy each mapped offset needs `mov ecx, [edx + off]` followed by
+    `mov [eax + off], ecx`, with the copy writing exactly SCALAR_COPY_OFFSETS.
+    """
+    stores = TYRE_SCALAR_STORES if stores is None else stores
+    by_va = {site["va"]: site["bytes"] for site in evidence}
+    loader = {va: raw for va, raw in by_va.items() if TYRE_LOADER_SPAN[0] <= va < TYRE_LOADER_SPAN[1]}
+    problems = []
+    mapped = set()
+    for tag, entry in stores.items():
+        for offset, sites in entry["offsets"].items():
+            mapped.add(int(offset, 16))
+            for site in sites:
+                raw = loader.get(int(site, 16))
+                if raw is None:
+                    problems.append(f"{tag} + {offset}: no byte-checked tyre loader site at {site}")
+                elif not (len(raw) == 6 and raw[:2] == "d9" and raw[2:4] in ("50", "58") and disp8(raw[4:]) == offset):
+                    problems.append(f"{tag} + {offset}: site {site} ({raw}) is not a float store at [eax + {offset}]")
+        if "scaled_by" in entry:
+            load = "d905" + int(entry["scaled_by"], 16).to_bytes(4, "little").hex()
+            if loader.get(int(entry["scale_sites"]["load"], 16)) != load:
+                problems.append(f"{tag}: no byte-checked load of its scale global {entry['scaled_by']} at "
+                                + entry["scale_sites"]["load"])
+            multiply = {"d848" + offset[2:].zfill(2) for offset in entry["offsets"]}
+            if loader.get(int(entry["scale_sites"]["multiply"], 16)) not in multiply:
+                problems.append(f"{tag}: no byte-checked fmul by its scale global at {entry['scale_sites']['multiply']}")
+    target = SCALAR_COPY_SPAN[0] - (SCALAR_COPY_CALL + 5)
+    call = "e8" + (target & 0xFFFFFFFF).to_bytes(4, "little").hex()
+    if by_va.get(SCALAR_COPY_CALL) != call:
+        problems.append(f"no byte-checked call from 0x{SCALAR_COPY_CALL:08x} to 0x{SCALAR_COPY_SPAN[0]:08x}")
+    copied = set()
+    for va, raw in sorted(by_va.items()):
+        if SCALAR_COPY_SPAN[0] <= va < SCALAR_COPY_SPAN[1] and len(raw) == 6 and raw[:4] == "8948":
+            offset = int(raw[4:], 16)
+            if by_va.get(va - 3) == "8b4a" + raw[4:]:
+                copied.add(offset)
+            else:
+                problems.append(f"copy store at 0x{va:08x} has no byte-checked load of parent + 0x{offset:02x} before it")
+    if copied != set(SCALAR_COPY_OFFSETS):
+        problems.append("byte-checked copy offsets " + ", ".join(f"0x{offset:02x}" for offset in sorted(copied))
+                        + " are not exactly +0x18..+0x40")
+    if mapped - copied:
+        problems.append("mapped offsets the copy does not write: "
+                        + ", ".join(f"0x{offset:02x}" for offset in sorted(mapped - copied)))
+    return problems
+
+
+def load_field_evidence(path=REPO_ROOT / "analysis/selected/field-evidence.json"):
+    return json.loads(Path(path).read_text())
 
 
 def sources_in_file_order(records):
@@ -441,8 +652,11 @@ def table_dimensions(records, tag):
     return {"blocks": len(blocks), "rows": rows, "columns": columns}
 
 
-def verify_text_databases(game_dir, known_tags):
-    """Check the parsed demo databases against the counts observed in the data."""
+def verify_text_databases(game_dir, known_tags, evidence=None):
+    """Check the parsed demo databases against the counts observed in the data.
+
+    evidence is the field-evidence.json site list; by default the committed one is read.
+    """
     engines = read_database(game_dir, DATABASES["engines"], known_tags)["records"]
     gearboxes = read_database(game_dir, DATABASES["gearboxes"], known_tags)["records"]
     tyres = read_database(game_dir, DATABASES["tyres"], known_tags, sound_info=True)["records"]
@@ -474,13 +688,18 @@ def verify_text_databases(game_dir, known_tags):
     check_table_provenance(tyres, provenance)
     require({name: {table: entry["source"] for table, entry in tables.items()} for name, tables in provenance.items()}
             == expected, "Tyre table provenance disagrees with INHERIT_TYPE resolved in file order")
-    scalars = scalar_inheritance(tyres)
-    require(set(scalars) == {record["type"] for record in tyre_inherits}
-            and all(entry["status"] == "unresolved" for entry in scalars.values()),
-            "Tyre scalar inheritance record set mismatch")
-    # docs/analysis.md states that every demo record declares its scalars after INHERIT_TYPE.
-    early = sorted(name for name, entry in scalars.items() if entry["scalars_before"])
+    problems = scalar_evidence_problems(load_field_evidence() if evidence is None else evidence)
+    require(not problems, "Tyre scalar stores lack byte-checked evidence: " + "; ".join(problems))
+    scalars = effective_scalars(tyres)
+    require(set(scalars) == {record["type"] for record in tyre_inherits}, "Tyre effective scalar record set mismatch")
+    check_effective_scalars(tyres, scalars)
+    # docs/analysis.md states that every demo record declares its scalars after INHERIT_TYPE, so none is overwritten.
+    early = sorted(name for name, entry in scalars.items() if entry["overwritten"])
     require(not early, "Tyre scalars declared before INHERIT_TYPE: " + ", ".join(early))
+    unmapped = sorted(name for name, entry in scalars.items() if entry["unmapped"])
+    require(not unmapped, "Tyre scalar tags without a byte-checked store: " + ", ".join(unmapped))
+    counts = scalar_counts(scalars)
+    require(counts == TYRE_SCALAR_COUNTS, f"Tyre effective scalar counts mismatch: {counts}")
     untagged = [{"record": record["type"], **item}
                 for record in engines + gearboxes + tyres for item in record["untagged"]]
     require(untagged == [{"record": "INDIGO", "line": 1410, "tokens": ["INHERIT_TYPE", "DEFAULT_TRACK"]}],
@@ -489,7 +708,8 @@ def verify_text_databases(game_dir, known_tags):
             "torque_rows": [min(len(f["rows"]) for f in torque), max(len(f["rows"]) for f in torque)],
             "engine_inheritances": len(inherits), "gearbox_tags": sorted(GEARBOX_TAGS), "untagged_lines": untagged,
             "tyre_records": len(tyres), "tyre_inheritances": len(tyre_inherits), "tyre_tables": tables,
-            "tyre_table_sources": sources, "tyre_scalar_inheritance_records": len(scalars),
+            "tyre_table_sources": sources, "tyre_effective_scalar_records": len(scalars),
+            "tyre_effective_scalar_counts": counts,
             "sound_info_entries": len(entries), "sound_info_per_record": sounds}
 
 
@@ -503,7 +723,7 @@ def write_databases(game_dir, output, known_tags):
         if stem == "tyres":
             database["resolved_tables"] = resolve_tyre_tables(database["records"])
             database["table_provenance"] = tyre_table_provenance(database["records"])
-            database["scalar_inheritance"] = scalar_inheritance(database["records"])
+            database["effective_scalars"] = effective_scalars(database["records"])
         (Path(output) / f"{stem}.json").write_text(json.dumps(database, indent=2, allow_nan=False) + "\n")
         counts[stem] = len(database["records"])
     return counts

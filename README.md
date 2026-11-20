@@ -106,7 +106,7 @@ headless script errors can be reported without a failing process exit code.
 | `artifacts/text-databases/` | Parsed engine, gearbox and tyre records from `scripts/text_database.py`, with source hashes |
 | `artifacts/research/` | Self-contained research directory from `scripts/build_research.py`: the "Explore findings" entrance page `index.html`, the six pages below, and the `analysis/` files they link to under `evidence/`; every page carries the rights-holder notice |
 | `artifacts/fr3-research-<revision>.zip` | Citable research packet from `scripts/package_research.py`: the verified research directory in one folder, with a `MANIFEST.json` naming the input build, producer revision, Python version, the checks actually run and each file's SHA-256, plus `SHA256SUMS` |
-| `artifacts/dossier/tyres.html` | Offline tyre dossier from `scripts/tyre_dossier.py`: each tyre's declarations beside its five table sources and their byte-checked evidence, with each site, accessor, the loader and the scalar copy linked to its section on `routines.html` |
+| `artifacts/dossier/tyres.html` | Offline tyre dossier from `scripts/tyre_dossier.py`: each tyre's declarations beside its five table sources and their byte-checked evidence, each inheriting tyre's effective scalar fields with their source record and line, and each site, accessor, the loader and the scalar copy linked to its section on `routines.html` |
 | `artifacts/dossier/engines.html`, `artifacts/dossier/gearboxes.html` | Offline engine and gearbox dossiers from `scripts/record_dossier.py`: each record's declarations as written, with inheritance and untagged lines labelled unresolved, and the database's load and copy routines linked to `routines.html` |
 | `artifacts/dossier/pcg.html` | Offline PCG catalogue from `scripts/pcg_catalogue.py`: every PCG collection and graphic, its header fields, byte spans and decoding status |
 | `artifacts/dossier/routines.html` | Offline routine index from `scripts/routine_index.py`: each of the 25 analyst-labelled routines with its signature, Ghidra pseudocode, bounded disassembly and byte-checked sites |
@@ -132,10 +132,14 @@ tables, the inheritance path, the `TYREDATA.DAT` line the table comes from and
 the accessor and record offset the game reads it through; those accessor
 reads and their `+0x14` fallbacks are byte-checked in
 [`field-evidence.json`](analysis/selected/field-evidence.json). Under
-`scalar_inheritance` it lists, for each inheriting tyre, the scalar tags
-declared before and after its `INHERIT_TYPE` line, labelled `unresolved`.
-Engine and scalar-field inheritance are recorded, not resolved, and the meaning
-of the sound table's first fifteen words is unknown:
+`effective_scalars` it gives, for each inheriting tyre and each scalar tag with
+a byte-checked store, the declaration that ends up in the field after the
+`INHERIT_TYPE` copy at `0x00524090`, with its source record, line and
+inheritance path; fields nobody declares are labelled zero-filled and tags
+without a byte-checked store unmapped, with no value
+([details](docs/analysis.md#tyre-scalar-inheritance)). Engine inheritance is
+recorded, not resolved, and the meaning of the sound table's first fifteen
+words is unknown:
 
 ```sh
 python3 scripts/acquire_demo.py inputs
@@ -256,8 +260,11 @@ CI runs them, after a `compileall` syntax check, on every push and pull request
 output limits, truncation, trailing data and overlapping PCG payloads, as well as
 the PE virtual-address reader, file identity checks and tool-path resolution. They also cover
 the strict engine, gearbox and tyre text-database parser: its accepted grammar and each
-rejected construct, and tyre table inheritance resolution. They check the tyre dossier's anchors and links, its
-address-matched evidence trails, its escaping and each input disagreement it refuses, and the engine and gearbox
+rejected construct, tyre table inheritance resolution, and tyre scalar inheritance: a declaration before
+`INHERIT_TYPE` being overwritten, an override after it, multi-level chains, zero-filled and unmapped fields, the
+store table agreeing with `field-evidence.json`, and the independent derivation catching a planted mismatch. They
+check the tyre dossier's anchors and links, its address-matched evidence trails, its effective scalar rows, its
+escaping and each input disagreement it refuses, and the engine and gearbox
 dossiers' anchors, unresolved labels, escaping and the malformed inputs they refuse. The PCG catalogue tests run the script on the committed `analysis/` files and check every input disagreement it refuses. The routine index tests check its sections, escaping and site placement on synthetic routines, run it on the committed files, and check each refusal: `selected.c` and `status.json` disagreeing, a malformed `.asm` span header, and a site that would be dropped or shown twice. The open questions tests check the page's three anchored sections and their four parts, that observed values follow synthetic inputs, that every reading is labelled untested, escaping, the engine, tyre and PCG pages' links to each question, and each refusal: `INDIGO` missing or without exactly one `INHERIT_TYPE DEFAULT_TRACK` line, the sound table's allocation or `+0x54` store missing from `field-evidence.json`, the tyre loader's table stores changed, and extra bytes on any graphics but `_loadbar` and `_loadbr2` at 1,024 bytes each. The research-directory tests build it from fixture game files, check its pages, notice, links and copied evidence, that every tyre, engine and gearbox link into `routines.html` names a section or site row there and that a renamed linked routine refuses the build, and check that the verifier rejects a missing page or notice, a broken local link (including a record page's link to a missing `routines.html` fragment), an external resource, a `<script>` and a file the build does not write. The research-packet tests package a fixture research directory, check its folder, `MANIFEST.json` and `SHA256SUMS` (with `sha256sum -c` where installed) and that two runs give byte-identical ZIPs, and check that a missing directory, a page without the notice, an extra file, changed evidence, evidence copied from an uncommitted `analysis/` edit and a directory or symlink destination are refused with nothing written. The site-verifier packet tests lay a fixture packet beside a published `research/` and check that a missing linked packet, one absent from the site's `SHA256SUMS`, one built at another revision, one whose page differs from `research/`, and one with an extra or missing file are each refused with a specific message, and that a site with neither a packet nor a link to one still passes. For demo acquisition they cover, without network access, the
 download-link filter, HTTPS-only fetches and redirects, the 12-URL cap, identity-checked
 archive writes and ZIP extraction safety (unsafe paths, symlinks, size limit, existing
