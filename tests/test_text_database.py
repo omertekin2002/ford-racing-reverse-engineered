@@ -11,6 +11,9 @@ from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import text_database
+from text_database import (ENGINE_COPY, ENGINE_FIELD_STORES, ENGINE_LOADER_SPAN, byte_ranges, compare_immediate,
+                           engine_evidence_problems, engine_layout_problems, load_layout_header, load_tag_ids,
+                           memory_operand, unmapped_engine_tags)
 from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, RESOLVED_TYRE_TABLES, SCALAR_COPY_CALL, SCALAR_COPY_OFFSETS,
                            SCALAR_COPY_SPAN, SOUND_INFO_COUNTS, TYRE_SCALAR_COUNTS, TYRE_SCALAR_STORES,
                            TYRE_TABLE_ACCESSORS, TYRE_TABLE_SOURCES, TYRE_TABLES, UNMAPPED, ZERO_FILLED,
@@ -814,6 +817,329 @@ class TyreTableAccessorByteEvidenceTests(unittest.TestCase):
                 self.assertTrue(any(store.fullmatch(text) for text in texts))
 
 
+# The engine loader's dispatch loop head, where it compares the next tag's ID, and its default (unknown tag) branch.
+ENGINE_DISPATCH = 0x00522856
+ENGINE_NEXT_TAG = 0x00522848
+ENGINE_DEFAULT = 0x00522878
+RECORD_WRITE = re.compile(r"(?:fstp|fst|mov) (dword|byte) ptr \[(edi|edx) \+ (0x[0-9a-f]+)\], ?.*|fstp (dword) ptr \[(edi|edx) \+ (0x[0-9a-f]+)\]")
+SIGNED_JUMPS = {"jl": lambda c: c < 0, "jle": lambda c: c <= 0, "jg": lambda c: c > 0, "jge": lambda c: c >= 0,
+                "je": lambda c: c == 0, "jne": lambda c: c != 0}
+
+
+def engine_loader_lines():
+    lines = (text_database.REPO_ROOT / "analysis/selected/load_engine_database.asm").read_text().splitlines()
+    return [(int(match[1], 16), match[2]) for match in map(ASM_LINE.match, lines) if match]
+
+
+def immediate(text):
+    return int(text, 0) if not text.startswith("-") else -int(text[1:], 0)
+
+
+def engine_dispatch(lines, tag_id):
+    """Follow the loader's compare tree for one tag ID from the committed disassembly.
+
+    Returns (the compares taken as [(va, immediate)], the VAs the handler can reach, or None when the tag reaches
+    the default branch). The handler is every instruction reachable, through any branch, before it jumps back to
+    the next-tag read.
+    """
+    order = [va for va, _ in lines]
+    text = dict(lines)
+    va, compared, compares = ENGINE_DISPATCH, None, []
+    while True:
+        mnemonic, _, operands = text[va].partition(" ")
+        if mnemonic == "cmp" and operands.startswith("eax, "):
+            value = immediate(operands[5:])
+            compared = (tag_id > value) - (tag_id < value)
+            compares.append((va, value))
+        elif mnemonic in SIGNED_JUMPS:
+            if SIGNED_JUMPS[mnemonic](compared):
+                va = int(operands, 16)
+                continue
+        else:
+            break
+        va = order[order.index(va) + 1]
+    if va == ENGINE_DEFAULT:
+        return compares, None
+    reached, pending = set(), [va]
+    while pending:
+        va = pending.pop()
+        if va in reached or va in (ENGINE_NEXT_TAG, ENGINE_DEFAULT):
+            continue
+        reached.add(va)
+        mnemonic, _, operands = text[va].partition(" ")
+        following = order[order.index(va) + 1]
+        if mnemonic == "jmp":
+            pending.append(int(operands, 16))
+        elif mnemonic.startswith("j"):
+            pending += [int(operands, 16), following]
+        elif mnemonic != "ret":
+            pending.append(following)
+    return compares, reached
+
+
+def record_writes(lines, reached):
+    """Return {va: (width, base, offset)} for each write to [edi + n] or [edx + n] among the reached VAs."""
+    writes = {}
+    for va, text in lines:
+        match = RECORD_WRITE.fullmatch(text) if va in reached else None
+        if match:
+            width, base, offset = [group for group in match.groups() if group]
+            writes[va] = (width, base, int(offset, 16))
+    return writes
+
+
+class EngineDispatchTests(unittest.TestCase):
+    """Emulate the committed loader disassembly's compare tree; no game data needed."""
+
+    def setUp(self):
+        self.lines = engine_loader_lines()
+        self.tags = load_tag_ids()
+
+    def test_each_mapped_tag_reaches_its_handler_through_its_compare(self):
+        for tag, entry in [*ENGINE_FIELD_STORES.items(), ("INHERIT_TYPE", ENGINE_COPY)]:
+            with self.subTest(tag=tag):
+                compares, reached = engine_dispatch(self.lines, self.tags[tag])
+                self.assertIsNotNone(reached)
+                self.assertEqual(compares[-1], (int(entry["compare"], 16), entry["id"]))
+
+    def test_each_handler_writes_exactly_the_mapped_sites(self):
+        for tag, entry in ENGINE_FIELD_STORES.items():
+            with self.subTest(tag=tag):
+                writes = record_writes(self.lines, engine_dispatch(self.lines, entry["id"])[1])
+                expected = {}
+                for offset, store in entry["offsets"].items():
+                    base, disp = ("edx", int(offset, 16) - 4) if "slots" in store else ("edi", int(offset, 16))
+                    expected.update({int(va, 16): (store["width"], base, disp) for va in store["sites"]})
+                self.assertEqual(writes, expected)
+        writes = record_writes(self.lines, engine_dispatch(self.lines, ENGINE_COPY["id"])[1])
+        self.assertEqual(writes, {int(ENGINE_COPY["parent_store"]["site"], 16): ("dword", "edi", 0x18)})
+
+    def test_every_other_registry_tag_reaches_the_default_branch(self):
+        handled = {*ENGINE_FIELD_STORES, "INHERIT_TYPE"}
+        for tag, tag_id in self.tags.items():
+            if tag not in handled:
+                with self.subTest(tag=tag):
+                    self.assertIsNone(engine_dispatch(self.lines, tag_id)[1])
+
+    def test_emulation_catches_a_wrong_compare_or_store(self):
+        # A synthetic tree: 0x10 takes the jne-guarded handler, 0x11 falls to the default branch.
+        lines = [(ENGINE_DISPATCH, "cmp eax, 0x10"), (ENGINE_DISPATCH + 5, f"jne 0x{ENGINE_DEFAULT:x}"),
+                 (ENGINE_DISPATCH + 11, "fstp dword ptr [edi + 0x98]"),
+                 (ENGINE_DISPATCH + 17, f"jmp 0x{ENGINE_NEXT_TAG:x}"), (ENGINE_DEFAULT, "mov edx, 0x1a0")]
+        compares, reached = engine_dispatch(lines, 0x10)
+        self.assertEqual(compares, [(ENGINE_DISPATCH, 0x10)])
+        self.assertEqual(record_writes(lines, reached), {ENGINE_DISPATCH + 11: ("dword", "edi", 0x98)})
+        self.assertIsNone(engine_dispatch(lines, 0x11)[1])
+
+
+def drifted(table, path, value):
+    """Deep-copy a map and set one nested key; path is a tuple of keys."""
+    result = copy.deepcopy(table)
+    target = result
+    for key in path[:-1]:
+        target = target[key]
+    if value is None:
+        del target[path[-1]]
+    else:
+        target[path[-1]] = value
+    return result
+
+
+class EngineEvidenceTests(unittest.TestCase):
+    def setUp(self):
+        self.evidence = load_field_evidence()
+        self.tags = load_tag_ids()
+
+    def problems(self, evidence=None, stores=None, engine_copy=None, tags=None):
+        return engine_evidence_problems(self.evidence if evidence is None else evidence,
+                                        self.tags if tags is None else tags, stores, engine_copy)
+
+    def without(self, *vas):
+        return [site for site in self.evidence if site["va"] not in vas]
+
+    def assertReports(self, fragment, problems):
+        self.assertTrue(any(fragment in problem for problem in problems), problems)
+
+    def test_committed_evidence_agrees_with_the_map(self):
+        self.assertEqual(self.problems(), [])
+
+    def test_map_covers_nineteen_stored_tags_plus_torque_array(self):
+        self.assertEqual(len(ENGINE_FIELD_STORES), 20)
+        derived = {(tag, offset) for tag, entry in ENGINE_FIELD_STORES.items()
+                   for offset, store in entry["offsets"].items() if store.get("derived")}
+        self.assertEqual(derived, {("TORQUE_ARRAY", "0x2c"), ("TURBO_MASS", "0xa4")})
+        self.assertEqual(ENGINE_FIELD_STORES["TORQUE_ARRAY"]["offsets"]["0x3c"]["slots"], 18)
+
+    def test_wrong_id_is_reported(self):
+        problems = self.problems(stores=drifted(ENGINE_FIELD_STORES, ("MAX_RPM", "id"), 0xb1))
+        self.assertIn("MAX_RPM: analysis/tags.json gives registry ID 0xb0, the map says 0xb1", problems)
+        self.assertIn("MAX_RPM: compare site 0x005228b1 (3db0000000) is not cmp eax, 0xb1", problems)
+        self.assertIn("INHERIT_TYPE: analysis/tags.json gives registry ID 0x9d, the map says 0x9c",
+                      self.problems(tags={**self.tags, "INHERIT_TYPE": 0x9d}))
+        self.assertIn("CAPACITY: compare site 0x005228b1 (3db0000000) is not cmp eax, 0x37",
+                      self.problems(stores=drifted(ENGINE_FIELD_STORES, ("CAPACITY", "compare"), "0x005228b1")))
+
+    def test_missing_site_is_reported(self):
+        removals = {
+            0x00522b15: "FUEL_CUTOFF + 0x1c: no byte-checked engine loader site at 0x00522b15",
+            0x00522be0: "CAPACITY + 0x34: no byte-checked engine loader site at 0x00522be0",
+            0x00522bd0: "CAPACITY compare: no byte-checked engine loader site at 0x00522bd0",
+            0x00522c4e: "TURBO_MASS + 0xa4: no byte-checked engine loader site at 0x00522c4e",
+            0x00522926: "TORQUE_ARRAY zero-fill call: no byte-checked engine loader site at 0x00522926",
+            0x0052295b: "TORQUE_ARRAY row pointer step: no byte-checked engine loader site at 0x0052295b",
+            0x0052292b: "TORQUE_ARRAY row count: no byte-checked engine loader site at 0x0052292b",
+            0x00522b64: "LOCATION_TYPE enum table: no byte-checked engine loader site at 0x00522b64",
+            0x00522b43: "INHERIT_TYPE parent in edx: no byte-checked engine loader site at 0x00522b43",
+            0x00522b47: "INHERIT_TYPE copy call: no byte-checked engine loader site at 0x00522b47",
+            0x00522b4c: "INHERIT_TYPE + 0x18: no byte-checked engine loader site at 0x00522b4c",
+            0x00522c97: "copy store at 0x00522c9a has no byte-checked load of parent + 0x1c into eax before it",
+            0x00522d61: "ENGINE_COPY + 0xac: no byte-checked load/store pair in the copy",
+            0x00522ccd: "Engine copy block movsd: no byte-checked engine copy site at 0x00522ccd",
+        }
+        for va, fragment in removals.items():
+            with self.subTest(va=f"0x{va:08x}"):
+                self.assertReports(fragment, self.problems(self.without(va)))
+
+    def test_site_outside_its_routine_is_reported(self):
+        moved = [{**site, "va": site["va"] + 0x1000} if site["va"] == 0x00522a76 else site for site in self.evidence]
+        self.assertIn("MAX_RPM + 0x30: no byte-checked engine loader site at 0x00522a76", self.problems(moved))
+        self.assertReports("Engine copy record register: no byte-checked engine copy site at 0x00522804",
+                           self.problems(engine_copy=drifted(ENGINE_COPY, ("record_in_ebx",), "0x00522804")))
+
+    def test_store_at_the_wrong_offset_or_width_is_reported(self):
+        stores = drifted(ENGINE_FIELD_STORES, ("ROUGHNESS", "offsets"),
+                         {"0x2c": {**ENGINE_FIELD_STORES["ROUGHNESS"]["offsets"]["0x28"]}})
+        problems = self.problems(stores=stores)
+        self.assertReports("ROUGHNESS + 0x2c: site 0x0052290e (d95f28) is not a kind store, width dword, base edi, "
+                           "disp 0x2c instruction", problems)
+        self.assertIn("the copy writes offsets no mapped tag stores: +0x28..+0x2b", problems)
+        stores = drifted(ENGINE_FIELD_STORES, ("NUMBER_OF_TURBOS", "offsets", "0x94", "width"), "dword")
+        self.assertReports("NUMBER_OF_TURBOS + 0x94: site 0x005228e4 (888794000000) is not a kind store, width dword",
+                           self.problems(stores=stores))
+        stores = drifted(ENGINE_FIELD_STORES, ("TORQUE_ARRAY", "offsets", "0x3c", "slots"), 17)
+        problems = self.problems(stores=stores)
+        self.assertReports("TORQUE_ARRAY zero-fill size: site 0x0052291c (bb48000000) is not bb44000000", problems)
+        self.assertIn("the copy writes offsets no mapped tag stores: +0x80..+0x83", problems)
+
+    def test_copy_offset_that_nothing_stores_is_reported(self):
+        problems = self.problems(engine_copy=drifted(ENGINE_COPY, ("offsets", "0x18"), "dword"))
+        self.assertIn("ENGINE_COPY + 0x18: no byte-checked load/store pair in the copy", problems)
+        self.assertIn("the copy writes offsets no mapped tag stores: +0x18..+0x1b", problems)
+        self.assertIn("the copy writes the name or the parent address: +0x18..+0x1b", problems)
+        problems = self.problems(stores=drifted(ENGINE_FIELD_STORES, ("MAX_AIRFLOW",), None))
+        self.assertEqual(problems, ["the copy writes offsets no mapped tag stores: +0x9c..+0x9f"])
+
+    def test_stored_offset_the_copy_misses_is_reported(self):
+        problems = self.problems(engine_copy=drifted(ENGINE_COPY, ("offsets", "0xac"), None))
+        self.assertIn("copy pair at + 0xac is not in ENGINE_COPY", problems)
+        self.assertIn("mapped stores the copy misses: +0xac..+0xaf", problems)
+        problems = self.problems(engine_copy=drifted(ENGINE_COPY, ("block", "size"), 0x44))
+        self.assertIn("mapped stores the copy misses: +0x80..+0x83", problems)
+        self.assertIn("Engine copy block size: site 0x00522c86 (b948000000) is not b944000000", problems)
+        problems = self.problems(engine_copy=drifted(ENGINE_COPY, ("offsets", "0x94"), "dword"))
+        self.assertIn("ENGINE_COPY + 0x94: the copy moves a byte, not a dword", problems)
+
+    def test_copy_load_must_feed_the_same_register_and_offset(self):
+        wrong = [{**site, "bytes": "8b4220"} if site["va"] == 0x00522c97 else site for site in self.evidence]
+        self.assertReports("copy store at 0x00522c9a has no byte-checked load of parent + 0x1c into eax",
+                           self.problems(wrong))
+
+    def test_copied_bytes_equal_stored_bytes(self):
+        stored = text_database.engine_stored_bytes(ENGINE_FIELD_STORES)
+        copied = text_database.engine_copy_bytes(ENGINE_COPY)
+        self.assertEqual(set(stored), copied)
+        self.assertEqual(byte_ranges(set(range(0xb0)) - copied), "+0x00..+0x13, +0x15..+0x1b, +0x96..+0x97")
+
+
+class EngineDecoderTests(unittest.TestCase):
+    def test_memory_operand(self):
+        cases = {"d99f9c000000": ("store", "dword", "edi", 0x9c, "st0"), "d95a38": ("store", "dword", "edx", 0x38, "st0"),
+                 "888794000000": ("store", "byte", "edi", 0x94, "al"), "8b421c": ("load", "dword", "edx", 0x1c, "eax"),
+                 "8a8295000000": ("load", "byte", "edx", 0x95, "al"), "8d723c": ("lea", None, "edx", 0x3c, "esi"),
+                 "d94730": ("load", "dword", "edi", 0x30, "st0"), "894f18": ("store", "dword", "edi", 0x18, "ecx"),
+                 "c787a40000000000803f": ("store", "dword", "edi", 0xa4, 0x3f800000),
+                 "d95dd4": ("store", "dword", "ebp", -0x2c, "st0")}
+        for raw, expected in cases.items():
+            with self.subTest(raw=raw):
+                decoded = memory_operand(raw)
+                self.assertEqual(tuple(decoded[key] for key in ("kind", "width", "base", "disp", "register")), expected)
+        for raw in ("f2a5", "89c3", "8b0424", "8b05a41c5800", "d9e8", "c7470000", "d97528", "8b421c00"):
+            with self.subTest(raw=raw):
+                self.assertIsNone(memory_operand(raw))
+
+    def test_compare_immediate(self):
+        self.assertEqual(compare_immediate("3d5b010000"), 0x15b)
+        self.assertEqual(compare_immediate("83f801"), 1)
+        self.assertEqual(compare_immediate("83f8f2"), -0xe)
+        self.assertIsNone(compare_immediate("3c01"))
+        self.assertIsNone(compare_immediate("83f901"))
+
+    @unittest.skipIf(capstone is None, "needs capstone and pefile from scripts/requirements.txt")
+    def test_decoder_agrees_with_capstone_on_every_engine_site(self):
+        decoded = dict(decoded_evidence())
+        engine = [(va, raw) for va, raw, _ in EVIDENCE if ENGINE_LOADER_SPAN[0] <= va < ENGINE_COPY["span"][1]]
+        self.assertEqual(len(engine), 125)
+        for va, raw in engine:
+            mine = memory_operand(raw)
+            if mine is None:
+                continue
+            with self.subTest(va=f"0x{va:08x}"):
+                sign = "-" if mine["disp"] < 0 else "+"
+                self.assertIn(f"[{mine['base']} {sign} 0x{abs(mine['disp']):x}]", decoded[va])
+                if mine["width"]:
+                    self.assertIn(f"{mine['width']} ptr", decoded[va])
+        for tag, entry in [*ENGINE_FIELD_STORES.items(), ("INHERIT_TYPE", ENGINE_COPY)]:
+            with self.subTest(tag=tag):
+                self.assertEqual(decoded[int(entry["compare"], 16)], f"cmp eax, {entry['id'] if entry['id'] < 10 else hex(entry['id'])}")
+
+
+ENGINE_HEADER = load_layout_header()
+
+
+class EngineLayoutTests(unittest.TestCase):
+    def test_committed_header_agrees_with_the_map(self):
+        self.assertEqual(engine_layout_problems(ENGINE_HEADER), [])
+
+    def test_offset_that_disagrees_with_the_header_is_reported(self):
+        swapped = ENGINE_HEADER.replace("    float max_fuel_flow;\n    float max_delta_fuel_flow;\n",
+                                        "    float max_delta_fuel_flow;\n    float max_fuel_flow;\n")
+        self.assertNotEqual(swapped, ENGINE_HEADER)
+        problems = engine_layout_problems(swapped)
+        self.assertIn("MAX_FUELFLOW + 0xa8: Fr3EngineRecord.max_fuel_flow is at +0xac", problems)
+        self.assertIn("MAX_DELTA_FUELFLOW + 0xac: Fr3EngineRecord.max_delta_fuel_flow is at +0xa8", problems)
+        stores = drifted(ENGINE_FIELD_STORES, ("CAPACITY", "offsets"),
+                         {"0x38": {**ENGINE_FIELD_STORES["CAPACITY"]["offsets"]["0x34"]}})
+        self.assertIn("CAPACITY + 0x38: Fr3EngineRecord.capacity is at +0x34", engine_layout_problems(ENGINE_HEADER, stores))
+
+    def test_width_name_size_and_assertions_are_checked(self):
+        stores = drifted(ENGINE_FIELD_STORES, ("NUMBER_OF_TURBOS", "offsets", "0x94", "width"), "dword")
+        self.assertIn("NUMBER_OF_TURBOS + 0x94: Fr3EngineRecord.turbo_count is 1 bytes, the map stores 4",
+                      engine_layout_problems(ENGINE_HEADER, stores))
+        stores = drifted(ENGINE_FIELD_STORES, ("TORQUE_ARRAY", "offsets", "0x3c", "field"), "torques")
+        self.assertIn("TORQUE_ARRAY + 0x3c: Fr3EngineRecord has no field torques", engine_layout_problems(ENGINE_HEADER, stores))
+        line = '_Static_assert(offsetof(Fr3EngineRecord, capacity) == 0x34, "CAPACITY");\n'
+        self.assertIn(line, ENGINE_HEADER)
+        self.assertEqual(engine_layout_problems(ENGINE_HEADER.replace(line, "")),
+                         ["CAPACITY + 0x34: the header does not _Static_assert offsetof(Fr3EngineRecord, capacity) == 0x34"])
+        grown = ENGINE_HEADER.replace("    float max_delta_fuel_flow;\n", "    float max_delta_fuel_flow;\n    float extra;\n")
+        self.assertIn("Fr3EngineRecord is 0xb4 bytes, not 0xb0", engine_layout_problems(grown))
+        engine_copy = drifted(ENGINE_COPY, ("parent_store", "field"), "parent_address")
+        self.assertIn("INHERIT_TYPE + 0x18: Fr3EngineRecord has no field parent_address",
+                      engine_layout_problems(ENGINE_HEADER, copy=engine_copy))
+
+    def test_header_provenance_names_the_byte_checked_engine_offsets(self):
+        self.assertNotIn("Engine/gearbox layouts use the supplied report", ENGINE_HEADER)
+        self.assertIn("Every Fr3EngineRecord offset from +0x14 on is byte-checked", ENGINE_HEADER)
+
+
+class UnmappedEngineTagTests(unittest.TestCase):
+    def test_reports_each_unmapped_tag_once_with_its_first_use(self):
+        records = parse(":TYPE A\n:ADDITIONAL_BRAKING 1\n:CAPACITY 2\n:TYPE B\n:INHERIT_TYPE A\n:ADDITIONAL_BRAKING 3\n"
+                        ":AEROFOIL 1\n:END\n", {"ADDITIONAL_BRAKING", "CAPACITY", "INHERIT_TYPE", "AEROFOIL"})
+        self.assertEqual(unmapped_engine_tags(records), {"ADDITIONAL_BRAKING": ("A", 2), "AEROFOIL": ("B", 7)})
+        self.assertEqual(unmapped_engine_tags(records[:1], {**ENGINE_FIELD_STORES, "ADDITIONAL_BRAKING": {}}), {})
+
+
 def engine_file():
     lines = [":TYPE BASE0"]
     for i in range(5):
@@ -1022,8 +1348,33 @@ class VerifyTextDatabaseTests(unittest.TestCase):
 
     def test_reads_the_committed_evidence_by_default(self):
         with mock.patch.object(text_database, "load_field_evidence", return_value=[]), \
-                self.assertRaisesRegex(ValueError, "Tyre scalar stores lack byte-checked evidence"):
+                self.assertRaisesRegex(ValueError, "Engine stores lack byte-checked evidence"):
             verify_text_databases(self.game, TAGS)
+        tyre_only = [site for site in load_field_evidence() if site["va"] >= text_database.TYRE_LOADER_SPAN[0]]
+        with self.assertRaisesRegex(ValueError, "Engine stores lack byte-checked evidence: LOCATION_TYPE compare"):
+            verify_text_databases(self.game, TAGS, tyre_only)
+        engine_only = [site for site in load_field_evidence() if site["va"] < text_database.TYRE_LOADER_SPAN[0]]
+        with self.assertRaisesRegex(ValueError, "Tyre scalar stores lack byte-checked evidence"):
+            verify_text_databases(self.game, TAGS, engine_only)
+
+    def test_reject_unmapped_engine_tag(self):
+        self.write("engines", engine_file().replace(":TYPE BASE1\r\n", ":TYPE BASE1\r\n:ADDITIONAL_BRAKING 0.5\r\n"))
+        with self.assertRaisesRegex(ValueError, "Engine tags without a byte-checked store: ADDITIONAL_BRAKING "
+                                                "\\(first in BASE1, line 9\\)"):
+            verify_text_databases(self.game, TAGS | {"ADDITIONAL_BRAKING"})
+
+    def test_reject_engine_store_without_evidence(self):
+        evidence = [site for site in load_field_evidence() if site["va"] != 0x00522a76]
+        with self.assertRaisesRegex(ValueError, "Engine stores lack byte-checked evidence: MAX_RPM \\+ 0x30"):
+            verify_text_databases(self.game, TAGS, evidence)
+
+    def test_reject_engine_id_or_header_disagreement(self):
+        with self.assertRaisesRegex(ValueError, "Engine stores lack byte-checked evidence: CAPACITY: analysis/tags.json"):
+            verify_text_databases(self.game, TAGS, tag_ids={**load_tag_ids(), "CAPACITY": 0x38})
+        header = load_layout_header().replace("    float max_fuel_flow;\n    float max_delta_fuel_flow;\n",
+                                              "    float max_delta_fuel_flow;\n    float max_fuel_flow;\n")
+        with self.assertRaisesRegex(ValueError, "disagree with recovered/fr3_database_layouts.h: MAX_FUELFLOW"):
+            verify_text_databases(self.game, TAGS, header=header)
 
     def test_reject_wrong_engine_count(self):
         self.write("engines", engine_file().replace(":TYPE CHILD49\r\n:INHERIT_TYPE BASE4\r\n", ""))

@@ -330,7 +330,7 @@ class CommittedFilesTests(unittest.TestCase):
     def test_builds_from_the_committed_analysis_files(self):
         result = self.run_script("--output", str(self.output))
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("Wrote 25 routines, 15 disassembly files and 64 byte-checked sites", result.stdout)
+        self.assertIn("Wrote 25 routines, 15 disassembly files and 189 byte-checked sites", result.stdout)
         page = self.output.read_text(encoding="utf-8")
         committed = json.loads(routine_index.STATUS.read_text(encoding="utf-8"))
         self.assertEqual(page.count('<section class="routine"'), 25)
@@ -346,6 +346,12 @@ class CommittedFilesTests(unittest.TestCase):
         self.assertEqual(len(site_vas(found["fr3_load_tyre_database"])), 30)
         # The scalar copy's eleven load/store pairs and its ret.
         self.assertEqual(len(site_vas(found["fr3_copy_tyre_scalar_fields"])), 23)
+        # The engine loader: allocation size, 21 dispatch compares and the stores, zero-fill, derived values,
+        # enum tables and INHERIT_TYPE setup; the engine copy: every load/store pair, the block and its ret.
+        engine_loader, engine_copy = site_vas(found["fr3_load_engine_database"]), site_vas(found["fr3_copy_engine_record"])
+        self.assertEqual((len(engine_loader), len(engine_copy)), (72, 53))
+        self.assertTrue(all(0x005227F0 <= int(va, 16) < 0x00522C80 for va in engine_loader))
+        self.assertTrue(all(0x00522C80 <= int(va, 16) < 0x00522D6C for va in engine_copy))
         for name in ("fill_memory", "allocate_database_record", "create_database", "fill_memory_body"):
             self.assertIn(f"asm-{name}", found)
 
