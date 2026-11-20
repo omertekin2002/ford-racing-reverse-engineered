@@ -115,7 +115,8 @@ Ubuntu runner: it acquires and verifies the public demo, installs the pinned
 runtimes, runs `build_releases.py`, checks `sha256sum -c SHA256SUMS`, verifies
 both archives again, extracts the Linux package and runs `./launch.sh --verify`
 in it. It runs on pull requests and pushes to `main` that change the builder,
-the launchers, these documents or the game-file manifest, and on demand:
+the launchers, these documents or the game-file manifest, on every pushed
+`v*` tag (see [Making a release](#making-a-release)), and on demand:
 
 ```sh
 gh workflow run releases.yml --repo omertekin2002/ford-racing-reverse-engineered --ref main
@@ -134,28 +135,49 @@ cd wine-packages && sha256sum -c SHA256SUMS
 
 A pull-request run builds GitHub's temporary merge commit, so its
 `source_revision` names that commit; a run on `main` names the `main` commit.
-The workflow has read-only repository access. It creates no release, tag or
-deployment and does not launch the game under Wine; see
-[runtime validation](release-validation.md) for what has been run.
+The build job has read-only repository access. Pull-request, `main` and
+on-demand runs create no release, tag or deployment. No run launches the game
+under Wine; see [runtime validation](release-validation.md) for what has been run.
 
-### Publishing a release
+### Making a release
 
-Publishing stays a manual step for the repository owner. v0.1.0-preview was
-published from a local build with these steps:
+A pushed version tag drafts the release from the CI-built files; publishing it
+stays the repository owner's click.
 
-1. Build both packages with the two commands above, or download the artifact
-   of a green **Wine compatibility packages** run on `main`.
-2. In `artifacts/releases/` (or the downloaded directory), check the archives
-   with `sha256sum -c SHA256SUMS`.
-3. Extract the Linux package and run `./launch.sh --verify` in its directory.
-4. From that directory, create a prerelease with the two archives and
-   the checksum file:
+1. Bump `VERSION` in `scripts/build_releases.py` and merge that to `main`.
+2. Push the matching tag from that `main` commit: `git tag v<VERSION>` and
+   `git push origin v<VERSION>`. Agents never push release tags.
+3. The tag runs **Wine compatibility packages**. Before building it fails if
+   the tag is not exactly `v` + `VERSION`, naming both. After the build
+   and its checksum checks, it also requires each `builds.json` entry's `source_revision`
+   to be the tagged commit.
+4. The `draft-release` job, the only job with write access, runs only on tag
+   pushes. It downloads the run's artifact, checks
+   `sha256sum -c SHA256SUMS` again and runs `scripts/release_tag.py draft`.
+   That creates a **draft** release for the tag with `gh release create
+   --draft --verify-tag`, titled like `Ford Racing 3 Demo 0.1.0 preview (Wine
+   packages)`, marked pre-release when `VERSION` has a `-` suffix. It attaches
+   exactly the two archives, `SHA256SUMS` and `builds.json`, with notes
+   generated from `builds.json` that link this page and the run.
+5. If the tag already has a release, draft or published, the job fails and
+   leaves that release unchanged. Delete the old draft first, or bump
+   `VERSION` and tag again.
+6. Review the draft on the Releases page, edit its notes if needed, and press
+   **Publish**. The workflow never publishes, edits a release or pushes a tag.
 
-   ```sh
-   gh release create v<version> --prerelease \
-     ford-racing-3-demo-<version>-linux-x86_64.tar.gz \
-     ford-racing-3-demo-<version>-macos.zip \
-     SHA256SUMS
-   ```
+To preview the command and notes from a downloaded artifact without touching
+GitHub:
+
+```sh
+python3 scripts/release_tag.py draft wine-packages --tag v<VERSION> \
+  --sha <commit> --repo omertekin2002/ford-racing-reverse-engineered \
+  --run-url <run-url> --dry-run
+```
+
+v0.1.0-preview predates this workflow and was published by hand from a local
+build: the packages were built with the two commands above, checked with
+`sha256sum -c SHA256SUMS` and the Linux package's `./launch.sh --verify`, and
+attached with `gh release create v<version> --prerelease` to the two archives
+and `SHA256SUMS`.
 
 The version comes from `VERSION` in `scripts/build_releases.py`.
