@@ -148,8 +148,13 @@ class RecordDossierPageTests(RecordDossierTestCase):
             with self.subTest(prefix=prefix):
                 links = Links(page)
                 self.assertEqual(len(links.ids), len(set(links.ids)))
+                # Each inheriting engine's effective TORQUE_ARRAY row has an id, which the entrance page links.
+                torque = {"CHILD", "GRANDCHILD"} if prefix == "engine" else set()
                 self.assertEqual([anchor for anchor in links.ids if "-line-" not in anchor],
-                                 ["rights-notice", "rights-title", *(f"{prefix}-{name}" for name in names)])
+                                 ["rights-notice", "rights-title",
+                                  *(anchor for name in names for anchor in (f"{prefix}-{name}",
+                                                                           f"{prefix}-{name}-torque-array")
+                                    if not anchor.endswith("-torque-array") or name in torque)])
                 internal = [href[1:] for href in links.hrefs if href.startswith("#")]
                 self.assertTrue(internal)
                 self.assertEqual([href for href in internal if href not in links.ids], [])
@@ -225,7 +230,9 @@ class RecordDossierPageTests(RecordDossierTestCase):
     def test_effective_fields_resolve_a_two_level_chain(self):
         engines, _ = self.build()
         grandchild = section(engines, "engine", "GRANDCHILD").split("<h3>Declarations, as written</h3>")[0]
-        rows = dict(re.findall(r"<tr><td><code>(\w+)</code></td>(.*?)</tr>", grandchild))
+        rows = dict(re.findall(r'<tr(?: id="engine-GRANDCHILD-torque-array")?><td><code>(\w+)</code></td>(.*?)</tr>',
+                               grandchild))
+        self.assertEqual(grandchild.count('<tr id="engine-GRANDCHILD-torque-array"><td><code>TORQUE_ARRAY</code>'), 1)
         self.assertEqual(set(rows), set(ENGINE_FIELD_STORES))
         # CAPACITY comes from CHILD, one level up; LOCATION_TYPE from BASE, two levels up.
         self.assertIn('<td><span class="num">1.5</span></td><td>inherited</td><td><a href="#engine-CHILD-line-11">CHILD '

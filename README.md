@@ -34,7 +34,9 @@ The new tyre analysis reconstructs its 88-byte record and table allocations.
   input build and the checks they passed; it is rebuilt on every deploy. The
   entrance page also answers
   [whether road, offroad and track tyres use different tables](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/#tyre-tables),
-  generated from the tyre table provenance with one traced example.
+  generated from the tyre table provenance with one traced example, and
+  [which engines share a torque table and what they declare differently](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/#engine-torque-tables),
+  generated from the engines' effective fields.
 
 Read [the verified findings and limitations](docs/analysis.md). This is an
 analysis package, not restored original source or a runnable replacement game.

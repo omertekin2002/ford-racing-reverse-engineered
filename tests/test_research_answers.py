@@ -9,8 +9,9 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from dossier_common import routine_labels
 import research_answers
-from text_database import REPO_ROOT, ZERO_FILLED
+from text_database import REPO_ROOT, ZERO_FILLED, parse
 
+from test_record_dossier import TAGS, with_engine_fields
 from test_tyre_dossier import TYRES, tyres_json
 
 EVIDENCE = json.loads((REPO_ROOT / "analysis/selected/field-evidence.json").read_text())
@@ -132,6 +133,219 @@ class SectionTests(unittest.TestCase):
         self.assertNotIn("<b>", markup)
         self.assertIn("&lt;b&gt;&quot;x&quot;", markup)
         self.assertIn('id="tyre-tables"', section(tyres))
+
+
+ENGINE_TAGS = {*TAGS, "TORQUE_MODIFIER"}
+# ROOT declares a table nobody inherits. A declares its own table, which B (through A) and C (through B and A) read,
+# so A's table is shared by three engines. LONE declares a table only it reads. INDIGO is a root with a colon-less
+# line.
+ENGINES = """:TYPE ROOT
+:MAX_RPM 6000
+:TORQUE_MODIFIER 1.0
+:TORQUE_ARRAY
+0 10.5
+1000 20.5
+:TYPE A
+:INHERIT_TYPE ROOT
+:MAX_RPM 7000
+:TORQUE_MODIFIER 3.9
+:TORQUE_ARRAY
+0 30.5
+1000 40.5
+:TYPE B
+:INHERIT_TYPE A
+:TORQUE_MODIFIER 3.0
+:TYPE C
+:INHERIT_TYPE B
+:TORQUE_MODIFIER 3.5
+:CAPACITY 2.5
+:TYPE LONE
+:INHERIT_TYPE ROOT
+:MAX_RPM 8000
+:TORQUE_MODIFIER 2.0
+:TORQUE_ARRAY
+0 1.5
+:TYPE INDIGO
+INHERIT_TYPE ROOT
+:TORQUE_MODIFIER 1.5
+:END
+"""
+
+
+def engines_json(text=ENGINES):
+    return with_engine_fields({"source": "DATA/ASCII/CARS/ENGDATA.DAT", "sha256": "0" * 64,
+                               "records": parse(text, ENGINE_TAGS)})
+
+
+def engine_section(engines=None, evidence=EVIDENCE):
+    return research_answers.engine_torque_section(engines_json() if engines is None else engines, evidence, LABELS)
+
+
+class EngineSelectionTests(unittest.TestCase):
+    def test_groups_readers_by_table_source_and_line(self):
+        self.assertEqual(research_answers.torque_groups(engines_json()),
+                         [{"source": "A", "source_line": 11, "readers": ["A", "B", "C"]},
+                          {"source": "LONE", "source_line": 25, "readers": ["LONE"]}])
+        self.assertEqual(research_answers.shared_groups(engines_json()),
+                         [{"source": "A", "source_line": 11, "readers": ["A", "B", "C"]}])
+
+    def test_a_root_whose_table_is_inherited_reads_it_too(self):
+        engines = engines_json(ENGINES.replace(":END", ":TYPE D\n:INHERIT_TYPE ROOT\n:END"))
+        self.assertEqual(research_answers.shared_groups(engines),
+                         [{"source": "ROOT", "source_line": 4, "readers": ["ROOT", "D"]},
+                          {"source": "A", "source_line": 11, "readers": ["A", "B", "C"]}])
+
+    def test_zero_filled_tables_are_not_grouped(self):
+        # NONE_ROOT declares no table, so its child keeps the zero fill and reads no table.
+        text = ENGINES.replace(":END", ":TYPE NONE_ROOT\n:MAX_RPM 1\n:TYPE NONE_CHILD\n:INHERIT_TYPE NONE_ROOT\n:END")
+        groups = research_answers.torque_groups(engines_json(text))
+        self.assertNotIn("NONE_CHILD", [name for group in groups for name in group["readers"]])
+        self.assertIn("1 has no TORQUE_ARRAY along its :INHERIT_TYPE path and keeps the zero-filled slots",
+                      text_of(engine_section(engines_json(text))))
+
+    def test_example_is_the_first_engine_that_inherits_its_table(self):
+        self.assertEqual(research_answers.torque_example(engines_json()), "B")
+        text = ENGINES.replace(":END", ":TYPE LATER\n:INHERIT_TYPE LONE\n:END")
+        self.assertEqual(research_answers.torque_example(engines_json(text)), "B")
+        text = ENGINES.replace(":TYPE B", ":TYPE EARLY\n:INHERIT_TYPE A\n:TYPE B")
+        self.assertEqual(research_answers.torque_example(engines_json(text)), "EARLY")
+
+    def test_no_shared_table_is_refused(self):
+        # Without B and C, every table is read by one engine only.
+        text = ENGINES.replace(":TYPE B\n:INHERIT_TYPE A\n:TORQUE_MODIFIER 3.0\n:TYPE C\n:INHERIT_TYPE B\n"
+                               ":TORQUE_MODIFIER 3.5\n:CAPACITY 2.5\n", "")
+        with self.assertRaisesRegex(ValueError, "#engine-torque-tables answer has no shared torque table"):
+            engine_section(engines_json(text))
+
+    def test_no_inheriting_table_is_refused(self):
+        # Hand-made: B and C marked as declaring A's table, so it is shared yet no engine inherits a table.
+        engines = copy.deepcopy(engines_json())
+        for name in ("B", "C"):
+            engines["effective_fields"][name]["fields"]["TORQUE_ARRAY"]["status"] = "declared"
+        with self.assertRaisesRegex(ValueError, "#engine-torque-tables answer has no traced example"):
+            engine_section(engines)
+
+    def test_a_linked_site_missing_from_the_evidence_is_refused(self):
+        evidence = [site for site in EVIDENCE if site["va"] != 0x00522ccd]
+        with self.assertRaisesRegex(ValueError, "not in field-evidence.json: 0x00522ccd"):
+            engine_section(evidence=evidence)
+
+
+class EngineSectionTests(unittest.TestCase):
+    def test_summary_and_table_come_from_effective_fields(self):
+        markup = engine_section()
+        self.assertTrue(markup.startswith('<section id="engine-torque-tables"><h2>Which engines share a torque table, '
+                                          "and what do they declare differently?</h2>"))
+        text = text_of(markup)
+        self.assertIn("Of the 4 engines with :INHERIT_TYPE , 2 declare their own TORQUE_ARRAY and 2 inherit one. "
+                      "1 table is read by more than one engine, 3 engines in all; the other 1 inheriting engine each "
+                      "reads a table that no other engine reads.", text)
+        self.assertIn("The 2 records without :INHERIT_TYPE ( ROOT and INDIGO ( open question )) are not counted above. "
+                      "No inheriting engine reads a table one of them declares.", text)
+        self.assertIn("A line 11 A declares it ( line 11 ) MAX_RPM 7000 ( line 9 ); TORQUE_MODIFIER 3.9 ( line 10 ) "
+                      "B inherits it: B &rarr; A TORQUE_MODIFIER 3.0 ( line 16 ) "
+                      "C inherits it: C &rarr; B &rarr; A TORQUE_MODIFIER 3.5 ( line 19 ); CAPACITY 2.5 ( line 20 )",
+                      text)
+        self.assertNotIn("LONE line 25", text)
+        # One more engine inheriting A moves every count; nothing in the section is fixed.
+        text = text_of(engine_section(engines_json(ENGINES.replace(":END", ":TYPE MORE\n:INHERIT_TYPE C\n:END"))))
+        self.assertIn("Of the 5 engines with :INHERIT_TYPE , 2 declare their own TORQUE_ARRAY and 3 inherit one. "
+                      "1 table is read by more than one engine, 4 engines in all", text)
+        self.assertIn("MORE inherits it: MORE &rarr; C &rarr; B &rarr; A", text)
+
+    def test_shared_root_is_named_as_a_reader(self):
+        text = text_of(engine_section(engines_json(ENGINES.replace(":END", ":TYPE D\n:INHERIT_TYPE ROOT\n:END"))))
+        self.assertIn("2 tables are read by more than one engine, 5 engines in all", text)
+        self.assertIn("ROOT is counted among the readers of the shared tables because inheriting engines read its "
+                      "table.", text)
+        self.assertIn("ROOT line 4 ROOT declares it ( line 4 ) MAX_RPM 6000 ( line 2 ); TORQUE_MODIFIER 1.0 ( line 3 ) "
+                      "D inherits it: D &rarr; ROOT none", text)
+
+    def test_trace_links_path_lines_row_count_copy_and_zero_fill(self):
+        markup = engine_section()
+        links = re.findall(r'href="([^"]+)"', markup)
+        for href in ("engines.html#engine-B", "engines.html#engine-B-line-15", "engines.html#engine-A-line-11",
+                     "engines.html#engine-A-line-9", "engines.html#engine-B-torque-array",
+                     "routines.html#fr3_copy_engine_record", "routines.html#site-0052292b",
+                     "routines.html#site-00522b47", "routines.html#site-00522ccd", "routines.html#site-00522cd4",
+                     "routines.html#site-00522926", "routines.html#site-00522a0e", "routines.html#site-005229c1",
+                     "routines.html#site-005229f8", "questions.html#indigo"):
+            self.assertIn(href, links)
+        for href in links:
+            self.assertRegex(href, r"\A(engines\.html(#engine-[A-Za-z0-9_]+(-line-\d+|-torque-array)?)?|"
+                                   r"routines\.html#(site-[0-9a-f]{8}|fr3_\w+)|questions\.html#indigo)\Z")
+        text = text_of(markup)
+        self.assertIn("Traced example: B Chosen from the data: the first engine in file order that inherits its "
+                      "TORQUE_ARRAY . B reads the table A declares on line 11 .", text)
+        self.assertIn("B declares no TORQUE_ARRAY after its :INHERIT_TYPE on line 15 , which names A .", text)
+        self.assertIn("A declares the TORQUE_ARRAY on line 11 of DATA/ASCII/CARS/ENGDATA.DAT , 2 rows &times; 2 "
+                      "columns.", text)
+        self.assertIn("When the loader parsed that table, it read the row count from + 0x30 ( 0x0052292b ), which held "
+                      "the MAX_RPM 7000 that A declares on line 9 .", text)
+        self.assertIn("calls the record copy fr3_copy_engine_record ( 0x00522b47 ). The copy moves the parent's 18 "
+                      "torque slots at + 0x3c as one 0x48-byte block ( 0x00522ccd , 0x00522cd4 )", text)
+        self.assertIn("first zero-fills all 18 slots ( 0x00522926 )", text)
+
+    def test_trace_of_a_two_hop_path_and_an_inherited_max_rpm(self):
+        # C reaches A's table through B; without its own MAX_RPM, A's table was parsed after A's INHERIT_TYPE gave it
+        # ROOT's.
+        text = ENGINES.replace(":TYPE A\n:INHERIT_TYPE ROOT\n:MAX_RPM 7000\n", ":TYPE A\n:INHERIT_TYPE ROOT\n")
+        markup = text_of(research_answers.torque_trace(engines_json(text), "C", LABELS))
+        self.assertIn("C declares no TORQUE_ARRAY after its :INHERIT_TYPE on line 17 , which names B .", markup)
+        self.assertIn("B declares no TORQUE_ARRAY after its :INHERIT_TYPE on line 14 , which names A .", markup)
+        self.assertIn("A declares the TORQUE_ARRAY on line 10 of", markup)
+        self.assertIn("which held the MAX_RPM 6000 that ROOT declares on line 2 , which reached A through A &rarr; "
+                      "ROOT .", markup)
+
+    def test_comparison_ends_at_each_engine_own_modifier(self):
+        text = text_of(engine_section())
+        self.assertIn("A shared table does not make two engines' effective fields the same. All 3 engines that read a "
+                      "shared table declare their own TORQUE_MODIFIER , which the loader stores at + 0x24 ( 0x00522a0e ). "
+                      "For 1 of the 1 shared table, the engines that read the table hold different TORQUE_MODIFIER "
+                      "declarations. For example (the first such table in file order), the engines reading the table "
+                      "A declares on line 11 hold A 3.9 ( line 10 ), B 3.0 ( line 16 ) and C 3.5 ( line 19 ).", text)
+        self.assertIn("How the game uses + 0x24 together with the table is not byte-checked here, so this answer "
+                      "neither combines them nor computes anything from them.", text)
+        self.assertIn("The + 0x2c that TORQUE_ARRAY may also write ( 0x005229c1 , 0x005229f8 ) is labelled derived and "
+                      "conditional and is given no value", text)
+        # C no longer declares its own modifier, so it holds B's, and B's table group still differs.
+        text = text_of(engine_section(engines_json(ENGINES.replace(":TORQUE_MODIFIER 3.5\n", ""))))
+        self.assertIn("2 of the 3 engines that read a shared table declare their own TORQUE_MODIFIER", text)
+        self.assertIn("C 3.0 ( line 16 )", text)
+        # Nobody re-declares the modifier: the readers all hold A's.
+        text = ENGINES.replace(":TORQUE_MODIFIER 3.5\n", "").replace(":TORQUE_MODIFIER 3.0\n", "")
+        self.assertIn("The engines reading each shared table hold the same TORQUE_MODIFIER .",
+                      text_of(engine_section(engines_json(text))))
+
+    def test_wording_makes_no_unit_or_performance_claim(self):
+        markup = engine_section()
+        text = text_of(markup[markup.index("</h2>"):]).lower()
+        for word in ("unit", "horsepower", "power", "performance", "handling", "faster", "slower", "curve", "newton",
+                     "kw", "nm "):
+            self.assertNotIn(word, text)
+        # Nothing is multiplied: no number appears that is not declared in the synthetic file or a site, line or
+        # count.
+        for product in ("119", "122", "117.0", "15.21"):
+            self.assertNotIn(product, text)
+
+    def test_indigo_links_its_open_question(self):
+        self.assertEqual(research_answers.engine_ref("INDIGO"),
+                         '<a href="engines.html#engine-INDIGO">INDIGO</a> '
+                         '(<a href="questions.html#indigo">open question</a>)')
+        self.assertEqual(research_answers.engine_ref("A"), '<a href="engines.html#engine-A">A</a>')
+        self.assertIn('<a href="engines.html#engine-INDIGO">INDIGO</a> (<a href="questions.html#indigo">open question'
+                      "</a>)", engine_section())
+
+    def test_names_are_escaped(self):
+        markup = research_answers.engine_ref('<b>"x"</b>') + research_answers.engine_line_link('<b>"x"</b>', 3)
+        self.assertNotIn("<b>", markup)
+        self.assertIn("&lt;b&gt;&quot;x&quot;&lt;/b&gt;", markup)
+        # parse() only accepts words and numbers, so escaping of declared values is checked on a hand-made input.
+        engines = copy.deepcopy(engines_json())
+        engines["effective_fields"]["B"]["fields"]["TORQUE_MODIFIER"]["values"] = ['<i>"3"</i>']
+        markup = engine_section(engines)
+        self.assertNotIn("<i>", markup)
+        self.assertIn("&lt;i&gt;&quot;3&quot;&lt;/i&gt;", markup)
 
 
 if __name__ == "__main__":
