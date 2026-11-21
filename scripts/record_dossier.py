@@ -33,6 +33,9 @@ The gearbox page has a "Where each field is stored" table: for each tag in
 GEARBOX_FIELD_STORES, its payload offset, width and Fr3GearboxRecord field, how
 it is read (float, enum word table, or float stored as an integer's low byte)
 and its compare (with the selecting jg after a range compare) and store sites.
+Each row has the id gearbox-store-<TAG>, and each declaration row on both pages
+the id <engine|gearbox>-<record>-line-<n>; the Compare records page
+(scripts/record_compare.py) links both.
 Gearbox inheritance is not resolved: no demo gearbox declares :INHERIT_TYPE,
 and a gearbox's :INHERIT_TYPE is labelled unresolved.
 
@@ -295,15 +298,30 @@ def read_html(entry):
     return text
 
 
+def gearbox_tags():
+    """The tags in GEARBOX_FIELD_STORES, in payload offset order (+0x14 to +0x31)."""
+    return sorted(GEARBOX_FIELD_STORES, key=lambda tag: int(next(iter(GEARBOX_FIELD_STORES[tag]["offsets"])), 16))
+
+
+def store_anchor(tag):
+    """The id of gearbox tag `tag`'s row in the gearbox page's "Where each field is stored" table."""
+    return anchor("gearbox", "store", tag)
+
+
 def gearbox_store_section(routines):
-    """The nine-row table of where the gearbox loader stores each tag, linked to its byte-checked sites."""
+    """The nine-row table of where the gearbox loader stores each tag, linked to its byte-checked sites.
+
+    Each row has the id store_anchor(tag), which the Compare records page (scripts/record_compare.py) links.
+    """
     rows = []
-    for tag, entry in sorted(GEARBOX_FIELD_STORES.items(), key=lambda item: int(next(iter(item[1]["offsets"])), 16)):
+    for tag in gearbox_tags():
+        entry = GEARBOX_FIELD_STORES[tag]
         (offset, store), = entry["offsets"].items()
         compare = site_link(int(entry["compare"], 16))
         if "after_range" in entry:
             compare += f', then <code>jg</code> {site_link(int(entry["after_range"], 16))}'
-        rows.append(f'<tr><td><code>{e(tag)}</code></td><td><code>+ {e(offset)}</code></td><td>{e(store["width"])}</td>'
+        rows.append(f'<tr id="{e(store_anchor(tag))}"><td><code>{e(tag)}</code></td><td><code>+ {e(offset)}</code></td>'
+                    f'<td>{e(store["width"])}</td>'
                     f'<td><code>{e(store["field"])}</code></td><td>{read_html(entry)}</td>'
                     f'<td><code>cmp eax, 0x{entry["id"]:x}</code> {compare}</td><td>{sites_html(store["sites"])}</td></tr>')
     return ('<h2 id="field-stores">Where each field is stored</h2>'
@@ -395,7 +413,7 @@ def render(database, kind, pe, revision, routines, entrance=False):
             parts.append(consequence_section(record, database["untagged_inherit_consequences"][name]))
         note = ENGINE_INHERIT_NOTE if engines else INHERIT_NOTE
         parts.append(f"<h3>Declarations, as written</h3>"
-                     f"{declarations(record, prefix, note, untagged_note, row_ids=engines)}</section>")
+                     f"{declarations(record, prefix, note, untagged_note, row_ids=True)}</section>")
     parts.append("</body></html>\n")
     return "\n".join(parts)
 
