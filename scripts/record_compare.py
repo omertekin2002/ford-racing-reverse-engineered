@@ -43,7 +43,7 @@ GEARBOX_PAGE = DATABASES["gearboxes"]["page"]
 DEFAULT_GAME = REPO_ROOT / "inputs/extracted/Program_Executable_Files"
 FLOAT_KINDS = frozenset({"float", "float_to_byte"})
 READ_TEXT = {"float": "float", "enum": "enum word", "float_to_byte": "float stored as an integer's low byte"}
-EXTRA_STYLE = ("table.matrix td, table.matrix th { white-space: nowrap; }\n"
+EXTRA_STYLE = (".wide { overflow-x: auto; }\ntable.matrix td { white-space: nowrap; }\n"
                "table.matrix th small { font-weight: normal; }\n")
 SCOPE = ('Scope: values are shown exactly as declared in <code>GEARDATA.DAT</code>, and linked to their declaration '
          "rows on the gearbox page. This page claims no units, no meaning for the enum words and no physics. For "
@@ -146,7 +146,7 @@ def matrix(gearboxes):
             for cell in (gearbox["cells"][tag] for tag in gearbox_tags()))
         rows.append(f'<tr id="{e(row_anchor(name))}"><td><a href="{e(GEARBOX_PAGE)}#{e(anchor("gearbox", name))}">'
                     f"{e(name)}</a></td>{cells}</tr>")
-    return f'<table class="matrix">{header}{"".join(rows)}</table>'
+    return f'<div class="wide"><table class="matrix">{header}{"".join(rows)}</table></div>'
 
 
 def differences_table(gearboxes):
