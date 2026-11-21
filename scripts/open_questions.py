@@ -238,8 +238,9 @@ def indigo_section(case, engines, hrefs, calls, engine_loader, engine_copy):
     matters = (f'<ul><li>{engine_link(name, "The engine page")} keeps line {e(line["line"])} verbatim, labelled '
                "unresolved, and does not apply it: it shows only the record's own declarations.</li>"
                f"<li>{e(parent_name)} declares {len(missing)} tags that {e(name)} does not: {missing_tags}. Which values "
-               f"{e(name)} ends up with for them depends on the answer, and on engine inheritance, which is itself "
-               "unresolved.</li></ul>")
+               f"{e(name)} ends up with for them depends on the answer: zero-filled if the line is ignored, or "
+               f"{e(parent_name)}'s effective values if it is applied. {engine_link(name, 'The engine page')} lists "
+               "both readings for each tag.</li></ul>")
     readings = (f"The engine loader skips or ignores the line, so {e(name)} keeps only its own declarations.",
                 f"The engine loader applies the line as inheritance, giving {e(name)} {e(parent_name)} as its parent.")
     call_text = ", ".join(f"<code>0x{va:08x}</code>" for va, _ in calls)
