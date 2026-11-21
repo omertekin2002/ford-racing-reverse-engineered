@@ -150,8 +150,16 @@ class RecordDossierPageTests(RecordDossierTestCase):
                 self.assertEqual(len(links.ids), len(set(links.ids)))
                 # Each inheriting engine's effective TORQUE_ARRAY row has an id, which the entrance page links.
                 torque = {"CHILD", "GRANDCHILD"} if prefix == "engine" else set()
+                # Each declaration row has an id, which the engine page's effective fields and the Compare records page
+                # link; so does each row of the gearbox store table.
+                lines = [anchor for anchor in links.ids if "-line-" in anchor]
+                self.assertTrue(lines)
+                self.assertTrue(all(re.fullmatch(rf"{prefix}-({'|'.join(names)})-line-\d+", anchor) for anchor in lines))
+                stores = ([f"gearbox-store-{tag}" for tag in record_dossier.gearbox_tags()] if prefix == "gearbox"
+                          else [])
                 self.assertEqual([anchor for anchor in links.ids if "-line-" not in anchor],
-                                 ["rights-notice", "rights-title", *(["field-stores"] if prefix == "gearbox" else []),
+                                 ["rights-notice", "rights-title",
+                                  *(["field-stores", *stores] if prefix == "gearbox" else []),
                                   *(anchor for name in names for anchor in (f"{prefix}-{name}",
                                                                            f"{prefix}-{name}-torque-array")
                                     if not anchor.endswith("-torque-array") or name in torque)])
@@ -162,7 +170,7 @@ class RecordDossierPageTests(RecordDossierTestCase):
                 external = {href for href in links.hrefs if not href.startswith("#")}
                 sites = {href for href in external if href.startswith("routines.html#site-")}
                 self.assertEqual(external - sites,
-                                 {"engines.html", "gearboxes.html", "tyres.html", "pcg.html", "routines.html", "questions.html",
+                                 {"engines.html", "gearboxes.html", "compare.html", "tyres.html", "pcg.html", "routines.html", "questions.html",
                                   *routines, *NOTICE_LINKS}
                                  - {self.pages[prefix == "gearbox"].name})
                 evidence = {f"routines.html#site-{site['va']:08x}" for site in EVIDENCE}
@@ -218,8 +226,11 @@ class RecordDossierPageTests(RecordDossierTestCase):
         engines, gearboxes = self.build()
         self.assertNotIn("Where each field is stored", engines)
         table = gearboxes[gearboxes.index('<h2 id="field-stores">'):gearboxes.index("<h2>Summary</h2>")]
-        rows = re.findall(r"<tr><td><code>(\w+)</code></td><td><code>\+ (0x[0-9a-f]+)</code></td><td>(\w+)</td>"
+        rows = re.findall(r'<tr id="gearbox-store-(\w+)"><td><code>(\w+)</code></td><td><code>\+ (0x[0-9a-f]+)</code></td><td>(\w+)</td>'
                           r"<td><code>(\w+)</code></td><td>(.*?)</td><td>(.*?)</td><td>(.*?)</td></tr>", table)
+        self.assertEqual([row_id for row_id, tag, *_ in rows], [tag for _, tag, *_ in rows])
+        self.assertEqual([row_id for row_id, *_ in rows], record_dossier.gearbox_tags())
+        rows = [row[1:] for row in rows]
         self.assertEqual([(tag, offset, width) for tag, offset, width, *_ in rows],
                          [("CLUTCH_SPEED", "0x14", "dword"), ("CLUTCH_MAX_POWER", "0x18", "dword"),
                           ("TORQUE_SHIFT", "0x1c", "dword"), ("DRIVE_SPLIT", "0x20", "dword"),
@@ -378,11 +389,11 @@ class RecordDossierPageTests(RecordDossierTestCase):
 
     def test_nav_bar(self):
         engines, gearboxes = self.build()
-        self.assertIn('<nav>Research: <strong>Engines</strong> | <a href="gearboxes.html">Gearboxes</a> | '
+        self.assertIn('<nav>Research: <strong>Engines</strong> | <a href="gearboxes.html">Gearboxes</a> | <a href="compare.html">Compare records</a> | '
                       '<a href="tyres.html">Tyres</a> | <a href="pcg.html">PCG catalogue</a> | '
                       '<a href="routines.html">Routines</a> | '
                       '<a href="questions.html">Open questions</a></nav>', engines)
-        self.assertIn('<nav>Research: <a href="engines.html">Engines</a> | <strong>Gearboxes</strong> | '
+        self.assertIn('<nav>Research: <a href="engines.html">Engines</a> | <strong>Gearboxes</strong> | <a href="compare.html">Compare records</a> | '
                       '<a href="tyres.html">Tyres</a> | <a href="pcg.html">PCG catalogue</a> | '
                       '<a href="routines.html">Routines</a> | '
                       '<a href="questions.html">Open questions</a></nav>', gearboxes)

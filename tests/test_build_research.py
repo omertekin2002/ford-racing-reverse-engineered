@@ -17,25 +17,27 @@ from text_database import DATABASES, REPO_ROOT, SCALAR_COPY_CALL, SCALAR_COPY_SP
 from verify_web import ISSUES_PAGE, RIGHTS_CREDIT
 
 from test_open_questions import QUESTION_ENGINES, question_manifest, question_pcg_index, question_verification
-from test_record_dossier import GEARBOXES
+from test_record_compare import COMPARE_GEARBOXES
 from test_tyre_dossier import ACCESSOR_SITES, LOADER_SITES, TYRES
 
 SCRIPT = REPO_ROOT / "scripts/build_research.py"
 PE = json.loads((REPO_ROOT / "analysis/pe-metadata.json").read_text())
-PAGES = ("index.html", "engines.html", "gearboxes.html", "tyres.html", "pcg.html", "routines.html", "questions.html")
+PAGES = ("index.html", "engines.html", "gearboxes.html", "compare.html", "tyres.html", "pcg.html", "routines.html",
+         "questions.html")
 ASM = tuple(sorted(f"evidence/selected/{path.name}" for path in (REPO_ROOT / "analysis/selected").glob("*.asm")))
 EVIDENCE = ("evidence/annotated/selected.c", "evidence/annotated/status.json", "evidence/pcg-index.json", *ASM,
             "evidence/selected/field-evidence.json", "evidence/unpacked-manifest.json")
-COUNTS = {"engines": 7, "gearboxes": 2, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
+COUNTS = {"engines": 7, "gearboxes": 3, "compared_gearboxes": 3, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
           "questions": 3}
 
 
 def write_game(root):
     """Write the three text databases, with the demo's CRLF line ends, under root; return root.
 
-    The engines include INDIGO's colon-less line, which the Open questions page requires.
+    The engines include INDIGO's colon-less line, which the Open questions page requires, and every gearbox declares
+    the nine mapped tags, which the Compare records page requires.
     """
-    for stem, text in (("engines", QUESTION_ENGINES), ("gearboxes", GEARBOXES), ("tyres", TYRES)):
+    for stem, text in (("engines", QUESTION_ENGINES), ("gearboxes", COMPARE_GEARBOXES), ("tyres", TYRES)):
         path = root / DATABASES[stem]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(text.replace("\n", "\r\n").encode("ascii"))
@@ -112,7 +114,7 @@ class BuildTests(ResearchTestCase):
     def test_entrance_page_shows_counts_identity_and_scope(self):
         self.build()
         index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
-        for text in ("7 engine records", "2 gearbox records", "3 tyre records", "2 collections, 5 graphics",
+        for text in ("7 engine records", "3 gearbox records", "3 gearboxes, 9 fields each", "3 tyre records", "2 collections, 5 graphics",
                      "25 annotated routines", "3 open questions",
                      f'SHA-256 <code>{PE["sha256"]}</code>', "<code>0123abcd</code>",
                      "Values are shown exactly as declared", "stays labelled unresolved"):
@@ -284,13 +286,17 @@ class BuildTests(ResearchTestCase):
 
     def test_counts_come_from_the_inputs(self):
         (self.game / DATABASES["gearboxes"]).write_bytes(
-            (GEARBOXES.replace(":END", ":TYPE EXTRA\n:CLUTCH_SPEED 0.5\n:END")).encode("ascii"))
+            COMPARE_GEARBOXES.replace(":END", COMPARE_GEARBOXES[COMPARE_GEARBOXES.index(":TYPE TRACK"):
+                                                                COMPARE_GEARBOXES.index("\n\n:TYPE RALLY")]
+                                      .replace("TRACK", "EXTRA") + "\n:END").encode("ascii"))
         (self.analysis / "pcg-index.json").write_text(json.dumps(question_pcg_index()[1:]), encoding="utf-8")
         (self.analysis / "verification.json").write_text(
             json.dumps({"pcg_collections_verified": 1, "pcg_entries_verified": 3}), encoding="utf-8")
-        self.assertEqual(self.build(), {**COUNTS, "gearboxes": 3, "pcg_collections": 1, "pcg_graphics": 3})
+        self.assertEqual(self.build(), {**COUNTS, "gearboxes": 4, "compared_gearboxes": 4, "pcg_collections": 1,
+                                        "pcg_graphics": 3})
         index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
-        self.assertIn("3 gearbox records", index)
+        self.assertIn("4 gearbox records", index)
+        self.assertIn("4 gearboxes, 9 fields each", index)
         self.assertIn("1 collections, 3 graphics", index)
 
     def test_replaces_a_previous_build(self):
@@ -455,6 +461,26 @@ class VerifierTests(unittest.TestCase):
                 self.edit(page, f'id="{anchor}"', 'id="gone"')
                 self.reject(f"index.html has a broken local link: '{page}#{anchor}' names no id in {page}")
 
+    def test_compare_page_links_a_missing_gearbox_page_anchor(self):
+        # A declaration row and a store-table row on the gearbox page, each linked from the Compare records page.
+        for anchor in ("gearbox-TRACK-line-14", "gearbox-store-ANTI_WHEELSKID"):
+            with self.subTest(anchor=anchor):
+                self.setUp()
+                self.edit("gearboxes.html", f'id="{anchor}"', 'id="gone"')
+                self.reject(f"compare.html has a broken local link: 'gearboxes.html#{anchor}' names no id in "
+                            "gearboxes.html")
+
+    def test_every_page_names_the_entrance_page_producer_revision(self):
+        revision = "<dt>Producer revision</dt><dd><code>0123abcd</code>"
+        self.edit("compare.html", revision, "<dt>Producer revision</dt><dd><code>fedc9876</code>")
+        self.reject("compare.html names producer revision 'fedc9876', not the entrance page's '0123abcd'")
+        self.setUp()
+        self.edit("compare.html", revision, "<dt>Producer</dt><dd><code>0123abcd</code>")
+        self.reject("compare.html names 0 producer revisions, not one")
+        self.setUp()
+        self.edit("pcg.html", "</body>", f"{revision}</code></dd></body>")
+        self.reject("pcg.html names 2 producer revisions, not one")
+
     def test_external_resources(self):
         cases = (('<img src="https://example.com/x.png">', "links to an external resource: <img src="),
                  ('<link rel="stylesheet" href="//example.com/x.css">', "links to an external resource: <link href="),
@@ -527,8 +553,8 @@ class CommandTests(unittest.TestCase):
         output = self.root / "research"
         result = self.run_script("--game", str(write_game(self.root / "game")), "--output", str(output))
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("Wrote 7 verified pages", result.stdout)
-        self.assertIn("7 engines, 2 gearboxes, 3 tyres, 62 PCG collections, 654 graphics, 25 routines and "
+        self.assertIn("Wrote 8 verified pages", result.stdout)
+        self.assertIn("7 engines, 3 gearboxes (3 compared), 3 tyres, 62 PCG collections, 654 graphics, 25 routines and "
                       "3 open questions", result.stdout)
         self.assertEqual(files_under(output), sorted((*PAGES, *EVIDENCE)))
         self.assertIn("62 collections, 654 graphics", (output / INDEX_PAGE).read_text(encoding="utf-8"))

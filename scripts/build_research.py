@@ -3,30 +3,34 @@
 Run it after scripts/acquire_demo.py has extracted the demo. It:
   1. parses ENGDATA.DAT, GEARDATA.DAT and TYREDATA.DAT with scripts/text_database.py
      into a temporary working directory, so no parsed JSON lands in the output;
-  2. writes tyres.html, engines.html, gearboxes.html, pcg.html, routines.html and
-     questions.html with scripts/tyre_dossier.py, scripts/record_dossier.py,
-     scripts/pcg_catalogue.py, scripts/routine_index.py and scripts/open_questions.py;
+  2. writes tyres.html, engines.html, gearboxes.html, compare.html, pcg.html,
+     routines.html and questions.html with scripts/tyre_dossier.py,
+     scripts/record_dossier.py, scripts/record_compare.py, scripts/pcg_catalogue.py,
+     scripts/routine_index.py and scripts/open_questions.py;
   3. copies every committed analysis/ file those pages link to into
      <output>/evidence/, keeping its path under analysis/, and points the pages there;
-  4. writes <output>/index.html, which links the six pages with their record,
-     graphic, routine and question counts, the fr3.exe SHA-256 and the producer revision,
+  4. writes <output>/index.html, which links the seven pages with their record,
+     comparison, graphic, routine and question counts, the fr3.exe SHA-256 and the producer revision,
      and answers "Do road, offroad and track tyres use different tables?" in its
      #tyre-tables section, generated from tyres.json, and "Which engines share a
      torque table, and what do they declare differently?" in its
      #engine-torque-tables section, generated from engines.json, both by
      scripts/research_answers.py;
-  5. checks the directory with verify_research(): all seven pages exist, each carries
-     the rights-holder notice before its main content, none has a <script> or an
+  5. checks the directory with verify_research(): all eight pages exist, each carries
+     the rights-holder notice before its main content and names the same producer
+     revision, none has a <script> or an
      external resource, every local link resolves to a file inside the output, every
      link to another page's fragment, such as the tyre, engine and gearbox pages'
-     links to routines.html#<label> and routines.html#site-<va>, names an id on that
-     page, and the directory holds no file other than the ones this script writes.
+     links to routines.html#<label> and routines.html#site-<va> and the compare page's
+     links to gearboxes.html#<id>, names an id on that page, and the directory holds
+     no file other than the ones this script writes.
 
 The pages are built in a staging directory next to the output and only replace it
 once they pass. An existing output directory is replaced only when it holds nothing
 but files this script writes. The pages hold game data: keep them out of Git.
 """
 import argparse
+import html
 from html.parser import HTMLParser
 from pathlib import Path
 import re
@@ -38,12 +42,13 @@ from dossier_common import (INDEX_PAGE, NOTICE_ID, NOTICE_LINKS, PAGES, e, load_
                             routine_labels)
 import open_questions
 import pcg_catalogue
+import record_compare
 import record_dossier
 import research_answers
 import routine_index
 from text_database import REPO_ROOT, load_known_tags, require, write_databases
 import tyre_dossier
-from verify_web import RIGHTS_CREDIT
+from verify_web import PRODUCER_REVISION, RIGHTS_CREDIT
 
 ANALYSIS = REPO_ROOT / "analysis"
 DEFAULT_GAME = REPO_ROOT / "inputs/extracted/Program_Executable_Files"
@@ -108,6 +113,9 @@ def render_index(counts, pe, revision, evidence, answers=""):
              "sites behind each. Untagged lines are labelled unresolved.", f'{counts["engines"]} engine records'),
             ("gearboxes.html", "Gearboxes", "Each gearbox record's declarations as written.",
              f'{counts["gearboxes"]} gearbox records'),
+            ("compare.html", "Compare records", "Every gearbox lined up field by field, each value linked to its "
+             "declaration and each field to its byte-checked store, and which fields differ across the gearboxes.",
+             f'{counts["compared_gearboxes"]} gearboxes, {len(record_dossier.GEARBOX_FIELD_STORES)} fields each'),
             ("tyres.html", "Tyres", "Each tyre's declarations beside the source of its five resolved tables, the "
              "declaration each inheriting tyre's scalar fields end up with, and the byte-checked instruction sites "
              "behind each.", f'{counts["tyres"]} tyre records'),
@@ -162,6 +170,9 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
                       **record_dossier.build(work / "engines.json", work / "gearboxes.json", pe_path, staging, revision,
                                                entrance=True, status_path=status_path,
                                                evidence_path=analysis / TYRE_EVIDENCE["evidence"])}
+            counts["compared_gearboxes"] = record_compare.build(work / "gearboxes.json", game_dir, pe_path,
+                                                                staging / record_compare.PAGE, revision,
+                                                                entrance=True)
             counts["questions"] = open_questions.build(
                 work / "engines.json", work / "tyres.json", analysis / QUESTION_EVIDENCE["evidence"],
                 analysis / QUESTION_EVIDENCE["pcg_index"], pe_path, staging / open_questions.PAGE, revision,
@@ -208,6 +219,7 @@ class ResearchPage(HTMLParser):
         self.notice_text, self.notice_links = [], []
         self.feed(text)
         self.close()
+        self.revisions = [html.unescape(match) for match in PRODUCER_REVISION.findall(text)]
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
@@ -255,7 +267,14 @@ def verify_research(root):
             errors.append(f"{page} is missing")
             continue
         parsed[page] = ResearchPage(path.read_text(encoding="utf-8"))
+    entrance = parsed.get(INDEX_PAGE)
+    expected = entrance.revisions[0] if entrance and len(entrance.revisions) == 1 else None
     for page, found in parsed.items():
+        if len(found.revisions) != 1:
+            errors.append(f"{page} names {len(found.revisions)} producer revisions, not one")
+        elif expected is not None and found.revisions[0] != expected:
+            errors.append(f"{page} names producer revision {found.revisions[0]!r}, not the entrance page's "
+                          f"{expected!r}")
         if not found.notice_found:
             errors.append(f"{page} lacks the rights-holder notice (<aside id=\"{NOTICE_ID}\">)")
         else:
@@ -316,7 +335,7 @@ def main():
     except (ValueError, KeyError, TypeError, AttributeError, OSError) as error:
         raise SystemExit(f"build_research.py: {error}") from None
     print(f"Wrote {len(RESEARCH_PAGES)} verified pages to {args.output}: {counts['engines']} engines, "
-          f"{counts['gearboxes']} gearboxes, {counts['tyres']} tyres, {counts['pcg_collections']} PCG collections, "
+          f"{counts['gearboxes']} gearboxes ({counts['compared_gearboxes']} compared), {counts['tyres']} tyres, {counts['pcg_collections']} PCG collections, "
           f"{counts['pcg_graphics']} graphics, {counts['routines']} routines and {counts['questions']} open questions")
 
 
