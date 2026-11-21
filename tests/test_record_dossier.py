@@ -14,7 +14,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from dossier_common import NOTICE_LINKS, rights_notice
 import record_dossier
-from text_database import (ENGINE_FIELD_STORES, GEARBOX_TAGS, REPO_ROOT, effective_engine_fields, parse,
+from text_database import (ENGINE_FIELD_STORES, GEARBOX_FIELD_STORES, GEARBOX_TAGS, REPO_ROOT, effective_engine_fields, parse,
                            untagged_inherit_consequences)
 
 TAGS = {"CAPACITY", "LOCATION_TYPE", "MAX_RPM", "TORQUE_ARRAY", "INHERIT_TYPE", *GEARBOX_TAGS}
@@ -151,7 +151,7 @@ class RecordDossierPageTests(RecordDossierTestCase):
                 # Each inheriting engine's effective TORQUE_ARRAY row has an id, which the entrance page links.
                 torque = {"CHILD", "GRANDCHILD"} if prefix == "engine" else set()
                 self.assertEqual([anchor for anchor in links.ids if "-line-" not in anchor],
-                                 ["rights-notice", "rights-title",
+                                 ["rights-notice", "rights-title", *(["field-stores"] if prefix == "gearbox" else []),
                                   *(anchor for name in names for anchor in (f"{prefix}-{name}",
                                                                            f"{prefix}-{name}-torque-array")
                                     if not anchor.endswith("-torque-array") or name in torque)])
@@ -167,7 +167,7 @@ class RecordDossierPageTests(RecordDossierTestCase):
                                  - {self.pages[prefix == "gearbox"].name})
                 evidence = {f"routines.html#site-{site['va']:08x}" for site in EVIDENCE}
                 self.assertEqual(sites - evidence, set())
-                self.assertEqual(bool(sites), prefix == "engine")
+                self.assertTrue(sites)
 
     def test_loaded_by_links_the_load_and_copy_routines(self):
         for page, prefix in zip(self.build(), ("engine", "gearbox"), strict=True):
@@ -213,6 +213,38 @@ class RecordDossierPageTests(RecordDossierTestCase):
                       '<a href="#gearbox-ROAD_OLD">ROAD_OLD</a> on line 5.', track)
         self.assertNotIn("Effective fields", page)
         self.assertIn("<th>Parent (unresolved)</th>", page)
+
+    def test_gearbox_store_table_links_each_tag_to_its_sites(self):
+        engines, gearboxes = self.build()
+        self.assertNotIn("Where each field is stored", engines)
+        table = gearboxes[gearboxes.index('<h2 id="field-stores">'):gearboxes.index("<h2>Summary</h2>")]
+        rows = re.findall(r"<tr><td><code>(\w+)</code></td><td><code>\+ (0x[0-9a-f]+)</code></td><td>(\w+)</td>"
+                          r"<td><code>(\w+)</code></td><td>(.*?)</td><td>(.*?)</td><td>(.*?)</td></tr>", table)
+        self.assertEqual([(tag, offset, width) for tag, offset, width, *_ in rows],
+                         [("CLUTCH_SPEED", "0x14", "dword"), ("CLUTCH_MAX_POWER", "0x18", "dword"),
+                          ("TORQUE_SHIFT", "0x1c", "dword"), ("DRIVE_SPLIT", "0x20", "dword"),
+                          ("TRANSMISSION_TYPE", "0x24", "dword"), ("DIFF_TYPE", "0x28", "dword"),
+                          ("DRIVE_TYPE", "0x2c", "dword"), ("ANTI_WHEELSPIN", "0x30", "byte"),
+                          ("ANTI_WHEELSKID", "0x31", "byte")])
+        by_tag = {row[0]: row for row in rows}
+        for tag, entry in GEARBOX_FIELD_STORES.items():
+            with self.subTest(tag=tag):
+                _, offset, _, field, read, compare, store = by_tag[tag]
+                self.assertEqual(field, entry["offsets"][offset]["field"])
+                self.assertIn(f'<code>cmp eax, 0x{entry["id"]:x}</code> <a href="routines.html#site-'
+                              f'{int(entry["compare"], 16):08x}">', compare)
+                self.assertEqual("then <code>jg</code>" in compare, "after_range" in entry)
+                self.assertEqual(store, f'<a href="routines.html#site-{int(entry["offsets"][offset]["sites"][0], 16):08x}">'
+                                        f'<code>{entry["offsets"][offset]["sites"][0]}</code></a>')
+                self.assertIn(f'routines.html#site-{int(entry["read"]["call"], 16):08x}', read)
+                kind = entry["read"]["kind"]
+                self.assertEqual(read.startswith("enum word"), kind == "enum")
+                self.assertEqual("low byte" in read, kind == "float_to_byte")
+                if kind == "enum":
+                    self.assertIn(f'<code>{entry["enum_table"]["va"]}</code>', read)
+        self.assertIn('<code>:INHERIT_TYPE</code> calls the record copy <a href="routines.html#fr3_copy_gearbox_record">'
+                      '<code>fr3_copy_gearbox_record</code></a> (<a href="routines.html#site-00523339">', table)
+        self.assertIn("No demo gearbox declares <code>:INHERIT_TYPE</code>, so this page resolves none.", table)
 
     def test_declarations_table_shows_only_the_record_own_declarations(self):
         engines, _ = self.build()
@@ -453,7 +485,8 @@ class RecordDossierRejectTests(RecordDossierTestCase):
         self.build(with_engine_fields(stale))
 
     def test_linked_sites_must_be_byte_checked(self):
-        for va in (0x00522b47, 0x005229b6, 0x00522be0):
+        for va in (0x00522b47, 0x005229b6, 0x00522be0, 0x00523289, 0x005232c1, 0x005233c3, 0x00523364, 0x00523399,
+                   0x00523339):
             with self.subTest(va=hex(va)):
                 self.reject(f"These linked sites are not in field-evidence.json: 0x{va:08x}",
                             evidence=[site for site in EVIDENCE if site["va"] != va])

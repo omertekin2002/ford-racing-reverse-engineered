@@ -4,8 +4,8 @@ Inputs, all produced elsewhere and only read here:
   * engines.json and gearboxes.json from scripts/text_database.py: `records`,
     plus the ENGDATA.DAT or GEARDATA.DAT path and SHA-256, and, for engines,
     `effective_fields` and `untagged_inherit_consequences`.
-  * analysis/selected/field-evidence.json: the byte-checked sites the engine page
-    links to on the routines page.
+  * analysis/selected/field-evidence.json: the byte-checked sites the engine and
+    gearbox pages link to on the routines page.
   * analysis/pe-metadata.json: the executable's identity.
   * analysis/annotated/status.json: the analyst labels of the load and copy
     routines the pages link to on the sibling routines page.
@@ -27,8 +27,14 @@ declaration its row count was read from; the derived +0x2c and
 +0xa4 are labelled derived (+0x2c also conditional) with their possible
 origins and no value. A root with a colon-less INHERIT_TYPE line (INDIGO) lists
 the fields that depend on it under both readings, labelled unresolved. Units
-and physics are not interpreted. Gearbox inheritance is not resolved: a
-gearbox's :INHERIT_TYPE is labelled unresolved.
+and physics are not interpreted.
+
+The gearbox page has a "Where each field is stored" table: for each tag in
+GEARBOX_FIELD_STORES, its payload offset, width and Fr3GearboxRecord field, how
+it is read (float, enum word table, or float stored as an integer's low byte)
+and its compare (with the selecting jg after a range compare) and store sites.
+Gearbox inheritance is not resolved: no demo gearbox declares :INHERIT_TYPE,
+and a gearbox's :INHERIT_TYPE is labelled unresolved.
 
 A "Loaded by" line near the top of each page links its database's load and
 copy routines to their sections on the routines page (scripts/routine_index.py),
@@ -51,8 +57,10 @@ from pathlib import Path
 from dossier_common import (INDIGO_ANCHOR, ROUTINE_STATUS, STYLE, anchor, check_fields, check_pe, declarations, e,
                             is_indigo_line, line_anchor, link, load_json, page_start, producer_revision, question_link,
                             routine_label, routine_labels, routine_link, site_link)
-from text_database import (ENGINE_COPY, ENGINE_FIELD_STORES, REPO_ROOT, ZERO_FILLED, check_effective_engine_fields,
-                           effective_engine_fields, require, untagged_inherit_consequences)
+from text_database import (ENGINE_COPY, ENGINE_FIELD_STORES, FLOAT_READER, ENUM_READER, GEARBOX_COPY,
+                           GEARBOX_FIELD_STORES, GEARBOX_FLOAT_TO_BYTE_CALL, REPO_ROOT, ZERO_FILLED,
+                           check_effective_engine_fields, effective_engine_fields, require,
+                           untagged_inherit_consequences)
 
 TORQUE = "TORQUE_ARRAY"
 # Per database: the default input, the output page, the anchor prefix, the wording, and the entry VA and status.json
@@ -149,11 +157,23 @@ def engine_site_vas():
     return vas | {int(va, 16) for va in (ENGINE_COPY["call"], torque["row_count"]["site"], torque["zero_fill"]["call"])}
 
 
+def gearbox_site_vas():
+    """Every byte-checked site the gearbox page links: each tag's compare, selecting jg, reader call, enum table or
+    float-to-integer call and store, and the INHERIT_TYPE copy call."""
+    vas = {GEARBOX_COPY["call"]}
+    for entry in GEARBOX_FIELD_STORES.values():
+        vas |= {entry["compare"], entry["read"]["call"], *(store_va for store in entry["offsets"].values()
+                                                           for store_va in store["sites"])}
+        vas |= {va for va in (entry.get("after_range"), entry.get("enum_table", {}).get("site"),
+                              entry["read"].get("convert"), entry["read"].get("fistp")) if va}
+    return {int(va, 16) for va in vas}
+
+
 def check_sites(evidence):
-    """Refuse a linked engine site that field-evidence.json, which the routines page anchors, does not have."""
+    """Refuse a linked engine or gearbox site that field-evidence.json, which the routines page anchors, lacks."""
     require(isinstance(evidence, list) and all(isinstance(site, dict) and isinstance(site.get("va"), int)
                                                for site in evidence), "field-evidence.json must be a list of sites")
-    missing = sorted(engine_site_vas() - {site["va"] for site in evidence})
+    missing = sorted((engine_site_vas() | gearbox_site_vas()) - {site["va"] for site in evidence})
     require(not missing, "These linked sites are not in field-evidence.json: "
                          + ", ".join(f"0x{va:08x}" for va in missing))
 
@@ -259,6 +279,47 @@ def effective_section(name, entry, routines):
     return "".join(parts)
 
 
+def read_html(entry):
+    """How a gearbox tag's value is read, with its reader call and table or conversion sites."""
+    read = entry["read"]
+    call = site_link(int(read["call"], 16))
+    if read["kind"] == "enum":
+        table = entry["enum_table"]
+        return (f'enum word, from the reader at <code>0x{ENUM_READER:08x}</code> ({call}) given the word table at '
+                f'<code>{e(table["va"])}</code> ({site_link(int(table["site"], 16))})')
+    text = f'float, from the reader at <code>0x{FLOAT_READER:08x}</code> ({call})'
+    if read["kind"] == "float_to_byte":
+        text += (f', passed to <code>0x{GEARBOX_FLOAT_TO_BYTE_CALL:08x}</code> ({site_link(int(read["convert"], 16))}), '
+                 f'converted to an integer with <code>fistp</code> ({site_link(int(read["fistp"], 16))}) and stored '
+                 "as its low byte")
+    return text
+
+
+def gearbox_store_section(routines):
+    """The nine-row table of where the gearbox loader stores each tag, linked to its byte-checked sites."""
+    rows = []
+    for tag, entry in sorted(GEARBOX_FIELD_STORES.items(), key=lambda item: int(next(iter(item[1]["offsets"])), 16)):
+        (offset, store), = entry["offsets"].items()
+        compare = site_link(int(entry["compare"], 16))
+        if "after_range" in entry:
+            compare += f', then <code>jg</code> {site_link(int(entry["after_range"], 16))}'
+        rows.append(f'<tr><td><code>{e(tag)}</code></td><td><code>+ {e(offset)}</code></td><td>{e(store["width"])}</td>'
+                    f'<td><code>{e(store["field"])}</code></td><td>{read_html(entry)}</td>'
+                    f'<td><code>cmp eax, 0x{entry["id"]:x}</code> {compare}</td><td>{sites_html(store["sites"])}</td></tr>')
+    return ('<h2 id="field-stores">Where each field is stored</h2>'
+            f'<p>The loader {routine_link(routines["load"])} stores each tag into the <code>0x34</code>-byte record as '
+            'it parses it. Each row gives the payload offset, its width and its <code>Fr3GearboxRecord</code> field '
+            '(an analyst label), how the value is read, the tag-ID compare that selects the handler and the store, '
+            'each linked to its byte-checked site on the routines page. Where the compare is a range compare, the '
+            "handler is selected by the <code>jg</code> after its <code>jge</code> not jumping. "
+            f'<code>:INHERIT_TYPE</code> calls the record copy {routine_link(routines["copy"])} '
+            f'({site_link(int(GEARBOX_COPY["call"], 16))}), which copies all nine fields from the parent, not the '
+            'name or the padding, and stores no parent address. No demo gearbox declares <code>:INHERIT_TYPE</code>, '
+            'so this page resolves none.</p>'
+            '<table><tr><th>Tag</th><th>Offset</th><th>Width</th><th>Field</th><th>Read as</th><th>Compare</th>'
+            f'<th>Store</th></tr>{"".join(rows)}</table>')
+
+
 def consequence_section(record, consequence):
     """What depends on a root's colon-less INHERIT_TYPE line, under both readings, without choosing one."""
     item = {"line": consequence["line"], "tokens": consequence["tokens"]}
@@ -303,10 +364,12 @@ def render(database, kind, pe, revision, routines, entrance=False):
              f'<dt>Loaded by</dt><dd>{routine_ref(spec, routines, "load")}; record copy '
              f'{routine_ref(spec, routines, "copy")}; on the routines page. Routine labels are analyst-assigned, not '
              'original symbols.</dd></dl>',
-             f'<p class="scope">{ENGINE_SCOPE if engines else GEARBOX_SCOPE}</p>',
-             '<h2>Summary</h2><table><tr><th>Record</th><th>Line</th>'
-             + (f"<th>Parent{'' if engines else ' (unresolved)'}</th>" if inherits else "")
-             + (f"<th>{TORQUE} rows &times; columns</th>" if torque else "") + "</tr>"]
+             f'<p class="scope">{ENGINE_SCOPE if engines else GEARBOX_SCOPE}</p>']
+    if not engines:
+        parts.append(gearbox_store_section(routines))
+    parts.append('<h2>Summary</h2><table><tr><th>Record</th><th>Line</th>'
+                 + (f"<th>Parent{'' if engines else ' (unresolved)'}</th>" if inherits else "")
+                 + (f"<th>{TORQUE} rows &times; columns</th>" if torque else "") + "</tr>")
     for record in records:
         fields = record["fields"]
         row = f'<tr><td>{link(prefix, record["type"])}</td><td>{e(record["line"])}</td>'

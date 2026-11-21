@@ -149,7 +149,7 @@ headless script errors can be reported without a failing process exit code.
 | `artifacts/research/` | Self-contained research directory from `scripts/build_research.py`: the "Explore findings" entrance page `index.html`, the six pages below, and the `analysis/` files they link to under `evidence/`; every page carries the rights-holder notice |
 | `artifacts/fr3-research-<revision>.zip` | Citable research packet from `scripts/package_research.py`: the verified research directory in one folder, with a `MANIFEST.json` naming the input build, producer revision, Python version, the checks actually run and each file's SHA-256, plus `SHA256SUMS` |
 | `artifacts/dossier/tyres.html` | Offline tyre dossier from `scripts/tyre_dossier.py`: each tyre's declarations beside its five table sources and their byte-checked evidence, each inheriting tyre's effective scalar fields with their source record and line, and each site, accessor, the loader and the scalar copy linked to its section on `routines.html` |
-| `artifacts/dossier/engines.html`, `artifacts/dossier/gearboxes.html` | Offline engine and gearbox dossiers from `scripts/record_dossier.py`: each record's declarations as written, each inheriting engine's effective fields with their source record and line and store sites, untagged lines (and gearbox inheritance) labelled unresolved, and the database's load and copy routines linked to `routines.html` |
+| `artifacts/dossier/engines.html`, `artifacts/dossier/gearboxes.html` | Offline engine and gearbox dossiers from `scripts/record_dossier.py`: each record's declarations as written, each inheriting engine's effective fields with their source record and line and store sites, each gearbox field's offset, width, compare and store sites, untagged lines (and gearbox inheritance) labelled unresolved, and the database's load and copy routines linked to `routines.html` |
 | `artifacts/dossier/pcg.html` | Offline PCG catalogue from `scripts/pcg_catalogue.py`: every PCG collection and graphic, its header fields, byte spans and decoding status |
 | `artifacts/dossier/routines.html` | Offline routine index from `scripts/routine_index.py`: each of the 25 analyst-labelled routines with its signature, Ghidra pseudocode, bounded disassembly and byte-checked sites |
 | `artifacts/dossier/questions.html` | Offline "Open questions" page from `scripts/open_questions.py`: for `INDIGO`'s colon-less line, the tyre sound table's first fifteen words and the PCG extra bytes, what was observed, what depends on it, the untested alternatives and what evidence would decide it |
@@ -245,7 +245,8 @@ python3 scripts/tyre_dossier.py
 `gearboxes.json`, writing `engines.html` and `gearboxes.html` next to the tyre
 page. They show each record's declarations as written, each inheriting engine's
 effective fields traced to the record and line they come from with their
-byte-checked store sites, and link the database's load and copy routines to
+byte-checked store sites, where the gearbox loader stores each of the nine
+gearbox fields with its compare and store sites, and link the database's load and copy routines to
 `routines.html`; the colon-less `INDIGO` line, gearbox inheritance and the units
 of the values stay unresolved (see
 [the analysis notes](docs/analysis.md#engine-and-gearbox-dossier)):
@@ -307,7 +308,7 @@ python3 scripts/verify_findings.py . --level instructions
 | Level | Needs | Proves |
 | --- | --- | --- |
 | `data` | `inputs/` from `acquire_demo.py` | The archive's SHA-256 and the mirror's MD5, the `fr3.exe` identity, every file in `analysis/game-file-manifest.json`, the tag registry in `analysis/tags.json`, every compressed resource in `analysis/unpacked-manifest.json`, every PCG index and its two trailing-byte exceptions, the engine, gearbox and tyre text-database checks and the tyre table dimensions |
-| `instructions` | `inputs/fr3.exe` | The PE build metadata and import counts, all 194 `field-evidence.json` sites byte-checked against `fr3.exe`, and `analysis/selected/` matching, byte for byte, a fresh `extract_selected.py` export written to a temporary directory |
+| `instructions` | `inputs/fr3.exe` | The PE build metadata and import counts, all 274 `field-evidence.json` sites byte-checked against `fr3.exe`, and `analysis/selected/` matching, byte for byte, a fresh `extract_selected.py` export written to a temporary directory |
 | `full` (default) | both of the above, plus the Ghidra outputs from `scripts/run_analysis.py` and `gcc` | Everything above, plus the Ghidra baseline and C export counts, the 25 annotated exports, the fresh snapshot import and the C layout assertions; only this level rewrites `analysis/verification.json` |
 
 `data` and `instructions` never write to the checkout. A level whose inputs are
@@ -343,7 +344,10 @@ store table agreeing with `field-evidence.json`, and the independent derivation 
 Engine inheritance gets the same synthetic cases plus a depth-3 chain overriding one field, a child's own
 `TORQUE_ARRAY` replacing the parent's whole table, torque tables parsed with an inherited or zero-filled
 `MAX_RPM`, the derived `+0x2c` and `+0xa4` origins, both readings of a colon-less `INHERIT_TYPE` line, and the
-checker refusing a tampered entry. They
+checker refusing a tampered entry. The engine and gearbox store maps are checked against the committed evidence,
+the C header and an emulation of each loader's compare tree, and the gearbox checks catch a wrong tag ID, a
+missing site, a gearbox tag with no mapping, a copied offset nothing stores or a stored offset the copy misses,
+and an offset or width that disagrees with the header. They
 check the tyre dossier's anchors and links, its address-matched evidence trails, its effective scalar rows, its
 escaping and each input disagreement it refuses, and the engine and gearbox
 dossiers' anchors, effective-field and derived rows, unresolved labels, escaping and the malformed inputs they

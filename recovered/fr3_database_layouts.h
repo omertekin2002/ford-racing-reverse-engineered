@@ -1,5 +1,8 @@
 /* In-memory layouts for the SHA-256-pinned Windows demo.
- * Gearbox layout uses the supplied report and loader/copy instructions.
+ * Every Fr3GearboxRecord field from +0x14 on is byte-checked: the gearbox
+ * loader 0x00523220 stores each one when it parses its tag, and the copy
+ * 0x00523470 that INHERIT_TYPE calls copies all nine; no parent address is
+ * stored (GEARBOX_FIELD_STORES and GEARBOX_COPY in scripts/text_database.py).
  * Every Fr3EngineRecord field from +0x14 on is byte-checked: the engine loader
  * 0x005227f0 stores each one when it parses its tag, INHERIT_TYPE stores the
  * parent at +0x18, and the copy 0x00522c80 copies all of them but +0x18
@@ -112,8 +115,15 @@ _Static_assert(offsetof(Fr3EngineRecord, inverse_turbo_mass) == 0xa4, "TURBO_MAS
 _Static_assert(offsetof(Fr3EngineRecord, max_fuel_flow) == 0xa8, "MAX_FUELFLOW");
 _Static_assert(offsetof(Fr3EngineRecord, max_delta_fuel_flow) == 0xac, "MAX_DELTA_FUELFLOW, final engine field");
 _Static_assert(sizeof(Fr3GearboxRecord) == 0x34, "Gearbox record size");
-_Static_assert(offsetof(Fr3GearboxRecord, transmission_type) == 0x24, "Transmission offset");
-_Static_assert(offsetof(Fr3GearboxRecord, anti_wheelspin) == 0x30, "Flag offset");
+_Static_assert(offsetof(Fr3GearboxRecord, clutch_speed) == 0x14, "CLUTCH_SPEED");
+_Static_assert(offsetof(Fr3GearboxRecord, clutch_max_power) == 0x18, "CLUTCH_MAX_POWER");
+_Static_assert(offsetof(Fr3GearboxRecord, torque_shift) == 0x1c, "TORQUE_SHIFT");
+_Static_assert(offsetof(Fr3GearboxRecord, drive_split) == 0x20, "DRIVE_SPLIT");
+_Static_assert(offsetof(Fr3GearboxRecord, transmission_type) == 0x24, "TRANSMISSION_TYPE");
+_Static_assert(offsetof(Fr3GearboxRecord, differential_type) == 0x28, "DIFF_TYPE");
+_Static_assert(offsetof(Fr3GearboxRecord, drive_type) == 0x2c, "DRIVE_TYPE");
+_Static_assert(offsetof(Fr3GearboxRecord, anti_wheelspin) == 0x30, "ANTI_WHEELSPIN byte");
+_Static_assert(offsetof(Fr3GearboxRecord, anti_wheelskid) == 0x31, "ANTI_WHEELSKID byte, final gearbox field");
 _Static_assert(sizeof(Fr3TyreRecord) == 0x58, "Tyre record size");
 _Static_assert(offsetof(Fr3TyreRecord, inherited_address) == 0x14, "Tyre inherited address");
 _Static_assert(offsetof(Fr3TyreRecord, radius) == 0x28, "Tyre radius offset");

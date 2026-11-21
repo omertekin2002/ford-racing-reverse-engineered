@@ -330,7 +330,7 @@ class CommittedFilesTests(unittest.TestCase):
     def test_builds_from_the_committed_analysis_files(self):
         result = self.run_script("--output", str(self.output))
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("Wrote 25 routines, 15 disassembly files and 194 byte-checked sites", result.stdout)
+        self.assertIn("Wrote 25 routines, 15 disassembly files and 274 byte-checked sites", result.stdout)
         page = self.output.read_text(encoding="utf-8")
         committed = json.loads(routine_index.STATUS.read_text(encoding="utf-8"))
         self.assertEqual(page.count('<section class="routine"'), 25)

@@ -104,15 +104,17 @@ with a byte-checked store, as described in
 demo uses to its byte-checked payload offsets and the C layout below, as described
 in [New finding: engine stores and copy](#new-finding-engine-stores-and-copy), and
 resolves each inheriting engine's effective fields from them, as described in
-[Engine inheritance](#engine-inheritance). It does not decide the colon-less
-`INDIGO` line, map gearbox fields, or handle the other text files. The meaning of the
+[Engine inheritance](#engine-inheritance). It maps every gearbox tag to its
+byte-checked payload offset the same way, as described in
+[New finding: gearbox stores and copy](#new-finding-gearbox-stores-and-copy). It
+does not decide the colon-less `INDIGO` line, resolve gearbox inheritance (no demo
+gearbox inherits), or handle the other text files. The meaning of the
 sound table's first fifteen words, described below, is still unknown.
 
 The engine loader at `0x005227f0` allocates a `0xb0`-byte payload, and the gearbox
-loader at `0x00523220` allocates `0x34` bytes. Every engine payload field from
-`+0x14` on is now byte-checked (see the next section). The gearbox layout is
-still transcribed from the earlier report and supported by its loader and copy
-routines. The engine record's derived `+0x2c` and `+0xa4` values and the
+loader at `0x00523220` allocates `0x34` bytes. Every engine and every gearbox
+payload field from `+0x14` on is now byte-checked (see the next two sections), so
+neither layout is transcribed any more. The engine record's derived `+0x2c` and `+0xa4` values and the
 floating intermediate precision still need gameplay-level interpretation.
 
 [The recovered C header](../recovered/fr3_database_layouts.h) expresses engine,
@@ -324,6 +326,83 @@ does not declare, `if_ignored` (zero-filled) and `if_applied` (the entry it
 would get with `DEFAULT_TRACK` as its parent). It does not choose between them;
 see the [Open questions page](#open-questions).
 
+## New finding: gearbox stores and copy
+
+[The gearbox loader](../analysis/selected/load_gearbox_database.asm) allocates
+its `0x34`-byte payload (`mov edx, 0x34` at `0x00523234`, then
+`call 0x0042ed50` at `0x00523242`). Its record-creating branch keeps the node in
+`EDI`, moves it `0x20` bytes past the node header and reads the name into the
+payload's first `0x14` bytes (`0x005233fe`–`0x00523411`), so every handler
+stores at `EDI + offset`. The dispatch is a tree of range compares: where a tag's
+compare is followed by a `jge`, the handler is selected by the `jg` at the
+`jge`'s target not jumping, which leaves only that ID. Each of the nine gearbox
+tags has the compare below, whose immediate is the tag's ID in
+`analysis/tags.json`, and a handler that writes only the offset listed.
+`GEARBOX_FIELD_STORES` in [the parser](../scripts/text_database.py) records them,
+and [`field-evidence.json`](../analysis/selected/field-evidence.json) byte-checks
+every compare, selecting `jg`, reader call, enum table and store against
+`fr3.exe`:
+
+| Tag | ID | Compare | Offset | Width | Store | Read as |
+|---|---|---|---|---|---|---|
+| `CLUTCH_SPEED` | `0x5f` | `0x00523289`, then `jg` `0x005232c1` | `+0x14` | float | `0x005232ca` | float (`call 0x0042e680` at `0x005232c5`), `fstp` |
+| `CLUTCH_MAX_POWER` | `0x5e` | `0x005233cb` | `+0x18` | float | `0x005233db` | float (`0x005233d6`), `fstp` |
+| `TORQUE_SHIFT` | `0x11a` | `0x00523310`, then `jg` `0x00523343` | `+0x1c` | float | `0x0052334c` | float (`0x00523347`), `fstp` |
+| `DRIVE_SPLIT` | `0x76` | `0x00523378` | `+0x20` | float | `0x00523388` | float (`0x00523383`), `fstp` |
+| `TRANSMISSION_TYPE` | `0x159` | `0x00523354` | `+0x24` | dword | `0x00523370` | enum word (`call 0x0042e820` at `0x0052336b`) from the table at `0x0059743c` (`0x00523364`) |
+| `DIFF_TYPE` | `0x6d` | `0x005232d4` | `+0x28` | dword | `0x005232f0` | enum word (`0x005232eb`) from the table at `0x00597460` (`0x005232e4`) |
+| `DRIVE_TYPE` | `0x77` | `0x005232cf`, then `jg` `0x005232f5` | `+0x2c` | dword | `0x00523308` | enum word (`0x00523303`) from the table at `0x0059744c` (`0x005232fc`) |
+| `ANTI_WHEELSPIN` | `0xf` | `0x005233ac` | `+0x30` | byte | `0x005233c3` | float (`0x005233b3`) passed to `0x005352fa` (`0x005233b8`), `fistp` to `[ebp - 0x18]` (`0x005233bd`), low byte via `AL` (`0x005233c0`) |
+| `ANTI_WHEELSKID` | `0xe` | `0x0052328e`, then `jg` `0x00523390` | `+0x31` | byte | `0x005233a4` | the same, at `0x00523394`, `0x00523399`, `0x0052339e`, `0x005233a1` |
+
+`INHERIT_TYPE` (`0x9c`, compare `0x00523317`) reads a name of up to `0x14`
+bytes into a stack buffer (`0x0052331e`–`0x00523328`), passes that buffer to
+the parent lookup (`call 0x005234b0` at `0x00523330`), and calls
+[the gearbox copy](../analysis/selected/copy_gearbox_record.asm) with the parent
+in `EDX` and the record in `EAX` (`0x00523335`–`0x00523339`). Then it jumps back
+to the next tag (`0x0052333e`). Unlike the engine loader it stores no parent
+address: `+0x18` is `CLUTCH_MAX_POWER`. The copy saves `EBX` and `ECX`
+(`0x00523470`, `0x00523471`, restored at `0x005234a8`, `0x005234a9`) and moves,
+from the parent to the record (`EAX`):
+
+| Copied | How | Sites |
+|---|---|---|
+| dwords `+0x14`–`+0x2c` | seven load/store pairs through `ECX`, `+0x1c` first | `0x00523472`–`0x00523499` |
+| byte `+0x30` | `mov bl, [edx + 0x30]`, `mov [eax + 0x30], bl` | `0x0052349c`, `0x0052349f` |
+| byte `+0x31` | `mov dl, [edx + 0x31]`, `mov [eax + 0x31], dl` | `0x005234a2`, `0x005234a5` |
+
+That is exactly the nine stored offsets. The copy leaves alone the name
+(`+0x00`–`+0x13`) and `padding_32` (`+0x32`–`+0x33`). `GEARBOX_COPY` records
+the `INHERIT_TYPE` path and the copied offsets with their widths. No demo
+gearbox declares `:INHERIT_TYPE` (`verify_text_databases()` requires exactly the
+nine tags on all 14), so the copy resolves no values; it documents what the
+game would do.
+
+`verify_text_databases()` checks this on the real demo:
+
+- `GEARBOX_FIELD_STORES` must cover exactly the nine gearbox tags.
+- `gearbox_evidence_problems()` checks that each compare immediate equals the
+  tag's ID in `analysis/tags.json`, and each selecting site is a `jg` whose
+  claim names the tag. Every cited site must be in `field-evidence.json`, inside
+  its routine, and decode as the listed reader call, enum table, conversion or
+  store of the read register (`ST0`, `EAX` or `AL`). Each store site's claim must
+  name its tag, and every byte-checked write to the record in the loader must be
+  a mapped site. The allocation, name read and `INHERIT_TYPE` path must have
+  the listed bytes. Every copy store must follow a load of the same parent
+  offset into the same register, the copy must move exactly `GEARBOX_COPY`'s
+  offsets, and the bytes it writes must equal the bytes the tags store, without
+  the name or padding.
+- `gearbox_layout_problems()` checks that each mapped offset is the
+  `Fr3GearboxRecord` field named in the map, with that width, in
+  [the C header](../recovered/fr3_database_layouts.h), which must
+  `_Static_assert` all nine offsets.
+
+A unit test follows the compare tree in the committed
+`load_gearbox_database.asm` without the demo. Each mapped ID reaches its handler
+through the listed compare, and each handler calls its reader and writes exactly
+the mapped site. `INHERIT_TYPE` writes nothing to the record, and every other
+registry ID reaches the default branch.
+
 ## New finding: tyre payload and tables
 
 The loader at `0x00523820` supplies size `0x58` when creating the tyre database.
@@ -499,7 +578,7 @@ Engine inheritance is resolved the same way in
 [Engine inheritance](#engine-inheritance); the colon-less
 `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` remains unresolved.
 
-The tyre sites among the [194 byte-checked instruction sites](../analysis/selected/field-evidence.json)
+The tyre sites among the [274 byte-checked instruction sites](../analysis/selected/field-evidence.json)
 and [the loader's disassembly](../analysis/selected/load_tyre_database.asm)
 preserve the concrete evidence for these new findings.
 
@@ -558,7 +637,13 @@ The colon-less `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` is shown verbatim
 as an untagged line, not as inheritance, with a note that whether the game
 honours it is not established. `INDIGO`'s section lists, labelled unresolved and
 linked to `questions.html#indigo`, the 16 tags that depend on the line, under
-both readings. Gearbox `:INHERIT_TYPE` (none in the demo) stays labelled
+both readings. The gearbox page has a "Where each field is stored" table with
+one row per gearbox tag: its payload offset, width and `Fr3GearboxRecord` field,
+how it is read (float, enum word table, or float stored as an integer's low
+byte), and its compare (with the selecting `jg`) and store sites linked to
+`routines.html` (see
+[New finding: gearbox stores and copy](#new-finding-gearbox-stores-and-copy)).
+It names the copy call too. Gearbox `:INHERIT_TYPE` (none in the demo) stays labelled
 unresolved. A "Loaded by" line near the top links the database's load and copy
 routines (`fr3_load_engine_database` `0x005227f0` and `fr3_copy_engine_record`
 `0x00522c80`, or `fr3_load_gearbox_database` `0x00523220` and
@@ -620,7 +705,7 @@ lie in no committed span. The four files that hold no routine entry
 (`allocate_database_record`, `create_database`, `fill_memory` and
 `fill_memory_body`) get their own sections, and any site in no span, or before
 every routine entry in its file, is listed apart; today there is none. Each of
-the 194 sites is shown exactly once. The page says that every label is
+the 274 sites is shown exactly once. The page says that every label is
 analyst-assigned, not an original symbol, and that the pseudocode is Ghidra
 output with unresolved callees and inferred types. The script exits non-zero
 without writing the page when an input is missing or malformed, the routines or
@@ -858,7 +943,7 @@ holds game data and stays out of Git.
 [Verification results](../analysis/verification.json) cover the exact executable,
 all game files, all tags, all identified compressed resources, every PCG index,
 the selected instruction sites, table dimensions, export counts and C layout
-assertions. All 194 instruction sites were byte-checked against the pinned
+assertions. All 274 instruction sites were byte-checked against the pinned
 `fr3.exe` at `field_instruction_sites_verified_utc`, with the comparison
 `verify_findings.py` makes; the other results date from `verified_utc`. Nine parser tests additionally reject malformed synthetic
 resources, and eight helper tests cover virtual-address bounds and file identity checks.

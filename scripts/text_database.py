@@ -89,6 +89,22 @@ no units. engine_fields_by_recursion() derives the same fields parent first.
 untagged_inherit_consequences() lists, as `untagged_inherit_consequences`, the
 fields that depend on a root's colon-less INHERIT_TYPE line (the demo's INDIGO)
 under both readings, without choosing one; INDIGO stays a root as parsed.
+
+GEARBOX_FIELD_STORES maps each of the nine gearbox tags the loader at 0x00523220
+stores to its registry ID, the `cmp eax, <id>` that finally selects it (and,
+where the selection is a jg after that range compare's jge, the jg), its reader
+call (float, enum with its word table, or float converted to an integer whose
+low byte is stored) and its payload offset with the Fr3GearboxRecord field,
+width and store site. GEARBOX_RECORD holds the 0x34-byte allocation and the name
+read; GEARBOX_COPY records INHERIT_TYPE: the name read, parent lookup, the call
+to the copy at 0x00523470 with the parent in EDX and the record in EAX, and the
+copy's load/store pairs. Unlike engines no parent address is stored.
+gearbox_evidence_problems() checks all three against field-evidence.json and
+requires the copied bytes to equal the stored ones, name and padding excluded;
+gearbox_layout_problems() checks every mapped offset against
+recovered/fr3_database_layouts.h, and unmapped_gearbox_tags() compares the map
+with GEARBOX_TAGS. No demo gearbox declares INHERIT_TYPE, so nothing resolves
+gearbox inheritance: gearboxes.json holds the records as parsed.
 """
 import argparse
 from copy import deepcopy
@@ -280,6 +296,74 @@ ENGINE_NAME_BYTES = 0x14
 ENGINE_UNSTORED_TAGS = frozenset({"TYPE", "INHERIT_TYPE", "END"})
 GEARBOX_TAGS = frozenset({"CLUTCH_SPEED", "CLUTCH_MAX_POWER", "TRANSMISSION_TYPE", "TORQUE_SHIFT", "DRIVE_TYPE",
                           "DRIVE_SPLIT", "DIFF_TYPE", "ANTI_WHEELSPIN", "ANTI_WHEELSKID"})
+FLOAT_READER = 0x0042E680
+ENUM_READER = 0x0042E820
+STRING_READER = 0x0042E7C0
+# Each gearbox tag the loader at 0x00523220 stores (load_gearbox_database.asm): its registry ID, the `cmp eax, <id>`
+# that finally selects it, how its value is read and the payload offset it writes, with the Fr3GearboxRecord field,
+# width and store sites. The dispatch is a tree of range compares. CLUTCH_SPEED, DRIVE_TYPE, TORQUE_SHIFT and
+# ANTI_WHEELSKID are selected by a jg that follows the jge of their own range compare (`after_range`): falling through
+# it means the ID equals the compared one. `read` names the reader call: a float from FLOAT_READER stored with fstp, an
+# enum from ENUM_READER given the word table in `enum_table`, or (`float_to_byte`) a float passed to `convert`,
+# stored as an integer with fistp to a stack temporary whose low byte is then stored.
+GEARBOX_FIELD_STORES = {
+    "CLUTCH_SPEED": {"id": 0x5f, "compare": "0x00523289", "after_range": "0x005232c1",
+                     "read": {"kind": "float", "call": "0x005232c5"},
+                     "offsets": {"0x14": _store("clutch_speed", ["0x005232ca"])}},
+    "CLUTCH_MAX_POWER": {"id": 0x5e, "compare": "0x005233cb", "read": {"kind": "float", "call": "0x005233d6"},
+                         "offsets": {"0x18": _store("clutch_max_power", ["0x005233db"])}},
+    "TORQUE_SHIFT": {"id": 0x11a, "compare": "0x00523310", "after_range": "0x00523343",
+                     "read": {"kind": "float", "call": "0x00523347"},
+                     "offsets": {"0x1c": _store("torque_shift", ["0x0052334c"])}},
+    "DRIVE_SPLIT": {"id": 0x76, "compare": "0x00523378", "read": {"kind": "float", "call": "0x00523383"},
+                    "offsets": {"0x20": _store("drive_split", ["0x00523388"])}},
+    "TRANSMISSION_TYPE": {"id": 0x159, "compare": "0x00523354", "read": {"kind": "enum", "call": "0x0052336b"},
+                          "enum_table": {"va": "0x0059743c", "site": "0x00523364"},
+                          "offsets": {"0x24": _store("transmission_type", ["0x00523370"])}},
+    "DIFF_TYPE": {"id": 0x6d, "compare": "0x005232d4", "read": {"kind": "enum", "call": "0x005232eb"},
+                  "enum_table": {"va": "0x00597460", "site": "0x005232e4"},
+                  "offsets": {"0x28": _store("differential_type", ["0x005232f0"])}},
+    "DRIVE_TYPE": {"id": 0x77, "compare": "0x005232cf", "after_range": "0x005232f5",
+                   "read": {"kind": "enum", "call": "0x00523303"},
+                   "enum_table": {"va": "0x0059744c", "site": "0x005232fc"},
+                   "offsets": {"0x2c": _store("drive_type", ["0x00523308"])}},
+    "ANTI_WHEELSPIN": {"id": 0xf, "compare": "0x005233ac",
+                       "read": {"kind": "float_to_byte", "call": "0x005233b3", "convert": "0x005233b8",
+                                "fistp": "0x005233bd", "low_byte": "0x005233c0"},
+                       "offsets": {"0x30": _store("anti_wheelspin", ["0x005233c3"], "byte")}},
+    "ANTI_WHEELSKID": {"id": 0xe, "compare": "0x0052328e", "after_range": "0x00523390",
+                       "read": {"kind": "float_to_byte", "call": "0x00523394", "convert": "0x00523399",
+                                "fistp": "0x0052339e", "low_byte": "0x005233a1"},
+                       "offsets": {"0x31": _store("anti_wheelskid", ["0x005233a4"], "byte")}},
+}
+GEARBOX_FLOAT_TO_BYTE_CALL = 0x005352FA
+# How each `read` kind's value reaches the record: the reader it calls and the register the store writes.
+GEARBOX_READS = {"float": (FLOAT_READER, "st0"), "enum": (ENUM_READER, "eax"), "float_to_byte": (FLOAT_READER, "al")}
+GEARBOX_LOADER_SPAN = (0x00523220, 0x00523470)
+GEARBOX_RECORD_SIZE = 0x34
+GEARBOX_NAME_BYTES = 0x14
+# The 0x34-byte payload allocation and the record-creating branch, which reads the name into the payload's first
+# 0x14 bytes.
+GEARBOX_RECORD = {"allocation": {"size": "0x00523234", "call": "0x00523242", "target": "0x0042ed50"},
+                  "node_in_edi": "0x005233fe", "payload_in_edi": "0x0052340a",
+                  "name": {"size": "0x00523405", "destination": "0x0052340f", "call": "0x00523411"}}
+# INHERIT_TYPE in the gearbox loader and the copy it calls (copy_gearbox_record.asm). The loader reads the parent's
+# name into a stack buffer, looks the parent up by it, and calls the copy with the parent in EDX and the record in
+# EAX; then it reads the next tag. Unlike the engine loader it stores no parent address: + 0x18 is CLUTCH_MAX_POWER.
+# The copy saves EBX and ECX and writes `offsets`, each a load of parent + n into a register followed by a store of
+# that register at record (EAX) + n; it leaves the name and padding_32 alone. No demo gearbox declares INHERIT_TYPE.
+GEARBOX_COPY = {
+    "tag": "INHERIT_TYPE", "id": 0x9c, "compare": "0x00523317",
+    "read_name": {"size": "0x0052331e", "buffer": "0x00523323", "call": "0x00523328"},
+    "find_parent": {"name": "0x0052332d", "call": "0x00523330", "target": "0x005234b0"},
+    "arguments": {"parent_in_edx": "0x00523335", "record_in_eax": "0x00523337"},
+    "call": "0x00523339",
+    "next_tag": "0x0052333e",
+    "span": (0x00523470, 0x005234AB),
+    "saves": {"push_ebx": "0x00523470", "push_ecx": "0x00523471", "pop_ecx": "0x005234a8", "pop_ebx": "0x005234a9",
+              "ret": "0x005234aa"},
+    "offsets": {**{f"0x{offset:x}": "dword" for offset in range(0x14, 0x30, 4)}, "0x30": "byte", "0x31": "byte"},
+}
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -788,7 +872,7 @@ def byte_ranges(offsets):
 
 
 def engine_stored_bytes(stores):
-    """Return {payload byte offset: tag} for every byte ENGINE_FIELD_STORES says a tag writes."""
+    """Return {payload byte offset: tag} for every byte a store map (ENGINE_ or GEARBOX_FIELD_STORES) says a tag writes."""
     stored = {}
     for tag, entry in stores.items():
         for offset, store in entry["offsets"].items():
@@ -798,11 +882,105 @@ def engine_stored_bytes(stores):
 
 
 def engine_copy_bytes(copy):
-    """Return the set of payload byte offsets ENGINE_COPY says the copy writes."""
+    """Return the set of payload byte offsets a copy map (ENGINE_COPY, or GEARBOX_COPY with no block) says it writes."""
     copied = {byte for offset, width in copy["offsets"].items()
               for byte in range(int(offset, 16), int(offset, 16) + (1 if width == "byte" else 4))}
+    if "block" not in copy:
+        return copied
     block = int(copy["block"]["offset"], 16)
     return copied | set(range(block, block + copy["block"]["size"]))
+
+
+class SiteChecks:
+    """The field-evidence.json lookups the engine and gearbox map checks share; each failure appends to problems.
+
+    spans maps a routine's description (`engine loader`) to its [start, end) VAs; a cited site must be
+    byte-checked inside the named routine, by default the first one.
+    """
+
+    def __init__(self, evidence, tag_ids, problems, spans):
+        self.by_va = {site["va"]: site["bytes"] for site in evidence}
+        self.claims = {site["va"]: site.get("claim", "") for site in evidence}
+        self.tag_ids, self.problems, self.spans = tag_ids, problems, spans
+        self.default = next(iter(spans))
+
+    def site(self, label, va, where=None):
+        where = where or self.default
+        start, end = self.spans[where]
+        raw = self.by_va.get(int(va, 16))
+        if raw is None or not start <= int(va, 16) < end:
+            self.problems.append(f"{label}: no byte-checked {where} site at {va}")
+            return None
+        return raw
+
+    def exact(self, label, va, expected, where=None):
+        raw = self.site(label, va, where)
+        if raw is not None and raw != expected:
+            self.problems.append(f"{label}: site {va} ({raw}) is not {expected}")
+
+    def operand(self, label, va, expected, where=None):
+        raw = self.site(label, va, where)
+        decoded = raw and memory_operand(raw)
+        if raw is not None and (not decoded or any(decoded[key] != value for key, value in expected.items())):
+            shown = ", ".join(f"{key} {value if isinstance(value, str) else hex(value)}" for key, value in expected.items())
+            self.problems.append(f"{label}: site {va} ({raw}) is not a {shown} instruction")
+
+    def call(self, label, va, target, where=None):
+        self.exact(label, va, call_bytes(int(va, 16), int(target, 16) if isinstance(target, str) else target), where)
+
+    def compare(self, tag, entry):
+        if self.tag_ids.get(tag) != entry["id"]:
+            registered = "no registry ID" if tag not in self.tag_ids else f"registry ID 0x{self.tag_ids[tag]:x}"
+            self.problems.append(f"{tag}: analysis/tags.json gives {registered}, the map says 0x{entry['id']:x}")
+        raw = self.site(f"{tag} compare", entry["compare"])
+        if raw is not None and compare_immediate(raw) != entry["id"]:
+            self.problems.append(f"{tag}: compare site {entry['compare']} ({raw}) is not cmp eax, 0x{entry['id']:x}")
+
+    def about(self, va, tag):
+        """Whether the byte-checked site at va has a claim that starts with the tag's name."""
+        return self.claims.get(int(va, 16), "").startswith(tag + " ")
+
+
+def copy_pair_problems(by_va, span, record_base, offsets, name, problems):
+    """Check a record copy's load/store pairs against its map's {offset: width}; append each mismatch to problems.
+
+    Every store at [record_base + n] inside span needs a byte-checked load of parent [edx + n] into the same
+    register just before it (only a lea of another register may sit between them), and the pairs must be exactly
+    the mapped offsets, with their widths.
+    """
+    inside = sorted((va, raw) for va, raw in by_va.items() if span[0] <= va < span[1])
+    pairs = {}
+    for index, (va, raw) in enumerate(inside):
+        decoded = memory_operand(raw)
+        if not decoded or decoded["kind"] != "store" or decoded["base"] != record_base:
+            continue
+        want = {"kind": "load", "width": decoded["width"], "base": "edx", "disp": decoded["disp"],
+                "register": decoded["register"]}
+        found, end = False, va
+        # Walk back over contiguous byte-checked sites; only a lea of another register may sit between the pair.
+        for before, raw_before in reversed(inside[:index]):
+            if before + len(raw_before) // 2 != end:
+                break
+            previous = memory_operand(raw_before)
+            if previous == want:
+                found = True
+                break
+            if (not previous or previous["kind"] != "lea"
+                    or register_family(previous["register"]) == register_family(decoded["register"])):
+                break
+            end = before
+        if found:
+            pairs[f"0x{decoded['disp']:x}"] = decoded["width"]
+        else:
+            problems.append(f"copy store at 0x{va:08x} has no byte-checked load of parent + 0x{decoded['disp']:02x} "
+                            f"into {decoded['register']} before it")
+    for offset in sorted(set(pairs) | set(offsets), key=lambda text: int(text, 16)):
+        if offset not in pairs:
+            problems.append(f"{name} + {offset}: no byte-checked load/store pair in the copy")
+        elif offset not in offsets:
+            problems.append(f"copy pair at + {offset} is not in {name}")
+        elif pairs[offset] != offsets[offset]:
+            problems.append(f"{name} + {offset}: the copy moves a {pairs[offset]}, not a {offsets[offset]}")
 
 
 def engine_evidence_problems(evidence, tag_ids, stores=None, copy=None):
@@ -821,37 +999,10 @@ def engine_evidence_problems(evidence, tag_ids, stores=None, copy=None):
     """
     stores = ENGINE_FIELD_STORES if stores is None else stores
     copy = ENGINE_COPY if copy is None else copy
-    by_va = {site["va"]: site["bytes"] for site in evidence}
-    claims = {site["va"]: site.get("claim", "") for site in evidence}
     problems = []
-
-    def site(label, va, span=ENGINE_LOADER_SPAN):
-        raw = by_va.get(int(va, 16))
-        if raw is None or not span[0] <= int(va, 16) < span[1]:
-            problems.append(f"{label}: no byte-checked {'engine loader' if span == ENGINE_LOADER_SPAN else 'engine copy'} "
-                            f"site at {va}")
-            return None
-        return raw
-
-    def exact(label, va, expected, span=ENGINE_LOADER_SPAN):
-        raw = site(label, va, span)
-        if raw is not None and raw != expected:
-            problems.append(f"{label}: site {va} ({raw}) is not {expected}")
-
-    def operand(label, va, expected, span=ENGINE_LOADER_SPAN):
-        raw = site(label, va, span)
-        decoded = raw and memory_operand(raw)
-        if raw is not None and (not decoded or any(decoded[key] != value for key, value in expected.items())):
-            shown = ", ".join(f"{key} {value if isinstance(value, str) else hex(value)}" for key, value in expected.items())
-            problems.append(f"{label}: site {va} ({raw}) is not a {shown} instruction")
-
-    def compare(tag, entry):
-        if tag_ids.get(tag) != entry["id"]:
-            registered = "no registry ID" if tag not in tag_ids else f"registry ID 0x{tag_ids[tag]:x}"
-            problems.append(f"{tag}: analysis/tags.json gives {registered}, the map says 0x{entry['id']:x}")
-        raw = site(f"{tag} compare", entry["compare"])
-        if raw is not None and compare_immediate(raw) != entry["id"]:
-            problems.append(f"{tag}: compare site {entry['compare']} ({raw}) is not cmp eax, 0x{entry['id']:x}")
+    checks = SiteChecks(evidence, tag_ids, problems, {"engine loader": ENGINE_LOADER_SPAN, "engine copy": copy["span"]})
+    by_va, claims, site, exact, operand, compare = (checks.by_va, checks.claims, checks.site, checks.exact,
+                                                    checks.operand, checks.compare)
 
     for tag, entry in stores.items():
         compare(tag, entry)
@@ -906,43 +1057,11 @@ def engine_evidence_problems(evidence, tag_ids, stores=None, copy=None):
                 and decoded["base"] in ("edi", "edx") and va not in mapped):
             problems.append(f"byte-checked record store at 0x{va:08x} ({raw}) is in no mapped tag")
 
-    span = copy["span"]
+    span = "engine copy"
     exact("Engine copy saves ECX", copy["keeps_ecx"]["push"], "51", span)
     exact("Engine copy restores ECX", copy["keeps_ecx"]["pop"], "59", span)
     exact("Engine copy record register", copy["record_in_ebx"], "89c3", span)
-    inside = sorted((va, raw) for va, raw in by_va.items() if span[0] <= va < span[1])
-    pairs = {}
-    for index, (va, raw) in enumerate(inside):
-        decoded = memory_operand(raw)
-        if not decoded or decoded["kind"] != "store" or decoded["base"] != "ebx":
-            continue
-        want = {"kind": "load", "width": decoded["width"], "base": "edx", "disp": decoded["disp"],
-                "register": decoded["register"]}
-        found, end = False, va
-        # Walk back over contiguous byte-checked sites; only a lea of another register may sit between the pair.
-        for before, raw_before in reversed(inside[:index]):
-            if before + len(raw_before) // 2 != end:
-                break
-            previous = memory_operand(raw_before)
-            if previous == want:
-                found = True
-                break
-            if (not previous or previous["kind"] != "lea"
-                    or register_family(previous["register"]) == register_family(decoded["register"])):
-                break
-            end = before
-        if found:
-            pairs[f"0x{decoded['disp']:x}"] = decoded["width"]
-        else:
-            problems.append(f"copy store at 0x{va:08x} has no byte-checked load of parent + 0x{decoded['disp']:02x} "
-                            f"into {decoded['register']} before it")
-    for offset in sorted(set(pairs) | set(copy["offsets"]), key=lambda text: int(text, 16)):
-        if offset not in pairs:
-            problems.append(f"ENGINE_COPY + {offset}: no byte-checked load/store pair in the copy")
-        elif offset not in copy["offsets"]:
-            problems.append(f"copy pair at + {offset} is not in ENGINE_COPY")
-        elif pairs[offset] != copy["offsets"][offset]:
-            problems.append(f"ENGINE_COPY + {offset}: the copy moves a {pairs[offset]}, not a {copy['offsets'][offset]}")
+    copy_pair_problems(by_va, copy["span"], "ebx", copy["offsets"], "ENGINE_COPY", problems)
     block = copy["block"]
     offset, sites = int(block["offset"], 16), block["sites"]
     exact("Engine copy block size", sites["size"], "b9" + block["size"].to_bytes(4, "little").hex(), span)
@@ -990,26 +1109,12 @@ def engine_layout_problems(header, stores=None, copy=None):
     """
     stores = ENGINE_FIELD_STORES if stores is None else stores
     copy = ENGINE_COPY if copy is None else copy
-    members, size = struct_layout(header, "Fr3EngineRecord")
-    problems = [] if size == ENGINE_RECORD_SIZE else [f"Fr3EngineRecord is 0x{size:x} bytes, not 0x{ENGINE_RECORD_SIZE:x}"]
-    asserted = {field: int(value, 16) for field, value in
-                re.findall(r"_Static_assert\(offsetof\(Fr3EngineRecord, (\w+)\) == (0x[0-9a-fA-F]+)", header)}
-    expected = [(tag, offset, store["field"], (1 if store["width"] == "byte" else 4) * store.get("slots", 1))
+    expected = [(f"{tag} + {offset}", offset, store["field"],
+                 (1 if store["width"] == "byte" else 4) * store.get("slots", 1))
                 for tag, entry in stores.items() for offset, store in entry["offsets"].items()]
-    expected.append((copy["tag"], copy["parent_store"]["offset"], copy["parent_store"]["field"], 4))
-    for tag, offset, field, width in expected:
-        label = f"{tag} + {offset}"
-        if field not in members:
-            problems.append(f"{label}: Fr3EngineRecord has no field {field}")
-            continue
-        at, length = members[field]
-        if at != int(offset, 16):
-            problems.append(f"{label}: Fr3EngineRecord.{field} is at +0x{at:02x}")
-        elif length != width:
-            problems.append(f"{label}: Fr3EngineRecord.{field} is {length} bytes, the map stores {width}")
-        if asserted.get(field) != int(offset, 16):
-            problems.append(f"{label}: the header does not _Static_assert offsetof(Fr3EngineRecord, {field}) == {offset}")
-    return problems
+    parent = copy["parent_store"]
+    expected.append((f"{copy['tag']} + {parent['offset']}", parent["offset"], parent["field"], 4))
+    return layout_problems(header, "Fr3EngineRecord", ENGINE_RECORD_SIZE, expected)
 
 
 def unmapped_engine_tags(records, stores=None):
@@ -1021,6 +1126,158 @@ def unmapped_engine_tags(records, stores=None):
             if tag not in stores and tag not in ENGINE_UNSTORED_TAGS:
                 unmapped.setdefault(tag, (record["type"], field["line"]))
     return dict(sorted(unmapped.items()))
+
+
+def gearbox_evidence_problems(evidence, tag_ids, stores=None, copy=None):
+    """List every way GEARBOX_FIELD_STORES, GEARBOX_RECORD and GEARBOX_COPY lack matching byte-checked sites.
+
+    tag_ids maps tag names to analysis/tags.json registry IDs. Every cited site must be in field-evidence.json inside
+    the gearbox loader (or, for the copy's own instructions, inside the copy). Each tag's compare must be
+    `cmp eax, <its registry ID>` and any `after_range` site a jg whose claim names the tag. Its reader call must call
+    the reader of its kind (an enum's word table passed in EDX, a byte flag's float passed to 0x005352fa, converted
+    with fistp to a stack temporary and its low byte loaded into AL from there), and its store must write the read
+    register at [edi + offset] with the mapped width. Each store site's claim must start with its tag's name, and
+    every byte-checked write to [edi + n] in the loader must be a mapped site. The allocation, name read,
+    INHERIT_TYPE path and copy must have the documented bytes. The copy's load/store pairs must be exactly
+    GEARBOX_COPY's offsets, the bytes it writes must equal the bytes the mapped tags store, and it must not write
+    the name or padding.
+    """
+    stores = GEARBOX_FIELD_STORES if stores is None else stores
+    copy = GEARBOX_COPY if copy is None else copy
+    problems = []
+    checks = SiteChecks(evidence, tag_ids, problems, {"gearbox loader": GEARBOX_LOADER_SPAN, "gearbox copy": copy["span"]})
+
+    record = GEARBOX_RECORD
+    checks.exact("Gearbox allocation size", record["allocation"]["size"],
+                 "ba" + GEARBOX_RECORD_SIZE.to_bytes(4, "little").hex())
+    checks.call("Gearbox allocation call", record["allocation"]["call"], record["allocation"]["target"])
+    checks.exact("Gearbox record node in EDI", record["node_in_edi"], "89c7")
+    checks.exact("Gearbox payload in EDI", record["payload_in_edi"], "83c720")
+    checks.exact("Gearbox name size", record["name"]["size"], "bb" + GEARBOX_NAME_BYTES.to_bytes(4, "little").hex())
+    checks.exact("Gearbox name destination", record["name"]["destination"], "89fa")
+    checks.call("Gearbox name read", record["name"]["call"], STRING_READER)
+
+    for tag, entry in stores.items():
+        checks.compare(tag, entry)
+        if "after_range" in entry:
+            raw = checks.site(f"{tag} selecting jg", entry["after_range"])
+            if raw is not None and not (re.fullmatch(r"7f[0-9a-f]{2}|0f8f[0-9a-f]{8}", raw)
+                                        and checks.about(entry["after_range"], tag)):
+                problems.append(f"{tag}: selecting site {entry['after_range']} ({raw}) is not a jg whose claim is "
+                                f"about {tag}")
+        read = entry["read"]
+        if read["kind"] not in GEARBOX_READS:
+            problems.append(f"{tag}: unknown read kind {read['kind']!r}")
+            continue
+        reader, register = GEARBOX_READS[read["kind"]]
+        checks.call(f"{tag} reader call", read["call"], reader)
+        if read["kind"] == "enum" or "enum_table" in entry:
+            table = entry.get("enum_table")
+            if not table:
+                problems.append(f"{tag}: an enum read with no enum_table")
+            else:
+                checks.exact(f"{tag} enum table", table["site"], "ba" + int(table["va"], 16).to_bytes(4, "little").hex())
+        if read["kind"] == "float_to_byte":
+            checks.call(f"{tag} float-to-integer call", read["convert"], GEARBOX_FLOAT_TO_BYTE_CALL)
+            fistp = checks.site(f"{tag} fistp", read["fistp"])
+            low = checks.site(f"{tag} low byte", read["low_byte"])
+            if fistp is not None and low is not None:
+                decoded = memory_operand(low)
+                if not (len(fistp) == 6 and fistp[:4] == "db5d" and decoded
+                        and (decoded["kind"], decoded["width"], decoded["base"], decoded["register"])
+                        == ("load", "byte", "ebp", "al")
+                        and int.from_bytes(bytes.fromhex(fistp[4:]), "little", signed=True) == decoded["disp"]):
+                    problems.append(f"{tag}: {read['fistp']} ({fistp}) and {read['low_byte']} ({low}) are not a "
+                                    "fistp to [ebp + n] and a load of its low byte into AL")
+        for offset, store in entry["offsets"].items():
+            if not store["sites"]:
+                problems.append(f"{tag} + {offset}: no store sites")
+            for va in store["sites"]:
+                checks.operand(f"{tag} + {offset}", va, {"kind": "store", "width": store["width"], "base": "edi",
+                                                         "disp": int(offset, 16), "register": register})
+                if int(va, 16) in checks.by_va and not checks.about(va, tag):
+                    problems.append(f"{tag} + {offset}: the claim at {va} is not about {tag}: "
+                                    f"{checks.claims[int(va, 16)]!r}")
+
+    checks.compare(copy["tag"], copy)
+    name = copy["read_name"]
+    checks.exact("INHERIT_TYPE name size", name["size"], "bb" + GEARBOX_NAME_BYTES.to_bytes(4, "little").hex())
+    buffer = checks.site("INHERIT_TYPE name buffer", name["buffer"])
+    checks.call("INHERIT_TYPE name read", name["call"], STRING_READER)
+    find = copy["find_parent"]
+    passed = checks.site("INHERIT_TYPE parent name", find["name"])
+    if buffer is not None and passed is not None:
+        into, out = memory_operand(buffer), memory_operand(passed)
+        if not (into and out and (into["kind"], into["register"], out["kind"], out["register"])
+                == ("lea", "edx", "lea", "eax") and (into["base"], into["disp"]) == (out["base"], out["disp"])):
+            problems.append(f"INHERIT_TYPE: the parent lookup at {find['call']} is not passed the buffer the name was "
+                            f"read into ({name['buffer']} {buffer}, {find['name']} {passed})")
+    checks.call("INHERIT_TYPE parent lookup", find["call"], find["target"])
+    for key, expected in (("parent_in_edx", "89c2"), ("record_in_eax", "89f8")):
+        checks.exact(f"INHERIT_TYPE {key.replace('_', ' ')}", copy["arguments"][key], expected)
+    checks.call("INHERIT_TYPE copy call", copy["call"], copy["span"][0])
+    raw = checks.site("INHERIT_TYPE next tag", copy["next_tag"])
+    if raw is not None and raw[:2] not in ("e9", "eb"):
+        problems.append(f"INHERIT_TYPE: site {copy['next_tag']} ({raw}) is not the jump back to the next tag")
+    mapped = {int(va, 16) for entry in stores.values() for store in entry["offsets"].values() for va in store["sites"]}
+    for va, raw in sorted(checks.by_va.items()):
+        decoded = memory_operand(raw)
+        if (GEARBOX_LOADER_SPAN[0] <= va < GEARBOX_LOADER_SPAN[1] and decoded and decoded["kind"] == "store"
+                and decoded["base"] == "edi" and va not in mapped):
+            problems.append(f"byte-checked record store at 0x{va:08x} ({raw}) is in no mapped tag")
+
+    for key, expected in (("push_ebx", "53"), ("push_ecx", "51"), ("pop_ecx", "59"), ("pop_ebx", "5b"), ("ret", "c3")):
+        checks.exact(f"Gearbox copy {key.replace('_', ' ')}", copy["saves"][key], expected, "gearbox copy")
+    copy_pair_problems(checks.by_va, copy["span"], "eax", copy["offsets"], "GEARBOX_COPY", problems)
+
+    stored, copied = set(engine_stored_bytes(stores)), engine_copy_bytes(copy)
+    if copied - stored:
+        problems.append("the copy writes offsets no mapped tag stores: " + byte_ranges(copied - stored))
+    if stored - copied:
+        problems.append("mapped stores the copy misses: " + byte_ranges(stored - copied))
+    # The padding is every byte after the last stored one (padding_32 in the header).
+    untouchable = set(range(GEARBOX_NAME_BYTES)) | set(range(max(stored, default=-1) + 1, GEARBOX_RECORD_SIZE))
+    if copied & untouchable:
+        problems.append("the copy writes the name or the padding: " + byte_ranges(copied & untouchable))
+    return problems
+
+
+def layout_problems(header, struct, size, expected):
+    """List every (label, offset, field, width) in expected that disagrees with `struct` in the C header text.
+
+    Each field must be at its offset with its width, the header must `_Static_assert` that offset, and the struct
+    must be `size` bytes.
+    """
+    members, total = struct_layout(header, struct)
+    problems = [] if total == size else [f"{struct} is 0x{total:x} bytes, not 0x{size:x}"]
+    asserted = {field: int(value, 16) for field, value in
+                re.findall(rf"_Static_assert\(offsetof\({struct}, (\w+)\) == (0x[0-9a-fA-F]+)", header)}
+    for label, offset, field, width in expected:
+        if field not in members:
+            problems.append(f"{label}: {struct} has no field {field}")
+            continue
+        at, length = members[field]
+        if at != int(offset, 16):
+            problems.append(f"{label}: {struct}.{field} is at +0x{at:02x}")
+        elif length != width:
+            problems.append(f"{label}: {struct}.{field} is {length} bytes, the map stores {width}")
+        if asserted.get(field) != int(offset, 16):
+            problems.append(f"{label}: the header does not _Static_assert offsetof({struct}, {field}) == {offset}")
+    return problems
+
+
+def gearbox_layout_problems(header, stores=None):
+    """List every mapped gearbox offset that disagrees with Fr3GearboxRecord in recovered/fr3_database_layouts.h."""
+    stores = GEARBOX_FIELD_STORES if stores is None else stores
+    expected = [(f"{tag} + {offset}", offset, store["field"], 1 if store["width"] == "byte" else 4)
+                for tag, entry in stores.items() for offset, store in entry["offsets"].items()]
+    return layout_problems(header, "Fr3GearboxRecord", GEARBOX_RECORD_SIZE, expected)
+
+
+def unmapped_gearbox_tags(stores=None):
+    """Return the GEARBOX_TAGS with no mapped store and the mapped tags outside GEARBOX_TAGS, as two sorted lists."""
+    stores = GEARBOX_FIELD_STORES if stores is None else stores
+    return sorted(GEARBOX_TAGS - set(stores)), sorted(set(stores) - GEARBOX_TAGS)
 
 
 def engine_derived_offsets(tag):
@@ -1370,6 +1627,14 @@ def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, hea
             + (", ".join(consequences) or "none") + "; expected INDIGO only")
     for record in gearboxes:
         require(set(record["fields"]) == GEARBOX_TAGS, "Gearbox tag set mismatch: " + record["type"])
+    missing, extra = unmapped_gearbox_tags()
+    require(not missing and not extra, "GEARBOX_FIELD_STORES does not cover exactly GEARBOX_TAGS: "
+            + "; ".join(part for part in (missing and "unmapped " + ", ".join(missing),
+                                          extra and "not a gearbox tag " + ", ".join(extra)) if part))
+    problems = gearbox_evidence_problems(evidence, load_tag_ids() if tag_ids is None else tag_ids)
+    require(not problems, "Gearbox stores lack byte-checked evidence: " + "; ".join(problems))
+    problems = gearbox_layout_problems(load_layout_header() if header is None else header)
+    require(not problems, "Gearbox stores disagree with recovered/fr3_database_layouts.h: " + "; ".join(problems))
     require(len(tyres) == 109, f"Tyre record count mismatch: {len(tyres)}")
     tyre_inherits = [record for record in tyres if "INHERIT_TYPE" in record["fields"]]
     require(len(tyre_inherits) == 108, f"Tyre inheritance count mismatch: {len(tyre_inherits)}")
@@ -1405,7 +1670,7 @@ def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, hea
     require(untagged == [{"record": "INDIGO", "line": 1410, "tokens": ["INHERIT_TYPE", "DEFAULT_TRACK"]}],
             "Untagged line set mismatch")
     return {"engine_records": len(engines), "gearbox_records": len(gearboxes), "torque_arrays": len(torque),
-            "engine_mapped_tags": len(ENGINE_FIELD_STORES),
+            "engine_mapped_tags": len(ENGINE_FIELD_STORES), "gearbox_mapped_tags": len(GEARBOX_FIELD_STORES),
             "torque_rows": [min(len(f["rows"]) for f in torque), max(len(f["rows"]) for f in torque)],
             "engine_inheritances": len(inherits), "engine_effective_field_records": len(fields),
             "engine_effective_field_counts": engine_counts,
