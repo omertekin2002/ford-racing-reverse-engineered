@@ -75,10 +75,23 @@ engine_evidence_problems() checks both against field-evidence.json and requires
 the copied bytes to equal the stored ones, name and +0x18 excluded;
 engine_layout_problems() checks every mapped offset against
 recovered/fr3_database_layouts.h; unmapped_engine_tags() names any engine tag in
-use with no mapped store. Nothing resolves engine inheritance yet: engines.json
-holds the records as parsed, and the colon-less INDIGO line stays unresolved.
+use with no mapped store.
+effective_engine_fields() resolves, as engines.json `effective_fields`, each
+inheriting engine's mapped fields the way effective_scalars() does for tyres:
+it replays the loader in file order, each record zero-filled, each mapped tag
+stored as parsed and INHERIT_TYPE copying the parent's effective state, torque
+block included, over the record's. A record's own TORQUE_ARRAY replaces the
+parent's whole table, and its entry names the MAX_RPM declaration in the record
+when it was parsed. The derived +0x2c and +0xa4 get no value: their entries
+name the declarations that may have produced them (both of +0x2c's possible
+origins, as its stores are conditional). Values stay the declared text, with
+no units. engine_fields_by_recursion() derives the same fields parent first.
+untagged_inherit_consequences() lists, as `untagged_inherit_consequences`, the
+fields that depend on a root's colon-less INHERIT_TYPE line (the demo's INDIGO)
+under both readings, without choosing one; INDIGO stays a root as parsed.
 """
 import argparse
+from copy import deepcopy
 import hashlib
 import json
 import math
@@ -175,7 +188,8 @@ ENGINE_FIELD_STORES = {
                         "offsets": {"0x24": _store("torque_modifier", ["0x00522a0e"])}},
     "ROUGHNESS": {"id": 0xe4, "compare": "0x005228f6", "offsets": {"0x28": _store("roughness", ["0x0052290e"])}},
     "TORQUE_ARRAY": {"id": 0x118, "compare": "0x005228ef",
-                     "offsets": {"0x2c": _store("derived_rpm", ["0x005229c1", "0x005229f8"], derived=True),
+                     "offsets": {"0x2c": _store("derived_rpm", ["0x005229c1", "0x005229f8"], derived=True,
+                                                conditional=["0x00522980", "0x005229b6", "0x005229e9"]),
                                  "0x3c": _store("torque", ["0x00522969"], slots=18)},
                      "zero_fill": {"size": "0x0052291c", "destination": "0x00522921", "value": "0x00522924",
                                    "call": "0x00522926"},
@@ -207,13 +221,38 @@ ENGINE_FIELD_STORES = {
     "MAX_DELTA_FUELFLOW": {"id": 0xad, "compare": "0x005228bc",
                            "offsets": {"0xac": _store("max_delta_fuel_flow", ["0x005228d0"])}},
 }
-# Both +0x2c stores are conditional (the jumps at 0x00522980, 0x005229b6 and 0x005229e9), so +0x2c can keep what an
-# earlier INHERIT_TYPE copied, or zero. Every store site's field-evidence.json claim starts with its tag's name.
+# Both +0x2c stores are conditional (the jumps at 0x00522980, 0x005229b6 and 0x005229e9, listed as `conditional`), so
+# +0x2c can keep what an earlier INHERIT_TYPE copied, or zero. Every store and jump site's field-evidence.json claim
+# starts with its tag's name.
 # INHERIT_TYPE in the engine loader and the copy it calls (copy_engine_record.asm). The loader looks the parent up by
 # name, passes it in EDX and the record in EAX to the copy, then stores the parent at +0x18. The copy keeps the record
 # in EBX and writes `offsets` (each a load of parent + n into AL/EAX followed by a store at record + n) and the
 # `block` with a repeated movsd of size >> 2 dwords and a repeated movsb of size & 3 bytes. It leaves the name and
 # +0x18 alone.
+# How many of the 51 inheriting demo engines end up with each status, per mapped tag. The five roots declare every
+# mapped tag, so in the demo no field is zero-filled; none is overwritten and no tag is unmapped.
+ENGINE_FIELD_COUNTS = {
+    "LOCATION_TYPE": {"declared": 6, "inherited": 45},
+    "FUEL_CUTOFF": {"declared": 8, "inherited": 43},
+    "ENGINE_BRAKING": {"declared": 1, "inherited": 50},
+    "TORQUE_MODIFIER": {"declared": 51},
+    "ROUGHNESS": {"declared": 16, "inherited": 35},
+    "TORQUE_ARRAY": {"declared": 38, "inherited": 13},
+    "MAX_RPM": {"declared": 38, "inherited": 13},
+    "CAPACITY": {"declared": 14, "inherited": 37},
+    "TICKOVER_RPM": {"declared": 6, "inherited": 45},
+    "MAX_TURBO_PRESSURE": {"declared": 14, "inherited": 37},
+    "FLYWHEEL_MASS": {"declared": 7, "inherited": 44},
+    "FLYWHEEL_RADIUS": {"declared": 4, "inherited": 47},
+    "ACCELERATOR_SPEED": {"declared": 3, "inherited": 48},
+    "NUMBER_OF_TURBOS": {"declared": 14, "inherited": 37},
+    "NUMBER_OF_CYLINDERS": {"declared": 8, "inherited": 43},
+    "ASPIRATION_TYPE": {"declared": 18, "inherited": 33},
+    "MAX_AIRFLOW": {"declared": 3, "inherited": 48},
+    "TURBO_MASS": {"declared": 14, "inherited": 37},
+    "MAX_FUELFLOW": {"declared": 4, "inherited": 47},
+    "MAX_DELTA_FUELFLOW": {"declared": 3, "inherited": 48},
+}
 ENGINE_LOADER_SPAN = (0x005227F0, 0x00522C80)
 ENGINE_COPY = {
     "tag": "INHERIT_TYPE", "id": 0x9c, "compare": "0x00522b1d",
@@ -676,6 +715,8 @@ def scalar_evidence_problems(evidence, stores=None):
     return problems
 
 
+# A Jcc with an 8-bit (7x) or 32-bit (0f 8x) displacement.
+CONDITIONAL_JUMP = re.compile(r"7[0-9a-f][0-9a-f]{2}|0f8[0-9a-f][0-9a-f]{8}")
 REGISTERS = ("eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi")
 BYTE_REGISTERS = ("al", "cl", "dl", "bl", "ah", "ch", "dh", "bh")
 # Opcodes with a ModRM memory operand that the engine evidence uses, as (kind, width); 0xd9 depends on ModRM.reg.
@@ -823,6 +864,11 @@ def engine_evidence_problems(evidence, tag_ids, stores=None, copy=None):
                 operand(f"{tag} + {offset}", va, {"kind": "store", "width": store["width"], "base": base, "disp": disp})
                 if int(va, 16) in by_va and not claims[int(va, 16)].startswith(tag + " "):
                     problems.append(f"{tag} + {offset}: the claim at {va} is not about {tag}: {claims[int(va, 16)]!r}")
+            for va in store.get("conditional", []):
+                raw = site(f"{tag} + {offset} condition", va)
+                if raw is not None and not (CONDITIONAL_JUMP.fullmatch(raw) and claims[int(va, 16)].startswith(tag + " ")):
+                    problems.append(f"{tag} + {offset}: condition site {va} ({raw}) is not a conditional jump "
+                                    f"whose claim is about {tag}")
             if "slots" in store:
                 fill, rows = entry["zero_fill"], entry["row_pointer"]
                 exact(f"{tag} zero-fill size", fill["size"],
@@ -977,6 +1023,225 @@ def unmapped_engine_tags(records, stores=None):
     return dict(sorted(unmapped.items()))
 
 
+def engine_derived_offsets(tag):
+    """Return {offset: conditional} for each derived offset the tag's handler writes."""
+    return {offset: bool(store.get("conditional")) for offset, store in ENGINE_FIELD_STORES[tag]["offsets"].items()
+            if store.get("derived")}
+
+
+def own_origin(name, tag, field):
+    """The origin of a record's own declaration of one mapped tag, as the replay and the recursion carry it."""
+    origin = {"source": name, "source_line": field["line"], "values": field["values"], "path": [name]}
+    if field["rows"]:
+        origin["rows"] = field["rows"]
+    return origin
+
+
+def zero_origin(name):
+    """The origin of a field nobody declares: the record allocator's zero fill, seen from record `name`."""
+    return {"status": ZERO_FILLED, "path": [name]}
+
+
+def via(origin, name):
+    """The same origin seen from `name`, which copied it from the record its path starts at."""
+    return {**origin, "path": [name, *origin["path"]]}
+
+
+def described(origin, keys=("source", "source_line")):
+    """Return an origin's status (declared, inherited or zero-filled), its path and, unless zero-filled, `keys`."""
+    if origin.get("status") == ZERO_FILLED:
+        return {"status": ZERO_FILLED, "path": origin["path"]}
+    status = "declared" if len(origin["path"]) == 1 else "inherited"
+    return {"status": status, **{key: origin[key] for key in keys}, "path": origin["path"]}
+
+
+def engine_field(tag, origin, derived):
+    """Return one effective engine entry from the tag's origin and its derived offsets' possible origins."""
+    entry = {**described(origin, ("values", "source", "source_line")), "offsets": list(ENGINE_FIELD_STORES[tag]["offsets"])}
+    for key in ("rows", "max_rpm"):
+        if key in origin:
+            entry[key] = origin[key]
+    conditional = engine_derived_offsets(tag)
+    if conditional:
+        entry["derived"] = {offset: {"label": "derived", "conditional": conditional[offset],
+                                     "origins": [described(item) for item in derived[offset]]}
+                            for offset in conditional}
+    # Entries share origins along a chain; copy so that no entry aliases another's or the records' lists.
+    return deepcopy(entry)
+
+
+def engine_events(record):
+    """Return the record's declarations and its INHERIT_TYPE, in line order, as the loader meets them."""
+    return sorted(record["fields"].items(), key=lambda item: item[1]["line"])
+
+
+def effective_engine_fields(records):
+    """Return, for each engine with :INHERIT_TYPE, the declaration that ends up in each mapped tag's fields.
+
+    Replays the loader at 0x005227f0 in file order: each record starts zero-filled, each tag in ENGINE_FIELD_STORES
+    stores its declaration, and INHERIT_TYPE copies the parent's effective state over every offset ENGINE_COPY
+    covers (all of them, the 18 torque slots included), so a declaration made before it is overwritten (listed under
+    `overwritten`). TORQUE_ARRAY zero-fills its whole block before storing rows, so a record's own table replaces
+    the parent's and never mixes rows with it; each TORQUE_ARRAY origin carries `max_rpm`, the MAX_RPM origin in its
+    record when it was parsed, whose path runs from that record. Derived offsets carry their possible origins: the
+    producing declaration and, for a conditional store, whatever the offset held before. Tags without a
+    byte-checked store are listed under `unmapped`. Values stay the declared text; nothing is computed.
+    """
+    state = {}
+    entries = {}
+    for record in records:
+        name = record["type"]
+        fields = {tag: zero_origin(name) for tag in ENGINE_FIELD_STORES}
+        derived = {(tag, offset): [zero_origin(name)] for tag in ENGINE_FIELD_STORES for offset in engine_derived_offsets(tag)}
+        own, overwritten, unmapped = [], [], []
+        for tag, field in engine_events(record):
+            if tag == "INHERIT_TYPE":
+                parent = field["values"][0]
+                if parent not in state:
+                    raise TextDatabaseError(field["line"], f"{name!r} inherits {parent!r}, which is not an earlier record")
+                overwritten += own
+                own = []
+                fields = {key: via(origin, name) for key, origin in state[parent]["fields"].items()}
+                derived = {key: [via(origin, name) for origin in origins] for key, origins in state[parent]["derived"].items()}
+            elif tag in ENGINE_FIELD_STORES:
+                origin = own_origin(name, tag, field)
+                if tag == "TORQUE_ARRAY":
+                    # The handler reads its row count from +0x30 as it is now (0x0052292b).
+                    origin["max_rpm"] = described(fields["MAX_RPM"])
+                fields[tag] = origin
+                own.append({"tag": tag, "line": field["line"], "values": field["values"]})
+                produced = {"source": name, "source_line": field["line"], "path": [name]}
+                for offset, conditional in engine_derived_offsets(tag).items():
+                    derived[tag, offset] = [produced, *derived[tag, offset]] if conditional else [produced]
+            else:
+                unmapped.append({"tag": tag, "line": field["line"], "status": UNMAPPED})
+        state[name] = {"fields": fields, "derived": derived}
+        inherit = record["fields"].get("INHERIT_TYPE")
+        if inherit is None:
+            continue
+        entries[name] = {"inherit_type": {"line": inherit["line"], "parent": inherit["values"][0]},
+                         "fields": {tag: engine_field(tag, fields[tag], {offset: derived[tag, offset]
+                                                                          for offset in engine_derived_offsets(tag)})
+                                    for tag in ENGINE_FIELD_STORES},
+                         "overwritten": overwritten, "unmapped": unmapped}
+    return entries
+
+
+def engine_fields_by_recursion(records):
+    """Derive each inheriting engine's effective fields a second way, independent of effective_engine_fields().
+
+    Parent first, per record and tag: the record's own declaration counts when it follows its INHERIT_TYPE line (or
+    the record has none), otherwise the field is whatever the parent ends up with, and a root that does not declare
+    it is zero-filled. The MAX_RPM a TORQUE_ARRAY was parsed with is the record's own when declared before the
+    table and in effect, else the parent's final one when INHERIT_TYPE precedes the table, else zero. A derived
+    offset holds its tag's own declaration in effect, followed, for a conditional store, by what it held before.
+    """
+    by_name = {record["type"]: record for record in records}
+    order = {record["type"]: i for i, record in enumerate(records)}
+
+    def parent_of(name):
+        inherit = by_name[name]["fields"].get("INHERIT_TYPE")
+        if inherit is None:
+            return None, None
+        parent = inherit["values"][0]
+        if parent not in by_name or order[parent] >= order[name]:
+            raise TextDatabaseError(inherit["line"], f"{name!r} inherits {parent!r}, which is not an earlier record")
+        return parent, inherit["line"]
+
+    def in_effect(name, tag):
+        own = by_name[name]["fields"].get(tag)
+        _, line = parent_of(name)
+        return own if own is not None and (line is None or own["line"] > line) else None
+
+    def max_rpm_at(name, line):
+        own = in_effect(name, "MAX_RPM")
+        parent, inherit_line = parent_of(name)
+        if own is not None and own["line"] < line:
+            return own_origin(name, "MAX_RPM", own)
+        if parent is not None and inherit_line < line:
+            return via(origin(parent, "MAX_RPM"), name)
+        return zero_origin(name)
+
+    def origin(name, tag):
+        own = in_effect(name, tag)
+        if own is not None:
+            found = own_origin(name, tag, own)
+            if tag == "TORQUE_ARRAY":
+                found["max_rpm"] = described(max_rpm_at(name, own["line"]))
+            return found
+        parent, _ = parent_of(name)
+        return via(origin(parent, tag), name) if parent is not None else zero_origin(name)
+
+    def derived(name, tag, conditional):
+        own = in_effect(name, tag)
+        parent, _ = parent_of(name)
+        before = ([via(item, name) for item in derived(parent, tag, conditional)] if parent is not None
+                  else [zero_origin(name)])
+        if own is None:
+            return before
+        produced = {"source": name, "source_line": own["line"], "path": [name]}
+        return [produced, *before] if conditional else [produced]
+
+    return {record["type"]: {tag: engine_field(tag, origin(record["type"], tag),
+                                               {offset: derived(record["type"], tag, conditional)
+                                                for offset, conditional in engine_derived_offsets(tag).items()})
+                             for tag in ENGINE_FIELD_STORES}
+            for record in records if "INHERIT_TYPE" in record["fields"]}
+
+
+def check_effective_engine_fields(records, effective):
+    """Compare effective_engine_fields() output with engine_fields_by_recursion(); refuse any difference."""
+    expected = engine_fields_by_recursion(records)
+    require(set(effective) == set(expected), "Engine effective field record set mismatch")
+    for name, fields in expected.items():
+        for tag, entry in fields.items():
+            require(effective[name]["fields"].get(tag) == entry,
+                    f"Engine effective field disagrees with the parent-first derivation: {name} {tag}")
+        require(set(effective[name]["fields"]) == set(fields), "Engine effective field tag set mismatch: " + name)
+
+
+def engine_field_counts(effective):
+    """Count, for each mapped engine tag, how many inheriting records end up with each status."""
+    counts = {tag: {} for tag in ENGINE_FIELD_STORES}
+    for entry in effective.values():
+        for tag, field in entry["fields"].items():
+            counts[tag][field["status"]] = counts[tag].get(field["status"], 0) + 1
+    return counts
+
+
+def torque_without_own_max_rpm(effective):
+    """Return (record, TORQUE_ARRAY source) for each torque table not parsed with its own record's MAX_RPM."""
+    return [(name, field["source"]) for name, entry in effective.items()
+            for field in [entry["fields"]["TORQUE_ARRAY"]] if "max_rpm" in field and field["max_rpm"]["status"] != "declared"]
+
+
+def untagged_inherit_consequences(records):
+    """Return, per root record with one untagged `INHERIT_TYPE <earlier record>` line, what depends on that line.
+
+    Nothing here decides whether the game honours the line. For each mapped tag the record does not declare, `fields`
+    gives both readings: `if_ignored`, the zero fill the record keeps as parsed, and `if_applied`, the effective
+    entry effective_engine_fields() gives when the line is read as :INHERIT_TYPE. `overwritten_if_applied` lists the
+    record's own declarations that reading would overwrite.
+    """
+    consequences = {}
+    for index, record in enumerate(records):
+        names = {earlier["type"] for earlier in records[:index]}
+        lines = [item for item in record["untagged"] if len(item["tokens"]) == 2 and item["tokens"][0] == "INHERIT_TYPE"
+                 and item["tokens"][1] in names]
+        if len(lines) != 1 or "INHERIT_TYPE" in record["fields"]:
+            continue
+        line, parent, name = lines[0]["line"], lines[0]["tokens"][1], record["type"]
+        applied = {**record, "fields": {**record["fields"],
+                                        "INHERIT_TYPE": {"line": line, "values": [parent], "rows": []}}}
+        entry = effective_engine_fields(records[:index] + [applied])[name]
+        consequences[name] = {"line": line, "tokens": lines[0]["tokens"], "parent": parent, "status": "unresolved",
+                              "fields": {tag: {"if_ignored": described(zero_origin(name)),
+                                               "if_applied": entry["fields"][tag]}
+                                         for tag in ENGINE_FIELD_STORES if tag not in record["fields"]},
+                              "overwritten_if_applied": entry["overwritten"]}
+    return consequences
+
+
 def load_field_evidence(path=REPO_ROOT / "analysis/selected/field-evidence.json"):
     return json.loads(Path(path).read_text())
 
@@ -1088,6 +1353,21 @@ def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, hea
     unmapped = unmapped_engine_tags(engines)
     require(not unmapped, "Engine tags without a byte-checked store: "
             + ", ".join(f"{tag} (first in {name}, line {line})" for tag, (name, line) in unmapped.items()))
+    fields = effective_engine_fields(engines)
+    require(set(fields) == {record["type"] for record in inherits}, "Engine effective field record set mismatch")
+    check_effective_engine_fields(engines, fields)
+    early = sorted(name for name, entry in fields.items() if entry["overwritten"])
+    require(not early, "Engine fields declared before INHERIT_TYPE: " + ", ".join(early))
+    unmapped = sorted(name for name, entry in fields.items() if entry["unmapped"])
+    require(not unmapped, "Engine effective fields with an unmapped tag: " + ", ".join(unmapped))
+    stray = torque_without_own_max_rpm(fields)
+    require(not stray, "TORQUE_ARRAY parsed without its record's own MAX_RPM: "
+            + ", ".join(f"{name} (from {source})" for name, source in stray))
+    engine_counts = engine_field_counts(fields)
+    require(engine_counts == ENGINE_FIELD_COUNTS, f"Engine effective field counts mismatch: {engine_counts}")
+    consequences = untagged_inherit_consequences(engines)
+    require(set(consequences) == {"INDIGO"}, "Engines with a colon-less INHERIT_TYPE line to an earlier record: "
+            + (", ".join(consequences) or "none") + "; expected INDIGO only")
     for record in gearboxes:
         require(set(record["fields"]) == GEARBOX_TAGS, "Gearbox tag set mismatch: " + record["type"])
     require(len(tyres) == 109, f"Tyre record count mismatch: {len(tyres)}")
@@ -1127,7 +1407,9 @@ def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, hea
     return {"engine_records": len(engines), "gearbox_records": len(gearboxes), "torque_arrays": len(torque),
             "engine_mapped_tags": len(ENGINE_FIELD_STORES),
             "torque_rows": [min(len(f["rows"]) for f in torque), max(len(f["rows"]) for f in torque)],
-            "engine_inheritances": len(inherits), "gearbox_tags": sorted(GEARBOX_TAGS), "untagged_lines": untagged,
+            "engine_inheritances": len(inherits), "engine_effective_field_records": len(fields),
+            "engine_effective_field_counts": engine_counts,
+            "indigo_dependent_tags": sorted(consequences["INDIGO"]["fields"]), "gearbox_tags": sorted(GEARBOX_TAGS), "untagged_lines": untagged,
             "tyre_records": len(tyres), "tyre_inheritances": len(tyre_inherits), "tyre_tables": tables,
             "tyre_table_sources": sources, "tyre_effective_scalar_records": len(scalars),
             "tyre_effective_scalar_counts": counts,
@@ -1145,6 +1427,9 @@ def write_databases(game_dir, output, known_tags):
             database["resolved_tables"] = resolve_tyre_tables(database["records"])
             database["table_provenance"] = tyre_table_provenance(database["records"])
             database["effective_scalars"] = effective_scalars(database["records"])
+        if stem == "engines":
+            database["effective_fields"] = effective_engine_fields(database["records"])
+            database["untagged_inherit_consequences"] = untagged_inherit_consequences(database["records"])
         (Path(output) / f"{stem}.json").write_text(json.dumps(database, indent=2, allow_nan=False) + "\n")
         counts[stem] = len(database["records"])
     return counts
