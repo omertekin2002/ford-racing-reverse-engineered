@@ -1,7 +1,7 @@
 """HTML and input helpers shared by the offline dossier generators.
 
-scripts/tyre_dossier.py, scripts/record_dossier.py, scripts/pcg_catalogue.py, scripts/routine_index.py and
-scripts/open_questions.py write static pages
+scripts/tyre_dossier.py, scripts/record_dossier.py, scripts/record_compare.py, scripts/pcg_catalogue.py,
+scripts/routine_index.py and scripts/open_questions.py write static pages
 with inline CSS, no JavaScript and no external resources other than the two links in
 the rights-holder notice. Every piece of input text goes through e() before it reaches
 the page. scripts/build_research.py writes all of them, plus the entrance page, into
@@ -44,7 +44,7 @@ summary { cursor: pointer; }
 # "Explore findings" entrance that scripts/build_research.py writes.
 INDEX_PAGE = "index.html"
 PAGES = ((INDEX_PAGE, "Explore findings"), ("engines.html", "Engines"), ("gearboxes.html", "Gearboxes"),
-         ("tyres.html", "Tyres"), ("pcg.html", "PCG catalogue"), ("routines.html", "Routines"),
+         ("compare.html", "Compare records"), ("tyres.html", "Tyres"), ("pcg.html", "PCG catalogue"), ("routines.html", "Routines"),
          ("questions.html", "Open questions"))
 # The open questions that scripts/open_questions.py writes up, and what each one is about. The engine, tyre and PCG
 # pages link their unresolved label for each case to its anchor on QUESTIONS_PAGE; open_questions.py refuses to

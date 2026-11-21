@@ -94,13 +94,16 @@ def sha256(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def check_destination(destination, research):
-    """Refuse to write over anything but a previous packet, or inside the research directory."""
+def check_destination(destination, research, name=PACKET_NAME, kind="fr3-research-*.zip packet"):
+    """Refuse to write over anything but a previous packet, or inside the research directory.
+
+    name and kind let another packager (package_analysis.py) name what it may overwrite.
+    """
     if destination.exists() or destination.is_symlink():
         require(not destination.is_symlink(), f"Refusing to write the packet through a symlink: {destination}")
         require(destination.is_file(), f"Refusing to replace something that is not a file: {destination}")
-        require(PACKET_NAME.fullmatch(destination.name),
-                f"Refusing to replace {destination}: only a previous fr3-research-*.zip packet is overwritten")
+        require(name.fullmatch(destination.name),
+                f"Refusing to replace {destination}: only a previous {kind} is overwritten")
     require(not destination.resolve().is_relative_to(research.resolve()),
             f"Refusing to write the packet inside the research directory: {destination}")
 
@@ -161,8 +164,8 @@ def read_research(research, analysis, revision, pe, game=build_research.DEFAULT_
     require(f"SHA-256 <code>{e(pe['sha256'])}</code>" in index,
             f"{INDEX_PAGE} does not name the fr3.exe SHA-256 in analysis/pe-metadata.json: {pe['sha256']}")
     # A digest stored beside the HTML could be edited with it. Compare against an independent rebuild,
-    # reading even the non-published inputs (tags and verification) from Git rather than the working tree.
-    inputs = {"pe-metadata.json", "tags.json", "verification.json",
+    # reading even the non-published inputs (tags, verification and the game-file manifest) from Git rather than the working tree.
+    inputs = {"pe-metadata.json", "tags.json", "verification.json", build_research.GAME_MANIFEST,
               *(name.removeprefix(f"{build_research.EVIDENCE_DIR}/") for name in build_research.OUTPUT_FILES
                 if name.startswith(f"{build_research.EVIDENCE_DIR}/"))}
     with tempfile.TemporaryDirectory() as temporary:
@@ -213,20 +216,23 @@ def write_zip(path, edition, entries, epoch):
             archive.writestr(info, data, compresslevel=COMPRESSION_LEVEL)
 
 
-def check_zip(path, edition, files):
-    """Reopen the written ZIP and check it against the research files and both manifests."""
+def check_zip(path, edition, files, label="Research packet", contents="research files"):
+    """Reopen the written ZIP and check it against the packaged files and both manifests.
+
+    label and contents name the ZIP and its files in error messages (package_analysis.py reuses this check).
+    """
     with zipfile.ZipFile(path) as archive:
-        require(archive.testzip() is None, "Research packet failed its ZIP integrity check")
+        require(archive.testzip() is None, f"{label} failed its ZIP integrity check")
         names = archive.namelist()
-        require(len(names) == len(set(names)), "Research packet holds a duplicate entry")
+        require(len(names) == len(set(names)), f"{label} holds a duplicate entry")
         archived = {name.removeprefix(f"{edition}/"): archive.read(name) for name in names
                     if name.startswith(f"{edition}/")}
-        require(len(archived) == len(names), f"Research packet holds an entry outside {edition}/")
+        require(len(archived) == len(names), f"{label} holds an entry outside {edition}/")
     manifest = json.loads(archived[MANIFEST])
     listed = {entry["path"]: entry for entry in manifest["files"]}
     require(set(archived) == {*listed, MANIFEST, SUMS},
-            "Research packet does not hold exactly the manifest's files plus MANIFEST.json and SHA256SUMS")
-    require(set(listed) == set(files), "MANIFEST.json does not list exactly the research files")
+            f"{label} does not hold exactly the manifest's files plus MANIFEST.json and SHA256SUMS")
+    require(set(listed) == set(files), f"MANIFEST.json does not list exactly the {contents}")
     for name, entry in listed.items():
         data = archived[name]
         require(data == files[name] and len(data) == entry["size"] and sha256(data) == entry["sha256"],

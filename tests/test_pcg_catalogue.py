@@ -164,7 +164,7 @@ class CataloguePageTests(CatalogueTestCase):
         self.assertEqual(parsed.scripts, 0)
         self.assertNotIn("<script", page.lower())
         self.assertNotRegex(page.replace(rights_notice(), ""), r"https?://")
-        files = {href for href in parsed.hrefs if not href.startswith("#")} - {"engines.html", "gearboxes.html",
+        files = {href for href in parsed.hrefs if not href.startswith("#")} - {"engines.html", "gearboxes.html", "compare.html",
                                                                                  "tyres.html", "routines.html", "questions.html",
                                                                                  *NOTICE_LINKS}
         self.assertEqual({Path(os.path.normpath(self.output.parent / href)) for href in files},
@@ -172,7 +172,7 @@ class CataloguePageTests(CatalogueTestCase):
                           (self.root / "manifest.json").resolve()})
 
     def test_nav_bar(self):
-        self.assertIn('<nav>Research: <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | '
+        self.assertIn('<nav>Research: <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | <a href="compare.html">Compare records</a> | '
                       '<a href="tyres.html">Tyres</a> | <strong>PCG catalogue</strong> | <a href="routines.html">Routines</a> | '
                       '<a href="questions.html">Open questions</a></nav>', self.build())
 

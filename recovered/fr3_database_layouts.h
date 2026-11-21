@@ -1,5 +1,15 @@
 /* In-memory layouts for the SHA-256-pinned Windows demo.
- * Engine/gearbox layouts use the supplied report and loader/copy instructions.
+ * Every Fr3GearboxRecord field from +0x14 on is byte-checked: the gearbox
+ * loader 0x00523220 stores each one when it parses its tag, and the copy
+ * 0x00523470 that INHERIT_TYPE calls copies all nine; no parent address is
+ * stored (GEARBOX_FIELD_STORES and GEARBOX_COPY in scripts/text_database.py).
+ * Every Fr3EngineRecord field from +0x14 on is byte-checked: the engine loader
+ * 0x005227f0 stores each one when it parses its tag, INHERIT_TYPE stores the
+ * parent at +0x18, and the copy 0x00522c80 copies all of them but +0x18
+ * (ENGINE_FIELD_STORES and ENGINE_COPY in scripts/text_database.py, sites in
+ * analysis/selected/field-evidence.json). The field names are analyst labels;
+ * derived_rpm (+0x2c, stored only under conditions) and inverse_turbo_mass
+ * (+0xa4) are computed by the loader. Padding is not byte-checked.
  * Tyre layout was reconstructed here from loader 0x00523820 and accessors.
  * All address fields represent 32-bit game addresses, never native pointers.
  */
@@ -33,8 +43,8 @@ typedef struct {
     float max_airflow;
     float turbo_mass;
     float inverse_turbo_mass;
-    float max_fuel_flow_change;
     float max_fuel_flow;
+    float max_delta_fuel_flow;
 } Fr3EngineRecord;
 
 typedef struct {
@@ -80,14 +90,40 @@ typedef struct {
 
 _Static_assert(sizeof(float) == 4, "Requires 32-bit floats");
 _Static_assert(sizeof(Fr3EngineRecord) == 0xb0, "Engine record size");
+_Static_assert(offsetof(Fr3EngineRecord, location_type) == 0x14, "LOCATION_TYPE byte");
 _Static_assert(offsetof(Fr3EngineRecord, inherited_address) == 0x18, "Inherited address offset");
+_Static_assert(offsetof(Fr3EngineRecord, fuel_cutoff) == 0x1c, "FUEL_CUTOFF");
+_Static_assert(offsetof(Fr3EngineRecord, engine_braking) == 0x20, "ENGINE_BRAKING");
+_Static_assert(offsetof(Fr3EngineRecord, torque_modifier) == 0x24, "TORQUE_MODIFIER");
+_Static_assert(offsetof(Fr3EngineRecord, roughness) == 0x28, "ROUGHNESS");
+_Static_assert(offsetof(Fr3EngineRecord, derived_rpm) == 0x2c, "TORQUE_ARRAY derived value");
+_Static_assert(offsetof(Fr3EngineRecord, max_rpm) == 0x30, "MAX_RPM");
+_Static_assert(offsetof(Fr3EngineRecord, capacity) == 0x34, "CAPACITY");
+_Static_assert(offsetof(Fr3EngineRecord, tickover_rpm) == 0x38, "TICKOVER_RPM");
 _Static_assert(offsetof(Fr3EngineRecord, torque) == 0x3c, "Torque array offset");
+_Static_assert(sizeof(((Fr3EngineRecord *)0)->torque) == 0x48, "Torque array zero-fill and copy size");
 _Static_assert(offsetof(Fr3EngineRecord, max_turbo_pressure) == 0x84, "Torque array end");
+_Static_assert(offsetof(Fr3EngineRecord, flywheel_mass) == 0x88, "FLYWHEEL_MASS");
+_Static_assert(offsetof(Fr3EngineRecord, flywheel_radius) == 0x8c, "FLYWHEEL_RADIUS");
+_Static_assert(offsetof(Fr3EngineRecord, accelerator_speed) == 0x90, "ACCELERATOR_SPEED");
+_Static_assert(offsetof(Fr3EngineRecord, turbo_count) == 0x94, "NUMBER_OF_TURBOS byte");
+_Static_assert(offsetof(Fr3EngineRecord, cylinder_count) == 0x95, "NUMBER_OF_CYLINDERS byte");
 _Static_assert(offsetof(Fr3EngineRecord, aspiration_type) == 0x98, "Aspiration offset");
-_Static_assert(offsetof(Fr3EngineRecord, max_fuel_flow) == 0xac, "Final engine field");
+_Static_assert(offsetof(Fr3EngineRecord, max_airflow) == 0x9c, "MAX_AIRFLOW");
+_Static_assert(offsetof(Fr3EngineRecord, turbo_mass) == 0xa0, "TURBO_MASS");
+_Static_assert(offsetof(Fr3EngineRecord, inverse_turbo_mass) == 0xa4, "TURBO_MASS derived reciprocal");
+_Static_assert(offsetof(Fr3EngineRecord, max_fuel_flow) == 0xa8, "MAX_FUELFLOW");
+_Static_assert(offsetof(Fr3EngineRecord, max_delta_fuel_flow) == 0xac, "MAX_DELTA_FUELFLOW, final engine field");
 _Static_assert(sizeof(Fr3GearboxRecord) == 0x34, "Gearbox record size");
-_Static_assert(offsetof(Fr3GearboxRecord, transmission_type) == 0x24, "Transmission offset");
-_Static_assert(offsetof(Fr3GearboxRecord, anti_wheelspin) == 0x30, "Flag offset");
+_Static_assert(offsetof(Fr3GearboxRecord, clutch_speed) == 0x14, "CLUTCH_SPEED");
+_Static_assert(offsetof(Fr3GearboxRecord, clutch_max_power) == 0x18, "CLUTCH_MAX_POWER");
+_Static_assert(offsetof(Fr3GearboxRecord, torque_shift) == 0x1c, "TORQUE_SHIFT");
+_Static_assert(offsetof(Fr3GearboxRecord, drive_split) == 0x20, "DRIVE_SPLIT");
+_Static_assert(offsetof(Fr3GearboxRecord, transmission_type) == 0x24, "TRANSMISSION_TYPE");
+_Static_assert(offsetof(Fr3GearboxRecord, differential_type) == 0x28, "DIFF_TYPE");
+_Static_assert(offsetof(Fr3GearboxRecord, drive_type) == 0x2c, "DRIVE_TYPE");
+_Static_assert(offsetof(Fr3GearboxRecord, anti_wheelspin) == 0x30, "ANTI_WHEELSPIN byte");
+_Static_assert(offsetof(Fr3GearboxRecord, anti_wheelskid) == 0x31, "ANTI_WHEELSKID byte, final gearbox field");
 _Static_assert(sizeof(Fr3TyreRecord) == 0x58, "Tyre record size");
 _Static_assert(offsetof(Fr3TyreRecord, inherited_address) == 0x14, "Tyre inherited address");
 _Static_assert(offsetof(Fr3TyreRecord, radius) == 0x28, "Tyre radius offset");

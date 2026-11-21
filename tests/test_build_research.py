@@ -10,31 +10,34 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import build_research
+import record_dossier
 from dossier_common import INDEX_PAGE, NOTICE_LINKS, rights_notice
 from fr3_common import DEMO_PAGE
 from text_database import DATABASES, REPO_ROOT, SCALAR_COPY_CALL, SCALAR_COPY_SPAN, TYRE_SCALAR_STORES
 from verify_web import ISSUES_PAGE, RIGHTS_CREDIT
 
 from test_open_questions import QUESTION_ENGINES, question_manifest, question_pcg_index, question_verification
-from test_record_dossier import GEARBOXES
+from test_record_compare import COMPARE_GEARBOXES
 from test_tyre_dossier import ACCESSOR_SITES, LOADER_SITES, TYRES
 
 SCRIPT = REPO_ROOT / "scripts/build_research.py"
 PE = json.loads((REPO_ROOT / "analysis/pe-metadata.json").read_text())
-PAGES = ("index.html", "engines.html", "gearboxes.html", "tyres.html", "pcg.html", "routines.html", "questions.html")
+PAGES = ("index.html", "engines.html", "gearboxes.html", "compare.html", "tyres.html", "pcg.html", "routines.html",
+         "questions.html")
 ASM = tuple(sorted(f"evidence/selected/{path.name}" for path in (REPO_ROOT / "analysis/selected").glob("*.asm")))
 EVIDENCE = ("evidence/annotated/selected.c", "evidence/annotated/status.json", "evidence/pcg-index.json", *ASM,
             "evidence/selected/field-evidence.json", "evidence/unpacked-manifest.json")
-COUNTS = {"engines": 7, "gearboxes": 2, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
+COUNTS = {"engines": 7, "gearboxes": 3, "compared_gearboxes": 3, "compared_engines": 7, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
           "questions": 3}
 
 
 def write_game(root):
     """Write the three text databases, with the demo's CRLF line ends, under root; return root.
 
-    The engines include INDIGO's colon-less line, which the Open questions page requires.
+    The engines include INDIGO's colon-less line, which the Open questions page requires, and every gearbox declares
+    the nine mapped tags, which the Compare records page requires.
     """
-    for stem, text in (("engines", QUESTION_ENGINES), ("gearboxes", GEARBOXES), ("tyres", TYRES)):
+    for stem, text in (("engines", QUESTION_ENGINES), ("gearboxes", COMPARE_GEARBOXES), ("tyres", TYRES)):
         path = root / DATABASES[stem]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(text.replace("\n", "\r\n").encode("ascii"))
@@ -48,7 +51,7 @@ def write_analysis(root):
     """
     shutil.copytree(REPO_ROOT / "analysis/selected", root / "selected")
     shutil.copytree(REPO_ROOT / "analysis/annotated", root / "annotated")
-    for name in ("pe-metadata.json", "tags.json"):
+    for name in ("pe-metadata.json", "tags.json", "game-file-manifest.json"):
         shutil.copyfile(REPO_ROOT / "analysis" / name, root / name)
     for name, data in (("pcg-index.json", question_pcg_index()), ("unpacked-manifest.json", question_manifest()),
                        ("verification.json", question_verification())):
@@ -111,7 +114,7 @@ class BuildTests(ResearchTestCase):
     def test_entrance_page_shows_counts_identity_and_scope(self):
         self.build()
         index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
-        for text in ("7 engine records", "2 gearbox records", "3 tyre records", "2 collections, 5 graphics",
+        for text in ("7 engine records", "3 gearbox records", "3 gearboxes, 9 fields each; 7 engines, 20 fields each", "3 tyre records", "2 collections, 5 graphics",
                      "25 annotated routines", "3 open questions",
                      f'SHA-256 <code>{PE["sha256"]}</code>', "<code>0123abcd</code>",
                      "Values are shown exactly as declared", "stays labelled unresolved"):
@@ -161,6 +164,51 @@ class BuildTests(ResearchTestCase):
                 self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)},
                                  before)
 
+    def test_entrance_page_answers_the_engine_torque_question(self):
+        self.build()
+        index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
+        start = index.index('<section id="engine-torque-tables">')
+        answer = index[start:index.index("</section>", start)]
+        # It follows the tyre answer, before the page list, and leaves the tyre answer as it was.
+        self.assertLess(index.index('<section id="tyre-tables">'), start)
+        self.assertLess(start, index.index("<h2>Pages</h2>"))
+        text = " ".join(re.sub(r"<[^>]+>", " ", answer).split())
+        self.assertIn("Which engines share a torque table, and what do they declare differently?", text)
+        self.assertIn("Of the 3 engines with :INHERIT_TYPE , 0 declare their own TORQUE_ARRAY and 2 inherit one; 1 has "
+                      "no TORQUE_ARRAY along its :INHERIT_TYPE path and keeps the zero-filled slots.", text)
+        self.assertIn("1 table is read by more than one engine, 3 engines in all", text)
+        self.assertIn("BASE is counted among the readers of the shared tables", text)
+        self.assertIn("Traced example: CHILD", text)
+        self.assertIn("Where the comparison ends", text)
+        # Every link in the answer names a page and id the build wrote: engine sections, declaration lines, the
+        # torque-array row, routines, sites and INDIGO's open question.
+        links = re.findall(r'href="([^"#]+)#([^"]+)"', answer)
+        pages = {page for page, _ in links}
+        self.assertEqual(pages, {"engines.html", "routines.html", "questions.html"})
+        self.assertIn(("engines.html", "engine-CHILD-torque-array"), links)
+        self.assertIn(("questions.html", "indigo"), links)
+        for page, fragment in links:
+            self.assertIn(f'id="{fragment}"', (self.output / page).read_text(encoding="utf-8"), (page, fragment))
+
+    def test_removing_an_anchor_the_engine_answer_links_fails_verification(self):
+        self.build()
+        engines = self.output / "engines.html"
+        engines.write_text(engines.read_text(encoding="utf-8").replace(' id="engine-CHILD-torque-array"', ""),
+                           encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "engines.html#engine-CHILD-torque-array' names no id in engines.html"):
+            build_research.verify_research(self.output)
+
+    def test_engine_data_without_a_shared_torque_table_refuses_the_build(self):
+        self.build()
+        before = {name: (self.output / name).read_bytes() for name in files_under(self.output)}
+        table = ":TORQUE_ARRAY\n0 100.5\n1000 200.5\n2000 150.5\n"
+        self.assertIn(table, QUESTION_ENGINES)
+        (self.game / DATABASES["engines"]).write_bytes(
+            QUESTION_ENGINES.replace(table, "").replace("\n", "\r\n").encode("ascii"))
+        with self.assertRaisesRegex(ValueError, "#engine-torque-tables answer has no shared torque table"):
+            self.build()
+        self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)}, before)
+
     def test_routines_page_links_its_copied_evidence(self):
         self.build()
         routines = (self.output / "routines.html").read_text(encoding="utf-8")
@@ -168,7 +216,7 @@ class BuildTests(ResearchTestCase):
                      "evidence/selected/field-evidence.json", *ASM):
             self.assertIn(f'href="{href}"', routines)
         self.assertEqual(routines.count('<section class="routine"'), 25)
-        self.assertEqual(routines.count('<tr class="site"'), 64)
+        self.assertEqual(routines.count('<tr class="site"'), 274)
         self.assertIn('<a href="index.html">Explore findings</a>', routines)
         # Each routine's anchor is a real id: verify_research() accepts a deep link to it from another page.
         index = self.output / INDEX_PAGE
@@ -200,8 +248,15 @@ class BuildTests(ResearchTestCase):
         self.assertEqual(sites, {f"site-{va:08x}" for group in (*ACCESSOR_SITES.values(), *LOADER_SITES.values(),
                                                                  scalar, {SCALAR_COPY_CALL}, copies)
                                  for va in group})
-        self.assertEqual(linked["engines.html"], {"fr3_load_engine_database", "fr3_copy_engine_record"})
-        self.assertEqual(linked["gearboxes.html"], {"fr3_load_gearbox_database", "fr3_copy_gearbox_record"})
+        # The engine page also links each effective-fields row's store sites, the conditions on +0x2c, the INHERIT_TYPE
+        # copy call and the torque table's zero fill and MAX_RPM read.
+        self.assertEqual(linked["engines.html"], {"fr3_load_engine_database", "fr3_copy_engine_record",
+                                                  *(f"site-{va:08x}" for va in record_dossier.engine_site_vas())})
+        # The gearbox page links each tag's compare, selecting jg, reader, table or conversion and store sites, and the
+        # INHERIT_TYPE copy call.
+        self.assertEqual(linked["gearboxes.html"], {"fr3_load_gearbox_database", "fr3_copy_gearbox_record",
+                                                    *(f"site-{va:08x}" for va in record_dossier.gearbox_site_vas())})
+        self.assertEqual(len(record_dossier.gearbox_site_vas()), 39)
 
     def test_renamed_linked_routine_refuses_the_build_and_keeps_the_previous_output(self):
         self.build()
@@ -231,13 +286,17 @@ class BuildTests(ResearchTestCase):
 
     def test_counts_come_from_the_inputs(self):
         (self.game / DATABASES["gearboxes"]).write_bytes(
-            (GEARBOXES.replace(":END", ":TYPE EXTRA\n:CLUTCH_SPEED 0.5\n:END")).encode("ascii"))
+            COMPARE_GEARBOXES.replace(":END", COMPARE_GEARBOXES[COMPARE_GEARBOXES.index(":TYPE TRACK"):
+                                                                COMPARE_GEARBOXES.index("\n\n:TYPE RALLY")]
+                                      .replace("TRACK", "EXTRA") + "\n:END").encode("ascii"))
         (self.analysis / "pcg-index.json").write_text(json.dumps(question_pcg_index()[1:]), encoding="utf-8")
         (self.analysis / "verification.json").write_text(
             json.dumps({"pcg_collections_verified": 1, "pcg_entries_verified": 3}), encoding="utf-8")
-        self.assertEqual(self.build(), {**COUNTS, "gearboxes": 3, "pcg_collections": 1, "pcg_graphics": 3})
+        self.assertEqual(self.build(), {**COUNTS, "gearboxes": 4, "compared_gearboxes": 4, "pcg_collections": 1,
+                                        "pcg_graphics": 3})
         index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
-        self.assertIn("3 gearbox records", index)
+        self.assertIn("4 gearbox records", index)
+        self.assertIn("4 gearboxes, 9 fields each", index)
         self.assertIn("1 collections, 3 graphics", index)
 
     def test_replaces_a_previous_build(self):
@@ -402,6 +461,36 @@ class VerifierTests(unittest.TestCase):
                 self.edit(page, f'id="{anchor}"', 'id="gone"')
                 self.reject(f"index.html has a broken local link: '{page}#{anchor}' names no id in {page}")
 
+    def test_compare_page_links_a_missing_gearbox_page_anchor(self):
+        # A declaration row and a store-table row on the gearbox page, each linked from the Compare records page.
+        for anchor in ("gearbox-TRACK-line-14", "gearbox-store-ANTI_WHEELSKID"):
+            with self.subTest(anchor=anchor):
+                self.setUp()
+                self.edit("gearboxes.html", f'id="{anchor}"', 'id="gone"')
+                self.reject(f"compare.html has a broken local link: 'gearboxes.html#{anchor}' names no id in "
+                            "gearboxes.html")
+
+    def test_compare_page_links_a_missing_engine_page_anchor(self):
+        # A declaration row, a store-table row and an effective TORQUE_ARRAY row on the engine page, each linked from
+        # the Compare records page's engine section.
+        for anchor in ("engine-BASE-line-2", "engine-store-TURBO_MASS", "engine-CHILD-torque-array"):
+            with self.subTest(anchor=anchor):
+                self.setUp()
+                self.edit("engines.html", f'id="{anchor}"', 'id="gone"')
+                self.reject(f"compare.html has a broken local link: 'engines.html#{anchor}' names no id in "
+                            "engines.html")
+
+    def test_every_page_names_the_entrance_page_producer_revision(self):
+        revision = "<dt>Producer revision</dt><dd><code>0123abcd</code>"
+        self.edit("compare.html", revision, "<dt>Producer revision</dt><dd><code>fedc9876</code>")
+        self.reject("compare.html names producer revision 'fedc9876', not the entrance page's '0123abcd'")
+        self.setUp()
+        self.edit("compare.html", revision, "<dt>Producer</dt><dd><code>0123abcd</code>")
+        self.reject("compare.html names 0 producer revisions, not one")
+        self.setUp()
+        self.edit("pcg.html", "</body>", f"{revision}</code></dd></body>")
+        self.reject("pcg.html names 2 producer revisions, not one")
+
     def test_external_resources(self):
         cases = (('<img src="https://example.com/x.png">', "links to an external resource: <img src="),
                  ('<link rel="stylesheet" href="//example.com/x.css">', "links to an external resource: <link href="),
@@ -474,8 +563,8 @@ class CommandTests(unittest.TestCase):
         output = self.root / "research"
         result = self.run_script("--game", str(write_game(self.root / "game")), "--output", str(output))
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("Wrote 7 verified pages", result.stdout)
-        self.assertIn("7 engines, 2 gearboxes, 3 tyres, 62 PCG collections, 654 graphics, 25 routines and "
+        self.assertIn("Wrote 8 verified pages", result.stdout)
+        self.assertIn("7 engines (7 compared), 3 gearboxes (3 compared), 3 tyres, 62 PCG collections, 654 graphics, 25 routines and "
                       "3 open questions", result.stdout)
         self.assertEqual(files_under(output), sorted((*PAGES, *EVIDENCE)))
         self.assertIn("62 collections, 654 graphics", (output / INDEX_PAGE).read_text(encoding="utf-8"))

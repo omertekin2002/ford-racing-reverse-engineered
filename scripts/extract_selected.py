@@ -28,6 +28,216 @@ ROUTINES = [
 ]
 
 EVIDENCE = [
+    (0x00522804, "bab0000000", "Engine payload allocation size: EDX = 0xb0"),
+    (0x00522856, "3dab000000", "Engine tag dispatch compares the tag ID in EAX with 0xab (MAX_AIRFLOW)"),
+    (0x0052285d, "83f87f", "Engine tag dispatch compares the tag ID in EAX with 0x7f (ENGINE_BRAKING)"),
+    (0x00522866, "83f801", "Engine tag dispatch compares the tag ID in EAX with 0x1 (ACCELERATOR_SPEED)"),
+    (0x005228a2, "d99f9c000000", "MAX_AIRFLOW float store (fstp) at record (EDI) + 0x9c"),
+    (0x005228aa, "3dc8000000", "Engine tag dispatch compares the tag ID in EAX with 0xc8 (NUMBER_OF_TURBOS)"),
+    (0x005228b1, "3db0000000", "Engine tag dispatch compares the tag ID in EAX with 0xb0 (MAX_RPM)"),
+    (0x005228bc, "3dad000000", "Engine tag dispatch compares the tag ID in EAX with 0xad (MAX_DELTA_FUELFLOW)"),
+    (0x005228d0, "d99fac000000", "MAX_DELTA_FUELFLOW float store (fstp) at record (EDI) + 0xac"),
+    (0x005228e4, "888794000000", "NUMBER_OF_TURBOS stores the integer reader's low byte (AL) at record (EDI) + 0x94"),
+    (0x005228ef, "3d18010000", "Engine tag dispatch compares the tag ID in EAX with 0x118 (TORQUE_ARRAY)"),
+    (0x005228f6, "3de4000000", "Engine tag dispatch compares the tag ID in EAX with 0xe4 (ROUGHNESS)"),
+    (0x0052290e, "d95f28", "ROUGHNESS float store (fstp) at record (EDI) + 0x28"),
+    (0x0052291c, "bb48000000", "TORQUE_ARRAY fill size: EBX = 0x48 (18 dwords)"),
+    (0x00522921, "8d473c", "TORQUE_ARRAY fill destination: EAX = record (EDI) + 0x3c"),
+    (0x00522924, "31d2", "TORQUE_ARRAY fill value: EDX = 0"),
+    (0x00522926, "e8651d0100", "TORQUE_ARRAY calls the fill routine at 0x00534690, zeroing + 0x3c..+0x83 before it reads any row"),
+    (0x0052292b, "d94730", "TORQUE_ARRAY loads the current MAX_RPM value at + 0x30 to derive its row count"),
+    (0x00522952, "89fa", "TORQUE_ARRAY row pointer starts at EDX = record (EDI)"),
+    (0x0052295b, "83c204", "TORQUE_ARRAY advances the row pointer by 4 (EDX += 4) for each row"),
+    (0x00522961, "d95dd4", "TORQUE_ARRAY stores each row's first column to the stack temporary [ebp - 0x2c], not to the record"),
+    (0x00522969, "d95a38", "TORQUE_ARRAY stores each row's second column at EDX + 0x38, which is record + 0x3c + 4 * row"),
+    (0x00522980, "7356", "TORQUE_ARRAY jumps to 0x005229d8, past the + 0x2c search and its store at 0x005229c1, when 0 is not below MAX_RPM"),
+    (0x005229b6, "730c", "TORQUE_ARRAY jumps to 0x005229c4, past the + 0x2c store at 0x005229c1, unless this row's value beats the best so far"),
+    (0x005229be, "8b45e8", "TORQUE_ARRAY loads the loop's current RPM value from [ebp - 0x18] into EAX"),
+    (0x005229c1, "89472c", "TORQUE_ARRAY derived store of that value (EAX) at record (EDI) + 0x2c"),
+    (0x005229e9, "0f8359feffff", "TORQUE_ARRAY jumps back to the next tag, past the + 0x2c store at 0x005229f8, unless |+ 0x2c - + 0x30| is below the float at 0x00581d20"),
+    (0x005229ef, "d94730", "TORQUE_ARRAY loads MAX_RPM at + 0x30"),
+    (0x005229f2, "d805241d5800", "TORQUE_ARRAY adds the float at 0x00581d24"),
+    (0x005229f8, "d95f2c", "TORQUE_ARRAY derived store of that sum at record (EDI) + 0x2c"),
+    (0x00522a00, "3d19010000", "Engine tag dispatch compares the tag ID in EAX with 0x119 (TORQUE_MODIFIER)"),
+    (0x00522a0e, "d95f24", "TORQUE_MODIFIER float store (fstp) at record (EDI) + 0x24"),
+    (0x00522a16, "3d5b010000", "Engine tag dispatch compares the tag ID in EAX with 0x15b (TURBO_MASS)"),
+    (0x00522a28, "d99fa0000000", "TURBO_MASS float store (fstp) at record (EDI) + 0xa0"),
+    (0x00522a2e, "f787a0000000ffffff7f", "TURBO_MASS tests + 0xa0 against 0x7fffffff (zero ignoring the sign bit)"),
+    (0x00522a38, "0f8410020000", "TURBO_MASS jumps to 0x00522c4e when + 0xa0 is zero"),
+    (0x00522a3e, "d987a0000000", "TURBO_MASS loads + 0xa0"),
+    (0x00522a44, "d9e8", "TURBO_MASS loads 1.0"),
+    (0x00522a46, "def1", "TURBO_MASS divides 1.0 by the + 0xa0 value (fdivrp)"),
+    (0x00522a48, "d99fa4000000", "TURBO_MASS derived store of 1 / (+ 0xa0) at record (EDI) + 0xa4"),
+    (0x00522a53, "3d12010000", "Engine tag dispatch compares the tag ID in EAX with 0x112 (TICKOVER_RPM)"),
+    (0x00522a65, "d95f38", "TICKOVER_RPM float store (fstp) at record (EDI) + 0x38"),
+    (0x00522a76, "d95f30", "MAX_RPM float store (fstp) at record (EDI) + 0x30"),
+    (0x00522a7e, "3db1000000", "Engine tag dispatch compares the tag ID in EAX with 0xb1 (MAX_TURBO_PRESSURE)"),
+    (0x00522a8c, "d99f84000000", "MAX_TURBO_PRESSURE float store (fstp) at record (EDI) + 0x84"),
+    (0x00522a97, "3dc6000000", "Engine tag dispatch compares the tag ID in EAX with 0xc6 (NUMBER_OF_CYLINDERS)"),
+    (0x00522aa9, "888795000000", "NUMBER_OF_CYLINDERS stores the integer reader's low byte (AL) at record (EDI) + 0x95"),
+    (0x00522ab4, "3dae000000", "Engine tag dispatch compares the tag ID in EAX with 0xae (MAX_FUELFLOW)"),
+    (0x00522ac6, "d99fa8000000", "MAX_FUELFLOW float store (fstp) at record (EDI) + 0xa8"),
+    (0x00522ada, "d95f20", "ENGINE_BRAKING float store (fstp) at record (EDI) + 0x20"),
+    (0x00522ae2, "3d8a000000", "Engine tag dispatch compares the tag ID in EAX with 0x8a (FUEL_CUTOFF)"),
+    (0x00522ae9, "3d87000000", "Engine tag dispatch compares the tag ID in EAX with 0x87 (FLYWHEEL_MASS)"),
+    (0x00522b01, "d99f88000000", "FLYWHEEL_MASS float store (fstp) at record (EDI) + 0x88"),
+    (0x00522b15, "d95f1c", "FUEL_CUTOFF float store (fstp) at record (EDI) + 0x1c"),
+    (0x00522b1d, "3d9c000000", "Engine tag dispatch compares the tag ID in EAX with 0x9c (INHERIT_TYPE)"),
+    (0x00522b3c, "e82f020000", "INHERIT_TYPE calls 0x00522d70 to look up the parent record by the name just read"),
+    (0x00522b41, "89c1", "INHERIT_TYPE keeps the parent record address in ECX"),
+    (0x00522b43, "89c2", "INHERIT_TYPE passes the parent record address in EDX to the engine copy"),
+    (0x00522b45, "89f8", "INHERIT_TYPE passes the current record address (EDI) in EAX to the engine copy"),
+    (0x00522b47, "e834010000", "INHERIT_TYPE calls the engine copy at 0x00522c80"),
+    (0x00522b4c, "894f18", "INHERIT_TYPE stores the parent record address (ECX) at + 0x18"),
+    (0x00522b54, "3da5000000", "Engine tag dispatch compares the tag ID in EAX with 0xa5 (LOCATION_TYPE)"),
+    (0x00522b64, "ba08745900", "LOCATION_TYPE passes the enum word table at 0x00597408 in EDX to the enum reader"),
+    (0x00522b70, "884714", "LOCATION_TYPE stores the enum reader's low byte (AL) at record (EDI) + 0x14"),
+    (0x00522b78, "3d88000000", "Engine tag dispatch compares the tag ID in EAX with 0x88 (FLYWHEEL_RADIUS)"),
+    (0x00522b8a, "d99f8c000000", "FLYWHEEL_RADIUS float store (fstp) at record (EDI) + 0x8c"),
+    (0x00522b9e, "d99f90000000", "ACCELERATOR_SPEED float store (fstp) at record (EDI) + 0x90"),
+    (0x00522ba9, "83f810", "Engine tag dispatch compares the tag ID in EAX with 0x10 (ASPIRATION_TYPE)"),
+    (0x00522bb9, "baf8735900", "ASPIRATION_TYPE passes the enum word table at 0x005973f8 in EDX to the enum reader"),
+    (0x00522bc5, "898798000000", "ASPIRATION_TYPE stores the enum reader's result (EAX) at record (EDI) + 0x98"),
+    (0x00522bd0, "83f837", "Engine tag dispatch compares the tag ID in EAX with 0x37 (CAPACITY)"),
+    (0x00522be0, "d95f34", "CAPACITY float store (fstp) at record (EDI) + 0x34"),
+    (0x00522c03, "89c7", "The record-creating branch keeps the record node returned by 0x0042eed0 in EDI"),
+    (0x00522c0f, "83c720", "The record-creating branch advances EDI by 0x20 past the node header to the payload"),
+    (0x00522c4e, "c787a40000000000803f", "TURBO_MASS derived store of 1.0 (0x3f800000) at record (EDI) + 0xa4 when + 0xa0 is zero"),
+    (0x00522c81, "51", "Engine copy saves ECX, which holds the INHERIT_TYPE parent address"),
+    (0x00522c84, "89c3", "Engine copy keeps the record address (EAX) in EBX"),
+    (0x00522c86, "b948000000", "Engine copy block size: ECX = 0x48 bytes"),
+    (0x00522c8b, "8a4214", "Engine copy loads the INHERIT_TYPE parent (EDX) byte + 0x14 into AL"),
+    (0x00522c8e, "8d723c", "Engine copy block source: ESI = parent (EDX) + 0x3c"),
+    (0x00522c91, "884314", "Engine copy stores that byte (AL) at record (EBX) + 0x14"),
+    (0x00522c94, "8d7b3c", "Engine copy block destination: EDI = record (EBX) + 0x3c"),
+    (0x00522c97, "8b421c", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x1c into EAX"),
+    (0x00522c9a, "89431c", "Engine copy stores that dword (EAX) at record (EBX) + 0x1c"),
+    (0x00522c9d, "8b4220", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x20 into EAX"),
+    (0x00522ca0, "894320", "Engine copy stores that dword (EAX) at record (EBX) + 0x20"),
+    (0x00522ca3, "8b4224", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x24 into EAX"),
+    (0x00522ca6, "894324", "Engine copy stores that dword (EAX) at record (EBX) + 0x24"),
+    (0x00522ca9, "8b4228", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x28 into EAX"),
+    (0x00522cac, "894328", "Engine copy stores that dword (EAX) at record (EBX) + 0x28"),
+    (0x00522caf, "8b422c", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x2c into EAX"),
+    (0x00522cb2, "89432c", "Engine copy stores that dword (EAX) at record (EBX) + 0x2c"),
+    (0x00522cb5, "8b4230", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x30 into EAX"),
+    (0x00522cb8, "894330", "Engine copy stores that dword (EAX) at record (EBX) + 0x30"),
+    (0x00522cbb, "8b4234", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x34 into EAX"),
+    (0x00522cbe, "894334", "Engine copy stores that dword (EAX) at record (EBX) + 0x34"),
+    (0x00522cc1, "8b4238", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x38 into EAX"),
+    (0x00522cc4, "894338", "Engine copy stores that dword (EAX) at record (EBX) + 0x38"),
+    (0x00522cc8, "89c8", "Engine copy keeps the block size (ECX) in EAX"),
+    (0x00522cca, "c1e902", "Engine copy block dword count: ECX = 0x48 >> 2 = 0x12"),
+    (0x00522ccd, "f2a5", "Engine copy repeats movsd ECX times (F2 prefix): 0x12 dwords from parent + 0x3c to record + 0x3c"),
+    (0x00522ccf, "8ac8", "Engine copy block remainder: CL = AL, the low byte of 0x48"),
+    (0x00522cd1, "80e103", "Engine copy block remainder: CL = CL & 3, which is 0 for 0x48"),
+    (0x00522cd4, "f2a4", "Engine copy repeats movsb CL times (F2 prefix): no bytes for 0x48"),
+    (0x00522cd7, "8b8284000000", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x84 into EAX"),
+    (0x00522cdd, "898384000000", "Engine copy stores that dword (EAX) at record (EBX) + 0x84"),
+    (0x00522ce3, "8b8288000000", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x88 into EAX"),
+    (0x00522ce9, "898388000000", "Engine copy stores that dword (EAX) at record (EBX) + 0x88"),
+    (0x00522cef, "8b828c000000", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x8c into EAX"),
+    (0x00522cf5, "89838c000000", "Engine copy stores that dword (EAX) at record (EBX) + 0x8c"),
+    (0x00522cfb, "8b8290000000", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x90 into EAX"),
+    (0x00522d01, "898390000000", "Engine copy stores that dword (EAX) at record (EBX) + 0x90"),
+    (0x00522d07, "8a8294000000", "Engine copy loads the INHERIT_TYPE parent (EDX) byte + 0x94 into AL"),
+    (0x00522d0d, "888394000000", "Engine copy stores that byte (AL) at record (EBX) + 0x94"),
+    (0x00522d13, "8a8295000000", "Engine copy loads the INHERIT_TYPE parent (EDX) byte + 0x95 into AL"),
+    (0x00522d19, "888395000000", "Engine copy stores that byte (AL) at record (EBX) + 0x95"),
+    (0x00522d1f, "8b8298000000", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x98 into EAX"),
+    (0x00522d25, "898398000000", "Engine copy stores that dword (EAX) at record (EBX) + 0x98"),
+    (0x00522d2b, "8b829c000000", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0x9c into EAX"),
+    (0x00522d31, "89839c000000", "Engine copy stores that dword (EAX) at record (EBX) + 0x9c"),
+    (0x00522d37, "8b82a0000000", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0xa0 into EAX"),
+    (0x00522d3d, "8983a0000000", "Engine copy stores that dword (EAX) at record (EBX) + 0xa0"),
+    (0x00522d43, "8b82a4000000", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0xa4 into EAX"),
+    (0x00522d49, "8983a4000000", "Engine copy stores that dword (EAX) at record (EBX) + 0xa4"),
+    (0x00522d4f, "8b82a8000000", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0xa8 into EAX"),
+    (0x00522d55, "8983a8000000", "Engine copy stores that dword (EAX) at record (EBX) + 0xa8"),
+    (0x00522d5b, "8b82ac000000", "Engine copy loads the INHERIT_TYPE parent (EDX) dword + 0xac into EAX"),
+    (0x00522d61, "8983ac000000", "Engine copy stores that dword (EAX) at record (EBX) + 0xac"),
+    (0x00522d69, "59", "Engine copy restores ECX, so the INHERIT_TYPE store at 0x00522b4c writes the parent address"),
+    (0x00522d6b, "c3", "Engine copy returns after its last store at + 0xac"),
+    (0x00523234, "ba34000000", "Gearbox payload allocation size: EDX = 0x34"),
+    (0x00523242, "e809bbf0ff", "Gearbox loader calls the database creation routine at 0x0042ed50 with that payload size in EDX"),
+    (0x00523289, "83f85f", "Gearbox tag dispatch compares the tag ID in EAX with 0x5f (CLUTCH_SPEED)"),
+    (0x0052328e, "83f80e", "Gearbox tag dispatch compares the tag ID in EAX with 0xe (ANTI_WHEELSKID)"),
+    (0x005232c1, "7f0c", "CLUTCH_SPEED is selected when this jg, reached from the jge after cmp eax, 0x5f at 0x00523289, does not jump: the tag ID equals 0x5f"),
+    (0x005232c5, "e8b6b3f0ff", "CLUTCH_SPEED calls the float reader at 0x0042e680"),
+    (0x005232ca, "d95f14", "CLUTCH_SPEED float store (fstp) at record (EDI) + 0x14"),
+    (0x005232cf, "83f877", "Gearbox tag dispatch compares the tag ID in EAX with 0x77 (DRIVE_TYPE)"),
+    (0x005232d4, "83f86d", "Gearbox tag dispatch compares the tag ID in EAX with 0x6d (DIFF_TYPE)"),
+    (0x005232e4, "ba60745900", "DIFF_TYPE passes the enum word table at 0x00597460 in EDX to the enum reader"),
+    (0x005232eb, "e830b5f0ff", "DIFF_TYPE calls the enum reader at 0x0042e820"),
+    (0x005232f0, "894728", "DIFF_TYPE stores the enum reader's result (EAX) at record (EDI) + 0x28"),
+    (0x005232f5, "7f19", "DRIVE_TYPE is selected when this jg, reached from the jge after cmp eax, 0x77 at 0x005232cf, does not jump: the tag ID equals 0x77"),
+    (0x005232fc, "ba4c745900", "DRIVE_TYPE passes the enum word table at 0x0059744c in EDX to the enum reader"),
+    (0x00523303, "e818b5f0ff", "DRIVE_TYPE calls the enum reader at 0x0042e820"),
+    (0x00523308, "89472c", "DRIVE_TYPE stores the enum reader's result (EAX) at record (EDI) + 0x2c"),
+    (0x00523310, "3d1a010000", "Gearbox tag dispatch compares the tag ID in EAX with 0x11a (TORQUE_SHIFT)"),
+    (0x00523317, "3d9c000000", "Gearbox tag dispatch compares the tag ID in EAX with 0x9c (INHERIT_TYPE)"),
+    (0x0052331e, "bb14000000", "INHERIT_TYPE passes the name size EBX = 0x14 to the string reader"),
+    (0x00523323, "8d55d0", "INHERIT_TYPE passes the stack buffer at EBP - 0x30 in EDX to the string reader"),
+    (0x00523328, "e893b4f0ff", "INHERIT_TYPE calls the string reader at 0x0042e7c0 to read the parent name into that buffer"),
+    (0x0052332d, "8d45d0", "INHERIT_TYPE passes the parent name buffer at EBP - 0x30 in EAX to the parent lookup"),
+    (0x00523330, "e87b010000", "INHERIT_TYPE calls 0x005234b0 to look up the parent record by the name just read"),
+    (0x00523335, "89c2", "INHERIT_TYPE passes the parent record address in EDX to the gearbox copy"),
+    (0x00523337, "89f8", "INHERIT_TYPE passes the current record address (EDI) in EAX to the gearbox copy"),
+    (0x00523339, "e832010000", "INHERIT_TYPE calls the gearbox copy at 0x00523470"),
+    (0x0052333e, "e938ffffff", "INHERIT_TYPE jumps back to read the next tag as soon as the copy returns; it stores no parent address in the record"),
+    (0x00523343, "7f0f", "TORQUE_SHIFT is selected when this jg, reached from the jge after cmp eax, 0x11a at 0x00523310, does not jump: the tag ID equals 0x11a"),
+    (0x00523347, "e834b3f0ff", "TORQUE_SHIFT calls the float reader at 0x0042e680"),
+    (0x0052334c, "d95f1c", "TORQUE_SHIFT float store (fstp) at record (EDI) + 0x1c"),
+    (0x00523354, "3d59010000", "Gearbox tag dispatch compares the tag ID in EAX with 0x159 (TRANSMISSION_TYPE)"),
+    (0x00523364, "ba3c745900", "TRANSMISSION_TYPE passes the enum word table at 0x0059743c in EDX to the enum reader"),
+    (0x0052336b, "e8b0b4f0ff", "TRANSMISSION_TYPE calls the enum reader at 0x0042e820"),
+    (0x00523370, "894724", "TRANSMISSION_TYPE stores the enum reader's result (EAX) at record (EDI) + 0x24"),
+    (0x00523378, "83f876", "Gearbox tag dispatch compares the tag ID in EAX with 0x76 (DRIVE_SPLIT)"),
+    (0x00523383, "e8f8b2f0ff", "DRIVE_SPLIT calls the float reader at 0x0042e680"),
+    (0x00523388, "d95f20", "DRIVE_SPLIT float store (fstp) at record (EDI) + 0x20"),
+    (0x00523390, "7f1a", "ANTI_WHEELSKID is selected when this jg, reached from the jge after cmp eax, 0xe at 0x0052328e, does not jump: the tag ID equals 0xe"),
+    (0x00523394, "e8e7b2f0ff", "ANTI_WHEELSKID calls the float reader at 0x0042e680"),
+    (0x00523399, "e85c1f0100", "ANTI_WHEELSKID calls 0x005352fa on the value read"),
+    (0x0052339e, "db5de8", "ANTI_WHEELSKID converts the result to an integer (fistp) in the stack temporary at EBP - 0x18"),
+    (0x005233a1, "8a45e8", "ANTI_WHEELSKID loads that integer's low byte from EBP - 0x18 into AL"),
+    (0x005233a4, "884731", "ANTI_WHEELSKID stores that low byte (AL) at record (EDI) + 0x31"),
+    (0x005233ac, "83f80f", "Gearbox tag dispatch compares the tag ID in EAX with 0xf (ANTI_WHEELSPIN)"),
+    (0x005233b3, "e8c8b2f0ff", "ANTI_WHEELSPIN calls the float reader at 0x0042e680"),
+    (0x005233b8, "e83d1f0100", "ANTI_WHEELSPIN calls 0x005352fa on the value read"),
+    (0x005233bd, "db5de8", "ANTI_WHEELSPIN converts the result to an integer (fistp) in the stack temporary at EBP - 0x18"),
+    (0x005233c0, "8a45e8", "ANTI_WHEELSPIN loads that integer's low byte from EBP - 0x18 into AL"),
+    (0x005233c3, "884730", "ANTI_WHEELSPIN stores that low byte (AL) at record (EDI) + 0x30"),
+    (0x005233cb, "83f85e", "Gearbox tag dispatch compares the tag ID in EAX with 0x5e (CLUTCH_MAX_POWER)"),
+    (0x005233d6, "e8a5b2f0ff", "CLUTCH_MAX_POWER calls the float reader at 0x0042e680"),
+    (0x005233db, "d95f18", "CLUTCH_MAX_POWER float store (fstp) at record (EDI) + 0x18"),
+    (0x005233fe, "89c7", "The gearbox record-creating branch keeps the record node returned by 0x0042eed0 in EDI"),
+    (0x00523405, "bb14000000", "The gearbox record-creating branch passes the name size EBX = 0x14 to the string reader"),
+    (0x0052340a, "83c720", "The gearbox record-creating branch advances EDI by 0x20 past the node header to the payload"),
+    (0x0052340f, "89fa", "The gearbox record-creating branch passes the payload (EDI) in EDX, so the name is read into + 0x00..+ 0x13"),
+    (0x00523411, "e8aab3f0ff", "The gearbox record-creating branch calls the string reader at 0x0042e7c0"),
+    (0x00523470, "53", "Gearbox copy saves EBX"),
+    (0x00523471, "51", "Gearbox copy saves ECX"),
+    (0x00523472, "8b4a1c", "Gearbox copy loads the INHERIT_TYPE parent (EDX) dword + 0x1c into ECX"),
+    (0x00523475, "89481c", "Gearbox copy stores that dword (ECX) at record (EAX) + 0x1c"),
+    (0x00523478, "8b4a14", "Gearbox copy loads the INHERIT_TYPE parent (EDX) dword + 0x14 into ECX"),
+    (0x0052347b, "894814", "Gearbox copy stores that dword (ECX) at record (EAX) + 0x14"),
+    (0x0052347e, "8b4a18", "Gearbox copy loads the INHERIT_TYPE parent (EDX) dword + 0x18 into ECX"),
+    (0x00523481, "894818", "Gearbox copy stores that dword (ECX) at record (EAX) + 0x18"),
+    (0x00523484, "8b4a20", "Gearbox copy loads the INHERIT_TYPE parent (EDX) dword + 0x20 into ECX"),
+    (0x00523487, "894820", "Gearbox copy stores that dword (ECX) at record (EAX) + 0x20"),
+    (0x0052348a, "8b4a24", "Gearbox copy loads the INHERIT_TYPE parent (EDX) dword + 0x24 into ECX"),
+    (0x0052348d, "894824", "Gearbox copy stores that dword (ECX) at record (EAX) + 0x24"),
+    (0x00523490, "8b4a28", "Gearbox copy loads the INHERIT_TYPE parent (EDX) dword + 0x28 into ECX"),
+    (0x00523493, "894828", "Gearbox copy stores that dword (ECX) at record (EAX) + 0x28"),
+    (0x00523496, "8b4a2c", "Gearbox copy loads the INHERIT_TYPE parent (EDX) dword + 0x2c into ECX"),
+    (0x00523499, "89482c", "Gearbox copy stores that dword (ECX) at record (EAX) + 0x2c"),
+    (0x0052349c, "8a5a30", "Gearbox copy loads the INHERIT_TYPE parent (EDX) byte + 0x30 into BL"),
+    (0x0052349f, "885830", "Gearbox copy stores that byte (BL) at record (EAX) + 0x30"),
+    (0x005234a2, "8a5231", "Gearbox copy loads the INHERIT_TYPE parent (EDX) byte + 0x31 into DL"),
+    (0x005234a5, "885031", "Gearbox copy stores that byte (DL) at record (EAX) + 0x31"),
+    (0x005234a8, "59", "Gearbox copy restores ECX"),
+    (0x005234a9, "5b", "Gearbox copy restores EBX"),
+    (0x005234aa, "c3", "Gearbox copy returns after its last store at + 0x31"),
     (0x00523834, "ba58000000", "Tyre payload allocation size: EDX = 0x58"),
     (0x00523900, "d95028", "RADIUS store at payload + 0x28"),
     (0x00523907, "d9583c", "Reciprocal radius store at payload + 0x3c"),
@@ -95,30 +305,38 @@ EVIDENCE = [
 ]
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("executable", type=Path)
-    parser.add_argument("output", type=Path)
-    args = parser.parse_args()
-    data = verified_exe(args.executable)
+def export_selected(data, output):
+    """Write the bounded disassembly and field-evidence.json for the verified executable bytes into output.
+
+    Returns the number of exported spans and the verified evidence list.
+    """
     pe = pefile.PE(data=data)
     decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
-    args.output.mkdir(parents=True, exist_ok=True)
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=True)
     for start, end, name in ROUTINES:
         raw = read_va(pe, data, start, end - start)
         text = f"; Analyst label: {name}; export span 0x{start:08x}..0x{end:08x}\n"
         text += "; Linear decoding may include padding or neighboring code. Check branch targets and function-based Ghidra output.\n"
         text += "\n".join(f"{i.address:08x} {i.bytes.hex():<24} {i.mnemonic} {i.op_str}" for i in decoder.disasm(raw, start))
-        (args.output / f"{name}.asm").write_text(text + "\n")
+        (output / f"{name}.asm").write_text(text + "\n")
     evidence = []
     for va, expected, claim in EVIDENCE:
         raw = read_va(pe, data, va, len(bytes.fromhex(expected)))
         if raw.hex() != expected:
             raise ValueError(f"Instruction mismatch at 0x{va:08x}")
         evidence.append({"va": va, "bytes": expected, "claim": claim})
-    (args.output / "field-evidence.json").write_text(json.dumps(evidence, indent=2) + "\n")
-    print(f"Exported {len(ROUTINES)} spans and verified {len(evidence)} instruction sites")
+    (output / "field-evidence.json").write_text(json.dumps(evidence, indent=2) + "\n")
+    return len(ROUTINES), evidence
 
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("executable", type=Path)
+    parser.add_argument("output", type=Path)
+    args = parser.parse_args()
+    spans, evidence = export_selected(verified_exe(args.executable), args.output)
+    print(f"Exported {spans} spans and verified {len(evidence)} instruction sites")
 
 if __name__ == "__main__":
     main()

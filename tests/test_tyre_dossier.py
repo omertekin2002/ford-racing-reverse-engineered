@@ -305,7 +305,7 @@ class DossierPageTests(DossierTestCase):
     def test_repository_links_resolve_from_the_output(self):
         page = self.build()
         targets = {target for target in re.findall(r'href="([^"#][^"]*)"', page)
-                   if not target.startswith("routines.html#")} - {"engines.html", "gearboxes.html", "pcg.html",
+                   if not target.startswith("routines.html#")} - {"engines.html", "gearboxes.html", "compare.html", "pcg.html",
                                                                    "routines.html", "questions.html",
                                                                    "questions.html#sound-words", *NOTICE_LINKS}
         self.assertEqual({Path(os.path.normpath(self.output.parent / target)) for target in targets},
@@ -313,7 +313,7 @@ class DossierPageTests(DossierTestCase):
         self.assertIn('evidence.json</a>).</p>', page)
 
     def test_nav_bar_links_the_sibling_dossiers(self):
-        self.assertIn('<nav>Research: <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | '
+        self.assertIn('<nav>Research: <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | <a href="compare.html">Compare records</a> | '
                       '<strong>Tyres</strong> | <a href="pcg.html">PCG catalogue</a> | <a href="routines.html">Routines</a> | '
                       '<a href="questions.html">Open questions</a></nav>', self.build())
 
