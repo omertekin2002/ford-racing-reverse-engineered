@@ -1,13 +1,15 @@
 """Generate the offline "Compare records" research page, compare.html.
 
-Its first section compares the demo's gearboxes field by field. Inputs, all produced elsewhere and only read here:
-  * gearboxes.json from scripts/text_database.py: `records`, plus the GEARDATA.DAT path and SHA-256.
-  * GEARDATA.DAT itself, under the extracted game directory, whose SHA-256 must match gearboxes.json. The page
-    shows each value exactly as written there (0.2 and 0.20 stay distinct), which the parsed numbers in
-    gearboxes.json no longer record; each written token must parse to the value gearboxes.json holds.
+It compares the demo's gearboxes, then its engines, field by field. Inputs, all produced elsewhere and only read here:
+  * gearboxes.json and engines.json from scripts/text_database.py: `records`, plus the GEARDATA.DAT or ENGDATA.DAT
+    path and SHA-256, and, for engines, `effective_fields` and `untagged_inherit_consequences`.
+  * GEARDATA.DAT and ENGDATA.DAT themselves, under the extracted game directory, whose SHA-256s must match the JSON.
+    The page shows each value exactly as written there (0.2 and 0.20 stay distinct), which the parsed numbers in the
+    JSON no longer record; each written token must parse to the value the JSON holds.
   * analysis/pe-metadata.json: the executable's identity.
+  * analysis/game-file-manifest.json, whose ENGDATA.DAT SHA-256 says whether ENGDATA.DAT is the demo's.
 
-The page has two tables:
+The gearbox section has two tables:
   * The matrix: one row per gearbox in GEARDATA.DAT order, one column per tag in GEARBOX_FIELD_STORES in payload
     offset order (+0x14 to +0x31). Each cell shows the declared value as written and links to that declaration's
     row on gearboxes.html (gearbox-<name>-line-<n>); each column header shows the tag's offset, width and how it is
@@ -18,39 +20,93 @@ The page has two tables:
     1 and 1.0 are one value, with each written form shown; enum tags are grouped by the exact word. A tag with one
     value is labelled "same in all <n>".
 
-Values are not interpreted: no units, enum meanings or physics, and the integer the loader stores the low byte of
-for ANTI_WHEELSPIN and ANTI_WHEELSKID is not computed. Declared values are the stored values only because no
+Gearbox values are not interpreted: no units, enum meanings or physics, and the integer the loader stores the low
+byte of for ANTI_WHEELSPIN and ANTI_WHEELSKID is not computed. Declared values are the stored values only because no
 gearbox inherits, so the script refuses to write the page, and exits non-zero, when a gearbox
   * lacks one of the mapped tags or declares a tag that is not mapped,
   * declares :INHERIT_TYPE (gearbox inheritance is not resolved, and would make declared differ from stored),
   * has an untagged line (whether the game honours it is not established),
   * declares a mapped tag with rows or more than one value, or
-  * declares a float tag with a value that is not a number,
-and when GEARDATA.DAT does not match gearboxes.json, or an input is missing or malformed as record_dossier.py
-checks it. The page has inline CSS, no JavaScript and no external resources other than the rights-holder notice's
-two links. It links gearboxes.html, so it belongs beside the engine and gearbox pages.
+  * declares a float tag with a value that is not a number.
+
+The engine section shows each engine's effective values, the declarations the loader ends up storing once
+:INHERIT_TYPE has copied the parent's fields, as engines.json's `effective_fields` resolve them (a root's are its own
+declarations). It has two tables:
+  * The matrix: one row per engine in ENGDATA.DAT order, one column per tag in ENGINE_FIELD_STORES in payload offset
+    order. Each column header links to its row in the engine page's "Where each field is stored" table
+    (engine-store-<TAG>). Each cell shows the effective value as written on its source line, linked to that
+    declaration's row (engine-<source>-line-<n>), marked declared or inherited from <source>, with the INHERIT_TYPE
+    path when it is longer than one step. A TORQUE_ARRAY cell shows no values: it gives the source record and line,
+    the row count and the MAX_RPM declaration the table was parsed with, and links the engine's effective
+    TORQUE_ARRAY row (engine-<name>-torque-array; a root, which has none, links only the declaration).
+  * What differs: per tag, the distinct effective values and the engines that hold each. Numbers are grouped by the
+    parsed number, enum words by the exact word and torque tables by source record and line; zero-filled cells are
+    listed apart. It counts how the inheriting engines get each field (declared, inherited or zero-filled, as
+    engines.json resolves it); when ENGDATA.DAT is the demo's by the game-file manifest, those counts must equal
+    ENGINE_FIELD_COUNTS.
+A root's colon-less `INHERIT_TYPE <record>` line (the demo's INDIGO) is not applied. Every cell whose value depends on
+it, because the root does not declare the tag or declares it before the line, and every engine whose effective
+origin for a tag runs through such a cell, is labelled unresolved with no value, never zero; for INDIGO's line it
+links questions.html#indigo. Such cells are counted apart in What differs. Engine values are not interpreted either:
+no units, enum meanings or physics, no value for the derived +0x2c and +0xa4, and TORQUE_MODIFIER is not applied to
+the table. The script refuses to write the page when ENGDATA.DAT does not match engines.json, when an engine
+  * declares a tag with no byte-checked store,
+  * declares :INHERIT_TYPE but has no effective_fields, or a declaration before it that the copy overwrites,
+  * has an untagged line other than a root's colon-less INHERIT_TYPE line,
+  * declares a mapped tag that is not one inline value (TORQUE_ARRAY: not a block of rows), or a number tag with a
+    value that is not a number, or whose written token does not parse to the value engines.json holds,
+when effective_fields or untagged_inherit_consequences differ from what text_database.py derives, and when the
+inheriting engines' counts differ from ENGINE_FIELD_COUNTS as above.
+
+It also refuses when an input is missing or malformed as record_dossier.py checks it. The page has inline CSS, no
+JavaScript and no external resources other than the rights-holder notice's two links. It links gearboxes.html,
+engines.html and questions.html, so it belongs beside them.
 """
 import argparse
 import hashlib
 from pathlib import Path
 
-from dossier_common import STYLE, anchor, check_pe, e, line_anchor, load_json, page_start, producer_revision
-from record_dossier import DATABASES, check_records, gearbox_tags, store_anchor
-from text_database import GEARBOX_FIELD_STORES, REPO_ROOT, lines_of, require, value
+from dossier_common import (INDIGO_ANCHOR, QUESTIONS_PAGE, STYLE, anchor, check_fields, check_pe, e, is_indigo_line,
+                            line_anchor, load_json, page_start, producer_revision)
+from record_dossier import (DATABASES, TORQUE, check_engine_fields, check_records, engine_store_anchor, engine_tags,
+                            gearbox_tags, store_anchor)
+from text_database import (ENGINE_FIELD_COUNTS, ENGINE_FIELD_STORES, GEARBOX_FIELD_STORES, REPO_ROOT, ZERO_FILLED,
+                           described, engine_field_counts, lines_of, own_origin, require, value, zero_origin)
 
 PAGE = "compare.html"
 GEARBOX_PAGE = DATABASES["gearboxes"]["page"]
+ENGINE_PAGE = DATABASES["engines"]["page"]
+# The committed list of the demo's game files and their SHA-256s; it identifies the demo's ENGDATA.DAT, whose
+# effective field counts ENGINE_FIELD_COUNTS records.
+GAME_MANIFEST = REPO_ROOT / "analysis/game-file-manifest.json"
+UNRESOLVED = "unresolved"
 DEFAULT_GAME = REPO_ROOT / "inputs/extracted/Program_Executable_Files"
 FLOAT_KINDS = frozenset({"float", "float_to_byte"})
 READ_TEXT = {"float": "float", "enum": "enum word", "float_to_byte": "float stored as an integer's low byte"}
+# Only the matrices scroll sideways, inside .wide: elsewhere long words (the SHA-256s, record names in lists) may break,
+# and narrow screens get tighter padding, so that the page fits a phone's width. The engine matrix's cells wrap their
+# provenance notes.
 EXTRA_STYLE = (".wide { overflow-x: auto; }\ntable.matrix td { white-space: nowrap; }\n"
-               "table.matrix th small { font-weight: normal; }\n")
+               "table.matrix th small { font-weight: normal; }\n"
+               "dd code, table:not(.matrix) li { overflow-wrap: anywhere; }\n"
+               "table.matrix.engines td { white-space: normal; min-width: 9em; }\n"
+               "@media (max-width: 40em) { body { padding: 0 0.5em; } th, td { padding: 0.2em 0.3em; } "
+               "td ul { padding-left: 1.2em; } }\n")
 SCOPE = ('Scope: values are shown exactly as declared in <code>GEARDATA.DAT</code>, and linked to their declaration '
          "rows on the gearbox page. This page claims no units, no meaning for the enum words and no physics. For "
          "<code>ANTI_WHEELSPIN</code> and <code>ANTI_WHEELSKID</code> the loader converts the float to an integer "
          "and stores that integer's low byte; this page does not compute it. No demo gearbox declares "
          "<code>:INHERIT_TYPE</code>, so the declared values are the values the loader stores from the file, and "
          "nothing is inherited.")
+ENGINE_SCOPE = ("Scope: each engine's values are its effective ones, the declarations the loader ends up storing once "
+                "each <code>:INHERIT_TYPE</code> has copied the parent's fields over the record, as "
+                "<code>scripts/text_database.py</code> resolves them. Each is shown exactly as written in "
+                "<code>ENGDATA.DAT</code> on the line that declares it, and linked to that line's row on the engine "
+                "page. This page claims no units, no meaning for the enum words and no physics. It computes no value "
+                "for the derived <code>+ 0x2c</code> and <code>+ 0xa4</code>, and does not apply "
+                "<code>TORQUE_MODIFIER</code> to the torque table. A root's colon-less <code>INHERIT_TYPE</code> line, "
+                "such as <code>INDIGO</code>'s, is not applied: every field that depends on whether the game honours "
+                "it is labelled unresolved and given no value, never zero.")
 
 
 def is_float(tag):
@@ -169,8 +225,348 @@ def differences_table(gearboxes):
             f'gearboxes</th></tr>{"".join(rows)}</table>')
 
 
-def render(database, gearboxes, pe, revision, entrance=False):
-    """Return the page. check_gearboxes() must have accepted the inputs and returned `gearboxes`."""
+def is_enum(tag):
+    """True for an engine tag read as an enum word (LOCATION_TYPE, ASPIRATION_TYPE); the others hold numbers."""
+    return "enum_table" in ENGINE_FIELD_STORES[tag]
+
+
+def demo_engine_counts(database, manifest_path=GAME_MANIFEST):
+    """ENGINE_FIELD_COUNTS when engines.json was parsed from the demo's ENGDATA.DAT, by the SHA-256 the committed
+    game-file manifest records for its path; None for any other file, whose counts nothing records."""
+    manifest = load_json(manifest_path, "Game file manifest (analysis/game-file-manifest.json)")
+    require(isinstance(manifest, list), "game-file-manifest.json must be a list")
+    recorded = {item.get("path"): item.get("sha256") for item in manifest if isinstance(item, dict)}
+    return ENGINE_FIELD_COUNTS if recorded.get(database["source"]) == database["sha256"] else None
+
+
+def written_value(database, where, tag, field, lines):
+    """Check one mapped declaration against its line in ENGDATA.DAT; return the value token as written.
+
+    TORQUE_ARRAY must be a block of rows under a bare `:TORQUE_ARRAY` line, and returns None: its rows are not
+    shown on this page. Every other mapped tag must be one inline value, a number unless the tag reads an enum word,
+    and its written token must parse to the value engines.json holds.
+    """
+    line = field["line"]
+    tokens = lines.get(line, [])
+    if tag == TORQUE:
+        require(field["rows"] and not field["values"], f"{where}: :{tag} on line {line} is not a block of rows")
+        require(tokens == [f":{tag}"], f"{where}: line {line} of {database['source']} is not ':{tag}' (rerun "
+                "scripts/text_database.py)")
+        return None
+    require(not field["rows"] and len(field["values"]) == 1, f"{where}: :{tag} on line {line} is not a single inline value")
+    declared = field["values"][0]
+    require(is_enum(tag) or isinstance(declared, (int, float)),
+            f"{where}: :{tag} on line {line} reads no enum word, but {declared!r} is not a number")
+    require(len(tokens) == 2 and tokens[0] == f":{tag}",
+            f"{where}: line {line} of {database['source']} is not ':{tag} <value>' (rerun scripts/text_database.py)")
+    parsed = value(tokens[1], line)
+    require(type(parsed) is type(declared) and parsed == declared,
+            f"{where}: line {line} of {database['source']} declares {tokens[1]!r}, but engines.json holds "
+            f"{declared!r} (rerun scripts/text_database.py)")
+    return tokens[1]
+
+
+def root_fields(record):
+    """A root engine's mapped fields, shaped like engines.json's effective entries: its own declaration, or the
+    zero fill. Its TORQUE_ARRAY's `max_rpm` is its own MAX_RPM when declared before the table, else the zero fill."""
+    name, fields = record["type"], record["fields"]
+    result = {}
+    for tag in ENGINE_FIELD_STORES:
+        field = fields.get(tag)
+        if field is None:
+            result[tag] = described(zero_origin(name))
+            continue
+        result[tag] = described(own_origin(name, tag, field), ("values", "source", "source_line"))
+        if tag == TORQUE:
+            result[tag]["rows"] = field["rows"]
+            rpm = fields.get("MAX_RPM")
+            result[tag]["max_rpm"] = described(own_origin(name, "MAX_RPM", rpm) if rpm and rpm["line"] < field["line"]
+                                               else zero_origin(name))
+    return result
+
+
+def unresolved_root(origin, tag, consequences):
+    """The root whose colon-less INHERIT_TYPE line `origin` depends on, or None.
+
+    An origin ends its path at the record its value comes from. When that is a root with such a line, the value
+    depends on the line if the root does not declare the tag (zero-filled as parsed, the parent's if applied) or
+    declares it before the line (overwritten if applied).
+    """
+    root = origin["path"][-1]
+    consequence = consequences.get(root)
+    if consequence is None:
+        return None
+    overwritten = {item["tag"] for item in consequence["overwritten_if_applied"]}
+    return root if origin["status"] == ZERO_FILLED or tag in overwritten else None
+
+
+def unresolved_cell(root, consequences):
+    consequence = consequences[root]
+    return {"status": UNRESOLVED, "root": root, "root_line": consequence["line"],
+            "question": is_indigo_line({"type": root}, consequence)}
+
+
+def engine_cell(tag, field, written, consequences):
+    """One matrix cell from an effective (or root) field: its status, provenance and value as written."""
+    root = unresolved_root(field, tag, consequences)
+    if root is not None:
+        return {**unresolved_cell(root, consequences), "effective_status": field["status"]}
+    cell = {"status": field["status"], "effective_status": field["status"], "path": field["path"]}
+    if field["status"] == ZERO_FILLED:
+        return cell
+    cell.update(source=field["source"], source_line=field["source_line"])
+    if tag == TORQUE:
+        rpm = field["max_rpm"]
+        rpm_root = unresolved_root(rpm, "MAX_RPM", consequences)
+        cell.update(rows=len(field["rows"]), max_rpm=unresolved_cell(rpm_root, consequences) if rpm_root else rpm)
+    else:
+        cell.update(written=written[field["source"], tag], value=field["values"][0])
+    return cell
+
+
+def check_engines(database, data, expected_counts=None):
+    """Check engines.json against ENGDATA.DAT's bytes; return its engines for the page, in file order.
+
+    Each is {"name", "line", "root", "cells": {tag: cell}}, with a cell for every mapped tag. expected_counts, when
+    given, must equal the per-tag status counts of the inheriting engines' effective fields.
+    """
+    check_records(database, "engines.json")
+    require(hashlib.sha256(data).hexdigest() == database["sha256"],
+            f"{database['source']} does not match engines.json's SHA-256 (rerun scripts/text_database.py)")
+    check_fields(database, {"effective_fields": dict, "untagged_inherit_consequences": dict}, "engines.json")
+    records, effective = database["records"], database["effective_fields"]
+    consequences = database["untagged_inherit_consequences"]
+    for record in records:
+        name, fields = record["type"], record["fields"]
+        where = f"engine {name!r} (line {record['line']})"
+        unmapped = sorted(set(fields) - set(ENGINE_FIELD_STORES) - {"INHERIT_TYPE"})
+        require(not unmapped, f"{where} declares tags with no byte-checked store: " + ", ".join(unmapped))
+        require("INHERIT_TYPE" not in fields or name in effective,
+                f"{where} declares :INHERIT_TYPE, but engines.json gives it no effective_fields (rerun "
+                "scripts/text_database.py)")
+    check_engine_fields(database)
+    lines = dict(lines_of(data))
+    written = {}
+    for record in records:
+        name = record["type"]
+        where = f"engine {name!r} (line {record['line']})"
+        allowed = {consequences[name]["line"]} if name in consequences else set()
+        stray = [str(item["line"]) for item in record.get("untagged", []) if item["line"] not in allowed]
+        require(not stray, f"{where} has untagged lines ({', '.join(stray)}) other than a root's colon-less "
+                           "INHERIT_TYPE line; whether the game honours them is not established")
+        overwritten = effective[name]["overwritten"] if name in effective else []
+        require(not overwritten, f"{where} declares " + ", ".join(f":{item['tag']} (line {item['line']})"
+                                                                  for item in overwritten)
+                + " before its :INHERIT_TYPE, which overwrites them; this page shows no overwritten declaration")
+        for tag, field in record["fields"].items():
+            if tag != "INHERIT_TYPE":
+                written[name, tag] = written_value(database, where, tag, field, lines)
+    counts = engine_field_counts(effective)
+    if expected_counts is not None:
+        differ = [f"{tag} {counts.get(tag, {})}, not {expected}" for tag, expected in expected_counts.items()
+                  if counts.get(tag) != expected]
+        differ += [f"{tag} {counts[tag]}, not recorded" for tag in counts if tag not in expected_counts]
+        require(not differ, "The inheriting engines' effective field counts differ from ENGINE_FIELD_COUNTS: "
+                + "; ".join(differ))
+    engines = []
+    for record in records:
+        name = record["type"]
+        fields = effective[name]["fields"] if name in effective else root_fields(record)
+        engines.append({"name": name, "line": record["line"], "root": name not in effective,
+                        "cells": {tag: engine_cell(tag, fields[tag], written, consequences) for tag in engine_tags()}})
+    return engines
+
+
+def engine_differences(engines):
+    """Per mapped tag, in offset order: {"groups", "zero_filled", "unresolved"}.
+
+    Each group is {"forms", "engines"} for a value, or {"source", "source_line", "engines"} for a torque table.
+    Numbers are grouped by the parsed number, enum words by the exact word, torque tables by the record and line
+    that declare them; groups are in value order (torque tables in file order). Zero-filled and unresolved cells
+    have no value and are listed apart. Engine lists are in file order.
+    """
+    order = {engine["name"]: i for i, engine in enumerate(engines)}
+    result = {}
+    for tag in engine_tags():
+        groups, zero, unresolved = {}, [], []
+        for engine in engines:
+            cell = engine["cells"][tag]
+            if cell["status"] in (UNRESOLVED, ZERO_FILLED):
+                (unresolved if cell["status"] == UNRESOLVED else zero).append(engine["name"])
+                continue
+            if tag == TORQUE:
+                key = (order[cell["source"]], cell["source_line"])
+                group = groups.setdefault(key, {"source": cell["source"], "source_line": cell["source_line"],
+                                                "engines": []})
+            else:
+                key = cell["written"] if is_enum(tag) else float(cell["value"])
+                group = groups.setdefault(key, {"forms": [], "engines": []})
+                if cell["written"] not in group["forms"]:
+                    group["forms"].append(cell["written"])
+            group["engines"].append(engine["name"])
+        result[tag] = {"groups": [groups[key] for key in sorted(groups)], "zero_filled": zero,
+                       "unresolved": unresolved}
+    return result
+
+
+def engine_row_anchor(name):
+    return anchor("compare-engine", name)
+
+
+def engine_line_link(name, line, text=None):
+    return (f'<a href="{e(ENGINE_PAGE)}#{e(line_anchor("engine", name, line))}" title="{e(name)} line {e(line)}">'
+            f'{e(text if text is not None else f"{name} line {line}")}</a>')
+
+
+def unresolved_html(cell):
+    """An unresolved value: the label, linked to the open question for INDIGO's line, and the line it depends on."""
+    label = '<span class="label">unresolved</span>'
+    if cell["question"]:
+        label = f'<a href="{e(QUESTIONS_PAGE)}#{e(INDIGO_ANCHOR)}">{label}</a>'
+    return f'{label}<br><small>no value; depends on {engine_line_link(cell["root"], cell["root_line"])}</small>'
+
+
+def provenance_html(cell):
+    """Declared, or inherited from the source record, with the INHERIT_TYPE path when it has more than one step."""
+    if cell["status"] == "declared":
+        return "declared"
+    text = f'inherited from <a href="#{e(engine_row_anchor(cell["source"]))}">{e(cell["source"])}</a>'
+    if len(cell["path"]) > 2:
+        text += ", path " + " &rarr; ".join(e(hop) for hop in cell["path"])
+    return text
+
+
+def max_rpm_html(rpm):
+    """The MAX_RPM a torque table was parsed with: its declaration, the zero fill, or unresolved."""
+    if rpm["status"] == UNRESOLVED:
+        label = '<span class="label">unresolved</span>'
+        if rpm["question"]:
+            label = f'<a href="{e(QUESTIONS_PAGE)}#{e(INDIGO_ANCHOR)}">{label}</a>'
+        return f'{label} (depends on {engine_line_link(rpm["root"], rpm["root_line"])})'
+    if rpm["status"] == ZERO_FILLED:
+        return '<span class="label">zero-filled</span>'
+    return engine_line_link(rpm["source"], rpm["source_line"])
+
+
+def engine_cell_html(engine, tag, cell):
+    """One matrix cell. A root's TORQUE_ARRAY links only its declaration row: the engine page gives only inheriting
+    engines an effective TORQUE_ARRAY row."""
+    if cell["status"] == UNRESOLVED:
+        return f"<td>{unresolved_html(cell)}</td>"
+    if cell["status"] == ZERO_FILLED:
+        path = (", path " + " &rarr; ".join(e(hop) for hop in cell["path"])) if len(cell["path"]) > 1 else ""
+        return f'<td><span class="label">zero-filled</span><br><small>no value{path}</small></td>'
+    if tag == TORQUE:
+        rows = f'{cell["rows"]} row{"" if cell["rows"] == 1 else "s"}'
+        if not engine["root"]:
+            rows = f'<a href="{e(ENGINE_PAGE)}#{e(anchor("engine", engine["name"], "torque-array"))}">{rows}</a>'
+        return (f'<td>{engine_line_link(cell["source"], cell["source_line"])}, {rows}<br><small>'
+                f'{provenance_html(cell)}; parsed with <code>MAX_RPM</code> {max_rpm_html(cell["max_rpm"])}'
+                "</small></td>")
+    return (f'<td><span class="num">{engine_line_link(cell["source"], cell["source_line"], cell["written"])}</span>'
+            f"<br><small>{provenance_html(cell)}</small></td>")
+
+
+def engine_column_header(tag):
+    stored = [(offset, store) for offset, store in ENGINE_FIELD_STORES[tag]["offsets"].items() if not store.get("derived")]
+    where = ", ".join(f'<code>+ {e(offset)}</code>, {e(store["width"])}'
+                      + (f' &times; {e(store["slots"])}' if "slots" in store else "") for offset, store in stored)
+    kind = "rows" if tag == TORQUE else ("enum word" if is_enum(tag) else "number")
+    return (f'<th><a href="{e(ENGINE_PAGE)}#{e(engine_store_anchor(tag))}"><code>{e(tag)}</code></a><br>'
+            f"<small>{where}<br>{kind}</small></th>")
+
+
+def engine_matrix(engines):
+    header = "<tr><th>Engine</th>" + "".join(engine_column_header(tag) for tag in engine_tags()) + "</tr>"
+    rows = []
+    for engine in engines:
+        name = engine["name"]
+        cells = "".join(engine_cell_html(engine, tag, engine["cells"][tag]) for tag in engine_tags())
+        kind = "root" if engine["root"] else "inherits"
+        rows.append(f'<tr id="{e(engine_row_anchor(name))}"><td><a href="{e(ENGINE_PAGE)}#{e(anchor("engine", name))}">'
+                    f"{e(name)}</a><br><small>{kind}</small></td>{cells}</tr>")
+    return f'<div class="wide"><table class="matrix engines">{header}{"".join(rows)}</table></div>'
+
+
+def engine_links(names):
+    return ", ".join(f'<a href="#{e(engine_row_anchor(name))}">{e(name)}</a>' for name in names)
+
+
+def engine_differences_table(engines):
+    total = len(engines)
+    inheriting = [engine for engine in engines if not engine["root"]]
+    rows = []
+    for tag, entry in engine_differences(engines).items():
+        groups = entry["groups"]
+        if tag == TORQUE:
+            kind = "by record and line"
+            shown = [f'{engine_line_link(group["source"], group["source_line"])} ({len(group["engines"])}): '
+                     f'{engine_links(group["engines"])}' for group in groups]
+        else:
+            kind = "by word" if is_enum(tag) else "by number"
+            shown = [", ".join(f"<code>{e(form)}</code>" for form in group["forms"])
+                     + f' ({len(group["engines"])}): {engine_links(group["engines"])}' for group in groups]
+        if entry["zero_filled"]:
+            shown.append(f'<span class="label">zero-filled</span>, no value ({len(entry["zero_filled"])}): '
+                         f'{engine_links(entry["zero_filled"])}')
+        if len(groups) == 1 and not entry["zero_filled"] and not entry["unresolved"]:
+            values = f'<span class="label">same in all {total}</span>: ' + shown[0].split(" (", 1)[0]
+        else:
+            values = "<ul>" + "".join(f"<li>{item}</li>" for item in shown) + "</ul>"
+        statuses = {}
+        for engine in inheriting:
+            status = engine["cells"][tag]["effective_status"]
+            statuses[status] = statuses.get(status, 0) + 1
+        counts = ", ".join(f'{count} {"zero-filled" if status == ZERO_FILLED else status}'
+                           for status, count in sorted(statuses.items(), key=lambda item: ("declared", "inherited",
+                                                                                           ZERO_FILLED).index(item[0])))
+        unresolved = (f'{len(entry["unresolved"])}: {engine_links(entry["unresolved"])}' if entry["unresolved"]
+                      else "0")
+        # A long tag may break after an underscore, so that the table fits a phone's width.
+        rows.append(f'<tr id="{e(anchor("differs-engine", tag))}"><td><code>{e(tag).replace("_", "_<wbr>")}</code></td>'
+                    f"<td>{len(groups)}, {kind}</td><td>{values}</td><td>{len(inheriting)} inheriting, as parsed: {counts}"
+                    f"<br>unresolved: {unresolved}</td></tr>")
+    return ("<table><tr><th>Tag</th><th>Distinct values</th><th>Values as written (engine count): engines</th>"
+            f'<th>Counts</th></tr>{"".join(rows)}</table>')
+
+
+def engines_section(engines, counts_checked):
+    total = len(engines)
+    inheriting = sum(not engine["root"] for engine in engines)
+    if counts_checked:
+        check = ("For the demo's <code>ENGDATA.DAT</code> these declared and inherited counts are the ones "
+                 "<code>scripts/text_database.py</code> records in <code>ENGINE_FIELD_COUNTS</code>; the page is not "
+                 "written when they differ.")
+    else:
+        check = ("This <code>ENGDATA.DAT</code> is not the demo's, so these counts are not checked against "
+                 "<code>ENGINE_FIELD_COUNTS</code>.")
+    return "\n".join([
+        '<h2 id="engines">Engines</h2>',
+        f'<p class="scope">{ENGINE_SCOPE}</p>',
+        f'<h3 id="engine-matrix">Every engine, field by field</h3><p>One row per engine, in <code>ENGDATA.DAT</code> '
+        f"order: {total - inheriting} roots, which declare their own values, and {inheriting} engines that inherit. "
+        "One column per field the loader stores, in payload offset order. Each value is the effective one, as "
+        f'written on the line that declares it and linked to that line\'s row on <a href="{e(ENGINE_PAGE)}">the engine '
+        "page</a>; it is marked declared (the engine's own line) or inherited from the record that declares it, with "
+        "the <code>INHERIT_TYPE</code> path when that is more than one step. A <code>TORQUE_ARRAY</code> cell gives the "
+        "record and line that declare the table, its row count and the <code>MAX_RPM</code> declaration it was parsed "
+        "with, and links the engine's effective <code>TORQUE_ARRAY</code> row. Each column header links to that "
+        "field's row in the engine page's \"Where each field is stored\" table, with the byte-checked compare and "
+        "store sites.</p>",
+        engine_matrix(engines),
+        f'<h3 id="engine-differences">What differs</h3><p>For each field, how many distinct effective values the {total} '
+        "engines hold, and which engines hold each. Numbers are grouped by the number, so two spellings of one number "
+        "are one value, with each spelling shown; enum words are grouped exactly as written, and torque tables by the "
+        "record and line that declare them. Unresolved cells have no value and are counted apart, not as zero. The "
+        f"last column counts how the {inheriting} inheriting engines get each field as parsed, with the colon-less "
+        "lines not applied, and then the unresolved cells. "
+        f"{check}</p>",
+        engine_differences_table(engines)])
+
+
+def render(database, gearboxes, pe, revision, entrance=False, engine_database=None, engines=(), counts_checked=False):
+    """Return the page. check_gearboxes() must have accepted the inputs and returned `gearboxes`, and check_engines()
+    `engine_database` and `engines`; counts_checked says whether it checked them against ENGINE_FIELD_COUNTS."""
     total = len(gearboxes)
     fields = len(GEARBOX_FIELD_STORES)
     return "\n".join([
@@ -180,11 +576,15 @@ def render(database, gearboxes, pe, revision, entrance=False):
         f'PE timestamp {e(pe.get("timestamp_header_utc", "unknown"))}</dd>',
         f'<dt>Gearbox database</dt><dd><code>{e(database["source"])}</code> SHA-256 <code>{e(database["sha256"])}'
         "</code></dd>",
+        f'<dt>Engine database</dt><dd><code>{e(engine_database["source"])}</code> SHA-256 '
+        f'<code>{e(engine_database["sha256"])}</code></dd>',
         f"<dt>Producer revision</dt><dd><code>{e(revision)}</code> (<code>scripts/record_compare.py</code>)</dd>",
-        f"<dt>Compared</dt><dd>{total} gearboxes, {fields} fields each</dd></dl>",
+        f"<dt>Compared</dt><dd>{total} gearboxes, {fields} fields each; {len(engines)} engines, "
+        f"{len(ENGINE_FIELD_STORES)} fields each</dd></dl>",
         "<p>This page lines up records of one kind field by field, each value linked to the line that declares it "
-        "and each field to where the loader stores it. Gearboxes come first; engines and tyres are not compared "
+        "and each field to where the loader stores it. Gearboxes and engines are compared; tyres are not compared "
         "yet.</p>",
+        '<p>Jump to: <a href="#gearboxes">Gearboxes</a> | <a href="#engines">Engines</a></p>',
         f'<p class="scope">{SCOPE}</p>',
         '<h2 id="gearboxes">Gearboxes</h2>',
         f'<h3 id="gearbox-matrix">Every gearbox, field by field</h3><p>One row per gearbox, in '
@@ -198,47 +598,65 @@ def render(database, gearboxes, pe, revision, entrance=False):
         "two spellings of one number (such as <code>0.2</code> and <code>0.20</code>) are one value, with each "
         "spelling shown; enum words are grouped exactly as written.</p>",
         differences_table(gearboxes),
+        engines_section(engines, counts_checked),
         "</body></html>\n"])
 
 
-def build(gearboxes_path, game_dir, pe_path, output, revision=None, entrance=False):
-    """Read and check the inputs, then write the page to `output`; return the number of gearboxes compared.
-
-    game_dir is the extracted Program_Executable_Files directory holding the GEARDATA.DAT gearboxes.json was parsed
-    from. entrance=True adds the entrance page to the nav bar, for scripts/build_research.py.
-    """
-    database = load_json(gearboxes_path, "Gearbox database (run scripts/text_database.py first)")
-    pe = load_json(pe_path, "PE metadata")
-    check_pe(pe)
+def game_file(database, label, game_dir):
+    """The bytes of the database file `database` (gearboxes.json or engines.json) was parsed from, under game_dir."""
     require(isinstance(database, dict) and isinstance(database.get("source"), str),
-            "gearboxes.json must be an object with a 'source'")
+            f"{label} must be an object with a 'source'")
     source = Path(game_dir) / database["source"]
     require(source.is_file(), f"{database['source']} not found under {game_dir} (run scripts/acquire_demo.py inputs)")
-    gearboxes = check_gearboxes(database, source.read_bytes())
-    page = render(database, gearboxes, pe, revision or producer_revision(), entrance)
+    return source.read_bytes()
+
+
+def build(gearboxes_path, engines_path, game_dir, pe_path, output, revision=None, entrance=False, engine_counts=None,
+          manifest_path=GAME_MANIFEST):
+    """Read and check the inputs, then write the page to `output`; return the gearbox and engine counts compared.
+
+    game_dir is the extracted Program_Executable_Files directory holding the GEARDATA.DAT and ENGDATA.DAT the JSON
+    files were parsed from. The inheriting engines' effective field counts must equal engine_counts when it is given,
+    else ENGINE_FIELD_COUNTS when ENGDATA.DAT is the demo's by manifest_path's SHA-256. entrance=True adds the
+    entrance page to the nav bar, for scripts/build_research.py.
+    """
+    database = load_json(gearboxes_path, "Gearbox database (run scripts/text_database.py first)")
+    engine_database = load_json(engines_path, "Engine database (run scripts/text_database.py first)")
+    pe = load_json(pe_path, "PE metadata")
+    check_pe(pe)
+    gearboxes = check_gearboxes(database, game_file(database, "gearboxes.json", game_dir))
+    engine_data = game_file(engine_database, "engines.json", game_dir)
+    check_fields(engine_database, {"sha256": str}, "engines.json")
+    expected = engine_counts if engine_counts is not None else demo_engine_counts(engine_database, manifest_path)
+    engines = check_engines(engine_database, engine_data, expected)
+    page = render(database, gearboxes, pe, revision or producer_revision(), entrance, engine_database, engines,
+                  expected is not None)
     Path(output).parent.mkdir(parents=True, exist_ok=True)
     Path(output).write_text(page, encoding="utf-8")
-    return len(gearboxes)
+    return {"compared_gearboxes": len(gearboxes), "compared_engines": len(engines)}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--gearboxes", type=Path, default=DATABASES["gearboxes"]["input"],
                         help="gearboxes.json written by scripts/text_database.py (default: %(default)s)")
+    parser.add_argument("--engines", type=Path, default=DATABASES["engines"]["input"],
+                        help="engines.json written by scripts/text_database.py (default: %(default)s)")
     parser.add_argument("--game", type=Path, default=DEFAULT_GAME,
-                        help="Extracted Program_Executable_Files directory gearboxes.json was parsed from "
-                             "(default: %(default)s)")
+                        help="Extracted Program_Executable_Files directory gearboxes.json and engines.json were "
+                             "parsed from (default: %(default)s)")
     parser.add_argument("--pe", type=Path, default=REPO_ROOT / "analysis/pe-metadata.json",
                         help="fr3.exe identity (default: %(default)s)")
     parser.add_argument("--output", type=Path, default=REPO_ROOT / "artifacts/dossier" / PAGE,
-                        help="HTML file to write, beside gearboxes.html; keep it out of Git, it holds game data "
-                             "(default: %(default)s)")
+                        help="HTML file to write, beside gearboxes.html and engines.html; keep it out of Git, it holds "
+                             "game data (default: %(default)s)")
     args = parser.parse_args()
     try:
-        count = build(args.gearboxes, args.game, args.pe, args.output)
+        counts = build(args.gearboxes, args.engines, args.game, args.pe, args.output)
     except (ValueError, KeyError, TypeError, AttributeError, OSError) as error:
         raise SystemExit(f"record_compare.py: {error}") from None
-    print(f"Compared {count} gearboxes field by field in {args.output}")
+    print(f"Compared {counts['compared_gearboxes']} gearboxes and {counts['compared_engines']} engines field by field "
+          f"in {args.output}")
 
 
 if __name__ == "__main__":

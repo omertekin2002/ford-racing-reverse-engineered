@@ -27,7 +27,7 @@ PAGES = ("index.html", "engines.html", "gearboxes.html", "compare.html", "tyres.
 ASM = tuple(sorted(f"evidence/selected/{path.name}" for path in (REPO_ROOT / "analysis/selected").glob("*.asm")))
 EVIDENCE = ("evidence/annotated/selected.c", "evidence/annotated/status.json", "evidence/pcg-index.json", *ASM,
             "evidence/selected/field-evidence.json", "evidence/unpacked-manifest.json")
-COUNTS = {"engines": 7, "gearboxes": 3, "compared_gearboxes": 3, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
+COUNTS = {"engines": 7, "gearboxes": 3, "compared_gearboxes": 3, "compared_engines": 7, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
           "questions": 3}
 
 
@@ -51,7 +51,7 @@ def write_analysis(root):
     """
     shutil.copytree(REPO_ROOT / "analysis/selected", root / "selected")
     shutil.copytree(REPO_ROOT / "analysis/annotated", root / "annotated")
-    for name in ("pe-metadata.json", "tags.json"):
+    for name in ("pe-metadata.json", "tags.json", "game-file-manifest.json"):
         shutil.copyfile(REPO_ROOT / "analysis" / name, root / name)
     for name, data in (("pcg-index.json", question_pcg_index()), ("unpacked-manifest.json", question_manifest()),
                        ("verification.json", question_verification())):
@@ -114,7 +114,7 @@ class BuildTests(ResearchTestCase):
     def test_entrance_page_shows_counts_identity_and_scope(self):
         self.build()
         index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
-        for text in ("7 engine records", "3 gearbox records", "3 gearboxes, 9 fields each", "3 tyre records", "2 collections, 5 graphics",
+        for text in ("7 engine records", "3 gearbox records", "3 gearboxes, 9 fields each; 7 engines, 20 fields each", "3 tyre records", "2 collections, 5 graphics",
                      "25 annotated routines", "3 open questions",
                      f'SHA-256 <code>{PE["sha256"]}</code>', "<code>0123abcd</code>",
                      "Values are shown exactly as declared", "stays labelled unresolved"):
@@ -470,6 +470,16 @@ class VerifierTests(unittest.TestCase):
                 self.reject(f"compare.html has a broken local link: 'gearboxes.html#{anchor}' names no id in "
                             "gearboxes.html")
 
+    def test_compare_page_links_a_missing_engine_page_anchor(self):
+        # A declaration row, a store-table row and an effective TORQUE_ARRAY row on the engine page, each linked from
+        # the Compare records page's engine section.
+        for anchor in ("engine-BASE-line-2", "engine-store-TURBO_MASS", "engine-CHILD-torque-array"):
+            with self.subTest(anchor=anchor):
+                self.setUp()
+                self.edit("engines.html", f'id="{anchor}"', 'id="gone"')
+                self.reject(f"compare.html has a broken local link: 'engines.html#{anchor}' names no id in "
+                            "engines.html")
+
     def test_every_page_names_the_entrance_page_producer_revision(self):
         revision = "<dt>Producer revision</dt><dd><code>0123abcd</code>"
         self.edit("compare.html", revision, "<dt>Producer revision</dt><dd><code>fedc9876</code>")
@@ -554,7 +564,7 @@ class CommandTests(unittest.TestCase):
         result = self.run_script("--game", str(write_game(self.root / "game")), "--output", str(output))
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Wrote 8 verified pages", result.stdout)
-        self.assertIn("7 engines, 3 gearboxes (3 compared), 3 tyres, 62 PCG collections, 654 graphics, 25 routines and "
+        self.assertIn("7 engines (7 compared), 3 gearboxes (3 compared), 3 tyres, 62 PCG collections, 654 graphics, 25 routines and "
                       "3 open questions", result.stdout)
         self.assertEqual(files_under(output), sorted((*PAGES, *EVIDENCE)))
         self.assertIn("62 collections, 654 graphics", (output / INDEX_PAGE).read_text(encoding="utf-8"))

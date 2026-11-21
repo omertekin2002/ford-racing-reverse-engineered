@@ -36,6 +36,15 @@ and its compare (with the selecting jg after a range compare) and store sites.
 Each row has the id gearbox-store-<TAG>, and each declaration row on both pages
 the id <engine|gearbox>-<record>-line-<n>; the Compare records page
 (scripts/record_compare.py) links both.
+
+The engine page has a "Where each field is stored" table too: for each tag in
+ENGINE_FIELD_STORES, in payload offset order, the offsets its handler writes,
+their width and Fr3EngineRecord field, its `cmp eax, <id>` dispatch site and
+its store sites. TORQUE_ARRAY's row gives the 18-slot block at +0x3c, its zero
+fill and the row count read from +0x30; the derived +0x2c (conditional, with
+its jump sites) and +0xa4 are listed as derived with no value; LOCATION_TYPE
+and ASPIRATION_TYPE name their enum word tables. Each row has the id
+engine-store-<TAG>, which the Compare records page's engine columns link.
 Gearbox inheritance is not resolved: no demo gearbox declares :INHERIT_TYPE,
 and a gearbox's :INHERIT_TYPE is labelled unresolved.
 
@@ -60,7 +69,7 @@ from pathlib import Path
 from dossier_common import (INDIGO_ANCHOR, ROUTINE_STATUS, STYLE, anchor, check_fields, check_pe, declarations, e,
                             is_indigo_line, line_anchor, link, load_json, page_start, producer_revision, question_link,
                             routine_label, routine_labels, routine_link, site_link)
-from text_database import (ENGINE_COPY, ENGINE_FIELD_STORES, FLOAT_READER, ENUM_READER, GEARBOX_COPY,
+from text_database import (ENGINE_COPY, ENGINE_FIELD_STORES, ENGINE_RECORD_SIZE, FLOAT_READER, ENUM_READER, GEARBOX_COPY,
                            GEARBOX_FIELD_STORES, GEARBOX_FLOAT_TO_BYTE_CALL, REPO_ROOT, ZERO_FILLED,
                            check_effective_engine_fields, effective_engine_fields, require,
                            untagged_inherit_consequences)
@@ -153,11 +162,16 @@ def check_engine_fields(database):
 
 
 def engine_site_vas():
-    """Every byte-checked site the engine page links: the stores, their conditions, the copy call and torque reads."""
+    """Every byte-checked site the engine page links: each tag's dispatch compare, enum word table and stores, the
+    stores' conditions, the torque table's zero fill and row count read, and the copy call and parent store."""
     torque = ENGINE_FIELD_STORES["TORQUE_ARRAY"]
-    vas = {int(va, 16) for entry in ENGINE_FIELD_STORES.values() for store in entry["offsets"].values()
+    vas = {va for entry in ENGINE_FIELD_STORES.values() for store in entry["offsets"].values()
            for va in store["sites"] + store.get("conditional", [])}
-    return vas | {int(va, 16) for va in (ENGINE_COPY["call"], torque["row_count"]["site"], torque["zero_fill"]["call"])}
+    vas |= {entry["compare"] for entry in ENGINE_FIELD_STORES.values()}
+    vas |= {entry["enum_table"]["site"] for entry in ENGINE_FIELD_STORES.values() if "enum_table" in entry}
+    vas |= {ENGINE_COPY["call"], ENGINE_COPY["parent_store"]["site"], torque["row_count"]["site"],
+            torque["zero_fill"]["call"]}
+    return {int(va, 16) for va in vas}
 
 
 def gearbox_site_vas():
@@ -338,6 +352,88 @@ def gearbox_store_section(routines):
             f'<th>Store</th></tr>{"".join(rows)}</table>')
 
 
+def engine_tags():
+    """The tags in ENGINE_FIELD_STORES, in payload order of their lowest offset (+0x14 to +0xac)."""
+    return sorted(ENGINE_FIELD_STORES,
+                  key=lambda tag: min(int(offset, 16) for offset in ENGINE_FIELD_STORES[tag]["offsets"]))
+
+
+def engine_store_anchor(tag):
+    """The id of engine tag `tag`'s row in the engine page's "Where each field is stored" table."""
+    return anchor("engine", "store", tag)
+
+
+def engine_offset_html(offset, store):
+    """One payload offset a tag's handler writes: the offset, and for a derived one its labels and no value."""
+    text = f"<code>+ {e(offset)}</code>"
+    if "slots" in store:
+        text += f", {e(store['slots'])} slots"
+    if store.get("derived"):
+        text += ' <span class="label">derived</span>'
+        if store.get("conditional"):
+            text += ', <span class="label">conditional</span>'
+        text += ", no value"
+    return text
+
+
+def engine_store_notes(tag, entry):
+    """What else a tag's handler does: its enum word table, or the torque table's zero fill, row count and derived
+    offset, or a derived offset; each linked to its byte-checked site."""
+    notes = []
+    if "enum_table" in entry:
+        table = entry["enum_table"]
+        notes.append(f'enum word, from the reader at <code>0x{ENUM_READER:08x}</code> given the word table at '
+                     f'<code>{e(table["va"])}</code> ({site_link(int(table["site"], 16))})')
+    if tag == TORQUE:
+        block = next(offset for offset, store in entry["offsets"].items() if "slots" in store)
+        slots = entry["offsets"][block]["slots"]
+        notes.append(f'zero-fills all {e(slots)} slots at <code>+ {e(block)}</code> first '
+                     f'({site_link(int(entry["zero_fill"]["call"], 16))}), then stores each row\'s second column in '
+                     "the next slot; the row count is read from the <code>MAX_RPM</code> value at "
+                     f'<code>+ {e(entry["row_count"]["offset"])}</code> as it is when the tag is parsed '
+                     f'({site_link(int(entry["row_count"]["site"], 16))})')
+    for offset, store in entry["offsets"].items():
+        if store.get("derived"):
+            text = f'<code>+ {e(offset)}</code> is derived by the handler, not declared; this page computes no value'
+            if store.get("conditional"):
+                text += (" and it is stored only past the jumps at " + sites_html(store["conditional"])
+                         + ", so it may instead keep what it held before")
+            notes.append(text)
+    return "; ".join(notes)
+
+
+def engine_store_section(routines):
+    """The table of where the engine loader stores each mapped tag, linked to its byte-checked sites.
+
+    Each row has the id engine_store_anchor(tag), which the Compare records page (scripts/record_compare.py) links.
+    """
+    rows = []
+    for tag in engine_tags():
+        entry = ENGINE_FIELD_STORES[tag]
+        offsets = entry["offsets"].items()
+        where = "<br>".join(engine_offset_html(offset, store) for offset, store in offsets)
+        widths = "<br>".join(e(store["width"]) for _, store in offsets)
+        fields = "<br>".join(f"<code>{e(store['field'])}</code>" for _, store in offsets)
+        stores = "<br>".join(f"<code>+ {e(offset)}</code>: {sites_html(store['sites'])}" for offset, store in offsets)
+        rows.append(f'<tr id="{e(engine_store_anchor(tag))}"><td><code>{e(tag)}</code></td><td>{where}</td>'
+                    f'<td>{widths}</td><td>{fields}</td>'
+                    f'<td><code>cmp eax, 0x{entry["id"]:x}</code> {site_link(int(entry["compare"], 16))}</td>'
+                    f"<td>{stores}</td><td>{engine_store_notes(tag, entry)}</td></tr>")
+    parent = ENGINE_COPY["parent_store"]
+    return ('<h2 id="field-stores">Where each field is stored</h2>'
+            f'<p>The loader {routine_link(routines["load"])} stores each tag into the <code>0x{ENGINE_RECORD_SIZE:x}'
+            '</code>-byte record as it parses it. Each row gives the payload offsets the tag\'s handler writes, their '
+            'width and <code>Fr3EngineRecord</code> field (an analyst label), the tag-ID compare that selects the '
+            'handler and the stores, each linked to its byte-checked site on the routines page. A derived offset '
+            'holds a value the handler computes rather than the one declared; it is listed without a value. '
+            f'<code>:INHERIT_TYPE</code> calls the record copy {routine_link(routines["copy"])} '
+            f'({site_link(int(ENGINE_COPY["call"], 16))}), which copies every field below from the parent, the '
+            f'torque slots included, and then stores the parent\'s address at <code>+ {e(parent["offset"])}</code> '
+            f'({site_link(int(parent["site"], 16))}).</p>'
+            '<table><tr><th>Tag</th><th>Offsets</th><th>Width</th><th>Field</th><th>Compare</th><th>Store</th>'
+            f'<th>Notes</th></tr>{"".join(rows)}</table>')
+
+
 def consequence_section(record, consequence):
     """What depends on a root's colon-less INHERIT_TYPE line, under both readings, without choosing one."""
     item = {"line": consequence["line"], "tokens": consequence["tokens"]}
@@ -383,8 +479,7 @@ def render(database, kind, pe, revision, routines, entrance=False):
              f'{routine_ref(spec, routines, "copy")}; on the routines page. Routine labels are analyst-assigned, not '
              'original symbols.</dd></dl>',
              f'<p class="scope">{ENGINE_SCOPE if engines else GEARBOX_SCOPE}</p>']
-    if not engines:
-        parts.append(gearbox_store_section(routines))
+    parts.append(engine_store_section(routines) if engines else gearbox_store_section(routines))
     parts.append('<h2>Summary</h2><table><tr><th>Record</th><th>Line</th>'
                  + (f"<th>Parent{'' if engines else ' (unresolved)'}</th>" if inherits else "")
                  + (f"<th>{TORQUE} rows &times; columns</th>" if torque else "") + "</tr>")
