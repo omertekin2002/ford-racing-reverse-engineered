@@ -11,7 +11,10 @@ Run it after scripts/acquire_demo.py has extracted the demo. It:
   4. writes <output>/index.html, which links the six pages with their record,
      graphic, routine and question counts, the fr3.exe SHA-256 and the producer revision,
      and answers "Do road, offroad and track tyres use different tables?" in its
-     #tyre-tables section, generated from tyres.json by scripts/research_answers.py;
+     #tyre-tables section, generated from tyres.json, and "Which engines share a
+     torque table, and what do they declare differently?" in its
+     #engine-torque-tables section, generated from engines.json, both by
+     scripts/research_answers.py;
   5. checks the directory with verify_research(): all seven pages exist, each carries
      the rights-holder notice before its main content, none has a <script> or an
      external resource, every local link resolves to a file inside the output, every
@@ -163,11 +166,14 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
                 work / "engines.json", work / "tyres.json", analysis / QUESTION_EVIDENCE["evidence"],
                 analysis / QUESTION_EVIDENCE["pcg_index"], pe_path, staging / open_questions.PAGE, revision,
                 hrefs=question_hrefs, entrance=True, selected=analysis / "selected")
-            # tyre_dossier.build() has accepted tyres.json and the field evidence; the answer reuses both.
-            answers = research_answers.tyre_tables_section(
-                load_json(work / "tyres.json", "Tyre database"),
-                load_json(analysis / TYRE_EVIDENCE["evidence"], "Field evidence"), routine_labels(status_path),
-                tyre_hrefs)
+            # tyre_dossier.build() has accepted tyres.json and the field evidence, and record_dossier.build()
+            # engines.json; the answers reuse them.
+            field_evidence = load_json(analysis / TYRE_EVIDENCE["evidence"], "Field evidence")
+            labels = routine_labels(status_path)
+            answers = (research_answers.tyre_tables_section(load_json(work / "tyres.json", "Tyre database"),
+                                                            field_evidence, labels, tyre_hrefs)
+                       + research_answers.engine_torque_section(load_json(work / "engines.json", "Engine database"),
+                                                                field_evidence, labels))
         counts["pcg_collections"], counts["pcg_graphics"] = pcg_catalogue.build(
             analysis / PCG_EVIDENCE["index"], analysis / PCG_EVIDENCE["manifest"], pe_path,
             analysis / "verification.json", staging / pcg_catalogue.PAGE, revision, hrefs=pcg_hrefs, entrance=True)

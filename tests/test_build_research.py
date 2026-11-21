@@ -162,6 +162,51 @@ class BuildTests(ResearchTestCase):
                 self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)},
                                  before)
 
+    def test_entrance_page_answers_the_engine_torque_question(self):
+        self.build()
+        index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
+        start = index.index('<section id="engine-torque-tables">')
+        answer = index[start:index.index("</section>", start)]
+        # It follows the tyre answer, before the page list, and leaves the tyre answer as it was.
+        self.assertLess(index.index('<section id="tyre-tables">'), start)
+        self.assertLess(start, index.index("<h2>Pages</h2>"))
+        text = " ".join(re.sub(r"<[^>]+>", " ", answer).split())
+        self.assertIn("Which engines share a torque table, and what do they declare differently?", text)
+        self.assertIn("Of the 3 engines with :INHERIT_TYPE , 0 declare their own TORQUE_ARRAY and 2 inherit one; 1 has "
+                      "no TORQUE_ARRAY along its :INHERIT_TYPE path and keeps the zero-filled slots.", text)
+        self.assertIn("1 table is read by more than one engine, 3 engines in all", text)
+        self.assertIn("BASE is counted among the readers of the shared tables", text)
+        self.assertIn("Traced example: CHILD", text)
+        self.assertIn("Where the comparison ends", text)
+        # Every link in the answer names a page and id the build wrote: engine sections, declaration lines, the
+        # torque-array row, routines, sites and INDIGO's open question.
+        links = re.findall(r'href="([^"#]+)#([^"]+)"', answer)
+        pages = {page for page, _ in links}
+        self.assertEqual(pages, {"engines.html", "routines.html", "questions.html"})
+        self.assertIn(("engines.html", "engine-CHILD-torque-array"), links)
+        self.assertIn(("questions.html", "indigo"), links)
+        for page, fragment in links:
+            self.assertIn(f'id="{fragment}"', (self.output / page).read_text(encoding="utf-8"), (page, fragment))
+
+    def test_removing_an_anchor_the_engine_answer_links_fails_verification(self):
+        self.build()
+        engines = self.output / "engines.html"
+        engines.write_text(engines.read_text(encoding="utf-8").replace(' id="engine-CHILD-torque-array"', ""),
+                           encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "engines.html#engine-CHILD-torque-array' names no id in engines.html"):
+            build_research.verify_research(self.output)
+
+    def test_engine_data_without_a_shared_torque_table_refuses_the_build(self):
+        self.build()
+        before = {name: (self.output / name).read_bytes() for name in files_under(self.output)}
+        table = ":TORQUE_ARRAY\n0 100.5\n1000 200.5\n2000 150.5\n"
+        self.assertIn(table, QUESTION_ENGINES)
+        (self.game / DATABASES["engines"]).write_bytes(
+            QUESTION_ENGINES.replace(table, "").replace("\n", "\r\n").encode("ascii"))
+        with self.assertRaisesRegex(ValueError, "#engine-torque-tables answer has no shared torque table"):
+            self.build()
+        self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)}, before)
+
     def test_routines_page_links_its_copied_evidence(self):
         self.build()
         routines = (self.output / "routines.html").read_text(encoding="utf-8")

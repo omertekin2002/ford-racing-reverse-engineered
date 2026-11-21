@@ -21,8 +21,9 @@ INDIGO's colon-less line links to its section on the Open questions page
 Each inheriting engine also gets an effective-fields table: for every tag in
 ENGINE_FIELD_STORES, its status (declared, inherited or zero-filled), the
 declared values, the source record and line (linked to that line's row), the
-INHERIT_TYPE path and the byte-checked store sites. A TORQUE_ARRAY row names
-the MAX_RPM declaration its row count was read from; the derived +0x2c and
+INHERIT_TYPE path and the byte-checked store sites. A TORQUE_ARRAY row, whose
+id the entrance page's torque-table answer links, names the MAX_RPM
+declaration its row count was read from; the derived +0x2c and
 +0xa4 are labelled derived (+0x2c also conditional) with their possible
 origins and no value. A root with a colon-less INHERIT_TYPE line (INDIGO) lists
 the fields that depend on it under both readings, labelled unresolved. Units
@@ -199,8 +200,11 @@ def value_html(field):
     return f'<span class="num">{e(" ".join(map(str, field["values"])))}</span>'
 
 
-def field_rows(tag, field):
-    """The table rows for one mapped tag: its stored offsets, then each derived offset."""
+def field_rows(name, tag, field):
+    """The table rows for engine `name`'s mapped tag: its stored offsets, then each derived offset.
+
+    The TORQUE_ARRAY row has the id anchor("engine", name, "torque-array"), which the entrance page links.
+    """
     stores = ENGINE_FIELD_STORES[tag]["offsets"]
     stored = [offset for offset in field["offsets"] if not stores[offset].get("derived")]
     source = ("none along the path" if field["status"] == ZERO_FILLED
@@ -211,7 +215,8 @@ def field_rows(tag, field):
         value += (f'<br>row count read from <code>+ {e(torque["row_count"]["offset"])}</code> '
                   f'({site_link(int(torque["row_count"]["site"], 16))}) when parsed: <code>MAX_RPM</code> from '
                   f'{origin_html(field["max_rpm"])}')
-    rows = [f'<tr><td><code>{e(tag)}</code></td><td>{", ".join(f"<code>+ {e(offset)}</code>" for offset in stored)}</td>'
+    row_id = f' id="{e(anchor("engine", name, "torque-array"))}"' if tag == TORQUE else ""
+    rows = [f'<tr{row_id}><td><code>{e(tag)}</code></td><td>{", ".join(f"<code>+ {e(offset)}</code>" for offset in stored)}</td>'
             f'<td>{value}</td><td>{e(STATUS_TEXT[field["status"]])}</td><td>{source}</td>'
             f'<td>{path_html(field["path"])}</td>'
             f'<td>{sites_html(va for offset in stored for va in stores[offset]["sites"])}</td></tr>']
@@ -242,7 +247,7 @@ def effective_section(name, entry, routines):
              'parent\'s effective value at copy time. An own <code>TORQUE_ARRAY</code> first zero-fills all 18 slots '
              f'({site_link(int(torque["zero_fill"]["call"], 16))}), so it replaces the parent\'s table and never mixes '
              'rows with it. Values are the declarations as written, not physical quantities.</p>', FIELD_HEADER]
-    parts += [field_rows(tag, field) for tag, field in entry["fields"].items()]
+    parts += [field_rows(name, tag, field) for tag, field in entry["fields"].items()]
     parts.append("</table>")
     if entry["overwritten"]:
         items = ", ".join(f'<code>{e(item["tag"])}</code> (line {e(item["line"])})' for item in entry["overwritten"])
