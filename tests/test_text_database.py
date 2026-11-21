@@ -17,6 +17,8 @@ from text_database import (ENGINE_COPY, ENGINE_FIELD_COUNTS, ENGINE_FIELD_STORES
                            untagged_inherit_consequences,
                            engine_evidence_problems, engine_layout_problems, load_layout_header, load_tag_ids,
                            memory_operand, unmapped_engine_tags)
+from text_database import (GEARBOX_COPY, GEARBOX_FIELD_STORES, GEARBOX_LOADER_SPAN, GEARBOX_RECORD,
+                           gearbox_evidence_problems, gearbox_layout_problems, unmapped_gearbox_tags)
 from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, RESOLVED_TYRE_TABLES, SCALAR_COPY_CALL, SCALAR_COPY_OFFSETS,
                            SCALAR_COPY_SPAN, SOUND_INFO_COUNTS, TYRE_SCALAR_COUNTS, TYRE_SCALAR_STORES,
                            TYRE_TABLE_ACCESSORS, TYRE_TABLE_SOURCES, TYRE_TABLES, UNMAPPED, ZERO_FILLED,
@@ -1040,8 +1042,8 @@ def immediate(text):
     return int(text, 0) if not text.startswith("-") else -int(text[1:], 0)
 
 
-def engine_dispatch(lines, tag_id):
-    """Follow the loader's compare tree for one tag ID from the committed disassembly.
+def engine_dispatch(lines, tag_id, head=ENGINE_DISPATCH, next_tag=ENGINE_NEXT_TAG, default=ENGINE_DEFAULT):
+    """Follow a loader's compare tree for one tag ID from the committed disassembly (by default the engine loader's).
 
     Returns (the compares taken as [(va, immediate)], the VAs the handler can reach, or None when the tag reaches
     the default branch). The handler is every instruction reachable, through any branch, before it jumps back to
@@ -1049,7 +1051,7 @@ def engine_dispatch(lines, tag_id):
     """
     order = [va for va, _ in lines]
     text = dict(lines)
-    va, compared, compares = ENGINE_DISPATCH, None, []
+    va, compared, compares = head, None, []
     while True:
         mnemonic, _, operands = text[va].partition(" ")
         if mnemonic == "cmp" and operands.startswith("eax, "):
@@ -1063,12 +1065,12 @@ def engine_dispatch(lines, tag_id):
         else:
             break
         va = order[order.index(va) + 1]
-    if va == ENGINE_DEFAULT:
+    if va == default:
         return compares, None
     reached, pending = set(), [va]
     while pending:
         va = pending.pop()
-        if va in reached or va in (ENGINE_NEXT_TAG, ENGINE_DEFAULT):
+        if va in reached or va in (next_tag, default):
             continue
         reached.add(va)
         mnemonic, _, operands = text[va].partition(" ")
@@ -1382,6 +1384,257 @@ class EngineLayoutTests(unittest.TestCase):
         self.assertIn("Every Fr3EngineRecord field from +0x14 on is byte-checked", ENGINE_HEADER)
 
 
+# The gearbox loader's dispatch head, its next-tag read and its default (unknown tag) branch.
+GEARBOX_DISPATCH = 0x00523289
+GEARBOX_NEXT_TAG = 0x0052327B
+GEARBOX_DEFAULT = 0x005232A0
+
+
+def gearbox_loader_lines():
+    lines = (text_database.REPO_ROOT / "analysis/selected/load_gearbox_database.asm").read_text().splitlines()
+    return [(int(match[1], 16), match[2]) for match in map(ASM_LINE.match, lines) if match]
+
+
+def gearbox_dispatch(lines, tag_id):
+    return engine_dispatch(lines, tag_id, GEARBOX_DISPATCH, GEARBOX_NEXT_TAG, GEARBOX_DEFAULT)
+
+
+class GearboxDispatchTests(unittest.TestCase):
+    """Emulate the committed gearbox loader disassembly's compare tree; no game data needed."""
+
+    def setUp(self):
+        self.lines = gearbox_loader_lines()
+        self.tags = load_tag_ids()
+
+    def test_each_mapped_tag_reaches_its_handler_through_its_compare(self):
+        for tag, entry in [*GEARBOX_FIELD_STORES.items(), ("INHERIT_TYPE", GEARBOX_COPY)]:
+            with self.subTest(tag=tag):
+                compares, reached = gearbox_dispatch(self.lines, self.tags[tag])
+                self.assertIsNotNone(reached)
+                self.assertEqual(compares[-1], (int(entry["compare"], 16), entry["id"]))
+                if "after_range" in entry:
+                    self.assertIn(int(entry["after_range"], 16) + 2, reached)
+
+    def test_each_handler_reads_and_writes_exactly_the_mapped_sites(self):
+        text = dict(self.lines)
+        for tag, entry in GEARBOX_FIELD_STORES.items():
+            with self.subTest(tag=tag):
+                reached = gearbox_dispatch(self.lines, entry["id"])[1]
+                expected = {int(va, 16): (store["width"], "edi", int(offset, 16))
+                            for offset, store in entry["offsets"].items() for va in store["sites"]}
+                self.assertEqual(record_writes(self.lines, reached), expected)
+                calls = sorted(va for va in reached if text[va].startswith("call "))
+                self.assertIn(int(entry["read"]["call"], 16), calls)
+        writes = record_writes(self.lines, gearbox_dispatch(self.lines, GEARBOX_COPY["id"])[1])
+        self.assertEqual(writes, {})
+
+    def test_every_other_registry_tag_reaches_the_default_branch(self):
+        handled = {*GEARBOX_FIELD_STORES, "INHERIT_TYPE"}
+        for tag, tag_id in self.tags.items():
+            if tag not in handled:
+                with self.subTest(tag=tag):
+                    self.assertIsNone(gearbox_dispatch(self.lines, tag_id)[1])
+
+    def test_map_covers_exactly_the_gearbox_tags(self):
+        self.assertEqual(set(GEARBOX_FIELD_STORES), GEARBOX_TAGS)
+        self.assertEqual(unmapped_gearbox_tags(), ([], []))
+        stores = {tag: entry for tag, entry in GEARBOX_FIELD_STORES.items() if tag != "DRIVE_SPLIT"}
+        self.assertEqual(unmapped_gearbox_tags(stores), (["DRIVE_SPLIT"], []))
+        self.assertEqual(unmapped_gearbox_tags({**GEARBOX_FIELD_STORES, "CAPACITY": {}}), ([], ["CAPACITY"]))
+
+
+class GearboxEvidenceTests(unittest.TestCase):
+    def setUp(self):
+        self.evidence = load_field_evidence()
+        self.tags = load_tag_ids()
+
+    def problems(self, evidence=None, stores=None, gearbox_copy=None, tags=None):
+        return gearbox_evidence_problems(self.evidence if evidence is None else evidence,
+                                         self.tags if tags is None else tags, stores, gearbox_copy)
+
+    def without(self, *vas):
+        return [site for site in self.evidence if site["va"] not in vas]
+
+    def replaced(self, va, **fields):
+        return [{**site, **fields} if site["va"] == va else site for site in self.evidence]
+
+    def assertReports(self, fragment, problems):
+        self.assertTrue(any(fragment in problem for problem in problems), problems)
+
+    def test_committed_evidence_agrees_with_the_map(self):
+        self.assertEqual(self.problems(), [])
+
+    def test_wrong_id_is_reported(self):
+        problems = self.problems(stores=drifted(GEARBOX_FIELD_STORES, ("DRIVE_SPLIT", "id"), 0x77))
+        self.assertIn("DRIVE_SPLIT: analysis/tags.json gives registry ID 0x76, the map says 0x77", problems)
+        self.assertIn("DRIVE_SPLIT: compare site 0x00523378 (83f876) is not cmp eax, 0x77", problems)
+        self.assertIn("ANTI_WHEELSPIN: analysis/tags.json gives registry ID 0x10, the map says 0xf",
+                      self.problems(tags={**self.tags, "ANTI_WHEELSPIN": 0x10}))
+        self.assertIn("INHERIT_TYPE: compare site 0x00523310 (3d1a010000) is not cmp eax, 0x9c",
+                      self.problems(gearbox_copy=drifted(GEARBOX_COPY, ("compare",), "0x00523310")))
+
+    def test_missing_site_is_reported(self):
+        removals = {
+            0x00523289: "CLUTCH_SPEED compare: no byte-checked gearbox loader site at 0x00523289",
+            0x005232c1: "CLUTCH_SPEED selecting jg: no byte-checked gearbox loader site at 0x005232c1",
+            0x005232ca: "CLUTCH_SPEED + 0x14: no byte-checked gearbox loader site at 0x005232ca",
+            0x005233d6: "CLUTCH_MAX_POWER reader call: no byte-checked gearbox loader site at 0x005233d6",
+            0x00523364: "TRANSMISSION_TYPE enum table: no byte-checked gearbox loader site at 0x00523364",
+            0x00523399: "ANTI_WHEELSKID float-to-integer call: no byte-checked gearbox loader site at 0x00523399",
+            0x005233bd: "ANTI_WHEELSPIN fistp: no byte-checked gearbox loader site at 0x005233bd",
+            0x00523234: "Gearbox allocation size: no byte-checked gearbox loader site at 0x00523234",
+            0x00523411: "Gearbox name read: no byte-checked gearbox loader site at 0x00523411",
+            0x00523317: "INHERIT_TYPE compare: no byte-checked gearbox loader site at 0x00523317",
+            0x00523330: "INHERIT_TYPE parent lookup: no byte-checked gearbox loader site at 0x00523330",
+            0x00523335: "INHERIT_TYPE parent in edx: no byte-checked gearbox loader site at 0x00523335",
+            0x00523339: "INHERIT_TYPE copy call: no byte-checked gearbox loader site at 0x00523339",
+            0x0052333e: "INHERIT_TYPE next tag: no byte-checked gearbox loader site at 0x0052333e",
+            0x00523472: "copy store at 0x00523475 has no byte-checked load of parent + 0x1c into ecx before it",
+            0x005234a5: "GEARBOX_COPY + 0x31: no byte-checked load/store pair in the copy",
+            0x00523471: "Gearbox copy push ecx: no byte-checked gearbox copy site at 0x00523471",
+        }
+        for va, fragment in removals.items():
+            with self.subTest(va=f"0x{va:08x}"):
+                self.assertReports(fragment, self.problems(self.without(va)))
+
+    def test_site_outside_its_routine_is_reported(self):
+        stores = drifted(GEARBOX_FIELD_STORES, ("DRIVE_SPLIT", "offsets", "0x20", "sites"), ["0x00522a0e"])
+        self.assertIn("DRIVE_SPLIT + 0x20: no byte-checked gearbox loader site at 0x00522a0e", self.problems(stores=stores))
+
+    def test_wrong_bytes_are_reported(self):
+        self.assertReports("Gearbox allocation size: site 0x00523234 (ba30000000) is not ba34000000",
+                           self.problems(self.replaced(0x00523234, bytes="ba30000000")))
+        self.assertReports("DIFF_TYPE enum table: site 0x005232e4 (ba60745900) is not ba4c745900",
+                           self.problems(stores=drifted(GEARBOX_FIELD_STORES, ("DIFF_TYPE", "enum_table", "va"),
+                                                        "0x0059744c")))
+        # A float tag mapped as an enum read: the reader call and the stored register disagree.
+        stores = drifted(GEARBOX_FIELD_STORES, ("DRIVE_SPLIT", "read", "kind"), "enum")
+        problems = self.problems(stores=stores)
+        self.assertReports("DRIVE_SPLIT reader call: site 0x00523383 (e8f8b2f0ff) is not", problems)
+        self.assertIn("DRIVE_SPLIT: an enum read with no enum_table", problems)
+        self.assertReports("DRIVE_SPLIT + 0x20: site 0x00523388 (d95f20) is not a kind store, width dword, base edi, "
+                           "disp 0x20, register eax instruction", problems)
+        self.assertReports("ANTI_WHEELSPIN: 0x005233bd (db5dec) and 0x005233c0 (8a45e8) are not a fistp",
+                           self.problems(self.replaced(0x005233bd, bytes="db5dec")))
+        self.assertReports("INHERIT_TYPE: the parent lookup at 0x00523330 is not passed the buffer the name was read",
+                           self.problems(self.replaced(0x0052332d, bytes="8d45d4")))
+
+    def test_selecting_jg_must_be_a_jg_about_its_tag(self):
+        self.assertIn("DRIVE_TYPE: selecting site 0x005232f5 (7d19) is not a jg whose claim is about DRIVE_TYPE",
+                      self.problems(self.replaced(0x005232f5, bytes="7d19")))
+        self.assertIn("TORQUE_SHIFT: selecting site 0x00523343 (7f0f) is not a jg whose claim is about TORQUE_SHIFT",
+                      self.problems(self.replaced(0x00523343, claim="DRIVE_TYPE is selected")))
+
+    def test_store_at_the_wrong_offset_or_width_is_reported(self):
+        stores = drifted(GEARBOX_FIELD_STORES, ("TORQUE_SHIFT", "offsets"),
+                         {"0x20": {**GEARBOX_FIELD_STORES["TORQUE_SHIFT"]["offsets"]["0x1c"]}})
+        problems = self.problems(stores=stores)
+        self.assertReports("TORQUE_SHIFT + 0x20: site 0x0052334c (d95f1c) is not a kind store, width dword, base edi, "
+                           "disp 0x20", problems)
+        self.assertIn("the copy writes offsets no mapped tag stores: +0x1c..+0x1f", problems)
+        stores = drifted(GEARBOX_FIELD_STORES, ("ANTI_WHEELSKID", "offsets", "0x31", "width"), "dword")
+        self.assertReports("ANTI_WHEELSKID + 0x31: site 0x005233a4 (884731) is not a kind store, width dword",
+                           self.problems(stores=stores))
+
+    def test_unmapped_tag_or_store_is_reported(self):
+        problems = self.problems(stores=drifted(GEARBOX_FIELD_STORES, ("DRIVE_SPLIT",), None))
+        self.assertEqual(problems, ["byte-checked record store at 0x00523388 (d95f20) is in no mapped tag",
+                                    "the copy writes offsets no mapped tag stores: +0x20..+0x23"])
+        problems = self.problems(stores=drifted(GEARBOX_FIELD_STORES, ("CLUTCH_SPEED", "offsets", "0x14", "sites"), []))
+        self.assertIn("CLUTCH_SPEED + 0x14: no store sites", problems)
+        self.assertIn("byte-checked record store at 0x005232ca (d95f14) is in no mapped tag", problems)
+
+    def test_copy_offset_that_nothing_stores_is_reported(self):
+        problems = self.problems(gearbox_copy=drifted(GEARBOX_COPY, ("offsets", "0x32"), "byte"))
+        self.assertIn("GEARBOX_COPY + 0x32: no byte-checked load/store pair in the copy", problems)
+        self.assertIn("the copy writes offsets no mapped tag stores: +0x32", problems)
+        self.assertIn("the copy writes the name or the padding: +0x32", problems)
+        problems = self.problems(gearbox_copy=drifted(GEARBOX_COPY, ("offsets", "0x10"), "dword"))
+        self.assertIn("the copy writes the name or the padding: +0x10..+0x13", problems)
+
+    def test_stored_offset_the_copy_misses_is_reported(self):
+        problems = self.problems(gearbox_copy=drifted(GEARBOX_COPY, ("offsets", "0x31"), None))
+        self.assertIn("copy pair at + 0x31 is not in GEARBOX_COPY", problems)
+        self.assertIn("mapped stores the copy misses: +0x31", problems)
+        problems = self.problems(gearbox_copy=drifted(GEARBOX_COPY, ("offsets", "0x30"), "dword"))
+        self.assertIn("GEARBOX_COPY + 0x30: the copy moves a byte, not a dword", problems)
+
+    def test_copy_load_must_feed_the_same_register_and_offset(self):
+        self.assertReports("copy store at 0x0052347b has no byte-checked load of parent + 0x14 into ecx",
+                           self.problems(self.replaced(0x00523478, bytes="8b4a18")))
+        self.assertReports("copy store at 0x0052349f has no byte-checked load of parent + 0x30 into bl",
+                           self.problems(self.replaced(0x0052349c, bytes="8a5230")))
+
+    def test_store_sites_must_belong_to_their_tag(self):
+        stores = copy.deepcopy(GEARBOX_FIELD_STORES)
+        stores["CLUTCH_SPEED"]["offsets"], stores["CLUTCH_MAX_POWER"]["offsets"] = (
+            stores["CLUTCH_MAX_POWER"]["offsets"], stores["CLUTCH_SPEED"]["offsets"])
+        problems = self.problems(stores=stores)
+        self.assertReports("CLUTCH_SPEED + 0x18: the claim at 0x005233db is not about CLUTCH_SPEED", problems)
+        self.assertReports("CLUTCH_MAX_POWER + 0x14: the claim at 0x005232ca is not about CLUTCH_MAX_POWER", problems)
+
+    def test_copied_bytes_equal_stored_bytes(self):
+        stored = text_database.engine_stored_bytes(GEARBOX_FIELD_STORES)
+        copied = text_database.engine_copy_bytes(GEARBOX_COPY)
+        self.assertEqual(set(stored), copied)
+        self.assertEqual(byte_ranges(set(range(0x34)) - copied), "+0x00..+0x13, +0x32..+0x33")
+
+    @unittest.skipIf(capstone is None, "needs capstone and pefile from scripts/requirements.txt")
+    def test_decoder_agrees_with_capstone_on_every_gearbox_site(self):
+        decoded = dict(decoded_evidence())
+        gearbox = [(va, raw) for va, raw, _ in EVIDENCE if GEARBOX_LOADER_SPAN[0] <= va < GEARBOX_COPY["span"][1]]
+        self.assertEqual(len(gearbox), 80)
+        for va, raw in gearbox:
+            mine = memory_operand(raw)
+            if mine is None:
+                continue
+            with self.subTest(va=f"0x{va:08x}"):
+                sign = "-" if mine["disp"] < 0 else "+"
+                self.assertIn(f"[{mine['base']} {sign} 0x{abs(mine['disp']):x}]", decoded[va])
+                if mine["width"]:
+                    self.assertIn(f"{mine['width']} ptr", decoded[va])
+        for tag, entry in [*GEARBOX_FIELD_STORES.items(), ("INHERIT_TYPE", GEARBOX_COPY)]:
+            with self.subTest(tag=tag):
+                self.assertEqual(decoded[int(entry["compare"], 16)],
+                                 f"cmp eax, {entry['id'] if entry['id'] < 10 else hex(entry['id'])}")
+                if "after_range" in entry:
+                    self.assertTrue(decoded[int(entry["after_range"], 16)].startswith("jg "))
+        for site in (GEARBOX_RECORD["allocation"]["call"], GEARBOX_COPY["call"]):
+            self.assertTrue(decoded[int(site, 16)].startswith("call "))
+
+
+class GearboxLayoutTests(unittest.TestCase):
+    def test_committed_header_agrees_with_the_map(self):
+        self.assertEqual(gearbox_layout_problems(ENGINE_HEADER), [])
+
+    def test_offset_that_disagrees_with_the_header_is_reported(self):
+        swapped = ENGINE_HEADER.replace("    float clutch_speed;\n    float clutch_max_power;\n",
+                                        "    float clutch_max_power;\n    float clutch_speed;\n")
+        self.assertNotEqual(swapped, ENGINE_HEADER)
+        problems = gearbox_layout_problems(swapped)
+        self.assertIn("CLUTCH_SPEED + 0x14: Fr3GearboxRecord.clutch_speed is at +0x18", problems)
+        self.assertIn("CLUTCH_MAX_POWER + 0x18: Fr3GearboxRecord.clutch_max_power is at +0x14", problems)
+
+    def test_width_name_size_and_assertions_are_checked(self):
+        stores = drifted(GEARBOX_FIELD_STORES, ("ANTI_WHEELSPIN", "offsets", "0x30", "width"), "dword")
+        self.assertIn("ANTI_WHEELSPIN + 0x30: Fr3GearboxRecord.anti_wheelspin is 1 bytes, the map stores 4",
+                      gearbox_layout_problems(ENGINE_HEADER, stores))
+        stores = drifted(GEARBOX_FIELD_STORES, ("DIFF_TYPE", "offsets", "0x28", "field"), "diff_type")
+        self.assertIn("DIFF_TYPE + 0x28: Fr3GearboxRecord has no field diff_type",
+                      gearbox_layout_problems(ENGINE_HEADER, stores))
+        line = '_Static_assert(offsetof(Fr3GearboxRecord, drive_split) == 0x20, "DRIVE_SPLIT");\n'
+        self.assertIn(line, ENGINE_HEADER)
+        self.assertEqual(gearbox_layout_problems(ENGINE_HEADER.replace(line, "")),
+                         ["DRIVE_SPLIT + 0x20: the header does not _Static_assert offsetof(Fr3GearboxRecord, "
+                          "drive_split) == 0x20"])
+        grown = ENGINE_HEADER.replace("    uint8_t padding_32[2];\n", "    uint8_t padding_32[6];\n")
+        self.assertIn("Fr3GearboxRecord is 0x38 bytes, not 0x34", gearbox_layout_problems(grown))
+
+    def test_header_provenance_names_the_byte_checked_gearbox_offsets(self):
+        self.assertNotIn("Gearbox layout uses the supplied report", ENGINE_HEADER)
+        self.assertIn("Every Fr3GearboxRecord field from +0x14 on is byte-checked", ENGINE_HEADER)
+
+
 class UnmappedEngineTagTests(unittest.TestCase):
     def test_reports_each_unmapped_tag_once_with_its_first_use(self):
         records = parse(":TYPE A\n:ADDITIONAL_BRAKING 1\n:CAPACITY 2\n:TYPE B\n:INHERIT_TYPE A\n:ADDITIONAL_BRAKING 3\n"
@@ -1481,6 +1734,7 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.assertEqual(summary["tyre_tables"], TYRE_TABLES)
         self.assertEqual(summary["tyre_table_sources"], TYRE_TABLE_SOURCES)
         self.assertEqual(summary["engine_effective_field_records"], 51)
+        self.assertEqual(summary["gearbox_mapped_tags"], 9)
         self.assertEqual(summary["engine_effective_field_counts"], ENGINE_FIELD_COUNTS)
         self.assertEqual(summary["indigo_dependent_tags"],
                          sorted(set(ENGINE_FIELD_STORES) - {"ASPIRATION_TYPE", "MAX_RPM", "TORQUE_MODIFIER", "TORQUE_ARRAY"}))
@@ -1652,6 +1906,26 @@ class VerifyTextDatabaseTests(unittest.TestCase):
                                               "    float max_delta_fuel_flow;\n    float max_fuel_flow;\n")
         with self.assertRaisesRegex(ValueError, "disagree with recovered/fr3_database_layouts.h: MAX_FUELFLOW"):
             verify_text_databases(self.game, TAGS, header=header)
+
+    def test_reject_gearbox_store_without_evidence(self):
+        evidence = [site for site in load_field_evidence() if site["va"] != 0x00523388]
+        with self.assertRaisesRegex(ValueError, "Gearbox stores lack byte-checked evidence: DRIVE_SPLIT \\+ 0x20"):
+            verify_text_databases(self.game, TAGS, evidence)
+
+    def test_reject_gearbox_id_or_header_disagreement(self):
+        with self.assertRaisesRegex(ValueError, "Gearbox stores lack byte-checked evidence: DRIVE_TYPE: analysis/tags"):
+            verify_text_databases(self.game, TAGS, tag_ids={**load_tag_ids(), "DRIVE_TYPE": 0x78})
+        header = load_layout_header().replace("    uint32_t differential_type;\n    uint32_t drive_type;\n",
+                                              "    uint32_t drive_type;\n    uint32_t differential_type;\n")
+        with self.assertRaisesRegex(ValueError, "Gearbox stores disagree with recovered/fr3_database_layouts.h: DIFF_TYPE"):
+            verify_text_databases(self.game, TAGS, header=header)
+
+    def test_reject_gearbox_tag_without_a_mapping(self):
+        stores = {tag: entry for tag, entry in GEARBOX_FIELD_STORES.items() if tag != "TORQUE_SHIFT"}
+        with mock.patch.object(text_database, "GEARBOX_FIELD_STORES", stores):
+            with self.assertRaisesRegex(ValueError, "GEARBOX_FIELD_STORES does not cover exactly GEARBOX_TAGS: "
+                                                    "unmapped TORQUE_SHIFT"):
+                verify_text_databases(self.game, TAGS)
 
     def test_reject_engine_field_before_inherit_type(self):
         self.write("engines", engine_file().replace(":TYPE CHILD40\r\n:INHERIT_TYPE CHILD32\r\n",

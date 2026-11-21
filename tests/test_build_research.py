@@ -214,7 +214,7 @@ class BuildTests(ResearchTestCase):
                      "evidence/selected/field-evidence.json", *ASM):
             self.assertIn(f'href="{href}"', routines)
         self.assertEqual(routines.count('<section class="routine"'), 25)
-        self.assertEqual(routines.count('<tr class="site"'), 194)
+        self.assertEqual(routines.count('<tr class="site"'), 274)
         self.assertIn('<a href="index.html">Explore findings</a>', routines)
         # Each routine's anchor is a real id: verify_research() accepts a deep link to it from another page.
         index = self.output / INDEX_PAGE
@@ -250,7 +250,11 @@ class BuildTests(ResearchTestCase):
         # copy call and the torque table's zero fill and MAX_RPM read.
         self.assertEqual(linked["engines.html"], {"fr3_load_engine_database", "fr3_copy_engine_record",
                                                   *(f"site-{va:08x}" for va in record_dossier.engine_site_vas())})
-        self.assertEqual(linked["gearboxes.html"], {"fr3_load_gearbox_database", "fr3_copy_gearbox_record"})
+        # The gearbox page links each tag's compare, selecting jg, reader, table or conversion and store sites, and the
+        # INHERIT_TYPE copy call.
+        self.assertEqual(linked["gearboxes.html"], {"fr3_load_gearbox_database", "fr3_copy_gearbox_record",
+                                                    *(f"site-{va:08x}" for va in record_dossier.gearbox_site_vas())})
+        self.assertEqual(len(record_dossier.gearbox_site_vas()), 39)
 
     def test_renamed_linked_routine_refuses_the_build_and_keeps_the_previous_output(self):
         self.build()
