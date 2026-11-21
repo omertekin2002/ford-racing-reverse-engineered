@@ -102,9 +102,10 @@ The parser resolves tyre inheritance for the five tables, as described in
 with a byte-checked store, as described in
 [Tyre scalar inheritance](#tyre-scalar-inheritance). It maps every engine tag the
 demo uses to its byte-checked payload offsets and the C layout below, as described
-in [New finding: engine stores and copy](#new-finding-engine-stores-and-copy), but
-does not resolve engine inheritance or the colon-less `INDIGO` line, map gearbox
-fields, or handle the other text files. The meaning of the
+in [New finding: engine stores and copy](#new-finding-engine-stores-and-copy), and
+resolves each inheriting engine's effective fields from them, as described in
+[Engine inheritance](#engine-inheritance). It does not decide the colon-less
+`INDIGO` line, map gearbox fields, or handle the other text files. The meaning of the
 sound table's first fifteen words, described below, is still unknown.
 
 The engine loader at `0x005227f0` allocates a `0xb0`-byte payload, and the gearbox
@@ -242,10 +243,86 @@ A unit test also follows the compare tree in the committed
 listed compare, and each handler writes exactly the mapped sites. Every other
 registry ID reaches the default branch.
 
-Engine inheritance is still unresolved. `engines.json` holds the records as
-parsed, and the engine dossier and the Open questions page label
-`:INHERIT_TYPE` and `INDIGO` unresolved. A later slice will resolve each
-engine's effective fields from the stores and copy above.
+### Engine inheritance
+
+The stores and copy above give engines the same model as
+[tyre scalars](#tyre-scalar-inheritance), over every mapped field. In file order,
+each record starts zero-filled; each tag in `ENGINE_FIELD_STORES` stores its
+declaration at its offsets; `INHERIT_TYPE` copies the parent's current state over
+every offset `ENGINE_COPY` covers, the torque block included. A field ends up
+holding the record's own declaration when it follows `INHERIT_TYPE`, and
+otherwise the parent's effective value at copy time, recursively. A declaration
+made before `INHERIT_TYPE` is overwritten. As for tyres, the model assumes nothing
+outside the loader writes a loaded record later; that code is not examined.
+
+Three cases differ from tyres:
+
+- `TORQUE_ARRAY` zero-fills all 18 slots before it stores rows, so a record's own
+  table replaces the parent's whole block and never mixes rows with it. A record
+  without one keeps the parent's rows. Because the row count is read from `+0x30`
+  as the tag is parsed, each torque entry also names the `MAX_RPM` declaration
+  (record and line) that was in the record at that moment: its own, an inherited
+  one, or the zero fill.
+- `+0xa4` is rewritten from `TURBO_MASS` whenever that tag is parsed, so its
+  entry names the `TURBO_MASS` declaration that produced it.
+- `+0x2c` may or may not be rewritten by `TORQUE_ARRAY` (the conditions above),
+  so its entry is labelled conditional and lists every possible origin: the
+  `TORQUE_ARRAY` declaration in effect, then whatever the offset held before,
+  down the chain to the root's zero fill. It does not pick one.
+
+Neither derived value is computed.
+
+`effective_engine_fields()` replays this and `text_database.py` writes it to
+`engines.json` as `effective_fields`. For each of the 51 engines with
+`:INHERIT_TYPE` it gives the `INHERIT_TYPE` line and parent and, for each of the
+20 mapped tags, the payload `offsets` and a `status` (`declared`, `inherited` or
+`not declared (zero-filled)`, as for tyres). Declared and inherited fields give
+the declared text `values` (and the `rows` of a torque array), the `source`
+record, its `source_line` and the `path` from the engine to the source.
+`TORQUE_ARRAY` adds `max_rpm`, and `TORQUE_ARRAY` and `TURBO_MASS` add `derived`
+entries for `+0x2c` and `+0xa4`, each with a `conditional` flag and its
+`origins`. `overwritten` and `unmapped` list early declarations and tags with no
+mapped store. No units, physics or row positions are computed.
+
+`engine_fields_by_recursion()` derives the same entries a second way, parent
+first by recursion over earlier records, and `verify_text_databases()` checks on
+the real demo that:
+
+- the effective record set is exactly the 51 inheriting engines;
+- the two derivations agree;
+- nothing is overwritten and no tag is unmapped;
+- every torque table was parsed with its own record's `MAX_RPM`;
+- the per-tag status counts equal `ENGINE_FIELD_COUNTS`.
+
+In the demo no field is zero-filled, because the five roots declare all 20
+tags. 38 inheriting engines declare their own `TORQUE_ARRAY`, each after its own
+`MAX_RPM`; the other 13 inherit the table. Of the 1,020 fields, 270 are declared
+by the engine itself, 510 come from its direct parent, 137 from two levels up and
+103 from three:
+
+| Tag | Declared | Inherited |
+|---|---|---|
+| `TORQUE_MODIFIER` | 51 | 0 |
+| `TORQUE_ARRAY`, `MAX_RPM` | 38 each | 13 each |
+| `ASPIRATION_TYPE` | 18 | 33 |
+| `ROUGHNESS` | 16 | 35 |
+| `CAPACITY`, `MAX_TURBO_PRESSURE`, `NUMBER_OF_TURBOS`, `TURBO_MASS` | 14 each | 37 each |
+| `FUEL_CUTOFF`, `NUMBER_OF_CYLINDERS` | 8 each | 43 each |
+| `FLYWHEEL_MASS` | 7 | 44 |
+| `LOCATION_TYPE`, `TICKOVER_RPM` | 6 each | 45 each |
+| `FLYWHEEL_RADIUS`, `MAX_FUELFLOW` | 4 each | 47 each |
+| `ACCELERATOR_SPEED`, `MAX_AIRFLOW`, `MAX_DELTA_FUELFLOW` | 3 each | 48 each |
+| `ENGINE_BRAKING` | 1 | 50 |
+
+A shared parent does not make two engines behave identically: each engine's
+own declarations replace the parent's.
+
+`INDIGO` stays a root as parsed and gets no `effective_fields` entry.
+`untagged_inherit_consequences()` writes, as `untagged_inherit_consequences`,
+what depends on its colon-less line: for each of the 16 mapped tags `INDIGO`
+does not declare, `if_ignored` (zero-filled) and `if_applied` (the entry it
+would get with `DEFAULT_TRACK` as its parent). It does not choose between them;
+see the [Open questions page](#open-questions).
 
 ## New finding: tyre payload and tables
 
@@ -418,8 +495,9 @@ from two levels up:
 | `MASS` | 4 | 104 |
 | `WET_MAGIC_GRIP_PERCENTAGE`, `TYRE_GRIP_DEPTH`, `ROLLING_RESISTANCE` | 2 each | 106 each |
 
-Engine inheritance in `ENGDATA.DAT` and the colon-less
-`INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` remain unresolved.
+Engine inheritance is resolved the same way in
+[Engine inheritance](#engine-inheritance); the colon-less
+`INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` remains unresolved.
 
 The tyre sites among the [194 byte-checked instruction sites](../analysis/selected/field-evidence.json)
 and [the loader's disassembly](../analysis/selected/load_tyre_database.asm)
@@ -462,22 +540,36 @@ the tyre page, with a link bar between the dossier pages. Each page lists the re
 file order, with each engine's `:INHERIT_TYPE` parent and torque array shape,
 and then shows every record's declarations exactly as written, in line order.
 Multi-row fields such as `TORQUE_ARRAY` appear as row tables with their
-dimensions. `:INHERIT_TYPE` links to the parent and is labelled unresolved: none
-of the parent's values are copied into the child, because engine inheritance is
-not resolved. The colon-less `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` is
-shown verbatim as an untagged line, not as inheritance, with a note that whether
-the game honours it is not established. The meaning and units of the values,
-including the torque arrays, are not interpreted. A "Loaded by" line near the
-top links the database's load and copy routines (`fr3_load_engine_database`
-`0x005227f0` and `fr3_copy_engine_record` `0x00522c80`, or
-`fr3_load_gearbox_database` `0x00523220` and `fr3_copy_gearbox_record`
-`0x00523470`) to their sections on `routines.html`, and each unresolved
-`:INHERIT_TYPE` note links the copy routine; the inheritance itself stays
-unresolved. The script exits non-zero
-without writing either page when an input is missing or malformed: records that
-are not a list or lack `type`, `line` or `fields`, duplicate record names, an
-`:INHERIT_TYPE` that does not name an earlier record of the same file, PE
-metadata without `sha256`, or a load or copy routine that is missing from
+dimensions. `:INHERIT_TYPE` links to the parent.
+
+Each of the 51 inheriting engines also gets an effective-fields table from
+`engines.json`'s `effective_fields` (see [Engine inheritance](#engine-inheritance)):
+for each mapped tag, its status, declared values (a torque array's shape), source
+record and line linked to that line's declaration row, path, and byte-checked
+store sites on `routines.html`. The section links the copy routine and its
+`INHERIT_TYPE` call site, and the torque zero fill. A torque row names the
+`MAX_RPM` declaration its row count was read from, with the `+0x30` read site.
+`+0x2c` and `+0xa4` get rows of their own, labelled derived (`+0x2c` also
+conditional, linking its three condition jumps), listing their possible origins
+and no value. A shared parent does not make two engines behave identically, and
+units and physics are not claimed.
+
+The colon-less `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` is shown verbatim
+as an untagged line, not as inheritance, with a note that whether the game
+honours it is not established. `INDIGO`'s section lists, labelled unresolved and
+linked to `questions.html#indigo`, the 16 tags that depend on the line, under
+both readings. Gearbox `:INHERIT_TYPE` (none in the demo) stays labelled
+unresolved. A "Loaded by" line near the top links the database's load and copy
+routines (`fr3_load_engine_database` `0x005227f0` and `fr3_copy_engine_record`
+`0x00522c80`, or `fr3_load_gearbox_database` `0x00523220` and
+`fr3_copy_gearbox_record` `0x00523470`) to their sections on `routines.html`.
+The script exits non-zero without writing either page when an input is missing
+or malformed: records that are not a list or lack `type`, `line` or `fields`,
+duplicate record names, an `:INHERIT_TYPE` that does not name an earlier record
+of the same file, `effective_fields` or `untagged_inherit_consequences` that
+differ from what `text_database.py` derives from the records, a linked site
+missing from `field-evidence.json` (`--evidence`), PE metadata without `sha256`,
+or a load or copy routine that is missing from
 `status.json` or labelled differently there. The pages are not committed because they hold game
 data; [`build_research.py`](#research-directory) builds them with the other
 research pages, for publishing per decision #46.

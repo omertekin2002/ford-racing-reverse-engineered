@@ -178,7 +178,8 @@ def check_text_databases(ctx):
                                     (ctx.root / "recovered/fr3_database_layouts.h").read_text())
     ctx.verified["text_databases"] = summary
     return {key: summary[key] for key in ("engine_records", "gearbox_records", "tyre_records", "torque_arrays",
-                                          "engine_mapped_tags", "tyre_effective_scalar_records", "sound_info_entries")}
+                                          "engine_mapped_tags", "engine_effective_field_records",
+                                          "tyre_effective_scalar_records", "sound_info_entries")}
 
 
 def check_tyre_table_dimensions(ctx):

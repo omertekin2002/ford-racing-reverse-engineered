@@ -20,7 +20,7 @@ from text_database import REPO_ROOT
 import tyre_dossier
 
 from test_pcg_catalogue import collection, entry
-from test_record_dossier import ENGINES, database
+from test_record_dossier import ENGINES, database, with_engine_fields
 from test_tyre_dossier import tyres_json
 
 SCRIPT = REPO_ROOT / "scripts/open_questions.py"
@@ -44,7 +44,7 @@ PARTS = ("observed", "matters", "readings", "decide")
 
 
 def engines_json(text=QUESTION_ENGINES):
-    return database(text, "DATA/ASCII/CARS/ENGDATA.DAT")
+    return with_engine_fields(database(text, "DATA/ASCII/CARS/ENGDATA.DAT"))
 
 
 def loading_entry(index, name, offset, width, height, extra=0, words=None):
@@ -391,7 +391,8 @@ class BackLinkTests(unittest.TestCase):
                                                                    "DATA/ASCII/CARS/GEARDATA.DAT")),
                              self.write("pe.json", PE), self.root, revision="0123abcd")
         page = (self.root / "engines.html").read_text(encoding="utf-8")
-        self.assertEqual(page.count('href="questions.html#indigo"'), 1)
+        # Once in INDIGO's list of fields that depend on the line, once on the line itself.
+        self.assertEqual(page.count('href="questions.html#indigo"'), 2)
         indigo = page[page.index('id="engine-INDIGO"'):]
         self.assertIn('(<a href="questions.html#indigo">open question</a>)', indigo[:indigo.index("</section>")])
         loner = page[page.index('id="engine-LONER"'):]

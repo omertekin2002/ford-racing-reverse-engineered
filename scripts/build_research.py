@@ -100,8 +100,9 @@ def copy_evidence(analysis, staging, files):
 
 def render_index(counts, pe, revision, evidence, answers=""):
     """Return the "Explore findings" entrance page; `answers` is the HTML of its answered questions."""
-    rows = (("engines.html", "Engines", "Each engine record's declarations as written. <code>:INHERIT_TYPE</code> "
-             "parents and untagged lines are labelled unresolved.", f'{counts["engines"]} engine records'),
+    rows = (("engines.html", "Engines", "Each engine record's declarations as written, and the declaration each "
+             "inheriting engine's fields end up with, traced to its record and line, with the byte-checked store "
+             "sites behind each. Untagged lines are labelled unresolved.", f'{counts["engines"]} engine records'),
             ("gearboxes.html", "Gearboxes", "Each gearbox record's declarations as written.",
              f'{counts["gearboxes"]} gearbox records'),
             ("tyres.html", "Tyres", "Each tyre's declarations beside the source of its five resolved tables, the "
@@ -156,7 +157,8 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
                                                   staging / tyre_dossier.PAGE, revision, hrefs=tyre_hrefs,
                                                   entrance=True, status_path=status_path),
                       **record_dossier.build(work / "engines.json", work / "gearboxes.json", pe_path, staging, revision,
-                                               entrance=True, status_path=status_path)}
+                                               entrance=True, status_path=status_path,
+                                               evidence_path=analysis / TYRE_EVIDENCE["evidence"])}
             counts["questions"] = open_questions.build(
                 work / "engines.json", work / "tyres.json", analysis / QUESTION_EVIDENCE["evidence"],
                 analysis / QUESTION_EVIDENCE["pcg_index"], pe_path, staging / open_questions.PAGE, revision,

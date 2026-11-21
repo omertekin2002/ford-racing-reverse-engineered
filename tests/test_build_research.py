@@ -10,6 +10,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import build_research
+import record_dossier
 from dossier_common import INDEX_PAGE, NOTICE_LINKS, rights_notice
 from fr3_common import DEMO_PAGE
 from text_database import DATABASES, REPO_ROOT, SCALAR_COPY_CALL, SCALAR_COPY_SPAN, TYRE_SCALAR_STORES
@@ -200,7 +201,10 @@ class BuildTests(ResearchTestCase):
         self.assertEqual(sites, {f"site-{va:08x}" for group in (*ACCESSOR_SITES.values(), *LOADER_SITES.values(),
                                                                  scalar, {SCALAR_COPY_CALL}, copies)
                                  for va in group})
-        self.assertEqual(linked["engines.html"], {"fr3_load_engine_database", "fr3_copy_engine_record"})
+        # The engine page also links each effective-fields row's store sites, the conditions on +0x2c, the INHERIT_TYPE
+        # copy call and the torque table's zero fill and MAX_RPM read.
+        self.assertEqual(linked["engines.html"], {"fr3_load_engine_database", "fr3_copy_engine_record",
+                                                  *(f"site-{va:08x}" for va in record_dossier.engine_site_vas())})
         self.assertEqual(linked["gearboxes.html"], {"fr3_load_gearbox_database", "fr3_copy_gearbox_record"})
 
     def test_renamed_linked_routine_refuses_the_build_and_keeps_the_previous_output(self):

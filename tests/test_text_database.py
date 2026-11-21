@@ -11,7 +11,10 @@ from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import text_database
-from text_database import (ENGINE_COPY, ENGINE_FIELD_STORES, ENGINE_LOADER_SPAN, byte_ranges, compare_immediate,
+from text_database import (ENGINE_COPY, ENGINE_FIELD_COUNTS, ENGINE_FIELD_STORES, ENGINE_LOADER_SPAN, byte_ranges,
+                           check_effective_engine_fields, compare_immediate, effective_engine_fields,
+                           engine_field_counts, engine_fields_by_recursion, torque_without_own_max_rpm,
+                           untagged_inherit_consequences,
                            engine_evidence_problems, engine_layout_problems, load_layout_header, load_tag_ids,
                            memory_operand, unmapped_engine_tags)
 from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, RESOLVED_TYRE_TABLES, SCALAR_COPY_CALL, SCALAR_COPY_OFFSETS,
@@ -30,6 +33,7 @@ except ImportError:
     capstone = None
 
 TAGS = {"CAPACITY", "LOCATION_TYPE", "INHERIT_TYPE", "TORQUE_ARRAY", "MAX_RPM", "ENGINE_BRAKING", *GEARBOX_TAGS,
+        *ENGINE_FIELD_STORES,
         *TYRE_SCALAR_STORES, "SOUND_INFO", "START_RPM", *TYRE_TABLES}
 VALID = """//////////////////////
 // Banner comment
@@ -628,6 +632,205 @@ class EffectiveScalarsTests(unittest.TestCase):
         self.assertEqual(counts["MASS"], {ZERO_FILLED: 2})
 
 
+ENGINE_TAGS = {*ENGINE_FIELD_STORES, "INHERIT_TYPE", "ADDITIONAL_BRAKING"}
+
+
+def parse_engines(*records):
+    return parse("".join(records) + ":END\n", ENGINE_TAGS)
+
+
+def engine_entry(tag, status, path, source=None, line=None, values=None, **extra):
+    entry = {"status": status, "path": path, "offsets": list(ENGINE_FIELD_STORES[tag]["offsets"])}
+    if status != ZERO_FILLED:
+        entry = {"status": status, "values": values, "source": source, "source_line": line, "path": path,
+                 "offsets": entry["offsets"]}
+    return {**entry, **extra}
+
+
+def origin(source, line, path):
+    return {"status": "declared" if len(path) == 1 else "inherited", "source": source, "source_line": line, "path": path}
+
+
+def zero(path):
+    return {"status": ZERO_FILLED, "path": path}
+
+
+# A depth-3 chain: ROOT declares MAX_RPM, a torque table and TURBO_MASS; MID and LEAF override one field each.
+CHAIN = (":TYPE ROOT\n:CAPACITY 2.0\n:MAX_RPM 6000\n:TORQUE_ARRAY\n0 100\n1000 200\n:TURBO_MASS 0.5\n",
+         ":TYPE MID\n:INHERIT_TYPE ROOT\n:ROUGHNESS 0.1\n",
+         ":TYPE LEAF\n:INHERIT_TYPE MID\n:CAPACITY 3.5\n",
+         ":TYPE TIP\n:INHERIT_TYPE LEAF\n:TORQUE_MODIFIER 1.2\n")
+
+
+class EffectiveEngineFieldsTests(unittest.TestCase):
+    def fields(self, records, name):
+        effective = effective_engine_fields(records)
+        # Every case also checks that the parent-first derivation agrees with the file-order replay.
+        check_effective_engine_fields(records, effective)
+        return effective[name]["fields"]
+
+    def test_depth_three_chain_overrides_one_field_and_inherits_the_rest(self):
+        records = parse_engines(*CHAIN)
+        fields = self.fields(records, "TIP")
+        self.assertEqual(list(fields), list(ENGINE_FIELD_STORES))
+        self.assertEqual(fields["TORQUE_MODIFIER"], engine_entry("TORQUE_MODIFIER", "declared", ["TIP"], "TIP", 16, [1.2]))
+        self.assertEqual(fields["CAPACITY"], engine_entry("CAPACITY", "inherited", ["TIP", "LEAF"], "LEAF", 13, [3.5]))
+        self.assertEqual(fields["ROUGHNESS"],
+                         engine_entry("ROUGHNESS", "inherited", ["TIP", "LEAF", "MID"], "MID", 10, [0.1]))
+        self.assertEqual(fields["MAX_RPM"],
+                         engine_entry("MAX_RPM", "inherited", ["TIP", "LEAF", "MID", "ROOT"], "ROOT", 3, [6000]))
+        self.assertEqual(fields["FUEL_CUTOFF"], engine_entry("FUEL_CUTOFF", ZERO_FILLED, ["TIP", "LEAF", "MID", "ROOT"]))
+        self.assertEqual(self.fields(records, "MID")["CAPACITY"],
+                         engine_entry("CAPACITY", "inherited", ["MID", "ROOT"], "ROOT", 2, [2.0]))
+        self.assertEqual(set(effective_engine_fields(records)), {"MID", "LEAF", "TIP"})
+
+    def test_declaration_before_inherit_type_is_overwritten(self):
+        records = parse_engines(":TYPE ROOT\n:CAPACITY 2.0\n",
+                                ":TYPE CHILD\n:CAPACITY 9.0\n:FUEL_CUTOFF 0.7\n:INHERIT_TYPE ROOT\n:ROUGHNESS 0.2\n")
+        entry = effective_engine_fields(records)["CHILD"]
+        check_effective_engine_fields(records, effective_engine_fields(records))
+        self.assertEqual(entry["overwritten"], [{"tag": "CAPACITY", "line": 4, "values": [9.0]},
+                                                {"tag": "FUEL_CUTOFF", "line": 5, "values": [0.7]}])
+        self.assertEqual(entry["fields"]["CAPACITY"], engine_entry("CAPACITY", "inherited", ["CHILD", "ROOT"], "ROOT", 2, [2.0]))
+        # ROOT never declares FUEL_CUTOFF, so the copy overwrites CHILD's with ROOT's zero fill.
+        self.assertEqual(entry["fields"]["FUEL_CUTOFF"], engine_entry("FUEL_CUTOFF", ZERO_FILLED, ["CHILD", "ROOT"]))
+        self.assertEqual(entry["fields"]["ROUGHNESS"]["status"], "declared")
+        self.assertEqual(entry["inherit_type"], {"line": 6, "parent": "ROOT"})
+
+    def test_own_torque_array_replaces_the_whole_parent_table(self):
+        records = parse_engines(":TYPE ROOT\n:MAX_RPM 6000\n:TORQUE_ARRAY\n0 1\n1 2\n2 3\n3 4\n",
+                                ":TYPE OWN\n:INHERIT_TYPE ROOT\n:MAX_RPM 3000\n:TORQUE_ARRAY\n0 9\n1 8\n",
+                                ":TYPE COPY\n:INHERIT_TYPE ROOT\n")
+        own = self.fields(records, "OWN")["TORQUE_ARRAY"]
+        # Only the child's two rows: the zero fill clears the parent's four before the child's rows are stored.
+        self.assertEqual((own["source"], own["source_line"], own["rows"]), ("OWN", 11, [[0, 9], [1, 8]]))
+        self.assertEqual(own["offsets"], ["0x2c", "0x3c"])
+        copied = self.fields(records, "COPY")["TORQUE_ARRAY"]
+        self.assertEqual((copied["status"], copied["source"], copied["source_line"], copied["path"], copied["rows"]),
+                         ("inherited", "ROOT", 3, ["COPY", "ROOT"], [[0, 1], [1, 2], [2, 3], [3, 4]]))
+
+    def test_torque_array_names_the_max_rpm_present_when_it_was_parsed(self):
+        records = parse_engines(":TYPE ROOT\n:MAX_RPM 6000\n:TORQUE_ARRAY\n0 1\n",
+                                ":TYPE OWN\n:INHERIT_TYPE ROOT\n:MAX_RPM 7000\n:TORQUE_ARRAY\n0 2\n",
+                                ":TYPE LATE\n:INHERIT_TYPE ROOT\n:TORQUE_ARRAY\n0 3\n:MAX_RPM 8000\n",
+                                ":TYPE BARE\n:TORQUE_ARRAY\n0 4\n:MAX_RPM 5000\n",
+                                ":TYPE ZERO\n:INHERIT_TYPE BARE\n",
+                                ":TYPE EARLY\n:MAX_RPM 1\n:INHERIT_TYPE BARE\n:TORQUE_ARRAY\n0 5\n")
+        effective = effective_engine_fields(records)
+        check_effective_engine_fields(records, effective)
+        rpm = {name: effective[name]["fields"]["TORQUE_ARRAY"]["max_rpm"] for name in ("OWN", "LATE", "ZERO", "EARLY")}
+        self.assertEqual(rpm["OWN"], origin("OWN", 7, ["OWN"]))
+        # LATE's own MAX_RPM comes after its table, so the table was parsed with the MAX_RPM copied from ROOT.
+        self.assertEqual(rpm["LATE"], origin("ROOT", 2, ["LATE", "ROOT"]))
+        # BARE's table came before any MAX_RPM, so it was parsed with the zero fill; ZERO inherits that table.
+        self.assertEqual(rpm["ZERO"], zero(["BARE"]))
+        # EARLY's own MAX_RPM was overwritten by the copy, so its table was parsed with BARE's.
+        self.assertEqual(rpm["EARLY"], origin("BARE", 18, ["EARLY", "BARE"]))
+        self.assertEqual(torque_without_own_max_rpm(effective),
+                         [("LATE", "LATE"), ("ZERO", "BARE"), ("EARLY", "EARLY")])
+
+    def test_derived_offsets_name_their_producers_without_a_value(self):
+        records = parse_engines(*CHAIN, ":TYPE TURBO\n:INHERIT_TYPE ROOT\n:TURBO_MASS 0.25\n:TORQUE_ARRAY\n0 7\n")
+        tip = self.fields(records, "TIP")
+        self.assertEqual(tip["TORQUE_ARRAY"]["derived"], {"0x2c": {
+            "label": "derived", "conditional": True,
+            "origins": [origin("ROOT", 4, ["TIP", "LEAF", "MID", "ROOT"]), zero(["TIP", "LEAF", "MID", "ROOT"])]}})
+        self.assertEqual(tip["TURBO_MASS"]["derived"], {"0xa4": {
+            "label": "derived", "conditional": False, "origins": [origin("ROOT", 7, ["TIP", "LEAF", "MID", "ROOT"])]}})
+        turbo = self.fields(records, "TURBO")
+        # +0x2c may come from TURBO's own table, or keep what the copy brought: ROOT's, or ROOT's zero fill.
+        self.assertEqual(turbo["TORQUE_ARRAY"]["derived"]["0x2c"]["origins"],
+                         [origin("TURBO", 20, ["TURBO"]), origin("ROOT", 4, ["TURBO", "ROOT"]), zero(["TURBO", "ROOT"])])
+        # +0xa4 is always rewritten from TURBO's own TURBO_MASS.
+        self.assertEqual(turbo["TURBO_MASS"]["derived"]["0xa4"]["origins"], [origin("TURBO", 19, ["TURBO"])])
+        for fields in (tip, turbo):
+            for field in fields.values():
+                for derived in field.get("derived", {}).values():
+                    self.assertTrue(all("values" not in item for item in derived["origins"]))
+        self.assertEqual({tag for tag, field in tip.items() if "derived" in field}, {"TORQUE_ARRAY", "TURBO_MASS"})
+
+    def test_unmapped_tag_gets_no_value(self):
+        records = parse_engines(":TYPE ROOT\n", ":TYPE CHILD\n:INHERIT_TYPE ROOT\n:ADDITIONAL_BRAKING 1\n")
+        entry = effective_engine_fields(records)["CHILD"]
+        self.assertEqual(entry["unmapped"], [{"tag": "ADDITIONAL_BRAKING", "line": 4, "status": UNMAPPED}])
+        self.assertNotIn("ADDITIONAL_BRAKING", entry["fields"])
+
+    def test_inherit_type_naming_a_later_or_missing_record_is_refused(self):
+        def records(parent):
+            return [{"type": "A", "line": 1, "fields": {"INHERIT_TYPE": {"line": 2, "values": [parent], "rows": []}},
+                     "untagged": []},
+                    {"type": "B", "line": 3, "fields": {"CAPACITY": {"line": 4, "values": [1], "rows": []}}, "untagged": []}]
+        for parent in ("B", "MISSING", "A"):
+            for resolve in (effective_engine_fields, engine_fields_by_recursion):
+                with self.subTest(parent=parent, resolve=resolve.__name__), \
+                        self.assertRaisesRegex(TextDatabaseError, "which is not an earlier record"):
+                    resolve(records(parent))
+
+    def test_checker_refuses_a_tampered_entry(self):
+        records = parse_engines(*CHAIN)
+        plants = {"value": lambda f: f["CAPACITY"].update(values=[2.0]),
+                  "source": lambda f: f["CAPACITY"].update(source="ROOT", source_line=2),
+                  "status": lambda f: f["MAX_RPM"].update(status="declared"),
+                  "max_rpm": lambda f: f["TORQUE_ARRAY"]["max_rpm"].update(status=ZERO_FILLED),
+                  "derived": lambda f: f["TORQUE_ARRAY"]["derived"]["0x2c"]["origins"].pop(),
+                  "missing tag": lambda f: f.pop("ROUGHNESS")}
+        for name, plant in plants.items():
+            with self.subTest(plant=name):
+                effective = effective_engine_fields(records)
+                plant(effective["TIP"]["fields"])
+                with self.assertRaisesRegex(ValueError, "disagrees with the parent-first derivation: TIP"):
+                    check_effective_engine_fields(records, effective)
+        effective = effective_engine_fields(records)
+        del effective["MID"]
+        with self.assertRaisesRegex(ValueError, "Engine effective field record set mismatch"):
+            check_effective_engine_fields(records, effective)
+
+    def test_field_counts(self):
+        counts = engine_field_counts(effective_engine_fields(parse_engines(*CHAIN)))
+        self.assertEqual(counts["CAPACITY"], {"inherited": 2, "declared": 1})
+        self.assertEqual(counts["FUEL_CUTOFF"], {ZERO_FILLED: 3})
+        self.assertEqual(list(counts), list(ENGINE_FIELD_STORES))
+
+    def test_records_are_not_mutated(self):
+        records = parse_engines(*CHAIN, ":TYPE LONE\nINHERIT_TYPE ROOT\n:CAPACITY 1\n")
+        before = copy.deepcopy(records)
+        effective_engine_fields(records)
+        engine_fields_by_recursion(records)
+        untagged_inherit_consequences(records)
+        self.assertEqual(records, before)
+
+
+class UntaggedInheritConsequenceTests(unittest.TestCase):
+    def test_lists_both_readings_for_each_undeclared_tag(self):
+        records = parse_engines(*CHAIN, ":TYPE INDIGO\nINHERIT_TYPE LEAF\n:CAPACITY 4.0\n:MAX_RPM 9000\n")
+        consequences = untagged_inherit_consequences(records)
+        self.assertEqual(list(consequences), ["INDIGO"])
+        entry = consequences["INDIGO"]
+        self.assertEqual({key: entry[key] for key in ("line", "tokens", "parent", "status", "overwritten_if_applied")},
+                         {"line": 18, "tokens": ["INHERIT_TYPE", "LEAF"], "parent": "LEAF", "status": "unresolved",
+                          "overwritten_if_applied": []})
+        self.assertEqual(set(entry["fields"]), set(ENGINE_FIELD_STORES) - {"CAPACITY", "MAX_RPM"})
+        self.assertEqual(entry["fields"]["ROUGHNESS"], {
+            "if_ignored": zero(["INDIGO"]),
+            "if_applied": engine_entry("ROUGHNESS", "inherited", ["INDIGO", "LEAF", "MID"], "MID", 10, [0.1])})
+        self.assertEqual(entry["fields"]["FUEL_CUTOFF"]["if_applied"]["status"], ZERO_FILLED)
+        # INDIGO stays a root as parsed: it gets no effective entry.
+        self.assertNotIn("INDIGO", effective_engine_fields(records))
+
+    def test_declarations_before_the_line_would_be_overwritten(self):
+        records = parse_engines(":TYPE ROOT\n:CAPACITY 1\n", ":TYPE LONE\n:CAPACITY 2\nINHERIT_TYPE ROOT\n")
+        self.assertEqual(untagged_inherit_consequences(records)["LONE"]["overwritten_if_applied"],
+                         [{"tag": "CAPACITY", "line": 4, "values": [2]}])
+
+    def test_other_untagged_lines_have_no_consequence(self):
+        for text in (":TYPE LONE\nINHERIT_TYPE LATER\n:TYPE LATER\n",  # names no earlier record
+                     ":TYPE LONE\nINHERIT_TYPE ROOT ROOT\n",  # extra token
+                     ":TYPE LONE\n:INHERIT_TYPE ROOT\nINHERIT_TYPE ROOT\n",  # already inherits
+                     ":TYPE LONE\nCAPACITY 3\n"):  # another tag
+            with self.subTest(text=text):
+                self.assertEqual(untagged_inherit_consequences(parse_engines(":TYPE ROOT\n", text)), {})
+
+
 def site_va(site):
     return int(site, 16)
 
@@ -980,6 +1183,16 @@ class EngineEvidenceTests(unittest.TestCase):
         self.assertEqual(derived, {("TORQUE_ARRAY", "0x2c"), ("TURBO_MASS", "0xa4")})
         self.assertEqual(ENGINE_FIELD_STORES["TORQUE_ARRAY"]["offsets"]["0x3c"]["slots"], 18)
 
+    def test_conditional_store_sites_must_be_byte_checked_jumps_about_their_tag(self):
+        self.assertReports("TORQUE_ARRAY + 0x2c condition: no byte-checked engine loader site at 0x005229b6",
+                           self.problems(self.without(0x005229b6)))
+        evidence = [{**site, "bytes": "90"} if site["va"] == 0x005229e9 else site for site in self.evidence]
+        self.assertReports("TORQUE_ARRAY + 0x2c: condition site 0x005229e9 (90) is not a conditional jump",
+                           self.problems(evidence))
+        evidence = [{**site, "claim": "MAX_RPM jumps"} if site["va"] == 0x00522980 else site for site in self.evidence]
+        self.assertReports("TORQUE_ARRAY + 0x2c: condition site 0x00522980 (7356) is not a conditional jump whose "
+                           "claim is about TORQUE_ARRAY", self.problems(evidence))
+
     def test_wrong_id_is_reported(self):
         problems = self.problems(stores=drifted(ENGINE_FIELD_STORES, ("MAX_RPM", "id"), 0xb1))
         self.assertIn("MAX_RPM: analysis/tags.json gives registry ID 0xb0, the map says 0xb1", problems)
@@ -1177,18 +1390,29 @@ class UnmappedEngineTagTests(unittest.TestCase):
         self.assertEqual(unmapped_engine_tags(records[:1], {**ENGINE_FIELD_STORES, "ADDITIONAL_BRAKING": {}}), {})
 
 
-def engine_file():
-    lines = [":TYPE BASE0"]
-    for i in range(5):
-        if i:
-            lines.append(f":TYPE BASE{i}")
-        lines += [":TORQUE_ARRAY"] + [f"{rpm}.0 100.0" for rpm in range(5 + i)]
-    for i in range(51):
-        lines += [f":TYPE {'INDIGO' if i == 50 else f'CHILD{i}'}", f":INHERIT_TYPE BASE{i % 5}"]
-        if i < 38:
-            lines += [":TORQUE_ARRAY"] + [f"{rpm}.0 100.0" for rpm in range(10)]
-    # Mirror the demo's single colon-less tag line, which sits on line 1410 inside INDIGO.
-    lines += ["//"] * (1409 - len(lines)) + ["INHERIT_TYPE DEFAULT_TRACK", ":END"]
+def engine_tags(tags, rows):
+    """Declare each tag in ENGINE_FIELD_STORES order (MAX_RPM before TORQUE_ARRAY), the table with `rows` rows."""
+    lines = []
+    for tag in sorted(tags, key=lambda tag: (tag == "TORQUE_ARRAY", list(ENGINE_FIELD_STORES).index(tag))):
+        lines += [f":{tag}"] + [f"{rpm}.0 100.0" for rpm in range(rows)] if tag == "TORQUE_ARRAY" else [f":{tag} 1"]
+    return lines
+
+
+def engine_file(parents=None):
+    """Mirror the demo's engine database shape: four roots that declare every mapped tag, 51 inheriting engines
+    (child i declares a tag after its INHERIT_TYPE when i is below the tag's declared count in ENGINE_FIELD_COUNTS),
+    and the root INDIGO, whose colon-less `INHERIT_TYPE DEFAULT_TRACK` line sits on line 1410."""
+    roots = ["DEFAULT_CLASSIC", "DEFAULT_MODERN", "DEFAULT_OFFROAD", "DEFAULT_TRACK"]
+    parents = parents or [roots[i % 4] if i < 8 else f"CHILD{i - 8}" for i in range(51)]
+    lines = []
+    for i, name in enumerate(roots):
+        lines += [f":TYPE {name}", *engine_tags(ENGINE_FIELD_STORES, 5 + i)]
+    for i, parent in enumerate(parents):
+        declared = [tag for tag, counts in ENGINE_FIELD_COUNTS.items() if i < counts.get("declared", 0)]
+        lines += [f":TYPE CHILD{i}", f":INHERIT_TYPE {parent}", *engine_tags(declared, 10)]
+    lines += [":TYPE INDIGO"]
+    lines += ["//"] * (1409 - len(lines)) + ["INHERIT_TYPE DEFAULT_TRACK"]
+    lines += [*engine_tags(["ASPIRATION_TYPE", "MAX_RPM", "TORQUE_MODIFIER", "TORQUE_ARRAY"], 9), ":END"]
     return "\r\n".join(lines) + "\r\n"
 
 
@@ -1256,6 +1480,10 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.assertEqual(summary["tyre_inheritances"], 108)
         self.assertEqual(summary["tyre_tables"], TYRE_TABLES)
         self.assertEqual(summary["tyre_table_sources"], TYRE_TABLE_SOURCES)
+        self.assertEqual(summary["engine_effective_field_records"], 51)
+        self.assertEqual(summary["engine_effective_field_counts"], ENGINE_FIELD_COUNTS)
+        self.assertEqual(summary["indigo_dependent_tags"],
+                         sorted(set(ENGINE_FIELD_STORES) - {"ASPIRATION_TYPE", "MAX_RPM", "TORQUE_MODIFIER", "TORQUE_ARRAY"}))
         self.assertEqual(summary["tyre_effective_scalar_records"], 108)
         self.assertEqual(summary["tyre_effective_scalar_counts"], TYRE_SCALAR_COUNTS)
         self.assertEqual(summary["sound_info_entries"], 40)
@@ -1321,7 +1549,18 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.assertEqual(len(tyres["effective_scalars"]), 108)
         self.assertNotIn("DEFAULT_ROAD", tyres["effective_scalars"])
         self.assertEqual(tyres["effective_scalars"]["TYRE100"]["fields"]["MASS"]["path"], ["TYRE100", "DEFAULT_TRACK"])
-        self.assertNotIn("resolved_tables", json.loads((output / "engines.json").read_text()))
+        engines = json.loads((output / "engines.json").read_text())
+        self.assertNotIn("resolved_tables", engines)
+        records = read_database(self.game, text_database.DATABASES["engines"], TAGS)["records"]
+        self.assertEqual(list(engines), ["source", "sha256", "records", "effective_fields",
+                                         "untagged_inherit_consequences"])
+        self.assertEqual(engines["effective_fields"], effective_engine_fields(records))
+        self.assertEqual(len(engines["effective_fields"]), 51)
+        self.assertNotIn("INDIGO", engines["effective_fields"])
+        self.assertEqual(engines["untagged_inherit_consequences"], untagged_inherit_consequences(records))
+        self.assertEqual(list(engines["untagged_inherit_consequences"]), ["INDIGO"])
+        self.assertEqual(engines["effective_fields"]["CHILD45"]["fields"]["TORQUE_ARRAY"]["path"],
+                         ["CHILD45", "CHILD37"])
 
     def test_reject_bad_table_provenance(self):
         def tampered(records):
@@ -1395,9 +1634,10 @@ class VerifyTextDatabaseTests(unittest.TestCase):
             verify_text_databases(self.game, TAGS, engine_only)
 
     def test_reject_unmapped_engine_tag(self):
-        self.write("engines", engine_file().replace(":TYPE BASE1\r\n", ":TYPE BASE1\r\n:ADDITIONAL_BRAKING 0.5\r\n"))
+        self.write("engines", engine_file().replace(":TYPE DEFAULT_MODERN\r\n",
+                                                    ":TYPE DEFAULT_MODERN\r\n:ADDITIONAL_BRAKING 0.5\r\n"))
         with self.assertRaisesRegex(ValueError, "Engine tags without a byte-checked store: ADDITIONAL_BRAKING "
-                                                "\\(first in BASE1, line 9\\)"):
+                                                "\\(first in DEFAULT_MODERN, line 28\\)"):
             verify_text_databases(self.game, TAGS | {"ADDITIONAL_BRAKING"})
 
     def test_reject_engine_store_without_evidence(self):
@@ -1413,8 +1653,57 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "disagree with recovered/fr3_database_layouts.h: MAX_FUELFLOW"):
             verify_text_databases(self.game, TAGS, header=header)
 
+    def test_reject_engine_field_before_inherit_type(self):
+        self.write("engines", engine_file().replace(":TYPE CHILD40\r\n:INHERIT_TYPE CHILD32\r\n",
+                                                    ":TYPE CHILD40\r\n:CAPACITY 2\r\n:INHERIT_TYPE CHILD32\r\n"))
+        with self.assertRaisesRegex(ValueError, "Engine fields declared before INHERIT_TYPE: CHILD40"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_torque_array_without_its_own_max_rpm(self):
+        # CHILD37's table now comes before its MAX_RPM, so it is parsed with the MAX_RPM copied from its parent;
+        # CHILD45 inherits that table.
+        text = engine_file()
+        start = text.index(":TYPE CHILD37\r\n")
+        record = text[start:text.index(":TYPE CHILD38\r\n")]
+        moved = record.replace(":MAX_RPM 1\r\n", "") + ":MAX_RPM 1\r\n"
+        self.write("engines", text.replace(record, moved))
+        with self.assertRaisesRegex(ValueError, "TORQUE_ARRAY parsed without its record's own MAX_RPM: CHILD37 \\(from "
+                                                "CHILD37\\), CHILD45 \\(from CHILD37\\)"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_wrong_engine_field_counts(self):
+        self.write("engines", engine_file().replace(":TYPE CHILD50\r\n:INHERIT_TYPE CHILD42\r\n:TORQUE_MODIFIER 1\r\n",
+                                                    ":TYPE CHILD50\r\n:INHERIT_TYPE CHILD42\r\n:TORQUE_MODIFIER 1\r\n"
+                                                    ":CAPACITY 1\r\n"))
+        with self.assertRaisesRegex(ValueError, "Engine effective field counts mismatch"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_engine_fields_that_disagree_with_the_independent_derivation(self):
+        # Pointing one field at another source keeps every status count, so only the derivation catches it.
+        def tampered(records):
+            entries = effective_engine_fields(records)
+            entries["CHILD45"]["fields"]["CAPACITY"].update(source="DEFAULT_MODERN", source_line=28)
+            return entries
+        with mock.patch.object(text_database, "effective_engine_fields", tampered), \
+                self.assertRaisesRegex(ValueError, "disagrees with the parent-first derivation: CHILD45 CAPACITY"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_wrong_engine_effective_records(self):
+        def tampered(records):
+            entries = effective_engine_fields(records)
+            del entries["CHILD7"]
+            return entries
+        with mock.patch.object(text_database, "effective_engine_fields", tampered), \
+                self.assertRaisesRegex(ValueError, "Engine effective field record set mismatch"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_missing_indigo_consequence(self):
+        self.write("engines", engine_file().replace("//\r\nINHERIT_TYPE DEFAULT_TRACK\r\n", "//\r\nINHERIT_TYPE LATER\r\n"))
+        with self.assertRaisesRegex(ValueError, "colon-less INHERIT_TYPE line to an earlier record: none; expected INDIGO"):
+            verify_text_databases(self.game, TAGS)
+
     def test_reject_wrong_engine_count(self):
-        self.write("engines", engine_file().replace(":TYPE CHILD49\r\n:INHERIT_TYPE BASE4\r\n", ""))
+        self.write("engines", engine_file().replace(":TYPE CHILD49\r\n:INHERIT_TYPE CHILD41\r\n:TORQUE_MODIFIER 1\r\n", ""))
         with self.assertRaisesRegex(ValueError, "Engine record count mismatch"):
             verify_text_databases(self.game, TAGS)
 
