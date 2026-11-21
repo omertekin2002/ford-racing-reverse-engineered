@@ -156,10 +156,9 @@ class RecordDossierPageTests(RecordDossierTestCase):
                 self.assertTrue(lines)
                 self.assertTrue(all(re.fullmatch(rf"{prefix}-({'|'.join(names)})-line-\d+", anchor) for anchor in lines))
                 stores = ([f"gearbox-store-{tag}" for tag in record_dossier.gearbox_tags()] if prefix == "gearbox"
-                          else [])
+                          else [f"engine-store-{tag}" for tag in record_dossier.engine_tags()])
                 self.assertEqual([anchor for anchor in links.ids if "-line-" not in anchor],
-                                 ["rights-notice", "rights-title",
-                                  *(["field-stores", *stores] if prefix == "gearbox" else []),
+                                 ["rights-notice", "rights-title", "field-stores", *stores,
                                   *(anchor for name in names for anchor in (f"{prefix}-{name}",
                                                                            f"{prefix}-{name}-torque-array")
                                     if not anchor.endswith("-torque-array") or name in torque)])
@@ -224,7 +223,7 @@ class RecordDossierPageTests(RecordDossierTestCase):
 
     def test_gearbox_store_table_links_each_tag_to_its_sites(self):
         engines, gearboxes = self.build()
-        self.assertNotIn("Where each field is stored", engines)
+        self.assertNotIn("gearbox-store-", engines)
         table = gearboxes[gearboxes.index('<h2 id="field-stores">'):gearboxes.index("<h2>Summary</h2>")]
         rows = re.findall(r'<tr id="gearbox-store-(\w+)"><td><code>(\w+)</code></td><td><code>\+ (0x[0-9a-f]+)</code></td><td>(\w+)</td>'
                           r"<td><code>(\w+)</code></td><td>(.*?)</td><td>(.*?)</td><td>(.*?)</td></tr>", table)
@@ -256,6 +255,54 @@ class RecordDossierPageTests(RecordDossierTestCase):
         self.assertIn('<code>:INHERIT_TYPE</code> calls the record copy <a href="routines.html#fr3_copy_gearbox_record">'
                       '<code>fr3_copy_gearbox_record</code></a> (<a href="routines.html#site-00523339">', table)
         self.assertIn("No demo gearbox declares <code>:INHERIT_TYPE</code>, so this page resolves none.", table)
+
+    def test_engine_store_table_links_each_tag_to_its_sites(self):
+        engines, gearboxes = self.build()
+        self.assertNotIn("engine-store-", gearboxes)
+        table = engines[engines.index('<h2 id="field-stores">'):engines.index("<h2>Summary</h2>")]
+        rows = dict(re.findall(r'<tr id="engine-store-(\w+)">(.*?)</tr>', table))
+        # One row per mapped tag, in payload order of its lowest offset.
+        self.assertEqual(list(rows), record_dossier.engine_tags())
+        self.assertEqual(len(rows), len(ENGINE_FIELD_STORES))
+        lowest = [min(int(offset, 16) for offset in ENGINE_FIELD_STORES[tag]["offsets"]) for tag in rows]
+        self.assertEqual(lowest, sorted(lowest))
+        self.assertEqual(lowest[0], 0x14)
+        for tag, entry in ENGINE_FIELD_STORES.items():
+            with self.subTest(tag=tag):
+                cells = re.findall(r"<td>(.*?)</td>", rows[tag])
+                self.assertEqual(cells[0], f"<code>{tag}</code>")
+                where, widths, fields, compare, stores, notes = cells[1:]
+                self.assertEqual(widths.split("<br>"), [store["width"] for store in entry["offsets"].values()])
+                self.assertEqual(fields.split("<br>"), [f'<code>{store["field"]}</code>'
+                                                        for store in entry["offsets"].values()])
+                self.assertEqual(compare, f'<code>cmp eax, 0x{entry["id"]:x}</code> <a href="routines.html#site-'
+                                          f'{int(entry["compare"], 16):08x}"><code>{entry["compare"]}</code></a>')
+                for offset, store in entry["offsets"].items():
+                    self.assertIn(f"<code>+ {offset}</code>", where)
+                    for va in store["sites"]:
+                        self.assertIn(f'<a href="routines.html#site-{int(va, 16):08x}"><code>{va}</code></a>', stores)
+                    # A derived offset is labelled and given no value.
+                    self.assertEqual(f"<code>+ {offset}</code> <span class=\"label\">derived</span>" in where,
+                                     bool(store.get("derived")))
+                    for va in store.get("conditional", []):
+                        self.assertIn(f"routines.html#site-{int(va, 16):08x}", notes)
+                self.assertEqual("enum word" in notes, "enum_table" in entry)
+                if "enum_table" in entry:
+                    self.assertIn(f'<code>{entry["enum_table"]["va"]}</code> (<a href="routines.html#site-'
+                                  f'{int(entry["enum_table"]["site"], 16):08x}">', notes)
+        torque = ENGINE_FIELD_STORES["TORQUE_ARRAY"]
+        cells = re.findall(r"<td>(.*?)</td>", rows["TORQUE_ARRAY"])
+        self.assertEqual(cells[1], '<code>+ 0x2c</code> <span class="label">derived</span>, '
+                                   '<span class="label">conditional</span>, no value<br><code>+ 0x3c</code>, 18 slots')
+        for va in (torque["zero_fill"]["call"], torque["row_count"]["site"]):
+            self.assertIn(f"routines.html#site-{int(va, 16):08x}", cells[6])
+        self.assertIn("zero-fills all 18 slots at <code>+ 0x3c</code> first", cells[6])
+        self.assertIn("row count is read from the <code>MAX_RPM</code> value at <code>+ 0x30</code>", cells[6])
+        self.assertIn('<code>+ 0xa4</code> <span class="label">derived</span>, no value',
+                      re.findall(r"<td>(.*?)</td>", rows["TURBO_MASS"])[1])
+        self.assertIn('<code>:INHERIT_TYPE</code> calls the record copy <a href="routines.html#fr3_copy_engine_record">'
+                      '<code>fr3_copy_engine_record</code></a> (<a href="routines.html#site-00522b47">', table)
+        self.assertIn('stores the parent\'s address at <code>+ 0x18</code> (<a href="routines.html#site-00522b4c">', table)
 
     def test_declarations_table_shows_only_the_record_own_declarations(self):
         engines, _ = self.build()
@@ -496,8 +543,9 @@ class RecordDossierRejectTests(RecordDossierTestCase):
         self.build(with_engine_fields(stale))
 
     def test_linked_sites_must_be_byte_checked(self):
+        # The engine table's dispatch compare, enum word table and parent store are linked sites too.
         for va in (0x00522b47, 0x005229b6, 0x00522be0, 0x00523289, 0x005232c1, 0x005233c3, 0x00523364, 0x00523399,
-                   0x00523339):
+                   0x00523339, 0x00522b54, 0x00522bb9, 0x00522b4c):
             with self.subTest(va=hex(va)):
                 self.reject(f"These linked sites are not in field-evidence.json: 0x{va:08x}",
                             evidence=[site for site in EVIDENCE if site["va"] != va])

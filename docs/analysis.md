@@ -637,7 +637,16 @@ The colon-less `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` is shown verbatim
 as an untagged line, not as inheritance, with a note that whether the game
 honours it is not established. `INDIGO`'s section lists, labelled unresolved and
 linked to `questions.html#indigo`, the 16 tags that depend on the line, under
-both readings. The gearbox page has a "Where each field is stored" table with
+both readings. The engine page has a "Where each field is stored" table with
+one row per tag in `ENGINE_FIELD_STORES`, in payload offset order, each with
+the id `engine-store-<TAG>`: the offsets the tag's handler writes, their width
+and `Fr3EngineRecord` field, the `cmp eax, <id>` dispatch site and the store
+sites, linked to `routines.html`. `TORQUE_ARRAY`'s row gives the 18-slot block
+at `+0x3c`, its zero fill and the row count read from `+0x30` when the tag is
+parsed; the derived `+0x2c` (conditional, linking its jumps) and `+0xa4` are
+listed as derived with no value, and `LOCATION_TYPE` and `ASPIRATION_TYPE` name
+their enum word tables. The table also links the `INHERIT_TYPE` copy call and
+the parent store at `+0x18`. The gearbox page has a "Where each field is stored" table with
 one row per gearbox tag: its payload offset, width and `Fr3GearboxRecord` field,
 how it is read (float, enum word table, or float stored as an integer's low
 byte), and its compare (with the selecting `jg`) and store sites linked to
@@ -664,7 +673,8 @@ research pages, for publishing per decision #46.
 `python3 scripts/record_compare.py`, run after `text_database.py`, writes
 `artifacts/dossier/compare.html` beside the engine and gearbox pages, the
 "Compare records" research page. Its first section compares the 14 demo
-gearboxes; engines and tyres are not compared yet. The matrix has one row per
+gearboxes and its second the 56 demo engines; tyres are not compared yet. A
+jump link at the top leads to each section. The gearbox matrix has one row per
 gearbox, in `GEARDATA.DAT` order, and one column per tag in
 `GEARBOX_FIELD_STORES`, in payload offset order (`+0x14` to `+0x31`), so any
 two rows compare two records field by field without client-side code. Each
@@ -693,9 +703,48 @@ gearbox lacks one of the nine mapped tags, declares a tag that is not mapped,
 declares `:INHERIT_TYPE` (gearbox inheritance is not resolved), has an
 untagged line, or declares a mapped tag with rows or more than one value, when
 a float tag's value is not a number, and when `GEARDATA.DAT` does not match
-`gearboxes.json`. The page is not committed because it holds game data;
-[`build_research.py`](#research-directory) builds it with the other research
-pages.
+`gearboxes.json`.
+
+The engine section shows each engine's effective values: what the loader ends
+up storing once each `:INHERIT_TYPE` has copied the parent's fields, as
+`engines.json` `effective_fields` resolve them (see
+[Engine inheritance](#engine-inheritance)); a root's values are its own
+declarations. Its matrix has one row per engine, in `ENGDATA.DAT` order, and
+one column per tag in `ENGINE_FIELD_STORES`, in payload offset order, 56 × 20
+in the demo. Each column header links to the tag's `engine-store-<TAG>` row on
+`engines.html`. Each cell shows the effective value as written on the line that
+declares it, read from `ENGDATA.DAT` (whose SHA-256 must match `engines.json`),
+linked to that declaration's row (`engine-<source>-line-<n>`) and marked
+declared or inherited from its source record, with the `INHERIT_TYPE` path when
+it is longer than one step. `TORQUE_ARRAY` cells list no values: they give the
+source record and line, the row count and the `MAX_RPM` declaration the table
+was parsed with, and link the engine's effective `engine-<name>-torque-array`
+row (a root has none, so its cell links only the declaration).
+
+`INDIGO`'s colon-less `INHERIT_TYPE DEFAULT_TRACK` line is not applied. Each
+of the 16 tags `INDIGO` does not declare, and any tag another engine gets
+through such a field, is shown as `unresolved` with no value, never `0`,
+linked to `questions.html#indigo`; a field a root declares before such a line
+would be unresolved too, because applying the line would overwrite it. The
+engine "What differs" table has one row per tag: the distinct effective values
+and the engines that hold each (numbers grouped by the parsed number, enum
+words by the exact word, torque tables by source record and line), the
+unresolved cells counted apart, and how the 51 inheriting engines get the field
+as parsed. When `ENGDATA.DAT` is the demo's, by the SHA-256 in
+`analysis/game-file-manifest.json`, those declared and inherited counts must
+equal `ENGINE_FIELD_COUNTS`. The engine section claims no units, enum meanings
+or physics, computes no derived `+0x2c` or `+0xa4` value and does not apply
+`TORQUE_MODIFIER` to the table. The script also exits non-zero without writing
+the page when an engine declares a tag with no byte-checked store, declares
+`:INHERIT_TYPE` but has no `effective_fields` entry or has a declaration before
+it that the copy overwrites, has an untagged line other than a root's
+colon-less `INHERIT_TYPE` line, or declares a mapped tag that is not one inline
+value (a `TORQUE_ARRAY` that is not a block of rows) or whose written token
+does not parse to the value `engines.json` holds, when `effective_fields` or
+`untagged_inherit_consequences` differ from what `text_database.py` derives,
+and when `ENGDATA.DAT` does not match `engines.json`. The page is not committed
+because it holds game data; [`build_research.py`](#research-directory) builds
+it with the other research pages.
 
 ### PCG catalogue
 
@@ -851,7 +900,8 @@ resource other than the notice's two links, that every local link, fragment
 included, resolves to a file and id inside the directory (so each record page's
 `routines.html#<label>` and `routines.html#site-<va>` link must name a section
 or site row on the routines page, built from the same `status.json`, and each
-`gearboxes.html#<id>` link on the compare page a declaration or store row), and that the directory
+`gearboxes.html#<id>` and `engines.html#<id>` link on the compare page a declaration, store or
+effective `TORQUE_ARRAY` row), and that the directory
 holds no file other than the ones the script writes. Only then does the
 staging directory replace the output; an existing output that holds anything
 else is left alone. The directory is not committed because it holds game data.

@@ -164,8 +164,8 @@ def read_research(research, analysis, revision, pe, game=build_research.DEFAULT_
     require(f"SHA-256 <code>{e(pe['sha256'])}</code>" in index,
             f"{INDEX_PAGE} does not name the fr3.exe SHA-256 in analysis/pe-metadata.json: {pe['sha256']}")
     # A digest stored beside the HTML could be edited with it. Compare against an independent rebuild,
-    # reading even the non-published inputs (tags and verification) from Git rather than the working tree.
-    inputs = {"pe-metadata.json", "tags.json", "verification.json",
+    # reading even the non-published inputs (tags, verification and the game-file manifest) from Git rather than the working tree.
+    inputs = {"pe-metadata.json", "tags.json", "verification.json", build_research.GAME_MANIFEST,
               *(name.removeprefix(f"{build_research.EVIDENCE_DIR}/") for name in build_research.OUTPUT_FILES
                 if name.startswith(f"{build_research.EVIDENCE_DIR}/"))}
     with tempfile.TemporaryDirectory() as temporary:
