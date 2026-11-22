@@ -81,7 +81,7 @@ SUMMARY_TAGS = ("CAR_ENGINE_TYPE", "CAR_GEARBOX_TYPE", "CAR_FRONT_TYRE_TYPE", "C
 FIXED_IDS = ("summary", "how-loaded", "lookups", "cars")
 EXTRA_STYLE = ("section.car { border-top: 2px solid #888; margin-top: 2em; }\n"
                ".wide { overflow-x: auto; }\n"
-               "dd code, td code { overflow-wrap: anywhere; }\n"
+               "dd code { overflow-wrap: anywhere; }\n"
                "@media (max-width: 40em) { body { padding: 0 0.5em; } th, td { padding: 0.2em 0.3em; } }\n")
 SCOPE = ("Scope: every value is shown exactly as written in <code>CARDATA.DAT</code>, on the line that declares it. "
          "The four tags the car loader resolves to another database's record, <code>CAR_ENGINE_TYPE</code>, "
