@@ -1,28 +1,31 @@
 """Build every research page, plus an "Explore findings" entrance page, into one self-contained directory.
 
 Run it after scripts/acquire_demo.py has extracted the demo. It:
-  1. parses ENGDATA.DAT, GEARDATA.DAT and TYREDATA.DAT with scripts/text_database.py
-     into a temporary working directory, so no parsed JSON lands in the output;
-  2. writes tyres.html, engines.html, gearboxes.html, compare.html, pcg.html,
-     routines.html and questions.html with scripts/tyre_dossier.py,
+  1. parses ENGDATA.DAT, GEARDATA.DAT, TYREDATA.DAT and CARDATA.DAT with scripts/text_database.py
+     into a temporary working directory, so no parsed JSON lands in the output; each car reference's basis
+     comes from the analysis directory's field-evidence.json and tags.json;
+  2. writes cars.html, tyres.html, engines.html, gearboxes.html, compare.html, pcg.html,
+     routines.html and questions.html with scripts/car_page.py, scripts/tyre_dossier.py,
      scripts/record_dossier.py, scripts/record_compare.py, scripts/pcg_catalogue.py,
      scripts/routine_index.py and scripts/open_questions.py;
   3. copies every committed analysis/ file those pages link to into
      <output>/evidence/, keeping its path under analysis/, and points the pages there;
-  4. writes <output>/index.html, which links the seven pages with their record,
+  4. writes <output>/index.html, which links the eight pages with their car, record,
      comparison, graphic, routine and question counts, the fr3.exe SHA-256 and the producer revision,
      and answers "Do road, offroad and track tyres use different tables?" in its
      #tyre-tables section, generated from tyres.json, and "Which engines share a
      torque table, and what do they declare differently?" in its
      #engine-torque-tables section, generated from engines.json, both by
      scripts/research_answers.py;
-  5. checks the directory with verify_research(): all eight pages exist, each carries
+  5. checks the directory with verify_research(): all nine pages exist, each carries
      the rights-holder notice before its main content and names the same producer
      revision, none has a <script> or an
      external resource, every local link resolves to a file inside the output, every
      link to another page's fragment, such as the tyre, engine and gearbox pages'
      links to routines.html#<label> and routines.html#site-<va> and the compare page's
-     links to gearboxes.html#<id>, engines.html#<id>, tyres.html#<id> and routines.html#<label>, names an id on
+     links to gearboxes.html#<id>, engines.html#<id>, tyres.html#<id> and routines.html#<label>, and the car
+     page's links to engines.html#engine-<name>, gearboxes.html#gearbox-<name>, tyres.html#tyre-<name>,
+     routines.html#site-<va> and routines.html#asm-load_car_database, names an id on
      that page, and the directory holds
      no file other than the ones this script writes.
 
@@ -39,6 +42,7 @@ import shutil
 import tempfile
 import urllib.parse
 
+import car_page
 from dossier_common import (INDEX_PAGE, NOTICE_ID, NOTICE_LINKS, PAGES, e, load_json, page_start, producer_revision,
                             routine_labels)
 import open_questions
@@ -47,8 +51,8 @@ import record_compare
 import record_dossier
 import research_answers
 import routine_index
-from text_database import (REPO_ROOT, RESOLVED_TYRE_TABLES, TYRE_SCALAR_STORES, load_known_tags, require,
-                           write_databases)
+from text_database import (REPO_ROOT, RESOLVED_TYRE_TABLES, TYRE_SCALAR_STORES, car_reference_bases, load_known_tags,
+                           load_tag_ids, require, write_databases)
 import tyre_dossier
 from verify_web import PRODUCER_REVISION, RIGHTS_CREDIT
 
@@ -113,7 +117,11 @@ def copy_evidence(analysis, staging, files):
 
 def render_index(counts, pe, revision, evidence, answers=""):
     """Return the "Explore findings" entrance page; `answers` is the HTML of its answered questions."""
-    rows = (("engines.html", "Engines", "Each engine record's declarations as written, and the declaration each "
+    rows = (("cars.html", "Cars", "Each car's engine, gearbox and front and back tyre, linked to those records, with "
+             "the basis of each link and the byte-checked car loader sites that resolve it, and every declaration as "
+             "written. CAR_PERFORMANCE and the other values are shown as declared: no units or menu meaning are "
+             "claimed.", f'{counts["cars"]} cars'),
+            ("engines.html", "Engines", "Each engine record's declarations as written, and the declaration each "
              "inheriting engine's fields end up with, traced to its record and line, with the byte-checked store "
              "sites behind each. INDIGO's colon-less INHERIT_TYPE line is applied on static instruction evidence; any "
              "other untagged line would be labelled unresolved.", f'{counts["engines"]} engine records'),
@@ -170,18 +178,25 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
         tyre_hrefs = copy_evidence(analysis, staging, TYRE_EVIDENCE)
         pcg_hrefs = copy_evidence(analysis, staging, PCG_EVIDENCE)
         question_hrefs = copy_evidence(analysis, staging, QUESTION_EVIDENCE)
+        routine_hrefs = copy_evidence(analysis, staging, ROUTINE_EVIDENCE)
         with tempfile.TemporaryDirectory() as work:
             work = Path(work)
-            # No page reads cars.json yet, so CARDATA.DAT is not parsed here.
-            write_databases(game_dir, work, load_known_tags(analysis / "tags.json"), ("engines", "gearboxes", "tyres"))
+            evidence_path = analysis / ROUTINE_EVIDENCE["evidence"]
+            bases = car_reference_bases(load_json(evidence_path, "Field evidence"), load_tag_ids(analysis / "tags.json"))
+            write_databases(game_dir, work, load_known_tags(analysis / "tags.json"), bases=bases)
+            counts = {"cars": car_page.build(work / "cars.json", work / "engines.json", work / "gearboxes.json",
+                                             work / "tyres.json", game_dir, pe_path, staging / car_page.PAGE,
+                                             revision, hrefs=routine_hrefs, entrance=True, evidence_path=evidence_path,
+                                             tags_path=analysis / "tags.json", selected=analysis / "selected",
+                                             manifest_path=analysis / GAME_MANIFEST)}
             # The tyre, engine and gearbox pages link routines.html, so they read the same status.json it does.
             status_path = analysis / ROUTINE_EVIDENCE["status"]
-            counts = {"tyres": tyre_dossier.build(work / "tyres.json", analysis / TYRE_EVIDENCE["evidence"], pe_path,
-                                                  staging / tyre_dossier.PAGE, revision, hrefs=tyre_hrefs,
-                                                  entrance=True, status_path=status_path),
-                      **record_dossier.build(work / "engines.json", work / "gearboxes.json", pe_path, staging, revision,
+            counts["tyres"] = tyre_dossier.build(work / "tyres.json", analysis / TYRE_EVIDENCE["evidence"], pe_path,
+                                                 staging / tyre_dossier.PAGE, revision, hrefs=tyre_hrefs,
+                                                 entrance=True, status_path=status_path)
+            counts.update(record_dossier.build(work / "engines.json", work / "gearboxes.json", pe_path, staging, revision,
                                                entrance=True, status_path=status_path,
-                                               evidence_path=analysis / TYRE_EVIDENCE["evidence"])}
+                                               evidence_path=analysis / TYRE_EVIDENCE["evidence"]))
             counts.update(record_compare.build(work / "gearboxes.json", work / "engines.json", work / "tyres.json",
                                                game_dir, pe_path, staging / record_compare.PAGE, revision,
                                                entrance=True, manifest_path=analysis / GAME_MANIFEST,
@@ -202,7 +217,6 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
         counts["pcg_collections"], counts["pcg_graphics"] = pcg_catalogue.build(
             analysis / PCG_EVIDENCE["index"], analysis / PCG_EVIDENCE["manifest"], pe_path,
             analysis / "verification.json", staging / pcg_catalogue.PAGE, revision, hrefs=pcg_hrefs, entrance=True)
-        routine_hrefs = copy_evidence(analysis, staging, ROUTINE_EVIDENCE)
         counts["routines"], _, _ = routine_index.build(
             analysis / ROUTINE_EVIDENCE["status"], analysis / ROUTINE_EVIDENCE["pseudocode"], analysis / "selected",
             analysis / ROUTINE_EVIDENCE["evidence"], pe_path, staging / routine_index.PAGE, revision,
@@ -348,7 +362,7 @@ def main():
         counts = build(args.game, args.output)
     except (ValueError, KeyError, TypeError, AttributeError, OSError) as error:
         raise SystemExit(f"build_research.py: {error}") from None
-    print(f"Wrote {len(RESEARCH_PAGES)} verified pages to {args.output}: {counts['engines']} engines "
+    print(f"Wrote {len(RESEARCH_PAGES)} verified pages to {args.output}: {counts['cars']} cars, {counts['engines']} engines "
           f"({counts['compared_engines']} compared), "
           f"{counts['gearboxes']} gearboxes ({counts['compared_gearboxes']} compared), {counts['tyres']} tyres "
           f"({counts['compared_tyres']} compared), {counts['pcg_collections']} PCG collections, "

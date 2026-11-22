@@ -391,7 +391,7 @@ class PageTests(CompareTestCase):
             self.assertIn(text, page)
 
     def test_nav_bar(self):
-        self.assertIn('<nav>Research: <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | '
+        self.assertIn('<nav>Research: <a href="cars.html">Cars</a> | <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | '
                       '<strong>Compare records</strong> | <a href="tyres.html">Tyres</a> | ', self.build())
 
     def test_no_scripts_or_remote_resources(self):
@@ -400,7 +400,7 @@ class PageTests(CompareTestCase):
         self.assertNotRegex(page.replace(rights_notice(), ""), r"https?://")
         self.assertEqual({href for href in Links(page).hrefs
                           if not href.startswith(("#", "gearboxes.html#", "engines.html#", "tyres.html#"))},
-                         {"engines.html", "gearboxes.html", "tyres.html", "pcg.html", "routines.html", "questions.html",
+                         {"cars.html", "engines.html", "gearboxes.html", "tyres.html", "pcg.html", "routines.html", "questions.html",
                           "questions.html#indigo", *NOTICE_LINKS,
                           *(f"routines.html#{label}" for label in TYRE_ACCESSOR_LABELS.values())})
 

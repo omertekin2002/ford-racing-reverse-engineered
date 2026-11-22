@@ -1,13 +1,13 @@
 """HTML and input helpers shared by the offline dossier generators.
 
-scripts/tyre_dossier.py, scripts/record_dossier.py, scripts/record_compare.py, scripts/pcg_catalogue.py,
-scripts/routine_index.py and scripts/open_questions.py write static pages
+scripts/car_page.py, scripts/tyre_dossier.py, scripts/record_dossier.py, scripts/record_compare.py,
+scripts/pcg_catalogue.py, scripts/routine_index.py and scripts/open_questions.py write static pages
 with inline CSS, no JavaScript and no external resources other than the two links in
 the rights-holder notice. Every piece of input text goes through e() before it reaches
 the page. scripts/build_research.py writes all of them, plus the entrance page, into
 one directory.
 
-The tyre, engine and gearbox pages link the routines and byte-checked sites they cite
+The car, tyre, engine and gearbox pages link the routines and byte-checked sites they cite
 to their sections on the sibling routines page with routine_link() and site_link().
 They look each routine's label up in analysis/annotated/status.json by entry VA with
 routine_labels() and routine_label(), which refuse a routine that is missing or
@@ -43,7 +43,7 @@ summary { cursor: pointer; }
 # The research pages, as written next to each other in one directory, in navigation order. index.html is the
 # "Explore findings" entrance that scripts/build_research.py writes.
 INDEX_PAGE = "index.html"
-PAGES = ((INDEX_PAGE, "Explore findings"), ("engines.html", "Engines"), ("gearboxes.html", "Gearboxes"),
+PAGES = ((INDEX_PAGE, "Explore findings"), ("cars.html", "Cars"), ("engines.html", "Engines"), ("gearboxes.html", "Gearboxes"),
          ("compare.html", "Compare records"), ("tyres.html", "Tyres"), ("pcg.html", "PCG catalogue"), ("routines.html", "Routines"),
          ("questions.html", "Open questions"))
 # The open questions that scripts/open_questions.py writes up, and what each one is about. The engine, tyre and PCG
