@@ -1,5 +1,6 @@
 """Synthetic tests for the entrance page's answered questions; these use no game data."""
 import copy
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -7,11 +8,15 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+from unittest import mock
+
+import car_page
 from dossier_common import routine_labels
 import research_answers
-from text_database import REPO_ROOT, ZERO_FILLED, parse
+from text_database import (BYTE_CHECKED, CAR_REFERENCE_STORES, DECLARED, REPO_ROOT, ZERO_FILLED, car_usage,
+                           load_known_tags, parse, parse_cars, resolve_car_references)
 
-from test_record_dossier import TAGS, with_engine_fields
+from test_record_dossier import TAGS, engines_json as dossier_engines_json, gearboxes_json, with_engine_fields
 from test_tyre_dossier import TYRES, tyres_json
 
 EVIDENCE = json.loads((REPO_ROOT / "analysis/selected/field-evidence.json").read_text())
@@ -372,6 +377,235 @@ class EngineSectionTests(unittest.TestCase):
         markup = engine_section(engines)
         self.assertNotIn("<i>", markup)
         self.assertIn("&lt;i&gt;&quot;3&quot;&lt;/i&gt;", markup)
+
+
+KNOWN_TAGS = load_known_tags(REPO_ROOT / "analysis/tags.json")
+CAR_BASES = {tag: BYTE_CHECKED for tag in CAR_REFERENCE_STORES}
+# ALPHA names the engine CHILD in lower case and MID as both tyres; BETA names CHILD, MID as its back tyre only, and
+# CHILD as its front tyre; GAMMA names its own records. So CHILD (engine), TRACK (gearbox) and MID (back tyre) are each
+# named by ALPHA and BETA, no front tyre is shared, and no car names BASE, which CHILD inherits, or ROOT, which MID
+# inherits. ALPHA writes 0.50, which cars.json holds as 0.5.
+CARS = """:CAR_TYPE ALPHA
+:CAR_ENGINE_TYPE child
+:CAR_GEARBOX_TYPE TRACK
+:CAR_BRAKE_TYPE DISC
+:CAR_FRONT_TYRE_TYPE MID
+:CAR_BACK_TYRE_TYPE MID
+:CAR_PERFORMANCE AGILITY 0.50
+:CAR_PERFORMANCE SPEED 0.2
+:CAR_TYPE BETA
+:CAR_ENGINE_TYPE CHILD
+:CAR_GEARBOX_TYPE TRACK
+:CAR_FRONT_TYRE_TYPE CHILD
+:CAR_BACK_TYRE_TYPE MID
+:CAR_PERFORMANCE AGILITY 0.7
+:CAR_TYPE GAMMA
+:CAR_ENGINE_TYPE LONER
+:CAR_GEARBOX_TYPE ROAD_OLD
+:CAR_FRONT_TYRE_TYPE ROOT
+:CAR_BACK_TYRE_TYPE CHILD
+:END
+"""
+
+
+def cars_json(text=CARS, bases=CAR_BASES):
+    """(cars.json, written declarations) for `text`, resolved against the dossier tests' engines, gearboxes, tyres."""
+    data = text.encode("ascii")
+    records = parse_cars(text, KNOWN_TAGS)
+    targets = {"engines": dossier_engines_json()["records"], "gearboxes": gearboxes_json()["records"],
+               "tyres": tyres_json()["records"]}
+    cars = {"source": "DATA/ASCII/CARS/CARDATA.DAT", "sha256": hashlib.sha256(data).hexdigest(), "records": records,
+            "references": resolve_car_references(records, targets, bases)}
+    return cars, car_page.check_cars(cars, data)
+
+
+def car_section(text=CARS, evidence=EVIDENCE, bases=CAR_BASES):
+    cars, written = cars_json(text, bases)
+    return research_answers.car_sharing_section(cars, car_usage(cars["references"]), written, evidence)
+
+
+def shared_block(markup, title):
+    """The part of the section under one tag's heading, up to the next heading."""
+    start = markup.index(f"<h3>{title} records named by more than one car</h3>")
+    return markup[start:markup.index("<h3>", start + 1)]
+
+
+class CarSharingSelectionTests(unittest.TestCase):
+    def test_counts_come_from_the_reverse_index(self):
+        cars, _ = cars_json()
+        counts = research_answers.sharing_counts(cars, car_usage(cars["references"]))
+        self.assertEqual(counts, {"CAR_ENGINE_TYPE": (2, 1, 2), "CAR_FRONT_TYRE_TYPE": (3, 0, 0),
+                                  "CAR_GEARBOX_TYPE": (2, 1, 2), "CAR_BACK_TYRE_TYPE": (2, 1, 2)})
+
+    def test_counts_that_disagree_with_check_car_usage_are_refused(self):
+        with mock.patch.object(research_answers, "check_car_usage",
+                               return_value={tag: 9 for tag in CAR_REFERENCE_STORES}):
+            with self.assertRaisesRegex(ValueError, "#car-shared-records answer's distinct records per tag"):
+                car_section()
+
+    def test_parents_are_not_counted_through_their_children(self):
+        cars, _ = cars_json()
+        usage = car_usage(cars["references"])
+        engines = dict(research_answers.tag_users(cars, usage, "CAR_ENGINE_TYPE"))
+        tyres = dict(research_answers.tag_users(cars, usage, "CAR_FRONT_TYRE_TYPE"))
+        self.assertNotIn("BASE", engines)
+        self.assertEqual(engines["CHILD"], ["ALPHA", "BETA"])
+        # GAMMA names ROOT itself, so ROOT is counted for its front tyre only, never through MID or CHILD.
+        self.assertEqual(tyres, {"MID": ["ALPHA"], "CHILD": ["BETA"], "ROOT": ["GAMMA"]})
+        text = text_of(car_section())
+        self.assertNotIn("BASE", text)
+
+    def test_front_and_back_are_kept_apart(self):
+        cars, _ = cars_json()
+        usage = car_usage(cars["references"])
+        self.assertEqual(research_answers.tag_users(cars, usage, "CAR_BACK_TYRE_TYPE"),
+                         [("MID", ["ALPHA", "BETA"]), ("CHILD", ["GAMMA"])])
+        markup = car_section()
+        front = text_of(shared_block(markup, "Front tyre"))
+        self.assertIn("No two cars' CAR_FRONT_TYRE_TYPE name the same record.", front)
+        back = shared_block(markup, "Back tyre")
+        self.assertIn('href="tyres.html#tyre-MID"', back)
+        self.assertEqual(re.findall(r'href="cars\.html#car-(\w+)"', back), ["ALPHA", "BETA"])
+        text = text_of(markup)
+        self.assertIn("1 car names the same tyre record through CAR_FRONT_TYRE_TYPE and CAR_BACK_TYRE_TYPE ; 2 cars "
+                      "name different ones:", text)
+        self.assertIn("BETA CHILD MID GAMMA ROOT CHILD", text)
+
+    def test_records_and_cars_follow_file_order(self):
+        # BETA moved before ALPHA: every list follows CARDATA.DAT.
+        beta = CARS[CARS.index(":CAR_TYPE BETA"):CARS.index(":CAR_TYPE GAMMA")]
+        text = beta + CARS.replace(beta, "")
+        cars, _ = cars_json(text)
+        usage = car_usage(cars["references"])
+        self.assertEqual(research_answers.tag_users(cars, usage, "CAR_GEARBOX_TYPE"),
+                         [("ROAD_OLD", ["GAMMA"]), ("TRACK", ["BETA", "ALPHA"])])
+        self.assertEqual(research_answers.sharing_example(cars, usage), ("CAR_ENGINE_TYPE", "CHILD", ["BETA", "ALPHA"]))
+        # Records follow their database file: ROAD_OLD is declared before TRACK in GEARDATA.DAT, whichever car
+        # comes first.
+        text = CARS.replace(":CAR_GEARBOX_TYPE ROAD_OLD", ":CAR_GEARBOX_TYPE TRACK").replace(
+            ":CAR_TYPE BETA\n:CAR_ENGINE_TYPE CHILD\n:CAR_GEARBOX_TYPE TRACK",
+            ":CAR_TYPE BETA\n:CAR_ENGINE_TYPE CHILD\n:CAR_GEARBOX_TYPE ROAD_OLD")
+        text = text.replace(":CAR_TYPE GAMMA\n:CAR_ENGINE_TYPE LONER\n:CAR_GEARBOX_TYPE TRACK",
+                            ":CAR_TYPE GAMMA\n:CAR_ENGINE_TYPE LONER\n:CAR_GEARBOX_TYPE ROAD_OLD")
+        cars, _ = cars_json(text)
+        self.assertEqual(research_answers.tag_users(cars, car_usage(cars["references"]), "CAR_GEARBOX_TYPE"),
+                         [("ROAD_OLD", ["BETA", "GAMMA"]), ("TRACK", ["ALPHA"])])
+
+    def test_example_follows_the_loader_tag_order(self):
+        cars, _ = cars_json()
+        self.assertEqual(research_answers.sharing_example(cars, car_usage(cars["references"])),
+                         ("CAR_ENGINE_TYPE", "CHILD", ["ALPHA", "BETA"]))
+        # Without a shared engine, the front tyre comes before the gearbox in CAR_REFERENCE_STORES order.
+        text = CARS.replace(":CAR_ENGINE_TYPE CHILD", ":CAR_ENGINE_TYPE BASE").replace(
+            ":CAR_FRONT_TYRE_TYPE CHILD", ":CAR_FRONT_TYRE_TYPE MID")
+        cars, _ = cars_json(text)
+        self.assertEqual(research_answers.sharing_example(cars, car_usage(cars["references"])),
+                         ("CAR_FRONT_TYRE_TYPE", "MID", ["ALPHA", "BETA"]))
+        text = CARS.replace(":CAR_ENGINE_TYPE CHILD", ":CAR_ENGINE_TYPE BASE")
+        cars, _ = cars_json(text)
+        self.assertEqual(research_answers.sharing_example(cars, car_usage(cars["references"])),
+                         ("CAR_GEARBOX_TYPE", "TRACK", ["ALPHA", "BETA"]))
+
+    def test_no_shared_record_is_refused(self):
+        text = CARS[:CARS.index(":CAR_TYPE BETA")] + CARS[CARS.index(":CAR_TYPE GAMMA"):]
+        with self.assertRaisesRegex(ValueError, "#car-shared-records answer has no shared record to show"):
+            car_section(text)
+
+    def test_a_linked_site_missing_from_the_evidence_is_refused(self):
+        store = int(CAR_REFERENCE_STORES["CAR_ENGINE_TYPE"]["store"], 16)
+        evidence = [site for site in EVIDENCE if site["va"] != store]
+        with self.assertRaisesRegex(ValueError, "#car-shared-records answer links sites that are not in "
+                                                "field-evidence.json: 0x00520ece"):
+            car_section(evidence=evidence)
+
+
+class CarSharingSectionTests(unittest.TestCase):
+    def test_summary_and_tables(self):
+        markup = car_section()
+        self.assertTrue(markup.startswith('<section id="car-shared-records"><h2>Which cars share an engine, gearbox or '
+                                          "tyre record?</h2>"))
+        text = text_of(markup)
+        self.assertIn("The 3 cars in DATA/ASCII/CARS/CARDATA.DAT name 2 engines, 2 gearboxes, 3 front tyres and 2 back "
+                      "tyres. Of those records, 1 engine named by 2 cars, 1 gearbox named by 2 cars, 0 front tyres "
+                      "named by 0 cars and 1 back tyre named by 2 cars are shared", text)
+        self.assertIn("Engine ( CAR_ENGINE_TYPE ) 2 1 2", text)
+        self.assertIn("Front tyre ( CAR_FRONT_TYRE_TYPE ) 3 0 0", text)
+        engine = shared_block(markup, "Engine")
+        self.assertIn('<a href="engines.html#engine-CHILD">CHILD</a> (line 9 of <code>ENGDATA.DAT</code>; '
+                      '<a href="engines.html#engine-CHILD-used-by">its Used by cars block</a>)', engine)
+        self.assertIn('<td><a href="cars.html#car-ALPHA">ALPHA</a></td><td><a href="cars.html#car-ALPHA-line-2">line 2'
+                      "</a>: <code>:CAR_ENGINE_TYPE child</code> (matches ignoring case, as the lookup compares)</td>",
+                      engine)
+        self.assertIn('<a href="cars.html#car-BETA-line-10">line 10</a>: <code>:CAR_ENGINE_TYPE CHILD</code></td>', engine)
+        self.assertIn('href="gearboxes.html#gearbox-TRACK-used-by"', shared_block(markup, "Gearbox"))
+
+    def test_each_row_carries_its_reference_basis(self):
+        bases = {**CAR_BASES, "CAR_BACK_TYRE_TYPE": DECLARED}
+        markup = car_section(bases=bases)
+        back = shared_block(markup, "Back tyre")
+        self.assertEqual(back.count(f'<span class="label">{DECLARED}</span>'), 2)
+        self.assertNotIn("byte-checked", back)
+        self.assertEqual(shared_block(markup, "Engine").count("byte-checked)</span>"), 2)
+
+    def test_trace_links_lines_store_row_sites_and_record(self):
+        markup = car_section()
+        trace = markup[markup.index("<h3>Traced example: CHILD</h3>"):markup.index("<h3>Where the comparison ends")]
+        links = re.findall(r'href="([^"]+)"', trace)
+        for href in ("cars.html#car-ALPHA", "cars.html#car-ALPHA-line-2", "cars.html#car-BETA",
+                     "cars.html#car-BETA-line-10", "cars.html#car-store-CAR_ENGINE_TYPE", "engines.html#engine-CHILD",
+                     "engines.html#engine-CHILD-used-by"):
+            self.assertIn(href, links)
+        sites = {f"routines.html#site-{va:08x}" for va in research_answers.store_site_vas("CAR_ENGINE_TYPE")}
+        self.assertEqual({href for href in links if href.startswith("routines.html")}, sites)
+        self.assertIn("routines.html#site-00520ece", sites)
+        text = text_of(trace)
+        self.assertIn("ALPHA names it on line 2 : :CAR_ENGINE_TYPE child (matches ignoring case, as the lookup "
+                      "compares), and BETA on line 10 : :CAR_ENGINE_TYPE CHILD", text)
+        self.assertIn("stores the record it returns at car payload + 0x1a8 ( 0x00520ece )", text)
+        self.assertIn("both names resolve to CHILD , declared at line 9 of ENGDATA.DAT", text)
+
+    def test_comparison_ends_with_the_other_references_and_performance_as_written(self):
+        markup = car_section()
+        ends = markup[markup.index("<h3>Where the comparison ends"):]
+        text = text_of(ends)
+        self.assertIn("ALPHA and BETA both name CHILD through CAR_ENGINE_TYPE .", text)
+        self.assertIn("CAR_GEARBOX_TYPE TRACK ( line 3 ) TRACK ( line 11 )", text)
+        self.assertIn("CAR_FRONT_TYRE_TYPE MID ( line 5 ) CHILD ( line 12 )", text)
+        # As written: ALPHA's 0.50 stays 0.50; BETA has one line fewer.
+        self.assertIn(":CAR_PERFORMANCE AGILITY 0.50 ( line 7 ) AGILITY 0.7 ( line 14 )", text)
+        self.assertIn(":CAR_PERFORMANCE SPEED 0.2 ( line 8 ) none", text)
+        self.assertIn('href="cars.html#car-ALPHA-line-7"', ends)
+        self.assertIn("Naming the same record does not establish that two cars have the same performance or handling",
+                      text)
+        self.assertIn("CAR_BRAKE_TYPE , CAR_BODY_TYPE , CAR_SETUP_TYPE and CAR_CONTROL_TYPE also name records, but "
+                      "their databases are not parsed, so they are not compared.", text)
+        # The brake record ALPHA names is not shown.
+        self.assertNotIn("DISC", text)
+
+    def test_wording_makes_no_unit_or_physics_claim(self):
+        markup = car_section()
+        text = text_of(markup[markup.index("</h2>"):]).lower()
+        for word in ("faster", "slower", "quicker", "mph", "km/h", "horsepower", "newton", "kilogram", "same handling "
+                     "as", "performs", "is heavier", "is lighter"):
+            self.assertNotIn(word, text)
+        # The only performance and handling words are in the statement that none is established.
+        self.assertEqual(text.count("performance or handling"), 1)
+        self.assertEqual(text.count("handling"), 1)
+
+    def test_names_and_values_are_escaped(self):
+        markup = research_answers.car_link('<b>"x"</b>') + research_answers.car_line_link('<b>"x"</b>', 3)
+        self.assertNotIn("<b>", markup)
+        self.assertIn("&lt;b&gt;&quot;x&quot;&lt;/b&gt;", markup)
+        cars, written = cars_json()
+        written = copy.deepcopy(written)
+        written["ALPHA"] = [(line, tag, ["<i>", '"0.5"'] if tag == "CAR_PERFORMANCE" else tokens)
+                            for line, tag, tokens in written["ALPHA"]]
+        cars["references"]["ALPHA"]["CAR_ENGINE_TYPE"]["name"] = "<u>child</u>"
+        markup = research_answers.car_sharing_section(cars, car_usage(cars["references"]), written, EVIDENCE)
+        self.assertNotIn("<i>", markup)
+        self.assertNotIn("<u>", markup)
+        self.assertIn("&lt;i&gt; &quot;0.5&quot;", markup)
+        self.assertIn("&lt;u&gt;child&lt;/u&gt;", markup)
 
 
 if __name__ == "__main__":
