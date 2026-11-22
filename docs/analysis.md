@@ -599,7 +599,11 @@ Zero-filled fields show the label and no value, and unmapped tags stay labelled
 `routines.html`, beside it: a "Loaded by" line links `fr3_load_tyre_database`,
 each "Why?" trail links its accessor's section and every site's
 `#site-<va>` row, and each scalar section links `0x00524090` to
-`fr3_copy_tyre_scalar_fields` and its `INHERIT_TYPE` call at `0x00523b3a`. Each label is read from
+`fr3_copy_tyre_scalar_fields` and its `INHERIT_TYPE` call at `0x00523b3a`. A "Where each field is stored" table
+has one row per tag in `TYRE_SCALAR_STORES`, in payload offset order, each with the id `tyre-store-<TAG>`: its
+offsets, its byte-checked store sites, for the two grip numbers the load of the scale global at `0x00597484` and the
+multiply, and, per offset, the scalar copy's load and store, each linked to its `#site-<va>` row; the Compare records
+page links these rows from its tyre columns. Each label is read from
 `analysis/annotated/status.json` by entry VA (`--status` changes the file). The
 script exits non-zero instead of writing a page when a
 record lacks a table, `resolved_tables` and `table_provenance` disagree, a path
@@ -673,7 +677,7 @@ research pages, for publishing per decision #46.
 `python3 scripts/record_compare.py`, run after `text_database.py`, writes
 `artifacts/dossier/compare.html` beside the engine and gearbox pages, the
 "Compare records" research page. Its first section compares the 14 demo
-gearboxes and its second the 56 demo engines; tyres are not compared yet. A
+gearboxes, its second the 56 demo engines and its third the 109 demo tyres. A
 jump link at the top leads to each section. The gearbox matrix has one row per
 gearbox, in `GEARDATA.DAT` order, and one column per tag in
 `GEARBOX_FIELD_STORES`, in payload offset order (`+0x14` to `+0x31`), so any
@@ -742,9 +746,50 @@ colon-less `INHERIT_TYPE` line, or declares a mapped tag that is not one inline
 value (a `TORQUE_ARRAY` that is not a block of rows) or whose written token
 does not parse to the value `engines.json` holds, when `effective_fields` or
 `untagged_inherit_consequences` differ from what `text_database.py` derives,
-and when `ENGDATA.DAT` does not match `engines.json`. The page is not committed
-because it holds game data; [`build_research.py`](#research-directory) builds
-it with the other research pages.
+and when `ENGDATA.DAT` does not match `engines.json`.
+
+The tyre section shows each tyre's effective scalar values, what the loader
+ends up storing once each `:INHERIT_TYPE` has copied the parent's scalar fields
+(`+0x18` to `+0x40`), as `tyres.json` `effective_scalars` resolve them (see
+[Tyre scalar inheritance](#tyre-scalar-inheritance)); the root's values are its own
+declarations. Its matrix has one row per tyre, in `TYREDATA.DAT` order, one
+column per tag in `TYRE_SCALAR_STORES`, in payload offset order, and then one
+per resolved table (the four `TYRE_TABLES` and `sound_info`), 109 × 14 in the
+demo. Each scalar cell shows the effective value as written on the line that
+declares it, read from `TYREDATA.DAT` (whose SHA-256 must match `tyres.json`),
+linked to that declaration's row on `tyres.html` (`tyre-<source>-line-<n>`) and
+marked declared or inherited from its source record, with the `INHERIT_TYPE`
+path when it is longer than one step; a zero-filled cell shows
+`not declared (zero-filled)` and no value. Each table cell names the record the
+table is read from, as `table_provenance` gives it, and links the tyre's row for
+that table on `tyres.html`, which holds its "Why?" trail; no table values are
+shown. Each scalar column header shows the tag's offsets and links its
+`tyre-store-<TAG>` row; each table column header shows the record offset its
+accessor tests and links the accessor's section on `routines.html`. Unmapped
+declarations, and declarations the scalar copy overwrites (none in the demo),
+get no column and are listed under the matrix. The tyre "What differs" table
+gives, per scalar tag, the distinct effective values grouped by the parsed
+number (`1` and `1.0` are one value, both forms shown) and the tyres that hold
+each, zero-filled cells apart, and how the 108 inheriting tyres get the field;
+per table, the source records and the tyres that read each. When
+`TYREDATA.DAT` is the demo's by `analysis/game-file-manifest.json`, the
+inheriting tyres' counts must equal `TYRE_SCALAR_COUNTS` and the table source
+counts `TYRE_TABLE_SOURCES` (109 `DEFAULT_ROAD` for both combined tables;
+73/23/13 `DEFAULT_ROAD`/`DEFAULT_OFFROAD`/`DEFAULT_TRACK` for vertical load,
+camber thrust and sound); for any other file the counts are shown but not
+checked, and the page says so. Values are declarations as written, not physical
+quantities: no units, compound meanings or physics, and the two grip numbers'
+scale by the global float at `0x00597484` is not applied. The script also exits
+non-zero without writing the page when `TYREDATA.DAT` does not match
+`tyres.json`; when an inheriting tyre declares a tag with no byte-checked store
+that its `effective_scalars` entry does not list as `unmapped` (`tyres.json`
+lists none for the root, whose unmapped declarations are listed all the same);
+when `resolved_tables`, `table_provenance` or `effective_scalars` differ from
+what `text_database.py` derives; when a mapped declaration is not one inline
+number or its written token does not parse to the value `tyres.json` holds; and
+when the demo counts differ. The page is not committed because it holds game
+data; [`build_research.py`](#research-directory) builds it with the other
+research pages.
 
 ### PCG catalogue
 
@@ -900,8 +945,9 @@ resource other than the notice's two links, that every local link, fragment
 included, resolves to a file and id inside the directory (so each record page's
 `routines.html#<label>` and `routines.html#site-<va>` link must name a section
 or site row on the routines page, built from the same `status.json`, and each
-`gearboxes.html#<id>` and `engines.html#<id>` link on the compare page a declaration, store or
-effective `TORQUE_ARRAY` row), and that the directory
+`gearboxes.html#<id>`, `engines.html#<id>` and `tyres.html#<id>` link on the compare page a declaration,
+store, effective `TORQUE_ARRAY` or tyre table row, and each `routines.html#<label>` link there an accessor's
+section), and that the directory
 holds no file other than the ones the script writes. Only then does the
 staging directory replace the output; an existing output that holds anything
 else is left alone. The directory is not committed because it holds game data.

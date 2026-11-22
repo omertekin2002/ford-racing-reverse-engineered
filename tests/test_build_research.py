@@ -27,7 +27,7 @@ PAGES = ("index.html", "engines.html", "gearboxes.html", "compare.html", "tyres.
 ASM = tuple(sorted(f"evidence/selected/{path.name}" for path in (REPO_ROOT / "analysis/selected").glob("*.asm")))
 EVIDENCE = ("evidence/annotated/selected.c", "evidence/annotated/status.json", "evidence/pcg-index.json", *ASM,
             "evidence/selected/field-evidence.json", "evidence/unpacked-manifest.json")
-COUNTS = {"engines": 7, "gearboxes": 3, "compared_gearboxes": 3, "compared_engines": 7, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
+COUNTS = {"engines": 7, "gearboxes": 3, "compared_gearboxes": 3, "compared_engines": 7, "compared_tyres": 3, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
           "questions": 3}
 
 
@@ -114,7 +114,7 @@ class BuildTests(ResearchTestCase):
     def test_entrance_page_shows_counts_identity_and_scope(self):
         self.build()
         index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
-        for text in ("7 engine records", "3 gearbox records", "3 gearboxes, 9 fields each; 7 engines, 20 fields each", "3 tyre records", "2 collections, 5 graphics",
+        for text in ("7 engine records", "3 gearbox records", "3 gearboxes, 9 fields each; 7 engines, 20 fields each; 3 tyres, 9 scalar fields and 5 tables each", "3 tyre records", "2 collections, 5 graphics",
                      "25 annotated routines", "3 open questions",
                      f'SHA-256 <code>{PE["sha256"]}</code>', "<code>0123abcd</code>",
                      "Values are shown exactly as declared", "stays labelled unresolved"):
@@ -146,7 +146,7 @@ class BuildTests(ResearchTestCase):
         # One more tyre inheriting MID changes the vertical load split the entrance page states.
         (self.game / DATABASES["tyres"]).write_bytes(
             TYRES.replace(":END", ":TYPE MORE\n:INHERIT_TYPE MID\n:END").replace("\n", "\r\n").encode("ascii"))
-        self.assertEqual(self.build(), {**COUNTS, "tyres": 4})
+        self.assertEqual(self.build(), {**COUNTS, "tyres": 4, "compared_tyres": 4})
         text = " ".join(re.sub(r"<[^>]+>", " ", (self.output / INDEX_PAGE).read_text(encoding="utf-8")).split())
         self.assertIn("the 4 tyres split across 2 records: 1 from ROOT and 3 from MID", text)
 
@@ -480,6 +480,15 @@ class VerifierTests(unittest.TestCase):
                 self.reject(f"compare.html has a broken local link: 'engines.html#{anchor}' names no id in "
                             "engines.html")
 
+    def test_compare_page_links_a_missing_tyre_page_anchor(self):
+        # A declaration row, a store-table row and a per-table row on the tyre page, each linked from the Compare
+        # records page's tyre section.
+        for anchor in ("tyre-ROOT-line-2", "tyre-store-RADIUS", "tyre-CHILD-VERTICAL_LOAD"):
+            with self.subTest(anchor=anchor):
+                self.setUp()
+                self.edit("tyres.html", f'id="{anchor}"', 'id="gone"')
+                self.reject(f"compare.html has a broken local link: 'tyres.html#{anchor}' names no id in tyres.html")
+
     def test_every_page_names_the_entrance_page_producer_revision(self):
         revision = "<dt>Producer revision</dt><dd><code>0123abcd</code>"
         self.edit("compare.html", revision, "<dt>Producer revision</dt><dd><code>fedc9876</code>")
@@ -564,7 +573,7 @@ class CommandTests(unittest.TestCase):
         result = self.run_script("--game", str(write_game(self.root / "game")), "--output", str(output))
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Wrote 8 verified pages", result.stdout)
-        self.assertIn("7 engines (7 compared), 3 gearboxes (3 compared), 3 tyres, 62 PCG collections, 654 graphics, 25 routines and "
+        self.assertIn("7 engines (7 compared), 3 gearboxes (3 compared), 3 tyres (3 compared), 62 PCG collections, 654 graphics, 25 routines and "
                       "3 open questions", result.stdout)
         self.assertEqual(files_under(output), sorted((*PAGES, *EVIDENCE)))
         self.assertIn("62 collections, 654 graphics", (output / INDEX_PAGE).read_text(encoding="utf-8"))

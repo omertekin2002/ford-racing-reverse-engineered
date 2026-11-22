@@ -274,6 +274,53 @@ class DossierPageTests(DossierTestCase):
         self.assertIn("(scaled by the float at <code>0x00597484</code> when stored)",
                       self.scalar_rows(page, "CHILD")["ROAD_MAGIC_GRIP_NUMBER"])
 
+    def test_store_table_links_each_tag_to_its_byte_checked_sites(self):
+        page = self.build()
+        table = page[page.index('<h2 id="field-stores">'):page.index("<h2>Summary</h2>")]
+        rows = dict(re.findall(r'<tr id="tyre-store-(\w+)">(.*?)</tr>', table))
+        # One row per mapped tag, in payload order of its lowest offset.
+        self.assertEqual(list(rows), tyre_dossier.tyre_tags())
+        self.assertEqual(sorted(rows), sorted(TYRE_SCALAR_STORES))
+        lowest = [min(int(offset, 16) for offset in TYRE_SCALAR_STORES[tag]["offsets"]) for tag in rows]
+        self.assertEqual(lowest, sorted(lowest))
+        self.assertEqual((lowest[0], lowest[-1]), (0x18, 0x40))
+        evidence = {site["va"]: site["bytes"] for site in EVIDENCE}
+        copies = tyre_dossier.copy_sites(EVIDENCE)
+        for tag, entry in TYRE_SCALAR_STORES.items():
+            with self.subTest(tag=tag):
+                cells = re.findall(r"<td>(.*?)</td>", rows[tag])
+                self.assertEqual(cells[0], f"<code>{tag}</code>")
+                offsets, stores, scale, copied = cells[1:]
+                self.assertEqual(offsets, "<br>".join(f"<code>+ {offset}</code>" for offset in entry["offsets"]))
+                self.assertEqual(stores, "<br>".join(
+                    f"<code>+ {offset}</code>: " + ", ".join(
+                        f'<a href="routines.html#site-{int(va, 16):08x}"><code>{va}</code></a>' for va in sites)
+                    for offset, sites in entry["offsets"].items()))
+                if "scaled_by" in entry:
+                    sites = entry["scale_sites"]
+                    self.assertEqual(scale, f'stored, multiplied in place by the float at <code>{entry["scaled_by"]}'
+                                            f'</code> and stored again: load <a href="routines.html#site-'
+                                            f'{int(sites["load"], 16):08x}"><code>{sites["load"]}</code></a>, multiply '
+                                            f'<a href="routines.html#site-{int(sites["multiply"], 16):08x}"><code>'
+                                            f'{sites["multiply"]}</code></a>')
+                else:
+                    self.assertEqual(scale, "none")
+                for offset in entry["offsets"]:
+                    pair = copies[offset]
+                    self.assertEqual(sorted(evidence[va] for va in pair),
+                                     sorted([f"8948{offset[2:]}", f"8b4a{offset[2:]}"]))
+                    self.assertIn(f"<code>+ {offset}</code>: " + ", ".join(
+                        f'<a href="routines.html#site-{va:08x}"><code>0x{va:08x}</code></a>' for va in pair), copied)
+                # Every site the row links is byte-checked, so the routines page anchors it.
+                linked = {int(va, 16) for va in re.findall(r"site-([0-9a-f]{8})", rows[tag])}
+                self.assertTrue(linked)
+                self.assertTrue(linked <= set(evidence))
+        self.assertIn('The loader <a href="routines.html#fr3_load_tyre_database"><code>fr3_load_tyre_database</code></a> '
+                      "stores each scalar tag below as a float", table)
+        self.assertIn('the scalar copy at <a href="routines.html#fr3_copy_tyre_scalar_fields"><code>0x00524090</code></a> '
+                      '(called for <code>:INHERIT_TYPE</code> at <a href="routines.html#site-00523b3a">', table)
+        self.assertIn("The scale global's runtime value is not shown or applied.", table)
+
     def test_declarations_as_written(self):
         root = section(self.build(), "ROOT")
         self.assertIn('<td>2</td><td><code>:RADIUS</code></td><td><span class="num">777.25</span></td>', root)

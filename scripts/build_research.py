@@ -22,7 +22,8 @@ Run it after scripts/acquire_demo.py has extracted the demo. It:
      external resource, every local link resolves to a file inside the output, every
      link to another page's fragment, such as the tyre, engine and gearbox pages'
      links to routines.html#<label> and routines.html#site-<va> and the compare page's
-     links to gearboxes.html#<id> and engines.html#<id>, names an id on that page, and the directory holds
+     links to gearboxes.html#<id>, engines.html#<id>, tyres.html#<id> and routines.html#<label>, names an id on
+     that page, and the directory holds
      no file other than the ones this script writes.
 
 The pages are built in a staging directory next to the output and only replace it
@@ -46,7 +47,8 @@ import record_compare
 import record_dossier
 import research_answers
 import routine_index
-from text_database import REPO_ROOT, load_known_tags, require, write_databases
+from text_database import (REPO_ROOT, RESOLVED_TYRE_TABLES, TYRE_SCALAR_STORES, load_known_tags, require,
+                           write_databases)
 import tyre_dossier
 from verify_web import PRODUCER_REVISION, RIGHTS_CREDIT
 
@@ -54,7 +56,8 @@ ANALYSIS = REPO_ROOT / "analysis"
 DEFAULT_GAME = REPO_ROOT / "inputs/extracted/Program_Executable_Files"
 DEFAULT_OUTPUT = REPO_ROOT / "artifacts/research"
 EVIDENCE_DIR = "evidence"
-# The demo's game files and SHA-256s, under analysis/; the compare page checks ENGDATA.DAT's counts only for the demo's.
+# The demo's game files and SHA-256s, under analysis/; the compare page checks ENGDATA.DAT's and TYREDATA.DAT's counts
+# only for the demo's.
 GAME_MANIFEST = "game-file-manifest.json"
 RESEARCH_PAGES = tuple(page for page, _ in PAGES)
 # The analysis/ files the pages link to, by the hrefs key each generator uses, as paths under analysis/.
@@ -115,11 +118,13 @@ def render_index(counts, pe, revision, evidence, answers=""):
              "sites behind each. Untagged lines are labelled unresolved.", f'{counts["engines"]} engine records'),
             ("gearboxes.html", "Gearboxes", "Each gearbox record's declarations as written.",
              f'{counts["gearboxes"]} gearbox records'),
-            ("compare.html", "Compare records", "Every gearbox, and every engine's effective values, lined up field "
-             "by field, each value linked to its declaration and each field to its byte-checked store, and which "
-             "fields differ across the records.",
+            ("compare.html", "Compare records", "Every gearbox, and every engine's and tyre's effective values, lined "
+             "up field by field, each value linked to its declaration and each field to its byte-checked store, each "
+             "tyre's tables to the record they are read from, and which fields differ across the records.",
              f'{counts["compared_gearboxes"]} gearboxes, {len(record_dossier.GEARBOX_FIELD_STORES)} fields each; '
-             f'{counts["compared_engines"]} engines, {len(record_dossier.ENGINE_FIELD_STORES)} fields each'),
+             f'{counts["compared_engines"]} engines, {len(record_dossier.ENGINE_FIELD_STORES)} fields each; '
+             f'{counts["compared_tyres"]} tyres, {len(TYRE_SCALAR_STORES)} scalar fields and '
+             f'{len(RESOLVED_TYRE_TABLES)} tables each'),
             ("tyres.html", "Tyres", "Each tyre's declarations beside the source of its five resolved tables, the "
              "declaration each inheriting tyre's scalar fields end up with, and the byte-checked instruction sites "
              "behind each.", f'{counts["tyres"]} tyre records'),
@@ -174,9 +179,10 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
                       **record_dossier.build(work / "engines.json", work / "gearboxes.json", pe_path, staging, revision,
                                                entrance=True, status_path=status_path,
                                                evidence_path=analysis / TYRE_EVIDENCE["evidence"])}
-            counts.update(record_compare.build(work / "gearboxes.json", work / "engines.json", game_dir, pe_path,
-                                               staging / record_compare.PAGE, revision, entrance=True,
-                                               manifest_path=analysis / GAME_MANIFEST))
+            counts.update(record_compare.build(work / "gearboxes.json", work / "engines.json", work / "tyres.json",
+                                               game_dir, pe_path, staging / record_compare.PAGE, revision,
+                                               entrance=True, manifest_path=analysis / GAME_MANIFEST,
+                                               status_path=status_path))
             counts["questions"] = open_questions.build(
                 work / "engines.json", work / "tyres.json", analysis / QUESTION_EVIDENCE["evidence"],
                 analysis / QUESTION_EVIDENCE["pcg_index"], pe_path, staging / open_questions.PAGE, revision,
@@ -340,7 +346,8 @@ def main():
         raise SystemExit(f"build_research.py: {error}") from None
     print(f"Wrote {len(RESEARCH_PAGES)} verified pages to {args.output}: {counts['engines']} engines "
           f"({counts['compared_engines']} compared), "
-          f"{counts['gearboxes']} gearboxes ({counts['compared_gearboxes']} compared), {counts['tyres']} tyres, {counts['pcg_collections']} PCG collections, "
+          f"{counts['gearboxes']} gearboxes ({counts['compared_gearboxes']} compared), {counts['tyres']} tyres "
+          f"({counts['compared_tyres']} compared), {counts['pcg_collections']} PCG collections, "
           f"{counts['pcg_graphics']} graphics, {counts['routines']} routines and {counts['questions']} open questions")
 
 

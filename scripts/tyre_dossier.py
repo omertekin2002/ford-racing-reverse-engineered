@@ -20,7 +20,11 @@ and line (linked to that record's declaration row), INHERIT_TYPE path, payload
 offsets and the byte-checked store and copy sites behind it. Zero-filled fields
 get no value, and scalar tags without a byte-checked store are labelled
 unmapped with no value. Values are the declared text, not physical quantities.
-A note labels the
+A "Where each field is stored" table
+gives, for each tag in TYRE_SCALAR_STORES, its payload offsets, its store sites,
+any scale sites and the scalar copy's load/store pair for each offset; each row
+has the id tyre-store-<TAG>, which the Compare records page
+(scripts/record_compare.py) links from its tyre columns. A note labels the
 sound table's leading words, before its START_RPM values, unresolved and links
 to their section on the Open questions page (scripts/open_questions.py).
 
@@ -253,6 +257,50 @@ def link(name, table=None):
     return dossier_common.link("tyre", name, table)
 
 
+def store_anchor(tag):
+    """The id of tyre tag `tag`'s row in the "Where each field is stored" table."""
+    return dossier_common.anchor("tyre", "store", tag)
+
+
+def tyre_tags():
+    """The tags in TYRE_SCALAR_STORES, in payload order of their lowest offset (+0x18 to +0x40)."""
+    return sorted(TYRE_SCALAR_STORES, key=lambda tag: min(int(offset, 16) for offset in TYRE_SCALAR_STORES[tag]["offsets"]))
+
+
+def store_section(copies, routines):
+    """The table of where the tyre loader stores each mapped scalar tag, linked to its byte-checked sites.
+
+    Each row has the id store_anchor(tag), which the Compare records page (scripts/record_compare.py) links.
+    copies is copy_sites(evidence).
+    """
+    rows = []
+    for tag in tyre_tags():
+        entry = TYRE_SCALAR_STORES[tag]
+        offsets = entry["offsets"].items()
+        where = "<br>".join(f"<code>+ {e(offset)}</code>" for offset, _ in offsets)
+        stores = "<br>".join(f"<code>+ {e(offset)}</code>: {site_links(int(va, 16) for va in sites)}"
+                             for offset, sites in offsets)
+        if "scaled_by" in entry:
+            scale = entry["scale_sites"]
+            scaled = (f'stored, multiplied in place by the float at <code>{e(entry["scaled_by"])}</code> and stored again: '
+                      f'load {site_link(int(scale["load"], 16))}, multiply {site_link(int(scale["multiply"], 16))}')
+        else:
+            scaled = "none"
+        copied = "<br>".join(f"<code>+ {e(offset)}</code>: {site_links(copies[offset])}" for offset, _ in offsets)
+        rows.append(f'<tr id="{e(store_anchor(tag))}"><td><code>{e(tag)}</code></td><td>{where}</td><td>{stores}</td>'
+                    f"<td>{scaled}</td><td>{copied}</td></tr>")
+    copy = routine_link(routines["tyre scalar copy"], f"0x{SCALAR_COPY_VA:08x}")
+    return ('<h2 id="field-stores">Where each field is stored</h2>'
+            f'<p>The loader {routine_link(routines["tyre loader"])} stores each scalar tag below as a float at its '
+            "payload offsets as it parses it. Each row gives those offsets, the byte-checked store sites, the sites "
+            "that scale the two grip numbers and, for each offset, the load and store by which the scalar copy at "
+            f"{copy} (called for <code>:INHERIT_TYPE</code> at {site_link(SCALAR_COPY_CALL)}) copies it from the "
+            "parent, each linked to its row on the routines page. The scale global's runtime value is not shown "
+            "or applied.</p>"
+            "<table><tr><th>Tag</th><th>Offsets</th><th>Store sites</th><th>Scale sites</th>"
+            f'<th>Copy sites (load, store)</th></tr>{"".join(rows)}</table>')
+
+
 def path_html(path, table):
     return " &rarr; ".join(link(hop, table) for hop in path)
 
@@ -379,6 +427,7 @@ def render(tyres, sites, copies, pe, revision, hrefs, routines, entrance=False):
                  "the sound information table's leading words, before its <code>START_RPM</code> values, are not "
                  "shown here, and what they hold is not established "
                  f"({question_link(SOUND_ANCHOR, 'open question')}).</p></div>")
+    parts.append(store_section(copies, routines))
     parts.append('<h2>Summary</h2><table><tr><th>Tyre</th>'
                  + "".join(f"<th>{e(TABLE_LABELS[table])}</th>" for table in RESOLVED_TYRE_TABLES) + "</tr>")
     for record in records:
