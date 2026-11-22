@@ -17,10 +17,11 @@ Run it after scripts/acquire_demo.py has extracted the demo. It:
      and answers "Do road, offroad and track tyres use different tables?" in its
      #tyre-tables section, generated from tyres.json, "Which engines share a
      torque table, and what do they declare differently?" in its
-     #engine-torque-tables section, generated from engines.json, and "Which cars
+     #engine-torque-tables section, generated from engines.json, "Which cars
      share an engine, gearbox or tyre record?" in its #car-shared-records section,
-     generated from the cars' reverse index and cars.json, all by
-     scripts/research_answers.py;
+     generated from the cars' reverse index and cars.json, and "Which cars run road,
+     offroad or track tyres?" in its #car-tyre-roots section, generated from cars.json
+     and tyres.json, all by scripts/research_answers.py;
   5. checks the directory with verify_research(): all nine pages exist, each carries
      the rights-holder notice before its main content and names the same producer
      revision, none has a <script> or an
@@ -222,13 +223,14 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
             # engines.json; the answers reuse them.
             field_evidence = load_json(analysis / TYRE_EVIDENCE["evidence"], "Field evidence")
             labels = routine_labels(status_path)
-            answers = (research_answers.tyre_tables_section(load_json(work / "tyres.json", "Tyre database"),
-                                                            field_evidence, labels, tyre_hrefs)
+            tyres = load_json(work / "tyres.json", "Tyre database")
+            answers = (research_answers.tyre_tables_section(tyres, field_evidence, labels, tyre_hrefs)
                        + research_answers.engine_torque_section(load_json(work / "engines.json", "Engine database"),
                                                                 field_evidence, labels)
                        + research_answers.car_sharing_section(
                            cars, usage, car_page.check_cars(cars, game_file(cars, "cars.json", game_dir)),
-                           field_evidence))
+                           field_evidence)
+                       + research_answers.car_tyre_roots_section(cars, tyres, field_evidence, labels))
         counts["pcg_collections"], counts["pcg_graphics"] = pcg_catalogue.build(
             analysis / PCG_EVIDENCE["index"], analysis / PCG_EVIDENCE["manifest"], pe_path,
             analysis / "verification.json", staging / pcg_catalogue.PAGE, revision, hrefs=pcg_hrefs, entrance=True)
