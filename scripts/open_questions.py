@@ -17,9 +17,11 @@ Inputs, all produced elsewhere and only read here:
 
 The output is one static HTML file, artifacts/dossier/questions.html by default, with inline CSS, no JavaScript and
 no external resources. Each section has four parts: what was observed (every value read from the inputs above at
-build time), why it matters (the places on the other research pages that stay unresolved because of it), possible
-readings (only the alternatives the observations leave open, each labelled untested and none ranked) and what would
-decide it. The page resolves nothing and assigns no meaning to the unknown line, words or bytes.
+build time), why it matters (the places on the other research pages that depend on it), possible readings (only the
+alternatives the observations leave open, each labelled untested and none ranked) and what would decide it. The page
+assigns no meaning to the unknown words or bytes. For INDIGO's line it also gives the static instruction evidence,
+gap by gap (INDIGO_GAPS in scripts/indigo_evidence.py), and the reading it supports, which engines.json and the other
+pages apply on that basis; the question stays here because nothing has been run to confirm it.
 
 The script refuses to write the page, and exits non-zero, when an input is missing or malformed or no longer shows
 the question: INDIGO is missing, has no untagged line, more than one, or one whose tokens are not
@@ -27,7 +29,10 @@ the question: INDIGO is missing, has no untagged line, more than one, or one who
 size or its +0x54 store; the tyre loader's indexed stores into the sound table are not at exactly two offsets that
 split the allocation into an unknown block, a START_RPM block of the same size and whole value rows; no tyre declares
 :SOUND_INFO; the graphics with extra bytes are not exactly `_loadbar` and `_loadbr2`, 1,024 bytes each, in one
-collection; an .asm file lacks its span header; or the PE metadata has no sha256.
+collection; an .asm file lacks its span header; or the PE metadata has no sha256. It also refuses when engines.json
+disagrees with what scripts/text_database.py derives from its records and this page's field-evidence.json, when it
+does not apply INDIGO's line, and when the static instruction evidence no longer supports that reading (a missing
+site, or a failed check on the disassembly or tags.json): the page and the data must agree.
 """
 import argparse
 from pathlib import Path
@@ -36,8 +41,10 @@ import re
 from dossier_common import (INDIGO_ANCHOR, INDIGO_RECORD, INDIGO_TOKENS, PCG_ANCHOR, PCG_QUESTION_ENTRIES,
                             PCG_QUESTION_EXTRA, QUESTIONS_PAGE, SOUND_ANCHOR, SOUND_NOTE_ID, STYLE, anchor, check_pe, e,
                             load_json, page_start, producer_revision, relative_href, site_link)
+from indigo_evidence import (COLON_SEARCH, INDIGO_GAPS, INHERIT_DISPATCH, LOOKUP_FIRST, LOOKUP_LAST, NEXT_TAG,
+                             REGISTRY, REGISTRY_ENTRY, REGISTRY_STRING, SEEK_TAG, TAG_READER)
 import pcg_catalogue
-from record_dossier import DATABASES, check_records
+from record_dossier import DATABASES, check_engine_fields, check_records
 from routine_index import ASM_HEADER
 from text_database import REPO_ROOT, TYRE_TABLE_ACCESSORS, require, table_sources
 import tyre_dossier
@@ -76,89 +83,7 @@ LOAD_WINDOW = 3
 SECTIONS = ((INDIGO_ANCHOR, "Engine INDIGO's colon-less INHERIT_TYPE line"),
             (SOUND_ANCHOR, "The tyre sound table's leading words"),
             (PCG_ANCHOR, "The extra bytes after _loadbar and _loadbr2"))
-# The #indigo instruction evidence: the static evidence for how the engine loader reads INDIGO's colon-less line,
-# gap by gap. Each gap lists the field-evidence.json sites (by VA) it rests on and says, in plain words, what they
-# show. The page states a reading only when every gap is evidenced: every site present, and the checks that
-# check_indigo_evidence() runs on the committed disassembly and analysis/tags.json pass.
-TAG_READER = 0x0042D0A0
-NEXT_TAG = 0x0042E530
-COLON_SEARCH = 0x0042D2A0
-SEEK_TAG = 0x0042E5A0
 INHERIT_TYPE = INDIGO_TOKENS[0]
-# The engine loader's `cmp eax, imm32` that selects the INHERIT_TYPE branch; its immediate is the tag ID.
-INHERIT_DISPATCH = 0x00522B1D
-# The tag registry (extract_tag_registry.TABLE_VA, not imported here because that module needs pefile), and the data
-# sites for INHERIT_TYPE's entry in it (REGISTRY + 4 * its ID) and the string that entry points to.
-REGISTRY, REGISTRY_ENTRY, REGISTRY_STRING = 0x00594D94, 0x00595004, 0x00564390
-# The entries of the tag registry that lookup mode 2 searches (register_application_tags.asm and the table lookup's
-# bounds): 1..0x16a of the 0x16b, compared ignoring case.
-LOOKUP_FIRST, LOOKUP_LAST = 1, 0x16A
-INDIGO_GAPS = (
-    {"id": "reader", "title": "Which tag reader ENGDATA.DAT is read with",
-     "shows": "The engine loader opens <code>cars\\engdata</code> with reader type 0 (<code>EBX = 0</code>). The reader "
-              "opening keeps that type, jumps through its table to the type 0 case, which uses the format string "
-              "<code>data\\ascii\\%s.dat</code> and stores 0 as the reader's type dword. At the head of its tag loop "
-              "the loader passes that reader and lookup mode 2 to the next-tag dispatcher at "
-              "<code>0x0042e530</code>, which reads the type dword and calls <code>0x0042d0a0</code> for type 0. "
-              "This page calls <code>0x0042d0a0</code> the ASCII tag reader for that reason; the label is the "
-              "analyst's.",
-     "sites": (0x00522828, 0x0052282A, 0x00522832, 0x00581CB4, 0x00522839, 0x004F8F80, 0x004F8FBD, 0x0042E92F,
-               0x0042E943, 0x0042E961, 0x0042E96B, 0x0042E910, 0x0042E973, 0x0054BB30, 0x0042E984, 0x0052283E,
-               0x00522848, 0x0052284D, 0x0052284F, 0x0042E535, 0x0042E541, 0x0042E543, 0x0042E547)},
-    {"id": "colon-before", "title": "How the tag reader handles ':' before a token",
-     "shows": "The reader first calls the separator skip, which reads again only for tab, LF, CR, space, "
-              "<code>(</code>, <code>)</code>, <code>,</code>, <code>;</code> and <code>{</code> and gives any other "
-              "character back, so <code>:</code> stays in the stream. The reader then reads <code>:</code>: its byte "
-              "in the character table is <code>0x0c</code>, with no <code>0xc0</code> bit, it is not <code>!</code>, "
-              "the byte has no <code>0xe0</code> bit, it is not <code>-</code> or <code>+</code>, and it is none of "
-              "<code>[</code>, <code>=</code>, <code>}</code> or <code>]</code>. So the reader keeps it only as the "
-              "previous character and reads the next one without starting a token. <code>I</code>, the first "
-              "letter of <code>INHERIT_TYPE</code>, has the byte <code>0x48</code>, with the <code>0x40</code> bit, "
-              "and the previous character is <code>:</code> or, after the separator skip, 0, neither of them "
-              "<code>\\</code>. So the token starts at <code>I</code> whether or not a colon comes before it.",
-     "sites": (0x0042D0B2, 0x0042CFDE, 0x0042CFFA, 0x0042D0C9, 0x0042D0E0, 0x0042D125, 0x00597AA7, 0x0042D12C,
-               0x0042D212, 0x0042D21F, 0x0042D226, 0x0042D25E, 0x0042D262, 0x0042D266, 0x0042D230, 0x0042D239,
-               0x0042D242, 0x0042D24B, 0x0042D256, 0x0042D259, 0x00597AB6, 0x0042D132, 0x0042D135, 0x0042D151)},
-    {"id": "colon-after", "title": "Where a token ends",
-     "shows": "After a token's first character the reader appends each character it reads until the delimiter "
-              "test returns non-zero. The test returns 1 for <code>:</code> (<code>0x3a</code>) and for space "
-              "(<code>0x20</code>) and 0 for <code>_</code> (<code>0x5f</code>). So <code>INHERIT_TYPE</code> is "
-              "collected whole and ends at the space before <code>DEFAULT_TRACK</code>, and a <code>:</code> right "
-              "after a token would end it rather than join it.",
-     "sites": (0x0042D15C, 0x0042D175, 0x0042D17F, 0x0042D186, 0x0042D18C, 0x0042D05E, 0x0042D061, 0x0042D072,
-               0x0042D056, 0x0042D074, 0x0042D077, 0x0042D07E, 0x0042D080, 0x0042D083, 0x0042D06D, 0x0042D06F,
-               0x0042D08E, 0x0042D091)},
-    {"id": "lookup", "title": "How the token's name is looked up",
-     "shows": "The reader passes the token and the loader's mode 2 to the name lookup at <code>0x0042d310</code>. "
-              "It searches the table registered for mode 2: the tag registry at <code>0x00594d94</code>, with the "
-              "values 0 and <code>0x16b</code>, so entries 1 to <code>0x16a</code>. The search is a binary search "
-              "over 4-byte entries whose callback compares the two strings after adding <code>0x20</code> to "
-              "<code>A</code>&ndash;<code>Z</code> in both, so the compare ignores case and the token itself is "
-              "not changed. Only a result of <code>-0x12</code>, nothing found, leads to the second lookup in "
-              "mode 1. The same search, run over the registry in <code>tags.json</code> with those bounds and that "
-              "compare, returns the ID shown below for <code>INHERIT_TYPE</code>.",
-     "sites": (0x0042D0AF, 0x0042D1DE, 0x0042D1E1, 0x0042D1E7, 0x0042D316, 0x0042D318, 0x0042D31A, 0x0042D31F,
-               0x0042D324, 0x0042D338, 0x004FA473, 0x004FA478, 0x004FA47D, 0x004FA482, 0x004FA484, 0x0042E359,
-               0x0042E365, 0x0042E36B, 0x0042E371, 0x0042E89F, 0x0042E8A2, 0x0042E8A8, 0x0042E8B0, 0x0042E8BB,
-               0x0042E8C5, 0x0042E8CA, 0x0042E8CF, 0x0042E8D4, 0x0042E8D7, 0x0042E8DD, 0x0042F453, 0x0042F455,
-               0x0042F461, 0x0042F466, 0x0042F46B, 0x0042F470, 0x0042F475, 0x0042F477, 0x0042F479, 0x0042F485,
-               0x0042E880, 0x0042E882, 0x0042E884, 0x00534987, 0x0053498B, 0x0053498F, 0x00534991, 0x00534996,
-               0x0053499B, 0x0053499E, 0x005349B5, 0x0042E8EE, 0x0042D207, 0x00595004, 0x00564390)},
-    {"id": "colon-search", "title": "Whether 0x0042d2a0, which reads up to the next ':', is on this path",
-     "shows": "<code>0x0042d2a0</code> reads characters until <code>:</code>, gives that <code>:</code> back and "
-              "then calls the ASCII tag reader. Its only call in the committed spans is in <code>0x0042e5a0</code>. "
-              "No call to either routine is in the committed spans of the engine loader, the next-tag dispatcher, "
-              "the tag reader or the routines it calls, listed below, so it is not on the path "
-              "<code>ENGDATA.DAT</code>'s tags are read through. Only direct calls in those spans were searched.",
-     "sites": (0x0042D2D2, 0x0042D2DB, 0x0042D2DF, 0x0042D2EE, 0x0042D2F7, 0x0042E5FF)},
-    {"id": "dispatch", "title": "Whether INHERIT_TYPE reaches the engine copy",
-     "shows": "The engine loader's dispatch compares the tag ID with the ID the lookup returns for "
-              "<code>INHERIT_TYPE</code>; that branch reads the parent's name, looks the parent record up and calls "
-              "the engine copy at <code>0x00522c80</code>. These sites were already byte-checked for "
-              "<code>:INHERIT_TYPE</code>. The ID comes from the name lookup, not from the colon, so the colon-less "
-              "token reaches the same branch.",
-     "sites": (INHERIT_DISPATCH, 0x00522B3C, 0x00522B47)},
-)
 EXTRA_STYLE = """section.question { border-top: 2px solid #888; margin-top: 2em; }
 td.differs { background: #fde8e8; font-weight: bold; }
 p.reading { border-left: 4px solid #888; padding: 0.2em 0.8em; }
@@ -199,7 +124,21 @@ def check_indigo(engines):
     require(parent in by_name, f"{INDIGO_RECORD}'s untagged line names {parent!r}, which is not an engine record")
     children = [(item["type"], item["fields"]["INHERIT_TYPE"]["line"]) for item in engines["records"]
                 if item["fields"].get("INHERIT_TYPE", {}).get("values") == [parent]]
-    return {"record": record, "line": untagged[0], "parent": by_name[parent], "children": children}
+    applied = engines.get("effective_fields", {}).get(INDIGO_RECORD, {}).get("inherit_type")
+    require(applied and not applied["colon"] and applied["line"] == untagged[0]["line"] and applied["parent"] == parent,
+            f"engines.json does not apply {INDIGO_RECORD}'s colon-less line {untagged[0]['line']} as inheritance from "
+            f"{parent} (rerun scripts/text_database.py)")
+    return {"record": record, "line": untagged[0], "parent": by_name[parent], "children": children,
+            "applied": applied, "effective": engines["effective_fields"][INDIGO_RECORD]}
+
+
+def require_reading(evidence_case):
+    """Refuse when the static instruction evidence that engines.json's application of INDIGO's line rests on fails."""
+    open_gaps = "; ".join(
+        f'{gap["title"]}: ' + ", ".join([*(f"missing 0x{va:08x}" for va in gap["missing"]), *gap["problems"]])
+        for gap in evidence_case["gaps"] if not gap["evidenced"])
+    require(evidence_case["reading"], f"engines.json applies {INDIGO_RECORD}'s colon-less line, but its static "
+                                      f"instruction evidence no longer supports it: {open_gaps}")
 
 
 def compare_names(key, name):
@@ -447,22 +386,16 @@ def instruction_part(evidence_case, line, parent_name, hrefs, exe_sha256):
         if gap["present"]:
             parts.append("<table><tr><th>VA</th><th>Bytes</th><th>Claim</th></tr>"
                          f"{evidence_rows(gap['present'])}</table>")
-    if evidence_case["reading"]:
-        parts.append(f'<p class="reading" id="{e(INDIGO_ANCHOR)}-static-reading"><span class="label">static '
-                     "instruction evidence</span>: the tag reader treats <code>:</code> as a separator before a "
-                     f"token, so line {e(line['line'])}, <code>{e(' '.join(line['tokens']))}</code>, gives the same "
-                     f"tag token, <code>{e(INHERIT_TYPE)}</code> (ID <code>{evidence_case['tag_id']:#x}</code>), as "
-                     f"<code>:{e(INHERIT_TYPE)}</code> and reaches the same dispatch and engine copy. That is the "
-                     f"second reading above: the line is applied as inheritance from {e(parent_name)}. Nothing has "
-                     "been run to check it, and no other page applies it yet: the engine page, Compare records and "
-                     f"the entrance answers still treat {e(INDIGO_RECORD)} as a root with only its own declarations "
-                     "until a later change applies this reading.</p>")
-    else:
-        open_gaps = ", ".join(f'<a href="#{e(gap_anchor(gap))}">{e(gap["title"])}</a>'
-                              for gap in evidence_case["gaps"] if not gap["evidenced"])
-        parts.append(f'<p class="reading" id="{e(INDIGO_ANCHOR)}-static-reading"><span class="label">static '
-                     "instruction evidence</span>: no reading is stated, because these gaps are still open: "
-                     f"{open_gaps}.</p>")
+    parts.append(f'<p class="reading" id="{e(INDIGO_ANCHOR)}-static-reading"><span class="label">static '
+                 "instruction evidence</span>: the tag reader treats <code>:</code> as a separator before a "
+                 f"token, so line {e(line['line'])}, <code>{e(' '.join(line['tokens']))}</code>, gives the same "
+                 f"tag token, <code>{e(INHERIT_TYPE)}</code> (ID <code>{evidence_case['tag_id']:#x}</code>), as "
+                 f"<code>:{e(INHERIT_TYPE)}</code> and reaches the same dispatch and engine copy. That is the "
+                 f"second reading above: the line is applied as inheritance from {e(parent_name)}. The edition now "
+                 f"applies it on this evidence: the engine data, {engine_link(INDIGO_RECORD, 'the engine page')}, "
+                 f'<a href="compare.html#{e(anchor("compare-engine", INDIGO_RECORD))}">Compare records</a> and the '
+                 "entrance answers give it the fields it inherits, each labelled with this basis. Nothing has been "
+                 "run to check it, so the question stays open here.</p>")
     return "".join(parts)
 
 
@@ -487,39 +420,30 @@ def indigo_section(case, engines, hrefs, calls, engine_loader, engine_copy, evid
                 f'{e(parent["line"])} with {len(parent["fields"])} tags</dd>'
                 f'<dt>Records whose <code>:INHERIT_TYPE</code> names {e(parent_name)}</dt><dd>{children}</dd></dl>')
     missing_tags = ", ".join(f"<code>{e(tag)}</code>" for tag in missing) or "none"
-    matters = (f'<ul><li>{engine_link(name, "The engine page")} keeps line {e(line["line"])} verbatim, labelled '
-               "unresolved, and does not apply it: it shows only the record's own declarations.</li>"
+    inherited = [tag for tag, field in case["effective"]["fields"].items() if field["status"] != "declared"]
+    matters = (f'<ul><li>{engine_link(name, "The engine page")} keeps line {e(line["line"])} verbatim and applies it '
+               "as inheritance on the static instruction evidence below, as do the engine data, Compare records and "
+               "the entrance answers. Each labels what comes through the line with that basis.</li>"
                f"<li>{e(parent_name)} declares {len(missing)} tags that {e(name)} does not: {missing_tags}. Which values "
                f"{e(name)} ends up with for them depends on the answer: zero-filled if the line is ignored, or "
-               f"{e(parent_name)}'s effective values if it is applied. {engine_link(name, 'The engine page')} lists "
-               "both readings for each tag.</li></ul>")
+               f"{e(parent_name)}'s effective values if it is applied. The edition shows the second for the "
+               f"{len(inherited)} mapped tags {e(name)} does not declare; {engine_link(name, 'the engine page')} also "
+               "names what ignoring the line would zero-fill.</li></ul>")
     readings = (f"The engine loader skips or ignores the line, so {e(name)} keeps only its own declarations.",
                 f"The engine loader applies the line as inheritance, giving {e(name)} {e(parent_name)} as its parent.")
-    stated = evidence_case["reading"]
     note = ("<p>Only the alternatives the observations leave open. Neither has been tested by running the game. "
-            + (f'The <a href="#{e(INDIGO_ANCHOR)}-static-reading">static instruction evidence</a> below supports the '
-               "second; it is not a run and is not applied on the other pages.</p>" if stated else
-               "The instruction evidence below does not yet decide between them.</p>"))
+            f'The <a href="#{e(INDIGO_ANCHOR)}-static-reading">static instruction evidence</a> below supports the '
+            "second, and the other pages apply it on that basis; it is not a run.</p>")
     call_text = ", ".join(f"<code>0x{va:08x}</code>" for va, _ in calls)
     copy = (f"The loader calls {e(engine_copy[0])} (<code>0x{engine_copy[1]:08x}</code>, "
             f"{asm_link(hrefs, 'engine_copy')}) at {call_text}.")
     loader = (f"{e(engine_loader[0])} at <code>0x{engine_loader[1]:08x}</code> "
               f"({asm_link(hrefs, 'engine_loader')})")
-    if stated:
-        decide = (f'<ul><li>The <a href="#{e(INDIGO_ANCHOR)}-static-reading">static instruction evidence</a> above '
-                  f"follows the engine loader, {loader}, and the tag reader it calls to the branch that handles "
-                  f"<code>:INHERIT_TYPE</code>. {copy} What it does not include is a run.</li>"
-                  f"<li>A run of the demo that compares {e(name)}'s loaded engine record with {e(parent_name)}'s, for "
-                  f"the tags {e(name)} does not declare, would test it.</li>"
-                  "<li>Applying the reading to the engine data on the other pages is a separate, later change.</li>"
-                  "</ul>")
-    else:
-        decide = (f"<ul><li>How the engine loader, {loader}, and the tag reader it calls treat a line whose first "
-                  "token has no colon: whether such a token reaches the branch that handles "
-                  f"<code>:INHERIT_TYPE</code> or is skipped. {copy} The instruction evidence above lists which of "
-                  "its gaps are still open.</li>"
-                  f"<li>A comparison of {e(name)}'s loaded engine record with {e(parent_name)}'s, for the tags "
-                  f"{e(name)} does not declare.</li></ul>")
+    decide = (f'<ul><li>The <a href="#{e(INDIGO_ANCHOR)}-static-reading">static instruction evidence</a> above '
+              f"follows the engine loader, {loader}, and the tag reader it calls to the branch that handles "
+              f"<code>:INHERIT_TYPE</code>. {copy} What it does not include is a run.</li>"
+              f"<li>A run of the demo that compares {e(name)}'s loaded engine record with {e(parent_name)}'s, for "
+              f"the tags {e(name)} does not declare, would test it.</li></ul>")
     return section(INDIGO_ANCHOR, SECTIONS[0][1], observed, matters, readings, decide, note,
                    instruction_part(evidence_case, line, parent_name, hrefs, exe_sha256))
 
@@ -644,12 +568,13 @@ def render(cases, inputs, pe, revision, hrefs, entrance=False):
              f'PE timestamp {e(pe.get("timestamp_header_utc", "unknown"))}</dd>',
              f'<dt>Producer revision</dt><dd><code>{e(revision)}</code> (<code>scripts/open_questions.py</code>)</dd>',
              f"<dt>Questions</dt><dd>{len(SECTIONS)}</dd></dl>",
-             '<p class="scope">Scope: three findings the other pages label unresolved. For each, this page shows what '
+             '<p class="scope">Scope: three findings no run has settled. The other pages label two of them unresolved '
+             "and apply the third, INDIGO's line, on static instruction evidence. For each, this page shows what "
              "was observed, read from the parsed game files and the committed <code>analysis/</code> files when the "
              "page was built; where the other pages depend on it; the alternatives the observations leave open, each "
              "untested; and what evidence would decide it. For INDIGO's line it also lists byte-checked instruction "
-             "evidence and, only when every gap in it is evidenced, states the reading that evidence supports, "
-             "labelled static instruction evidence: nothing has been run, and no other page applies it. The page "
+             "evidence and the reading it supports, labelled static instruction evidence, which the engine data and "
+             "the other pages apply on that basis: nothing has been run, so the question stays open here. The page "
              "assigns no meaning to the unknown words or bytes.</p>",
              f"<h2>Questions</h2><ol>{contents}</ol>",
              indigo_section(cases["indigo"], inputs["engines"], hrefs, cases["engine_calls"], inputs["engine_loader"],
@@ -684,6 +609,8 @@ def build(engines_path, tyres_path, evidence_path, index_path, pe_path, output, 
              "indigo_evidence": check_indigo_evidence(evidence, inputs, tags),
              "sound": check_sound(inputs["tyres"], evidence, inputs["tyre_loader"]),
              "pcg": check_pcg(collections)}
+    require_reading(cases["indigo_evidence"])
+    check_engine_fields(inputs["engines"], evidence)
     files = {"evidence": Path(evidence_path), "pcg_index": Path(index_path), "tags": Path(tags_path),
              **{key: selected / name for key, name in ASM.items()}}
     hrefs = hrefs or {key: relative_href(path.resolve(), output) for key, path in files.items()}

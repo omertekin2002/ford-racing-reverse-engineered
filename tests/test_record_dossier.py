@@ -45,6 +45,11 @@ GEARBOXES = """:TYPE ROAD_OLD
 :CLUTCH_SPEED 0.45
 :END
 """
+# ENGINES plus DEFAULT_TRACK and INDIGO, whose colon-less line is padded onto line 1410, where
+# text_database.APPLIED_UNTAGGED_INHERIT applies it.
+INDIGO_HEAD = ENGINES.removesuffix(":END\n") + ":TYPE DEFAULT_TRACK\n:CAPACITY 3.5\n:MAX_RPM 7000\n"
+INDIGO_ENGINES = (INDIGO_HEAD + "//\n" * (1408 - INDIGO_HEAD.count("\n"))
+                  + ":TYPE INDIGO\nINHERIT_TYPE DEFAULT_TRACK\n:MAX_RPM 8000\n:END\n")
 ENGINE_NAMES = ["BASE", "CHILD", "GRANDCHILD", "LONER"]
 PE = json.loads((REPO_ROOT / "analysis/pe-metadata.json").read_text())
 BASE_VALUES = ("777.25", "FRONT", "6500", "100.5", "200.5", "150.5")
@@ -386,6 +391,40 @@ class RecordDossierPageTests(RecordDossierTestCase):
         self.assertNotIn("<code>CAPACITY</code>", loner)
         # LONER is not the demo's INDIGO, so there is no open question to link.
         self.assertNotIn("questions.html", loner)
+
+    def test_indigo_applied_line_is_shown_verbatim_with_its_parent_and_basis(self):
+        engines, _ = self.build(engines_json(INDIGO_ENGINES))
+        basis = '<a href="questions.html#indigo"><span class="label">static instruction evidence</span></a>'
+        indigo = section(engines, "engine", "INDIGO")
+        self.assertNotIn('<span class="label">unresolved</span>', indigo)
+        effective, declared = indigo.split("<h3>Declarations, as written</h3>")
+        self.assertIn('<h3>Effective fields</h3><p>Line 1410, <code>INHERIT_TYPE DEFAULT_TRACK</code>, has no colon. It '
+                      'is applied here as <code>:INHERIT_TYPE</code> <a href="#engine-DEFAULT_TRACK">DEFAULT_TRACK</a> on '
+                      f"{basis}: the tag reader gives the token the same tag ID with or without the colon.", effective)
+        self.assertIn("nothing has been run to confirm it", effective)
+        # All mapped tags, with provenance: INDIGO's own MAX_RPM, the rest through DEFAULT_TRACK.
+        rows = re.findall(r"<tr(?: id=\"[^\"]+\")?><td><code>(\w+)</code></td>", effective)
+        self.assertEqual(sorted(rows), sorted(ENGINE_FIELD_STORES))
+        self.assertIn('<td><code>MAX_RPM</code></td><td><code>+ 0x30</code></td><td><span class="num">8000</span></td>'
+                      '<td>declared</td><td><a href="#engine-INDIGO-line-1411">INDIGO line 1411</a></td>', effective)
+        self.assertIn('<td><code>CAPACITY</code></td><td><code>+ 0x34</code></td><td><span class="num">3.5</span></td>'
+                      '<td>inherited</td><td><a href="#engine-DEFAULT_TRACK-line-19">DEFAULT_TRACK line 19</a></td>'
+                      '<td><a href="#engine-INDIGO">INDIGO</a> &rarr; <a href="#engine-DEFAULT_TRACK">DEFAULT_TRACK</a>'
+                      "</td>", effective)
+        self.assertIn("<p>Had line 1410 been ignored, INDIGO would be a root, and the 19 mapped tags it does not "
+                      "declare would be zero-filled: <code>LOCATION_TYPE</code>", effective)
+        self.assertIn("Applying it overwrites none of its own declarations.</p>", effective)
+        self.assertIn('<td>1410</td><td><code>(untagged)</code></td><td><code>INHERIT_TYPE DEFAULT_TRACK</code> kept '
+                      'verbatim, applied as <code>:INHERIT_TYPE</code> <a href="#engine-DEFAULT_TRACK">DEFAULT_TRACK</a> '
+                      f"on {basis}", declared)
+        self.assertIn('<a href="#engine-DEFAULT_TRACK">DEFAULT_TRACK</a> (colon-less line 1410, '
+                      f"{basis})</td>", summary_row(engines, "engine", "INDIGO"))
+        scope = engines[engines.index('<p class="scope">'):]
+        self.assertIn("The colon-less <code>INHERIT_TYPE DEFAULT_TRACK</code> in <code>INDIGO</code> (line 1410) is "
+                      f"applied as inheritance on {basis}", scope[:scope.index("</p>")])
+        self.assertIn("Any other untagged line is not applied", scope[:scope.index("</p>")])
+        # LONER's line is not allow-listed: it stays unresolved.
+        self.assertIn('<span class="label">unresolved</span>: LONER is a root as parsed', section(engines, "engine", "LONER"))
 
     def test_multi_row_fields_render_as_row_tables_with_dimensions(self):
         engines, _ = self.build()

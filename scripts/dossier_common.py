@@ -194,6 +194,11 @@ def is_indigo_line(record, item):
     return record["type"] == INDIGO_RECORD and tuple(item["tokens"]) == INDIGO_TOKENS
 
 
+def basis_html(basis):
+    """The label of an applied colon-less line's basis (`static instruction evidence`), linked to its question."""
+    return f'<a href="{e(basis["question"])}"><span class="label">{e(basis["label"])}</span></a>'
+
+
 def is_pcg_question(entry):
     """True for a PCG graphic whose extra bytes the Open questions page writes up."""
     return entry["name"] in PCG_QUESTION_ENTRIES and entry["extra_bytes"] == PCG_QUESTION_EXTRA

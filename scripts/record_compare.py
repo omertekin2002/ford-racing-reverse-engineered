@@ -49,10 +49,12 @@ declarations). It has two tables:
     listed apart. It counts how the inheriting engines get each field (declared, inherited or zero-filled, as
     engines.json resolves it); when ENGDATA.DAT is the demo's by the game-file manifest, those counts must equal
     ENGINE_FIELD_COUNTS.
-A root's colon-less `INHERIT_TYPE <record>` line (the demo's INDIGO) is not applied. Every cell whose value depends on
-it, because the root does not declare the tag or declares it before the line, and every engine whose effective
-origin for a tag runs through such a cell, is labelled unresolved with no value, never zero; for INDIGO's line it
-links questions.html#indigo. Such cells are counted apart in What differs. Engine values are not interpreted either:
+INDIGO's colon-less `INHERIT_TYPE DEFAULT_TRACK` line is applied, as engines.json applies it, on static instruction
+evidence: INDIGO's row is marked as inheriting through that line, and every cell whose INHERIT_TYPE path crosses it
+says so, with the basis label linked to questions.html#indigo. Any other root's colon-less `INHERIT_TYPE <record>`
+line, which engines.json lists as `unresolved`, is not applied. Every cell whose value depends on it, because the
+root does not declare the tag or declares it before the line, and every engine whose effective origin for a tag runs
+through such a cell, is labelled unresolved with no value, never zero. Such cells are counted apart in What differs. Engine values are not interpreted either:
 no units, enum meanings or physics, no value for the derived +0x2c and +0xa4, and TORQUE_MODIFIER is not applied to
 the table. The script refuses to write the page when ENGDATA.DAT does not match engines.json, when an engine
   * declares a tag with no byte-checked store,
@@ -97,9 +99,9 @@ import argparse
 import hashlib
 from pathlib import Path
 
-from dossier_common import (INDIGO_ANCHOR, QUESTIONS_PAGE, ROUTINE_STATUS, STYLE, anchor, check_fields, check_pe, e,
-                            is_indigo_line, line_anchor, load_json, page_start, producer_revision, routine_label,
-                            routine_labels, routine_link)
+from dossier_common import (INDIGO_ANCHOR, QUESTIONS_PAGE, ROUTINE_STATUS, STYLE, anchor, basis_html, check_fields,
+                            check_pe, e, is_indigo_line, line_anchor, load_json, page_start, producer_revision,
+                            routine_label, routine_labels, routine_link)
 from record_dossier import (DATABASES, TORQUE, check_engine_fields, check_records, engine_store_anchor, engine_tags,
                             gearbox_tags, store_anchor)
 from text_database import (ENGINE_FIELD_COUNTS, ENGINE_FIELD_STORES, GEARBOX_FIELD_STORES, REPO_ROOT,
@@ -145,9 +147,13 @@ ENGINE_SCOPE = ("Scope: each engine's values are its effective ones, the declara
                 "<code>ENGDATA.DAT</code> on the line that declares it, and linked to that line's row on the engine "
                 "page. This page claims no units, no meaning for the enum words and no physics. It computes no value "
                 "for the derived <code>+ 0x2c</code> and <code>+ 0xa4</code>, and does not apply "
-                "<code>TORQUE_MODIFIER</code> to the torque table. A root's colon-less <code>INHERIT_TYPE</code> line, "
-                "such as <code>INDIGO</code>'s, is not applied: every field that depends on whether the game honours "
-                "it is labelled unresolved and given no value, never zero.")
+                "<code>TORQUE_MODIFIER</code> to the torque table. <code>INDIGO</code>'s colon-less "
+                "<code>INHERIT_TYPE DEFAULT_TRACK</code> line is applied as inheritance on static instruction evidence "
+                f'(<a href="{QUESTIONS_PAGE}#{INDIGO_ANCHOR}">open question</a>): the tag reader gives it the same tag '
+                "as <code>:INHERIT_TYPE</code>. Nothing has been run to confirm it, so every value that comes through "
+                "that line is marked with its basis. Any other root's colon-less <code>INHERIT_TYPE</code> line is "
+                "not applied: every field that depends on whether the game honours it is labelled unresolved and "
+                "given no value, never zero.")
 TYRE_SCOPE = ("Scope: each tyre's scalar values are its effective ones, the declarations the loader ends up storing "
               "once each <code>:INHERIT_TYPE</code> has copied the parent's scalar fields over the record, as "
               "<code>scripts/text_database.py</code> resolves them. Each is shown exactly as written in "
@@ -341,7 +347,7 @@ def unresolved_root(origin, tag, consequences):
     """
     root = origin["path"][-1]
     consequence = consequences.get(root)
-    if consequence is None:
+    if consequence is None or consequence["status"] == "applied":
         return None
     overwritten = {item["tag"] for item in consequence["overwritten_if_applied"]}
     return root if origin["status"] == ZERO_FILLED or tag in overwritten else None
@@ -353,12 +359,25 @@ def unresolved_cell(root, consequences):
             "question": is_indigo_line({"type": root}, consequence)}
 
 
-def engine_cell(tag, field, written, consequences):
-    """One matrix cell from an effective (or root) field: its status, provenance and value as written."""
+def applied_hops(path, applied):
+    """The applied colon-less INHERIT_TYPE lines an origin's path crosses, as their records' `inherit_type` entries.
+
+    Every record in the path but the last copied the value from the next one through its INHERIT_TYPE.
+    """
+    return [{"record": hop, **applied[hop]} for hop in path[:-1] if hop in applied]
+
+
+def engine_cell(tag, field, written, consequences, applied=None):
+    """One matrix cell from an effective (or root) field: its status, provenance and value as written.
+
+    `applied` maps each record whose INHERIT_TYPE is an applied colon-less line to its `inherit_type` entry; a cell
+    whose path crosses one lists it under `applied`.
+    """
     root = unresolved_root(field, tag, consequences)
     if root is not None:
         return {**unresolved_cell(root, consequences), "effective_status": field["status"]}
-    cell = {"status": field["status"], "effective_status": field["status"], "path": field["path"]}
+    cell = {"status": field["status"], "effective_status": field["status"], "path": field["path"],
+            "applied": applied_hops(field["path"], applied or {})}
     if field["status"] == ZERO_FILLED:
         return cell
     cell.update(source=field["source"], source_line=field["source_line"])
@@ -415,12 +434,15 @@ def check_engines(database, data, expected_counts=None):
         differ += [f"{tag} {counts[tag]}, not recorded" for tag in counts if tag not in expected_counts]
         require(not differ, "The inheriting engines' effective field counts differ from ENGINE_FIELD_COUNTS: "
                 + "; ".join(differ))
+    applied = {name: entry["inherit_type"] for name, entry in effective.items() if not entry["inherit_type"]["colon"]}
     engines = []
     for record in records:
         name = record["type"]
         fields = effective[name]["fields"] if name in effective else root_fields(record)
         engines.append({"name": name, "line": record["line"], "root": name not in effective,
-                        "cells": {tag: engine_cell(tag, fields[tag], written, consequences) for tag in engine_tags()}})
+                        "applied": applied.get(name),
+                        "cells": {tag: engine_cell(tag, fields[tag], written, consequences, applied)
+                                  for tag in engine_tags()}})
     return engines
 
 
@@ -473,14 +495,21 @@ def unresolved_html(cell):
     return f'{label}<br><small>no value; depends on {engine_line_link(cell["root"], cell["root_line"])}</small>'
 
 
+def applied_html(hops):
+    """The applied colon-less lines a value came through, each with its basis label linked to its question."""
+    return "".join(f'; through {engine_line_link(hop["record"], hop["line"], f"{hop["record"]} line {hop["line"]}")} '
+                   f'(no colon), {basis_html(hop["basis"])}' for hop in hops)
+
+
 def provenance_html(cell):
-    """Declared, or inherited from the source record, with the INHERIT_TYPE path when it has more than one step."""
+    """Declared, or inherited from the source record, with the INHERIT_TYPE path when it has more than one step and
+    each applied colon-less line it crosses."""
     if cell["status"] == "declared":
         return "declared"
     text = f'inherited from <a href="#{e(engine_row_anchor(cell["source"]))}">{e(cell["source"])}</a>'
     if len(cell["path"]) > 2:
         text += ", path " + " &rarr; ".join(e(hop) for hop in cell["path"])
-    return text
+    return text + applied_html(cell.get("applied", []))
 
 
 def max_rpm_html(rpm):
@@ -502,7 +531,8 @@ def engine_cell_html(engine, tag, cell):
         return f"<td>{unresolved_html(cell)}</td>"
     if cell["status"] == ZERO_FILLED:
         path = (", path " + " &rarr; ".join(e(hop) for hop in cell["path"])) if len(cell["path"]) > 1 else ""
-        return f'<td><span class="label">zero-filled</span><br><small>no value{path}</small></td>'
+        return (f'<td><span class="label">zero-filled</span><br><small>no value{path}'
+                f'{applied_html(cell.get("applied", []))}</small></td>')
     if tag == TORQUE:
         rows = f'{cell["rows"]} row{"" if cell["rows"] == 1 else "s"}'
         if not engine["root"]:
@@ -530,6 +560,10 @@ def engine_matrix(engines):
         name = engine["name"]
         cells = "".join(engine_cell_html(engine, tag, engine["cells"][tag]) for tag in engine_tags())
         kind = "root" if engine["root"] else "inherits"
+        if engine.get("applied"):
+            hop = engine["applied"]
+            kind += (f' {e(hop["parent"])} through colon-less '
+                     f'{engine_line_link(name, hop["line"], f"line {hop["line"]}")}, {basis_html(hop["basis"])}')
         rows.append(f'<tr id="{e(engine_row_anchor(name))}"><td><a href="{e(ENGINE_PAGE)}#{e(anchor("engine", name))}">'
                     f"{e(name)}</a><br><small>{kind}</small></td>{cells}</tr>")
     return f'<div class="wide"><table class="matrix engines">{header}{"".join(rows)}</table></div>'
@@ -571,7 +605,7 @@ def engine_differences_table(engines):
                       else "0")
         # A long tag may break after an underscore, so that the table fits a phone's width.
         rows.append(f'<tr id="{e(anchor("differs-engine", tag))}"><td><code>{e(tag).replace("_", "_<wbr>")}</code></td>'
-                    f"<td>{len(groups)}, {kind}</td><td>{values}</td><td>{len(inheriting)} inheriting, as parsed: {counts}"
+                    f"<td>{len(groups)}, {kind}</td><td>{values}</td><td>{len(inheriting)} inheriting: {counts}"
                     f"<br>unresolved: {unresolved}</td></tr>")
     return ("<table><tr><th>Tag</th><th>Distinct values</th><th>Values as written (engine count): engines</th>"
             f'<th>Counts</th></tr>{"".join(rows)}</table>')
@@ -605,8 +639,9 @@ def engines_section(engines, counts_checked):
         "engines hold, and which engines hold each. Numbers are grouped by the number, so two spellings of one number "
         "are one value, with each spelling shown; enum words are grouped exactly as written, and torque tables by the "
         "record and line that declare them. Unresolved cells have no value and are counted apart, not as zero. The "
-        f"last column counts how the {inheriting} inheriting engines get each field as parsed, with the colon-less "
-        "lines not applied, and then the unresolved cells. "
+        f"last column counts how the {inheriting} inheriting engines get each field, <code>INDIGO</code>'s "
+        "colon-less line applied on static instruction evidence and any other colon-less line not applied, and then "
+        "the unresolved cells. "
         f"{check}</p>",
         engine_differences_table(engines)])
 

@@ -86,8 +86,9 @@ One `ENGDATA.DAT` line, `INHERIT_TYPE DEFAULT_TRACK` in record `INDIGO`, lacks
 the leading colon. The parser keeps such a line in the record's `untagged` list
 rather than treating it as inheritance. Static instruction evidence, described in
 [The ASCII tag reader and INDIGO's line](#the-ascii-tag-reader-and-indigos-line),
-supports reading it as inheritance, but nothing has been run and the parser does
-not apply it. Other non-tag lines outside a value block are rejected.
+supports reading it as inheritance, and the engine data applies it on that
+evidence alone (see [Engine inheritance](#engine-inheritance)); nothing has been
+run. Other non-tag lines outside a value block are rejected.
 
 `TYREDATA.DAT` yields 109 tyre records, 108 with `:INHERIT_TYPE`. It has one
 9×11 longitudinal and one 10×21 lateral combined table, and three 10×2 blocks
@@ -109,8 +110,9 @@ resolves each inheriting engine's effective fields from them, as described in
 [Engine inheritance](#engine-inheritance). It maps every gearbox tag to its
 byte-checked payload offset the same way, as described in
 [New finding: gearbox stores and copy](#new-finding-gearbox-stores-and-copy). It
-does not apply the colon-less `INDIGO` line, resolve gearbox inheritance (no demo
-gearbox inherits), or handle the other text files. The meaning of the
+applies the colon-less `INDIGO` line on static instruction evidence only, and
+does not resolve gearbox inheritance (no demo gearbox inherits) or handle the
+other text files. The meaning of the
 sound table's first fifteen words, described below, is still unknown.
 
 The engine loader at `0x005227f0` allocates a `0xb0`-byte payload, and the gearbox
@@ -277,8 +279,10 @@ Three cases differ from tyres:
 Neither derived value is computed.
 
 `effective_engine_fields()` replays this and `text_database.py` writes it to
-`engines.json` as `effective_fields`. For each of the 51 engines with
-`:INHERIT_TYPE` it gives the `INHERIT_TYPE` line and parent and, for each of the
+`engines.json` as `effective_fields`. For each of the 52 inheriting engines, the
+51 with `:INHERIT_TYPE` and `INDIGO` through its applied colon-less line, it
+gives the `INHERIT_TYPE` line and parent, `colon` (`false` for `INDIGO`, with the
+`basis` below) and, for each of the
 20 mapped tags, the payload `offsets` and a `status` (`declared`, `inherited` or
 `not declared (zero-filled)`, as for tyres). Declared and inherited fields give
 the declared text `values` (and the `rows` of a torque array), the `source`
@@ -292,41 +296,56 @@ mapped store. No units, physics or row positions are computed.
 first by recursion over earlier records, and `verify_text_databases()` checks on
 the real demo that:
 
-- the effective record set is exactly the 51 inheriting engines;
+- the effective record set is exactly the 52 inheriting engines: the 51 with
+  `:INHERIT_TYPE` and `INDIGO`, whose colon-less line is applied from line 1410
+  to `DEFAULT_TRACK` without overwriting anything;
 - the two derivations agree;
 - nothing is overwritten and no tag is unmapped;
 - every torque table was parsed with its own record's `MAX_RPM`;
 - the per-tag status counts equal `ENGINE_FIELD_COUNTS`.
 
-In the demo no field is zero-filled, because the five roots declare all 20
-tags. 38 inheriting engines declare their own `TORQUE_ARRAY`, each after its own
-`MAX_RPM`; the other 13 inherit the table. Of the 1,020 fields, 270 are declared
-by the engine itself, 510 come from its direct parent, 137 from two levels up and
-103 from three:
+In the demo no field is zero-filled, because the four roots declare all 20
+tags. 39 inheriting engines declare their own `TORQUE_ARRAY`, each after its own
+`MAX_RPM`; the other 13 inherit the table. Of the 1,040 fields, 274 are declared
+by the engine itself, 526 come from its direct parent, 137 from two levels up and
+103 from three. `INDIGO` adds one declared field for each of the four tags it
+declares and one inherited field for each of the other 16:
 
 | Tag | Declared | Inherited |
 |---|---|---|
-| `TORQUE_MODIFIER` | 51 | 0 |
-| `TORQUE_ARRAY`, `MAX_RPM` | 38 each | 13 each |
-| `ASPIRATION_TYPE` | 18 | 33 |
-| `ROUGHNESS` | 16 | 35 |
-| `CAPACITY`, `MAX_TURBO_PRESSURE`, `NUMBER_OF_TURBOS`, `TURBO_MASS` | 14 each | 37 each |
-| `FUEL_CUTOFF`, `NUMBER_OF_CYLINDERS` | 8 each | 43 each |
-| `FLYWHEEL_MASS` | 7 | 44 |
-| `LOCATION_TYPE`, `TICKOVER_RPM` | 6 each | 45 each |
-| `FLYWHEEL_RADIUS`, `MAX_FUELFLOW` | 4 each | 47 each |
-| `ACCELERATOR_SPEED`, `MAX_AIRFLOW`, `MAX_DELTA_FUELFLOW` | 3 each | 48 each |
-| `ENGINE_BRAKING` | 1 | 50 |
+| `TORQUE_MODIFIER` | 52 | 0 |
+| `TORQUE_ARRAY`, `MAX_RPM` | 39 each | 13 each |
+| `ASPIRATION_TYPE` | 19 | 33 |
+| `ROUGHNESS` | 16 | 36 |
+| `CAPACITY`, `MAX_TURBO_PRESSURE`, `NUMBER_OF_TURBOS`, `TURBO_MASS` | 14 each | 38 each |
+| `FUEL_CUTOFF`, `NUMBER_OF_CYLINDERS` | 8 each | 44 each |
+| `FLYWHEEL_MASS` | 7 | 45 |
+| `LOCATION_TYPE`, `TICKOVER_RPM` | 6 each | 46 each |
+| `FLYWHEEL_RADIUS`, `MAX_FUELFLOW` | 4 each | 48 each |
+| `ACCELERATOR_SPEED`, `MAX_AIRFLOW`, `MAX_DELTA_FUELFLOW` | 3 each | 49 each |
+| `ENGINE_BRAKING` | 1 | 51 |
 
 A shared parent does not make two engines behave identically: each engine's
 own declarations replace the parent's.
 
-`INDIGO` stays a root as parsed and gets no `effective_fields` entry.
-`untagged_inherit_consequences()` writes, as `untagged_inherit_consequences`,
-what depends on its colon-less line: for each of the 16 mapped tags `INDIGO`
-does not declare, `if_ignored` (zero-filled) and `if_applied` (the entry it
-would get with `DEFAULT_TRACK` as its parent). It does not choose between them;
-see the [Open questions page](#open-questions).
+`INDIGO`'s colon-less line is applied through a narrow, committed allow-list,
+`APPLIED_UNTAGGED_INHERIT`: record `INDIGO`, line 1410, tokens `INHERIT_TYPE
+DEFAULT_TRACK`, basis *static instruction evidence*, pointing at
+`questions.html#indigo` and the `INDIGO_GAPS` sites (now in
+`scripts/indigo_evidence.py`, shared with the Open questions page).
+`with_applied_inherits()` adds the line as `INDIGO`'s `INHERIT_TYPE` for both
+derivations; the parsed record keeps it verbatim in `untagged`. The build fails
+rather than apply it when the line is not exactly as listed (line and tokens),
+when `INDIGO` also has a `:INHERIT_TYPE`, or when any `INDIGO_GAPS` site is
+missing from `field-evidence.json`. No other colon-less line is applied.
+`INDIGO`'s `effective_fields` entry has `inherit_type` `{"line": 1410,
+"parent": "DEFAULT_TRACK", "colon": false, "basis": {...}}`; the colon-tagged
+entries have `"colon": true`. `untagged_inherit_consequences()` still writes, as
+`untagged_inherit_consequences`, both readings for each of the 16 mapped tags
+`INDIGO` does not declare, `if_ignored` (zero-filled) and `if_applied`, now with
+`status: "applied"` and the same `basis`; any other root's colon-less line keeps
+`status: "unresolved"`. Nothing has been run, so the question stays on the
+[Open questions page](#open-questions).
 
 ### The ASCII tag reader and INDIGO's line
 
@@ -387,10 +406,12 @@ missing colon changes the result.
 So, as static instruction evidence, `INHERIT_TYPE DEFAULT_TRACK` gives the same
 token and tag ID as `:INHERIT_TYPE DEFAULT_TRACK` and reaches the same copy:
 `INDIGO` would inherit from `DEFAULT_TRACK`, the second reading on the
-[Open questions page](#open-questions). The reading is **not applied**.
-`engines.json`, `ENGINE_FIELD_COUNTS`, `effective_fields`, the engine page,
-Compare records and the entrance answers still treat `INDIGO` as a root; a
-later change applies it.
+[Open questions page](#open-questions). The reading is **applied on static
+instruction evidence**: `engines.json`, `ENGINE_FIELD_COUNTS`,
+`effective_fields`, the engine page, Compare records and the entrance answers
+give `INDIGO` `DEFAULT_TRACK`'s effective values for the 16 tags it does not
+declare, each labelled with that basis and linked to `questions.html#indigo`
+(see [Engine inheritance](#engine-inheritance)). No run confirms it.
 
 ## New finding: gearbox stores and copy
 
@@ -642,7 +663,8 @@ from two levels up:
 
 Engine inheritance is resolved the same way in
 [Engine inheritance](#engine-inheritance); the colon-less
-`INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` is not applied (see
+`INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` is applied there on static
+instruction evidence only (see
 [The ASCII tag reader and INDIGO's line](#the-ascii-tag-reader-and-indigos-line)).
 
 The tyre sites among the [432 byte-checked sites](../analysis/selected/field-evidence.json)
@@ -692,7 +714,7 @@ and then shows every record's declarations exactly as written, in line order.
 Multi-row fields such as `TORQUE_ARRAY` appear as row tables with their
 dimensions. `:INHERIT_TYPE` links to the parent.
 
-Each of the 51 inheriting engines also gets an effective-fields table from
+Each of the 52 inheriting engines also gets an effective-fields table from
 `engines.json`'s `effective_fields` (see [Engine inheritance](#engine-inheritance)):
 for each mapped tag, its status, declared values (a torque array's shape), source
 record and line linked to that line's declaration row, path, and byte-checked
@@ -705,10 +727,14 @@ and no value. A shared parent does not make two engines behave identically, and
 units and physics are not claimed.
 
 The colon-less `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` is shown verbatim
-as an untagged line, not as inheritance, with a note that whether the game
-honours it is not established. `INDIGO`'s section lists, labelled unresolved and
-linked to `questions.html#indigo`, the 16 tags that depend on the line, under
-both readings. The engine page has a "Where each field is stored" table with
+as an untagged line, with a note that it is applied as `:INHERIT_TYPE
+DEFAULT_TRACK` on *static instruction evidence*, linked to
+`questions.html#indigo`; the same label appears in the scope, in the summary's
+parent column and at the top of `INDIGO`'s effective-fields table, which lists
+all 20 fields with provenance. `INDIGO`'s section also names the 16 tags that
+would be zero-filled had the line been ignored. Any other root's colon-less
+line is shown verbatim, labelled unresolved, with both readings for the tags
+that depend on it. The engine page has a "Where each field is stored" table with
 one row per tag in `ENGINE_FIELD_STORES`, in payload offset order, each with
 the id `engine-store-<TAG>`: the offsets the tag's handler writes, their width
 and `Fr3EngineRecord` field, the `cmp eax, <id>` dispatch site and the store
@@ -792,16 +818,19 @@ source record and line, the row count and the `MAX_RPM` declaration the table
 was parsed with, and link the engine's effective `engine-<name>-torque-array`
 row (a root has none, so its cell links only the declaration).
 
-`INDIGO`'s colon-less `INHERIT_TYPE DEFAULT_TRACK` line is not applied. Each
-of the 16 tags `INDIGO` does not declare, and any tag another engine gets
-through such a field, is shown as `unresolved` with no value, never `0`,
-linked to `questions.html#indigo`; a field a root declares before such a line
-would be unresolved too, because applying the line would overwrite it. The
-engine "What differs" table has one row per tag: the distinct effective values
-and the engines that hold each (numbers grouped by the parsed number, enum
-words by the exact word, torque tables by source record and line), the
-unresolved cells counted apart, and how the 51 inheriting engines get the field
-as parsed. When `ENGDATA.DAT` is the demo's, by the SHA-256 in
+`INDIGO`'s colon-less `INHERIT_TYPE DEFAULT_TRACK` line is applied, as
+`engines.json` applies it, on static instruction evidence: `INDIGO`'s row is
+marked as inheriting `DEFAULT_TRACK` through that line, and each cell whose
+`INHERIT_TYPE` path crosses it says so, with the basis label linked to
+`questions.html#indigo`; no `INDIGO` cell is unresolved. Any other root's
+colon-less line is not applied: each tag that root does not declare, and any tag
+another engine gets through such a field, is shown as `unresolved` with no
+value, never `0`; a field a root declares before such a line would be
+unresolved too, because applying the line would overwrite it. The engine "What
+differs" table has one row per tag: the distinct effective values and the
+engines that hold each (numbers grouped by the parsed number, enum words by the
+exact word, torque tables by source record and line), the unresolved cells
+counted apart, and how the 52 inheriting engines get the field. When `ENGDATA.DAT` is the demo's, by the SHA-256 in
 `analysis/game-file-manifest.json`, those declared and inherited counts must
 equal `ENGINE_FIELD_COUNTS`. The engine section claims no units, enum meanings
 or physics, computes no derived `+0x2c` or `+0xa4` value and does not apply
@@ -919,13 +948,13 @@ a site would be shown zero times or more than once, or the PE metadata has no
 
 `python3 scripts/open_questions.py`, run after `text_database.py`, writes
 `artifacts/dossier/questions.html` beside the other dossier pages. It gives
-three findings the other pages label unresolved their own anchored section,
+three findings no run has settled their own anchored section,
 each in four parts. **Observed** shows values read at build time from the parsed
 `engines.json` and `tyres.json` and the committed `analysis/` files, never typed
 into the script. **Why it matters** links the places on the other pages that
 stay unresolved because of it. **Possible readings** lists only the
 alternatives the observations leave open, each labelled *untested*, unranked.
-**What would decide it** names the committed routine or the comparison that
+**What would decide it** names the committed routine or the run that
 would settle it. `#indigo` adds a fifth part, **Instruction evidence**, between
 the readings and what would decide it. The page assigns no meaning to the
 unknown words or bytes.
@@ -945,11 +974,15 @@ unknown words or bytes.
   which calls the ASCII tag reader, that `seek_tag.asm` calls `0x0042d2a0` and
   no span on the tag path calls it or `0x0042e5a0`; it runs the lookup over
   `analysis/tags.json` and checks that the ID found matches the registry entry
-  and string sites and the dispatch compare at `0x00522b1d`. Only when every gap
-  is evidenced does the page state reading 2, labelled *static instruction
-  evidence*, adding that nothing has been run and that the other pages still
-  treat `INDIGO` as a root; otherwise it states no reading and names the gaps
-  left open.
+  and string sites and the dispatch compare at `0x00522b1d`. The page states
+  reading 2, labelled *static instruction evidence*, adding that the engine
+  data and the other pages apply it on that basis and that nothing has been run.
+  Because `engines.json` applies the line, the page and the data must agree:
+  the script refuses to write the page when any gap is not evidenced (naming
+  the open gaps and their missing sites or failed checks), when `engines.json`
+  does not apply the line, or when its `effective_fields` or
+  `untagged_inherit_consequences` differ from what `text_database.py` derives
+  with the page's `field-evidence.json`.
 - `#sound-words`: the byte-checked `0x2d0` allocation and `+0x54` store from
   `field-evidence.json`, and the tyre loader's indexed stores into the table,
   read from `load_tyre_database.asm` (at `+0x3c` and `+0x78`, each within three
@@ -975,7 +1008,9 @@ split the allocation into an unknown block, a `START_RPM` block of the same size
 and whole value rows; no tyre declares `:SOUND_INFO`; the graphics with extra
 bytes are not exactly `_loadbar` and `_loadbr2`, 1,024 bytes each, in one
 collection; the engine loader no longer calls the copy routine; an `.asm` file
-lacks its span header; or the PE metadata has no `sha256`.
+lacks its span header; the PE metadata has no `sha256`; or, as above, the
+`#indigo` instruction evidence no longer supports the line `engines.json`
+applies, or `engines.json` does not apply it.
 
 ### Research directory
 
@@ -1006,7 +1041,9 @@ data, and the build fails when the data has neither. Its `#engine-torque-tables`
 section, generated by the same script from the parsed `engines.json`, answers
 "Which engines share a torque table, and what do they declare differently?"
 from `effective_fields`: how many inheriting engines declare their own
-`TORQUE_ARRAY` and how many inherit one (38 and 13 in the demo), the tables
+`TORQUE_ARRAY` and how many inherit one (39 and 13 of the 52 in the demo,
+`INDIGO` among them through its colon-less line, applied on static instruction
+evidence and labelled so), the tables
 read by more than one engine (8 in the demo, read by 21 engines), each listed by
 its declaring record and line with the engines that read it and the other
 mapped declarations each holds in effect, one engine's traced `INHERIT_TYPE`
