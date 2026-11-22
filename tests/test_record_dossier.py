@@ -174,7 +174,7 @@ class RecordDossierPageTests(RecordDossierTestCase):
                 external = {href for href in links.hrefs if not href.startswith("#")}
                 sites = {href for href in external if href.startswith("routines.html#site-")}
                 self.assertEqual(external - sites,
-                                 {"engines.html", "gearboxes.html", "compare.html", "tyres.html", "pcg.html", "routines.html", "questions.html",
+                                 {"cars.html", "engines.html", "gearboxes.html", "compare.html", "tyres.html", "pcg.html", "routines.html", "questions.html",
                                   *routines, *NOTICE_LINKS}
                                  - {self.pages[prefix == "gearbox"].name})
                 evidence = {f"routines.html#site-{site['va']:08x}" for site in EVIDENCE}
@@ -475,11 +475,11 @@ class RecordDossierPageTests(RecordDossierTestCase):
 
     def test_nav_bar(self):
         engines, gearboxes = self.build()
-        self.assertIn('<nav>Research: <strong>Engines</strong> | <a href="gearboxes.html">Gearboxes</a> | <a href="compare.html">Compare records</a> | '
+        self.assertIn('<nav>Research: <a href="cars.html">Cars</a> | <strong>Engines</strong> | <a href="gearboxes.html">Gearboxes</a> | <a href="compare.html">Compare records</a> | '
                       '<a href="tyres.html">Tyres</a> | <a href="pcg.html">PCG catalogue</a> | '
                       '<a href="routines.html">Routines</a> | '
                       '<a href="questions.html">Open questions</a></nav>', engines)
-        self.assertIn('<nav>Research: <a href="engines.html">Engines</a> | <strong>Gearboxes</strong> | <a href="compare.html">Compare records</a> | '
+        self.assertIn('<nav>Research: <a href="cars.html">Cars</a> | <a href="engines.html">Engines</a> | <strong>Gearboxes</strong> | <a href="compare.html">Compare records</a> | '
                       '<a href="tyres.html">Tyres</a> | <a href="pcg.html">PCG catalogue</a> | '
                       '<a href="routines.html">Routines</a> | '
                       '<a href="questions.html">Open questions</a></nav>', gearboxes)

@@ -2228,12 +2228,12 @@ def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, hea
             "car_reference_targets": targets}
 
 
-def write_databases(game_dir, output, known_tags, stems=tuple(DATABASES)):
+def write_databases(game_dir, output, known_tags, stems=tuple(DATABASES), bases=None):
     """Parse the text databases under game_dir named by stems (by default all four) into <output>/<stem>.json;
     return the record count per stem.
 
-    cars.json adds `references`, each car's resolve_car_references() against the other three, with the basis
-    car_reference_bases() gives on the committed field-evidence.json and tag registry.
+    cars.json adds `references`, each car's resolve_car_references() against the other three, with `bases`, by
+    default the basis car_reference_bases() gives on the committed field-evidence.json and tag registry.
     """
     require(Path(game_dir).is_dir(), f"Game directory does not exist: {game_dir}")
     require(set(stems) <= set(DATABASES), f"Unknown text databases: {sorted(set(stems) - set(DATABASES))}")
@@ -2249,7 +2249,7 @@ def write_databases(game_dir, output, known_tags, stems=tuple(DATABASES)):
             targets = {name: parsed.get(name) or read_database(game_dir, DATABASES[name], known_tags,
                                                                name in SOUND_INFO_DATABASES)["records"]
                        for name in ("engines", "gearboxes", "tyres")}
-            database["references"] = resolve_car_references(database["records"], targets)
+            database["references"] = resolve_car_references(database["records"], targets, bases)
         if stem == "tyres":
             database["resolved_tables"] = resolve_tyre_tables(database["records"])
             database["table_provenance"] = tyre_table_provenance(database["records"])

@@ -22,17 +22,17 @@ from test_tyre_dossier import ACCESSOR_SITES, LOADER_SITES, TYRES
 
 SCRIPT = REPO_ROOT / "scripts/build_research.py"
 PE = json.loads((REPO_ROOT / "analysis/pe-metadata.json").read_text())
-PAGES = ("index.html", "engines.html", "gearboxes.html", "compare.html", "tyres.html", "pcg.html", "routines.html",
+PAGES = ("index.html", "cars.html", "engines.html", "gearboxes.html", "compare.html", "tyres.html", "pcg.html", "routines.html",
          "questions.html")
 ASM = tuple(sorted(f"evidence/selected/{path.name}" for path in (REPO_ROOT / "analysis/selected").glob("*.asm")))
 EVIDENCE = ("evidence/annotated/selected.c", "evidence/annotated/status.json", "evidence/pcg-index.json", *ASM,
             "evidence/selected/field-evidence.json", "evidence/tags.json", "evidence/unpacked-manifest.json")
-COUNTS = {"engines": 7, "gearboxes": 3, "compared_gearboxes": 3, "compared_engines": 7, "compared_tyres": 3, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
+COUNTS = {"cars": 2, "engines": 7, "gearboxes": 3, "compared_gearboxes": 3, "compared_engines": 7, "compared_tyres": 3, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
           "questions": 3}
 
 
-# Two cars whose references resolve against the engines, gearboxes and tyres below. No page reads them; the analysis
-# bundle packages cars.json.
+# Two cars whose references resolve against the engines, gearboxes and tyres below; cars.html shows them, and the
+# analysis bundle packages cars.json.
 CARS = """:CAR_TYPE ROADSTER
 :CAR_ENGINE_TYPE BASE
 :CAR_GEARBOX_TYPE ROAD
@@ -134,7 +134,7 @@ class BuildTests(ResearchTestCase):
     def test_entrance_page_shows_counts_identity_and_scope(self):
         self.build()
         index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
-        for text in ("7 engine records", "3 gearbox records", "3 gearboxes, 9 fields each; 7 engines, 20 fields each; 3 tyres, 9 scalar fields and 5 tables each", "3 tyre records", "2 collections, 5 graphics",
+        for text in ("2 cars", "7 engine records", "3 gearbox records", "3 gearboxes, 9 fields each; 7 engines, 20 fields each; 3 tyres, 9 scalar fields and 5 tables each", "3 tyre records", "2 collections, 5 graphics",
                      "25 annotated routines", "3 open questions",
                      f'SHA-256 <code>{PE["sha256"]}</code>', "<code>0123abcd</code>",
                      "Values are shown exactly as declared", "stays labelled unresolved"):
@@ -220,6 +220,41 @@ class BuildTests(ResearchTestCase):
                            encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "engines.html#engine-CHILD-torque-array' names no id in engines.html"):
             build_research.verify_research(self.output)
+
+    def test_car_page_links_records_routines_and_evidence_that_exist(self):
+        self.build()
+        cars = (self.output / "cars.html").read_text(encoding="utf-8")
+        self.assertEqual(cars.count('<section class="car"'), 2)
+        linked = set(re.findall(r'href="([a-z]+\.html)#([^"]+)"', cars))
+        for page, fragment in linked:
+            self.assertIn(f'id="{fragment}"', (self.output / page).read_text(encoding="utf-8"), (page, fragment))
+        self.assertTrue({("engines.html", "engine-BASE"), ("engines.html", "engine-CHILD"),
+                         ("gearboxes.html", "gearbox-ROAD"), ("gearboxes.html", "gearbox-RALLY"),
+                         ("tyres.html", "tyre-ROOT"), ("tyres.html", "tyre-MID"), ("tyres.html", "tyre-CHILD"),
+                         ("routines.html", "site-00520ece"), ("routines.html", "asm-load_car_database")} <= linked)
+        self.assertEqual({page for page, _ in linked}, {"engines.html", "gearboxes.html", "tyres.html", "routines.html"})
+        for href in re.findall(r'href="(evidence/[^"]+)"', cars):
+            self.assertTrue((self.output / href).is_file(), href)
+        self.assertIn('href="evidence/selected/load_car_database.asm"', cars)
+        index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
+        self.assertIn('<tr><td><a href="cars.html">Cars</a></td>', index)
+
+    def test_removing_a_record_anchor_the_car_page_links_fails_verification(self):
+        self.build()
+        tyres = self.output / "tyres.html"
+        tyres.write_text(tyres.read_text(encoding="utf-8").replace(' id="tyre-MID"', ""), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "cars.html has a broken local link: 'tyres.html#tyre-MID' names no id "
+                                                "in tyres.html"):
+            build_research.verify_research(self.output)
+
+    def test_a_dangling_car_reference_refuses_the_build_and_keeps_the_previous_output(self):
+        self.build()
+        before = {name: (self.output / name).read_bytes() for name in files_under(self.output)}
+        path = self.game / DATABASES["cars"]
+        path.write_bytes(path.read_bytes().replace(b":CAR_BACK_TYRE_TYPE MID", b":CAR_BACK_TYRE_TYPE GONE"))
+        with self.assertRaisesRegex(ValueError, "'GONE' matches no tyres record"):
+            self.build()
+        self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)}, before)
 
     def test_engine_data_without_a_shared_torque_table_refuses_the_build(self):
         self.build()
@@ -596,8 +631,8 @@ class CommandTests(unittest.TestCase):
         output = self.root / "research"
         result = self.run_script("--game", str(write_game(self.root / "game")), "--output", str(output))
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("Wrote 8 verified pages", result.stdout)
-        self.assertIn("7 engines (7 compared), 3 gearboxes (3 compared), 3 tyres (3 compared), 62 PCG collections, 654 graphics, 25 routines and "
+        self.assertIn("Wrote 9 verified pages", result.stdout)
+        self.assertIn("2 cars, 7 engines (7 compared), 3 gearboxes (3 compared), 3 tyres (3 compared), 62 PCG collections, 654 graphics, 25 routines and "
                       "3 open questions", result.stdout)
         self.assertEqual(files_under(output), sorted((*PAGES, *EVIDENCE)))
         self.assertIn("62 collections, 654 graphics", (output / INDEX_PAGE).read_text(encoding="utf-8"))
