@@ -600,7 +600,7 @@ The C header has no car layout, and transcribing the rest of the `0x1bc` record
 is out of scope, so the four offsets are not added there. `CAR_PERFORMANCE`,
 `CAR_APPROXIMATE_TOP_SPEED` and the other car tags are parsed but not
 interpreted. No unit, physics or menu meaning is claimed for them, and their
-stores are not mapped. No page shows the car references yet.
+stores are not mapped. The [Cars page](#cars-page) shows each car's references.
 
 ## New finding: tyre payload and tables
 
@@ -815,6 +815,57 @@ the loader and scalar copy, labelled differently there). A shared table source d
 same: their scalar fields can differ. The page is not committed because it holds
 game data; [`build_research.py`](#research-directory) builds it with the other
 research pages, for publishing per decision #46.
+
+### Cars page
+
+`python3 scripts/car_page.py`, run after `text_database.py`, writes
+`artifacts/dossier/cars.html` beside the engine, gearbox and tyre pages; the
+research directory includes it. It reads `cars.json` and the other three
+databases, `CARDATA.DAT` itself, `field-evidence.json`, `tags.json`, the bounded
+`.asm` files and `pe-metadata.json`, and shows:
+
+- a summary, one row per car in file order, naming its engine, gearbox, front
+  tyre and back tyre, each linked to that record's section on `engines.html`
+  (`#engine-<name>`), `gearboxes.html` (`#gearbox-<name>`) or `tyres.html`
+  (`#tyre-<name>`);
+- "How the car loader resolves each reference": per reference tag, a row
+  `#car-store-<TAG>` with its registry ID, the compares and jumps that select
+  its handler, the name read, the lookup and the car payload offset it stores
+  at (`+0x1a8`, `+0x1ac`, `+0x1b4`, `+0x1b8`), and a row `#car-lookup-<database>`
+  per lookup with its database and the bounded disassembly that holds it. The
+  `:CAR_TYPE` record sites are listed above them. Every site in
+  `field-evidence.json` links to its row on `routines.html`; a site that is not
+  there would be shown unlinked and labelled not byte-checked. None of the car
+  loader or lookups is an annotated routine, so `load_car_database.asm` is linked
+  under `evidence/` and to its section on the routines page;
+- one section per car, `#car-<name>`, so a car never shares an id with an
+  engine or body record of the same name (`MODEL_T` is both a car and an
+  engine). It lists the four references, each with its declaration line, the
+  record it resolves to and the basis `cars.json` gives it: *resolved by the
+  loader's lookup (byte-checked)* or *declared by name*. Then come all the
+  car's declarations as written in `CARDATA.DAT`, each row with the id
+  `#car-<name>-line-<n>`, the repeated `CAR_PERFORMANCE` and `VALID_LIVERY`
+  lines in file order.
+
+Values are shown exactly as written (`0.20` stays `0.20`); each written token
+must parse to the value in `cars.json`. No units, menu meaning or physics are
+claimed for `CAR_PERFORMANCE`, `CAR_APPROXIMATE_TOP_SPEED`, `CAR_MODEL_YEAR` or
+any other value. Tags that name records of databases nobody parses, such as
+`CAR_BODY_TYPE`, `CAR_BRAKE_TYPE`, `CAR_SETUP_TYPE` and `CAR_CONTROL_TYPE`, are
+shown as declared names, unlinked.
+
+The script refuses to write the page when `CARDATA.DAT` does not match
+`cars.json`'s SHA-256 or a written token, when `references` differ from what
+`resolve_car_references()` gives against the three target databases with the
+bases `car_reference_bases()` derives from the given evidence (so a dangling or
+ambiguous name is refused, and so is a reference called byte-checked whose sites
+are not), and when two ids on the page coincide. For the demo's `CARDATA.DAT`,
+by the game-file manifest, it also requires 55 cars with six `CAR_PERFORMANCE`
+lines each and the distinct referenced records in `CAR_REFERENCE_TARGETS`: 52
+engines, 14 gearboxes, 53 front and 53 back tyres. In the research directory,
+`build_research.py` parses `CARDATA.DAT` with the bases derived from the
+analysis directory it is given, and `verify_research()` checks that every
+record, site and `asm-load_car_database` fragment the page links exists.
 
 ### Engine and gearbox dossier
 
@@ -1132,13 +1183,13 @@ applies, or `engines.json` does not apply it.
 the pages above into one self-contained directory, `artifacts/research/` by
 default (`--game` and `--output` change the paths). It parses the four text
 databases with `text_database.py` into a temporary working directory, so no
-parsed JSON is published, and runs the tyre, engine and gearbox, compare records, PCG and
+parsed JSON is published, and runs the car, tyre, engine and gearbox, compare records, PCG and
 routine and open questions generators with their usual checks. The `analysis/` files the pages link
 to, all 32 bounded `.asm` files, `field-evidence.json`, `tags.json`, `pcg-index.json`,
 `unpacked-manifest.json` and the annotated `status.json` and `selected.c`, are copied unchanged
 to `evidence/` under their `analysis/` paths, and the pages link there instead
 of into the repository. It also writes `index.html`, the "Explore findings"
-entrance: it links the seven pages with a one-line description and the engine,
+entrance: it links the eight pages with a one-line description and the car count, the engine,
 gearbox and tyre record counts, the number of gearboxes compared, the PCG collection and graphic counts, the
 annotated routine count and the open question count, all computed from the inputs, and shows the `fr3.exe` SHA-256 and the producer
 revision. Its `#tyre-tables` section, generated by `scripts/research_answers.py`
@@ -1170,9 +1221,9 @@ Values are shown as declared, and unresolved items stay labelled unresolved.
 
 Every research page, the entrance included, carries the browser preview's
 rights-holder notice (the credit, the official demo link and the removal-request
-link) before its main content, and a link bar to the other seven pages. The pages
+link) before its main content, and a link bar to the other eight pages. The pages
 are built in a staging directory next to the output; `verify_research()` then
-checks that all eight exist, that each has the notice before its `<h1>` and
+checks that all nine exist, that each has the notice before its `<h1>` and
 names the same producer revision as `index.html`, that
 none has a `<script>`, CSS `url()` or `@import`, or any external link or
 resource other than the notice's two links, that every local link, fragment
@@ -1181,7 +1232,10 @@ included, resolves to a file and id inside the directory (so each record page's
 or site row on the routines page, built from the same `status.json`, and each
 `gearboxes.html#<id>`, `engines.html#<id>` and `tyres.html#<id>` link on the compare page a declaration,
 store, effective `TORQUE_ARRAY` or tyre table row, and each `routines.html#<label>` link there an accessor's
-section), and that the directory
+section, and each `engines.html#engine-<name>`, `gearboxes.html#gearbox-<name>`,
+`tyres.html#tyre-<name>`, `routines.html#site-<va>` and
+`routines.html#asm-load_car_database` link on the car page a record section, site
+row or disassembly section), and that the directory
 holds no file other than the ones the script writes. Only then does the
 staging directory replace the output; an existing output that holds anything
 else is left alone. The directory is not committed because it holds game data.
@@ -1203,7 +1257,7 @@ for comparison). Before writing anything it re-runs
 as committed at the current producer revision (read with `git show`, so evidence
 copied from an uncommitted edit is refused), and checks that `index.html` names
 that revision and the `fr3.exe` SHA-256 in its `analysis/pe-metadata.json`. It then
-rebuilds all eight pages with the current generators and extracted game databases,
+rebuilds all nine pages with the current generators and extracted game databases,
 reading every analysis input (including tags and verification metadata) from
 that Git revision into a temporary directory. Every page must match that fresh
 build byte for byte, so changing a finding or count while keeping the revision,

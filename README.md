@@ -27,7 +27,7 @@ The new tyre analysis reconstructs its 88-byte record and table allocations.
   WebAssembly runtime. See the [browser guide](docs/browser.md).
 - **Research findings:** open
   [Explore findings](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/),
-  the engine, gearbox, tyre, PCG catalogue, routines and open questions pages built from the demo in the
+  the car, engine, gearbox, tyre, PCG catalogue, routines and open questions pages built from the demo in the
   same Pages workflow and published beside the preview under `research/`. The
   [research packet](https://omertekin2002.github.io/ford-racing-reverse-engineered/downloads/fr3-research-latest.zip)
   is an offline ZIP of those pages with a `MANIFEST.json` naming their revision,
@@ -146,8 +146,9 @@ headless script errors can be reported without a failing process exit code.
 | `analysis/selected/` | Instruction evidence and explicitly bounded disassembly |
 | `recovered/fr3_database_layouts.h` | Engine, gearbox and tyre in-memory layouts |
 | `artifacts/text-databases/` | Parsed engine, gearbox and tyre records from `scripts/text_database.py`, with source hashes |
-| `artifacts/research/` | Self-contained research directory from `scripts/build_research.py`: the "Explore findings" entrance page `index.html`, the seven pages below, and the `analysis/` files they link to under `evidence/`; every page carries the rights-holder notice |
+| `artifacts/research/` | Self-contained research directory from `scripts/build_research.py`: the "Explore findings" entrance page `index.html`, the eight pages below, and the `analysis/` files they link to under `evidence/`; every page carries the rights-holder notice |
 | `artifacts/fr3-research-<revision>.zip` | Citable research packet from `scripts/package_research.py`: the verified research directory in one folder, with a `MANIFEST.json` naming the input build, producer revision, Python version, the checks actually run and each file's SHA-256, plus `SHA256SUMS` |
+| `artifacts/dossier/cars.html` | Offline "Cars" page from `scripts/car_page.py`: each of the 55 demo cars' engine, gearbox and front and back tyre, linked to that record's section on `engines.html`, `gearboxes.html` or `tyres.html` and labelled with the basis `cars.json` gives it (resolved by the loader's lookup, byte-checked, or declared by name), the car loader's byte-checked dispatch, name read, lookup and store sites for each reference linked to `routines.html`, and every car declaration as written, repeated `CAR_PERFORMANCE` lines in file order, with no units or menu meaning claimed |
 | `artifacts/dossier/tyres.html` | Offline tyre dossier from `scripts/tyre_dossier.py`: each tyre's declarations beside its five table sources and their byte-checked evidence, each inheriting tyre's effective scalar fields with their source record and line, a "Where each field is stored" table of each scalar tag's offsets and store, scale and copy sites, and each site, accessor, the loader and the scalar copy linked to its section on `routines.html` |
 | `artifacts/dossier/engines.html`, `artifacts/dossier/gearboxes.html` | Offline engine and gearbox dossiers from `scripts/record_dossier.py`: each record's declarations as written, each inheriting engine's effective fields with their source record and line and store sites, each engine and gearbox field's offset, width, compare and store sites, `INDIGO`'s colon-less line applied on static instruction evidence and labelled with that basis, other untagged lines (and gearbox inheritance) labelled unresolved, and the database's load and copy routines linked to `routines.html` |
 | `artifacts/dossier/compare.html` | Offline "Compare records" page from `scripts/record_compare.py`: the 14 demo gearboxes, and the 56 demo engines' and 109 demo tyres' effective values, field by field, each value as written in `GEARDATA.DAT`, `ENGDATA.DAT` or `TYREDATA.DAT` linked to its declaration row on `gearboxes.html`, `engines.html` or `tyres.html` (inherited values marked with their source record) and each field to its store row there, each tyre's five tables to the record they are read from, and, per field, how many distinct values the records hold and which records hold each; values that come through `INDIGO`'s colon-less line are marked with its basis, static instruction evidence |
@@ -205,7 +206,7 @@ python3 scripts/text_database.py inputs/extracted/Program_Executable_Files --out
 
 `scripts/build_research.py` builds every research page in one step, after
 `acquire_demo.py`. It parses the text databases into a temporary directory,
-writes the tyre, engine, gearbox, compare records, PCG, routines and open questions pages described below plus an "Explore
+writes the car, tyre, engine, gearbox, compare records, PCG, routines and open questions pages described below plus an "Explore
 findings" entrance page, `index.html`, into `artifacts/research/`, and copies the
 committed `analysis/` files the pages link to into `artifacts/research/evidence/`,
 so the directory is self-contained. Every page carries the browser preview's
@@ -232,6 +233,25 @@ python3 scripts/package_research.py
 
 The per-page commands below still work on their own and write to
 `artifacts/dossier/`, without the entrance page or a nav link to it.
+
+`scripts/car_page.py`, run after `text_database.py`, builds
+`artifacts/dossier/cars.html`, the "Cars" page. It gives each car a section,
+`#car-<name>`, with the engine, gearbox and front and back tyre it references,
+each linked to that record's section on the engine, gearbox or tyre page and
+labelled with its basis from `cars.json`, and every declaration as written in
+`CARDATA.DAT`, the repeated `CAR_PERFORMANCE` lines in file order. A table,
+`#car-store-<TAG>` per row, shows how the car loader resolves each reference:
+the tag ID, the compares that select its handler, the name read, the lookup and
+the payload offset it stores at, each byte-checked site linked to
+`routines.html`. No units or menu meaning are claimed for any value. It exits
+non-zero when `cars.json` no longer matches `CARDATA.DAT` or what
+`text_database.py` resolves, a reference dangles, or, for the demo's file, the
+55 cars and their referenced record counts change (see
+[the analysis notes](docs/analysis.md#cars-page)):
+
+```sh
+python3 scripts/car_page.py
+```
 
 `scripts/tyre_dossier.py` turns `tyres.json`, `field-evidence.json` and
 `pe-metadata.json` into one static page, `artifacts/dossier/tyres.html`, with no
