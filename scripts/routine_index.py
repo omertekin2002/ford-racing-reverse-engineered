@@ -52,9 +52,10 @@ PE_METADATA = ANALYSIS / "pe-metadata.json"
 ASM_FILES = ("allocate_database_record.asm", "binary_search.asm", "build_pcg_view.asm",
              "compare_names_ignoring_case.asm", "copy_engine_record.asm", "copy_gearbox_record.asm",
              "copy_tyre_scalar_fields.asm", "create_database.asm", "fill_memory.asm", "fill_memory_body.asm",
-             "find_tag_in_table.asm", "free_tyre_tables.asm", "is_ascii_delimiter.asm",
-             "load_compressed_resource.asm", "load_directx_libraries.asm", "load_engine_database.asm",
-             "load_gearbox_database.asm", "load_tyre_database.asm", "lookup_tag_name.asm", "next_tag.asm",
+             "find_tag_in_table.asm", "find_tyre_record.asm", "free_tyre_tables.asm", "is_ascii_delimiter.asm",
+             "link_database_record.asm", "load_car_database.asm", "load_compressed_resource.asm",
+             "load_directx_libraries.asm", "load_engine_database.asm", "load_gearbox_database.asm",
+             "load_tyre_database.asm", "lookup_tag_name.asm", "next_tag.asm",
              "open_database_file.asm", "open_database_reader.asm", "read_ascii_tag.asm",
              "register_application_tags.asm", "register_tag_tables.asm", "seek_tag.asm",
              "skip_ascii_separators.asm", "skip_to_colon_and_read_tag.asm", "tyre_table_accessors.asm")

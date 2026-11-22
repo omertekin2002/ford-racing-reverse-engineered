@@ -172,7 +172,8 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
         question_hrefs = copy_evidence(analysis, staging, QUESTION_EVIDENCE)
         with tempfile.TemporaryDirectory() as work:
             work = Path(work)
-            write_databases(game_dir, work, load_known_tags(analysis / "tags.json"))
+            # No page reads cars.json yet, so CARDATA.DAT is not parsed here.
+            write_databases(game_dir, work, load_known_tags(analysis / "tags.json"), ("engines", "gearboxes", "tyres"))
             # The tyre, engine and gearbox pages link routines.html, so they read the same status.json it does.
             status_path = analysis / ROUTINE_EVIDENCE["status"]
             counts = {"tyres": tyre_dossier.build(work / "tyres.json", analysis / TYRE_EVIDENCE["evidence"], pe_path,

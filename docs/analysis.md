@@ -490,6 +490,118 @@ through the listed compare, and each handler calls its reader and writes exactly
 the mapped site. `INHERIT_TYPE` writes nothing to the record, and every other
 registry ID reaches the default branch.
 
+## New finding: car references
+
+The demo's `DATA/ASCII/CARS/CARDATA.DAT` holds 55 `:CAR_TYPE` records. Each
+names an engine, a gearbox and a front and back tyre. `parse_cars()` in
+[the parser](../scripts/text_database.py) reads it with the same rules as the
+other databases, with these differences:
+
+- A record starts with `:CAR_TYPE`, not `:TYPE`.
+- A name must fit the loader's `0x20`-byte name read (31 characters and the NUL).
+- `:CAR_PERFORMANCE` (one word and one number) and `:VALID_LIVERY` may repeat.
+  Every occurrence is kept, in file order with its line, under the record's
+  `repeated` lists. Any other tag that repeats is refused.
+- A tag with no value and a line that does not start with a tag are refused.
+- A value that is not a number may start with a digit (`46_CONVERTIBLE`).
+
+`text_database.py` writes `cars.json` beside the other three outputs, with
+the source SHA-256. Its `references` give, for each car and reference tag, the
+name as written and its line, the record it resolves to and the line that
+declares it, the lookup and record offset below, and the basis. The engine,
+gearbox and tyre outputs are unchanged.
+
+[The car loader](../analysis/selected/load_car_database.asm) at `0x00520a60`
+opens `"cars\cardata"` (`0x00520a9c`, data at `0x00581884`). It creates its
+database with a `0x1bc`-byte payload (`0x00520a75`, `call 0x0042ed50` at
+`0x00520a8d`) and keeps it at `0x005973c8` (`0x00520aa1`). `:CAR_TYPE` (`0x4d`,
+`cmp` at `0x00520db1`, `jne` not taken at `0x00520db4`) allocates a node
+(`0x00520dc6`), keeps it in `ECX` (`0x00520dd4`) and links it with
+[`0x0042efd0`](../analysis/selected/link_database_record.asm) (`0x00520dd6`),
+which saves and restores `ECX`. The branch points `ESI` `0x20` past the node
+header, at the payload (`0x00520de1`), and reads the name into `0x20` bytes at
+payload `+0x03` (`0x00520de4`–`0x00520df0`). The link stores the database's
+first record at database `+0x10` and each node's next at node `+0x10`
+(`0x0042efe2`–`0x0042effd`).
+
+Each reference handler reads a name of up to `0x40` bytes into the stack buffer
+at `EBP - 0x64` and passes that buffer to a lookup. It stores the record the
+lookup returns at car payload (`ESI`) `+ offset`. The dispatch is a tree of
+signed range compares. `CAR_REFERENCE_STORES` records, for each tag, the path
+from a `cmp eax, <imm>` through the jumps that read its flags to the handler.
+The tag ID each path admits is derived from those bytes, not taken from a lead:
+
+| Tag | ID | Path to the handler | Name read | Lookup | Offset | Store |
+|---|---|---|---|---|---|---|
+| `CAR_ENGINE_TYPE` | `0x42` | `cmp 0x42` (`0x00520e95`), `jge` taken (`0x00520e98`), `jg` not taken (`0x00520eb5`) | `0x00520eb7`–`0x00520ec1` | `0x00522d70` (`0x00520ec9`) | `+0x1a8` | `0x00520ece` |
+| `CAR_FRONT_TYRE_TYPE` | `0x43` | the same `cmp 0x42`, `jge` and `jg` taken, then `cmp 0x44` (`0x00520f04`) and its `jge` not taken (`0x00520f07`): above `0x42` and below `0x44` | `0x00520f09`–`0x00520f13` | `0x005240e0` (`0x00520f1b`) | `+0x1b4` | `0x00520f20` |
+| `CAR_GEARBOX_TYPE` | `0x44` | `cmp 0x44` (`0x00520f04`), `jge` taken (`0x00520f07`), `jg` not taken (`0x00520f56`) | `0x00520f58`–`0x00520f62` | `0x005234b0` (`0x00520f6a`) | `+0x1ac` | `0x00520f6f` |
+| `CAR_BACK_TYRE_TYPE` | `0x3b` | `cmp 0x3b` (`0x0052102e`), `jge` taken (`0x00521031`), `jg` not taken (`0x00521093`) | `0x00521095`–`0x0052109f` | `0x005240e0` (`0x005210a7`) | `+0x1b8` | `0x005210ac` |
+
+`CAR_FRONT_TYRE_TYPE` has no compare of its own: its handler is the
+fall-through of the `jge` after `cmp eax, 0x44`, reached only from above
+`0x42`. The second call of `0x005240e0` belongs to `CAR_BACK_TYRE_TYPE` and
+stores `+0x1b8`, the record's last dword.
+
+The three lookups have the same shape:
+[`find_tyre_record.asm`](../analysis/selected/find_tyre_record.asm), and the
+same code at `0x00522d70` and `0x005234b0` inside the engine and gearbox copy
+exports. Each one:
+
+1. loads the database its family's loader created (`0x00597418`, `0x00597474`
+   and `0x0059747c`, stored at `0x00522821`, `0x00523251` and `0x00523851`);
+2. walks the record list from database `+0x10` through each node's `+0x10`;
+3. compares each payload's start with the name, using the string compare at
+   `0x00534980`, which lower-cases `A`–`Z` on both sides;
+4. returns the first payload that matches, or 0.
+
+Each family's loader reads the record name into the payload's first `0x14`
+bytes (engine `0x00522c0a`–`0x00522c16`, gearbox `0x00523405`–`0x00523411`,
+tyre `0x005238dc`–`0x005238ec`). So the lookup finds a record by its name.
+
+All four links are therefore resolved by the loader on byte-checked evidence.
+None is only declared by name. `resolve_car_references()` matches names the way
+the lookups do, equal once `A`–`Z` are lower-cased. On the demo every reference
+matches exactly. Which record comes first in a list is not established here,
+so a name that matches more than one record is refused, as is one that matches
+none. A reference that is missing, has more than one value or does not fit the
+`0x40`-byte read is also refused. `car_reference_bases()` labels a reference
+*declared by name* if any of its sites, or the shared record and lookup sites,
+fail the check.
+
+`verify_text_databases()` checks this on the real demo:
+
+- `car_evidence_problems()` checks the allocation, file name, database store,
+  `:CAR_TYPE` branch and link sites. For each tag it checks:
+  - the registry ID in `analysis/tags.json`;
+  - that the select path follows on, site by site, and admits exactly that ID;
+  - that the path ends at the handler and its last jump's claim names the tag;
+  - the name read, and that the lookup is passed the same buffer;
+  - that the call targets the lookup of the tag's database;
+  - a dword store of `EAX` at `[esi + offset]`, inside the record and past the
+    name.
+
+  Offsets must be distinct, and every byte-checked `[esi + n]` store in the
+  loader must be a mapped one. Each lookup's sites must match the shared shape,
+  its database must be the one its loader stores, and that loader must read
+  the name at the payload's start.
+- There are 55 cars, each with six `CAR_PERFORMANCE` entries. All four
+  references resolve exactly, with no dangling or ambiguous name, to 52
+  engines, 14 gearboxes, 53 front tyres and 53 back tyres
+  (`CAR_REFERENCE_TARGETS`).
+
+A unit test follows the compare tree in the committed `load_car_database.asm`
+without the demo. It checks that each reference ID reaches the handler its path
+names, through the path's compares, and that the handler calls only the string
+reader, its lookup and the error report. The handler must write the record only
+at its mapped offset, and no other registry ID may reach a reference handler.
+
+The C header has no car layout, and transcribing the rest of the `0x1bc` record
+is out of scope, so the four offsets are not added there. `CAR_PERFORMANCE`,
+`CAR_APPROXIMATE_TOP_SPEED` and the other car tags are parsed but not
+interpreted. No unit, physics or menu meaning is claimed for them, and their
+stores are not mapped. No page shows the car references yet.
+
 ## New finding: tyre payload and tables
 
 The loader at `0x00523820` supplies size `0x58` when creating the tyre database.
@@ -667,7 +779,7 @@ Engine inheritance is resolved the same way in
 instruction evidence only (see
 [The ASCII tag reader and INDIGO's line](#the-ascii-tag-reader-and-indigos-line)).
 
-The tyre sites among the [432 byte-checked sites](../analysis/selected/field-evidence.json)
+The tyre sites among the [541 byte-checked sites](../analysis/selected/field-evidence.json)
 and [the loader's disassembly](../analysis/selected/load_tyre_database.asm)
 preserve the concrete evidence for these new findings.
 
@@ -931,10 +1043,12 @@ VA at or below it. That is a placement rule of the page, not an established
 routine boundary. The nine reader routines (`fr3_read_integer` and the like)
 lie in no committed span. The files that hold no routine entry (such as
 `allocate_database_record`, `create_database`, `fill_memory` and the ASCII tag
-reader's `read_ascii_tag`) get their own sections, and any site in no span, or
-before every routine entry in its file, is listed apart: today the seven data
+reader's `read_ascii_tag`, and the car loader, tyre lookup and record link) get their own sections. The
+engine and gearbox lookups at `0x00522d70` and `0x005234b0` lie inside the copy exports, so their sites are
+listed under `fr3_copy_engine_record` and `fr3_copy_gearbox_record`. Any site in no span, or
+before every routine entry in its file, is listed apart: today the eight data
 sites (`"kind": "data"`: the character table bytes, strings, the registry entry
-and a jump table). Each of the 432 sites is shown exactly once. The page says that every label is
+and a jump table). Each of the 541 sites is shown exactly once. The page says that every label is
 analyst-assigned, not an original symbol, and that the pseudocode is Ghidra
 output with unresolved callees and inferred types. The script exits non-zero
 without writing the page when an input is missing or malformed, the routines or
@@ -1016,11 +1130,11 @@ applies, or `engines.json` does not apply it.
 
 `python3 scripts/build_research.py`, run after `acquire_demo.py`, builds all of
 the pages above into one self-contained directory, `artifacts/research/` by
-default (`--game` and `--output` change the paths). It parses the three text
+default (`--game` and `--output` change the paths). It parses the four text
 databases with `text_database.py` into a temporary working directory, so no
 parsed JSON is published, and runs the tyre, engine and gearbox, compare records, PCG and
 routine and open questions generators with their usual checks. The `analysis/` files the pages link
-to, all 29 bounded `.asm` files, `field-evidence.json`, `tags.json`, `pcg-index.json`,
+to, all 32 bounded `.asm` files, `field-evidence.json`, `tags.json`, `pcg-index.json`,
 `unpacked-manifest.json` and the annotated `status.json` and `selected.c`, are copied unchanged
 to `evidence/` under their `analysis/` paths, and the pages link there instead
 of into the repository. It also writes `index.html`, the "Explore findings"
@@ -1146,8 +1260,8 @@ it does not need Ghidra. The ZIP holds one folder,
   revision (`git ls-tree` and `git cat-file`). Any modified, staged, deleted or
   untracked file under those paths refuses the build, so the bundle never holds
   an edit its revision does not.
-- **Text databases:** `text-databases/engines.json`, `gearboxes.json` and
-  `tyres.json`, regenerated from the extracted demo with
+- **Text databases:** `text-databases/engines.json`, `gearboxes.json`,
+  `tyres.json` and `cars.json`, regenerated from the extracted demo with
   `text_database.write_databases()`.
 - **Research:** the research directory unchanged under `research/`, after
   `package_research.read_research()` has checked it as the research packet
@@ -1199,7 +1313,7 @@ holds game data and stays out of Git.
 [Verification results](../analysis/verification.json) cover the exact executable,
 all game files, all tags, all identified compressed resources, every PCG index,
 the selected instruction sites, table dimensions, export counts and C layout
-assertions. All 432 sites (425 instructions, 7 data) were byte-checked against the pinned
+assertions. All 541 sites (533 instructions, 8 data) were byte-checked against the pinned
 `fr3.exe` at `field_instruction_sites_verified_utc`, with the comparison
 `verify_findings.py` makes; the other results date from `verified_utc`. Nine parser tests additionally reject malformed synthetic
 resources, and eight helper tests cover virtual-address bounds and file identity checks.

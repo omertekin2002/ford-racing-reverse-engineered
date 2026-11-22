@@ -35,7 +35,8 @@ GHIDRA = {"artifacts/ghidra/calls.tsv": b"caller\tcallee\n", GHIDRA_C: b"/* 0040
           "artifacts/ghidra/disassembly.txt": b"00401000 RET\n", "artifacts/ghidra/functions.tsv": b"00401000\tf\n",
           GHIDRA_STATUS: b'{"functions": 1}\n', GHIDRA_SNAPSHOT: b"packed annotated program"}
 VERIFIED_UTC = "2026-10-10T11:41:11.997030+00:00"
-DATABASES = ("text-databases/engines.json", "text-databases/gearboxes.json", "text-databases/tyres.json")
+DATABASES = ("text-databases/engines.json", "text-databases/gearboxes.json", "text-databases/tyres.json",
+             "text-databases/cars.json")
 EPOCH = 1_700_000_000
 
 
