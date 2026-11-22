@@ -12,9 +12,22 @@ from extract_tag_registry import read_va
 ROUTINES = [
     (0x00409B80, 0x00409D80, "load_directx_libraries"),
     (0x0040BA30, 0x0040BB60, "load_compressed_resource"),
+    (0x00423B20, 0x00423C10, "build_pcg_view"),
+    (0x0042CFC0, 0x0042D040, "skip_ascii_separators"),
+    (0x0042D040, 0x0042D0A0, "is_ascii_delimiter"),
+    (0x0042D0A0, 0x0042D2A0, "read_ascii_tag"),
+    (0x0042D2A0, 0x0042D310, "skip_to_colon_and_read_tag"),
+    (0x0042D310, 0x0042D350, "lookup_tag_name"),
+    (0x0042E2C0, 0x0042E380, "register_tag_tables"),
+    (0x0042E530, 0x0042E5A0, "next_tag"),
+    (0x0042E5A0, 0x0042E610, "seek_tag"),
+    (0x0042E880, 0x0042E910, "find_tag_in_table"),
+    (0x0042E920, 0x0042EA40, "open_database_reader"),
     (0x0042ED50, 0x0042EDF5, "create_database"),
     (0x0042EED0, 0x0042EF62, "allocate_database_record"),
-    (0x00423B20, 0x00423C10, "build_pcg_view"),
+    (0x0042F440, 0x0042F495, "binary_search"),
+    (0x004F8F80, 0x004F8FC7, "open_database_file"),
+    (0x004FA470, 0x004FA48D, "register_application_tags"),
     (0x005227F0, 0x00522C80, "load_engine_database"),
     (0x00522C80, 0x00522EC0, "copy_engine_record"),
     (0x00523220, 0x00523470, "load_gearbox_database"),
@@ -24,11 +37,155 @@ ROUTINES = [
     (0x00523E50, 0x00523F30, "tyre_table_accessors"),
     (0x00524090, 0x005240E0, "copy_tyre_scalar_fields"),
     (0x00534690, 0x005346A8, "fill_memory"),
+    (0x00534980, 0x005349BB, "compare_names_ignoring_case"),
     (0x00537240, 0x005372E3, "fill_memory_body"),
 ]
 
 EVIDENCE = [
+    (0x0042cfd6, "e8d549fdff", "ASCII separator skip calls 0x004019b0 to read one character into [ebp - 0x10]"),
+    (0x0042cfde, "80fc28", "ASCII separator skip compares the character (AH) with 0x28 '(', the first of the compares that read again for tab, LF, CR, space, '(', ')', ',', ';' and '{'"),
+    (0x0042cff2, "baffffffff", "ASCII separator skip passes EDX = -1 to 0x00401940 for any other character"),
+    (0x0042cffa, "e84149fdff", "ASCII separator skip calls 0x00401940 with EDX = -1 and EBX = 1, the call the tag reader also makes to give back one character, and returns"),
+    (0x0042d056, "b801000000", "Delimiter test returns EAX = 1 from here"),
+    (0x0042d05e, "83f83a", "Delimiter test compares the character in EAX with 0x3a ':'"),
+    (0x0042d061, "7d0f", "Delimiter test jumps to 0x0042d072 when the character is 0x3a or above"),
+    (0x0042d06d, "74e7", "Delimiter test jumps to the return of 1 at 0x0042d056 when the last compare was equal"),
+    (0x0042d06f, "31c0", "Delimiter test returns EAX = 0 from here"),
+    (0x0042d072, "7ee2", "Delimiter test jumps to the return of 1 at 0x0042d056 when the character equals 0x3a ':'"),
+    (0x0042d074, "83f85b", "Delimiter test compares a character above 0x3a with 0x5b '['"),
+    (0x0042d077, "7d05", "Delimiter test jumps to 0x0042d07e when the character is 0x5b or above"),
+    (0x0042d07e, "7ed6", "Delimiter test jumps to the return of 1 when the character equals 0x5b '['"),
+    (0x0042d080, "83f85d", "Delimiter test compares a character above 0x5b, such as 0x5f '_', with 0x5d ']'"),
+    (0x0042d083, "ebe8", "Delimiter test jumps to 0x0042d06d, which returns 1 only if that compare was equal and otherwise falls to the return of 0 at 0x0042d06f"),
+    (0x0042d08e, "83f820", "Delimiter test compares the character with 0x20 (space)"),
+    (0x0042d091, "74c3", "Delimiter test jumps to the return of 1 at 0x0042d056 when the character equals 0x20"),
+    (0x0042d0af, "8955ec", "ASCII tag reader keeps the lookup mode it was passed in EDX at [ebp - 0x14]"),
+    (0x0042d0b2, "e809ffffff", "ASCII tag reader first calls the separator skip at 0x0042cfc0"),
+    (0x0042d0c9, "31c9", "ASCII tag reader starts with the previous character (ECX) = 0"),
+    (0x0042d0e0, "e8cb48fdff", "ASCII tag reader calls 0x004019b0 to read the next character into [ebp - 0x1c]"),
+    (0x0042d125, "f6806d7a5900c0", "ASCII tag reader tests the character's byte in the table at 0x00597a6d against 0xc0"),
+    (0x0042d12c, "0f84e0000000", "ASCII tag reader jumps to 0x0042d212 when neither 0xc0 bit is set"),
+    (0x0042d132, "83f95c", "ASCII tag reader compares the previous character (ECX) with 0x5c '\\'"),
+    (0x0042d135, "0f84df000000", "ASCII tag reader jumps to 0x0042d21a, without starting a token, when the previous character is 0x5c"),
+    (0x0042d148, "8d78ff", "ASCII tag reader keeps the token's start position minus 1 in EDI"),
+    (0x0042d151, "8885e0feffff", "ASCII tag reader stores the token's first character at the start of its buffer [ebp - 0x120]"),
+    (0x0042d15c, "e8dffeffff", "ASCII tag reader calls the delimiter test at 0x0042d040 on the token's first character"),
+    (0x0042d175, "e83648fdff", "ASCII tag reader calls 0x004019b0 to read the token's next character"),
+    (0x0042d17f, "e8bcfeffff", "ASCII tag reader calls the delimiter test at 0x0042d040 on each following character"),
+    (0x0042d186, "754c", "ASCII tag reader ends the token, jumping to 0x0042d1d4, when the delimiter test returns non-zero"),
+    (0x0042d18c, "888429dffeffff", "ASCII tag reader appends a character that is not a delimiter to the token buffer"),
+    (0x0042d1de, "8b55ec", "ASCII tag reader passes the lookup mode from [ebp - 0x14] in EDX"),
+    (0x0042d1e1, "8d85e0feffff", "ASCII tag reader passes the token buffer [ebp - 0x120] in EAX"),
+    (0x0042d1e7, "e824010000", "ASCII tag reader calls the name lookup at 0x0042d310 with the collected token"),
+    (0x0042d1ee, "83f8ee", "ASCII tag reader compares the lookup result with -0x12; on -0x12 it returns the value kept at [ebp - 0x18] instead"),
+    (0x0042d207, "89c8", "ASCII tag reader returns the lookup result in EAX"),
+    (0x0042d212, "3c21", "ASCII tag reader compares a character without a 0xc0 bit with 0x21 '!'"),
+    (0x0042d214, "0f8418ffffff", "ASCII tag reader jumps to the token start at 0x0042d132 when that character is 0x21 '!'"),
+    (0x0042d21f, "f6806d7a5900e0", "ASCII tag reader tests the character's byte in the table at 0x00597a6d against 0xe0"),
+    (0x0042d226, "7436", "ASCII tag reader jumps to 0x0042d25e when no 0xe0 bit is set"),
+    (0x0042d230, "80fc5b", "ASCII tag reader compares the character (AH) with 0x5b '['"),
+    (0x0042d233, "0f8415ffffff", "ASCII tag reader starts a one-character token at 0x0042d14e when the character is 0x5b '['"),
+    (0x0042d239, "80fc3d", "ASCII tag reader compares the character with 0x3d '='"),
+    (0x0042d242, "80fc7d", "ASCII tag reader compares the character with 0x7d '}'"),
+    (0x0042d24b, "80fc5d", "ASCII tag reader compares the character with 0x5d ']'"),
+    (0x0042d24e, "0f84fafeffff", "ASCII tag reader starts a token at 0x0042d14e when the character is 0x5d ']'"),
+    (0x0042d256, "8a4de4", "ASCII tag reader keeps the character just read as the previous character (CL)"),
+    (0x0042d259, "e977feffff", "ASCII tag reader jumps back to read the next character at 0x0042d0d5, without adding this one to a token"),
+    (0x0042d25e, "3c2d", "ASCII tag reader compares the character with 0x2d '-'"),
+    (0x0042d262, "3c2b", "ASCII tag reader compares the character with 0x2b '+'"),
+    (0x0042d266, "ebc5", "ASCII tag reader jumps to the bracket and '=' compares at 0x0042d22d for any other character"),
+    (0x0042d27a, "b8f0ffffff", "ASCII tag reader returns -0x10 after giving back a character with an 0xe0 bit, '-' or '+' that does not follow 0x5c"),
+    (0x0042d2d2, "e8d946fdff", "Colon search calls 0x004019b0 to read one character"),
+    (0x0042d2db, "807df03a", "Colon search compares the character with 0x3a ':'"),
+    (0x0042d2df, "75e6", "Colon search reads again until the character is 0x3a ':'"),
+    (0x0042d2ee, "e84d46fdff", "Colon search calls 0x00401940 with EDX = -1 and EBX = 1 once it has read 0x3a"),
+    (0x0042d2f7, "e8a4fdffff", "Colon search then calls the ASCII tag reader at 0x0042d0a0"),
+    (0x0042d316, "89c2", "Name lookup passes the token (EAX) in EDX to 0x0042e890"),
+    (0x0042d318, "89d8", "Name lookup passes the mode (EBX, from EDX) in EAX to 0x0042e890"),
+    (0x0042d31a, "e871150000", "Name lookup calls 0x0042e890 with the caller's mode"),
+    (0x0042d31f, "83f8ee", "Name lookup compares that result with -0x12"),
+    (0x0042d324, "83fb01", "Name lookup compares the caller's mode with 1"),
+    (0x0042d331, "b801000000", "Name lookup sets EAX = 1 for a second call"),
+    (0x0042d338, "e853150000", "Name lookup calls 0x0042e890 again, with mode 1, after a result of -0x12 in another mode"),
+    (0x0042e2ff, "b9f41a5900", "Tag table setup passes the table at 0x00591af4 in ECX for mode 1"),
+    (0x0042e304, "bbeeffffff", "Tag table setup passes EBX = -0x12 for mode 1"),
+    (0x0042e309, "baffffffff", "Tag table setup passes EDX = -1 for mode 1"),
+    (0x0042e30e, "89f8", "Tag table setup passes EAX = EDI = 1, the mode"),
+    (0x0042e316, "e825000000", "Tag table setup calls the table registration at 0x0042e340 for mode 1"),
+    (0x0042e359, "c1e004", "Table registration scales the mode (EAX) by 16"),
+    (0x0042e365, "89b024d77300", "Table registration stores EDX (via ESI) at 0x0073d724 + 16 * mode"),
+    (0x0042e36b, "89b828d77300", "Table registration stores EBX (via EDI) at 0x0073d728 + 16 * mode"),
+    (0x0042e371, "89882cd77300", "Table registration stores the table address (ECX) at 0x0073d72c + 16 * mode"),
+    (0x0042e535, "8b00", "Next-tag dispatcher reads the reader's type dword at [EAX]"),
+    (0x0042e53c, "83f801", "Next-tag dispatcher compares the type with 1"),
+    (0x0042e53f, "7313", "Next-tag dispatcher jumps to 0x0042e554 when the type is 1 or above"),
+    (0x0042e541, "85c0", "Next-tag dispatcher tests a type below 1 for zero"),
+    (0x0042e543, "7516", "Next-tag dispatcher jumps away from the ASCII call only when that type is not zero"),
+    (0x0042e547, "e854ebffff", "Next-tag dispatcher calls the ASCII tag reader at 0x0042d0a0 for type 0 (and type 2), with EDX unchanged"),
+    (0x0042e554, "762c", "Next-tag dispatcher jumps to the call at 0x0042e584 when the type equals 1"),
+    (0x0042e559, "74ea", "Next-tag dispatcher jumps to the call at 0x0042e545 when the type equals 2"),
+    (0x0042e584, "e8c7f4ffff", "Next-tag dispatcher calls 0x0042da50 for type 1"),
+    (0x0042e5ff, "e89cecffff", "0x0042e5a0 calls the colon search at 0x0042d2a0"),
+    (0x0042e880, "8b00", "Name compare callback loads the token pointer from [EAX]"),
+    (0x0042e882, "8b12", "Name compare callback loads the table entry's string pointer from [EDX]"),
+    (0x0042e884, "e9f7601000", "Name compare callback jumps to the string compare at 0x00534980"),
+    (0x0042e89c, "8955ec", "Table lookup keeps the token pointer (EDX) at [ebp - 0x14]"),
+    (0x0042e89f, "c1e004", "Table lookup scales the mode (EAX) by 16"),
+    (0x0042e8a2, "8b9824d77300", "Table lookup loads EBX from 0x0073d724 + 16 * mode"),
+    (0x0042e8a8, "8b8828d77300", "Table lookup loads ECX from 0x0073d728 + 16 * mode"),
+    (0x0042e8b0, "7c47", "Table lookup jumps to 0x0042e8f9, which sets EDI = 1 so the result is negated, when the first value (EBX) is negative"),
+    (0x0042e8bb, "8d5801", "Table lookup sets the search's first index: EBX = |first value| + 1"),
+    (0x0042e8c5, "6880e84200", "Table lookup pushes the compare callback 0x0042e880"),
+    (0x0042e8ca, "8d48ff", "Table lookup sets the search's last index: ECX = |second value| - 1"),
+    (0x0042e8cf, "6a04", "Table lookup pushes the entry size 4"),
+    (0x0042e8d4, "8d45ec", "Table lookup passes the address of the token pointer in EAX"),
+    (0x0042e8d7, "8b922cd77300", "Table lookup loads the table address from 0x0073d72c + 16 * mode into EDX"),
+    (0x0042e8dd, "e85e0b0000", "Table lookup calls the search at 0x0042f440"),
+    (0x0042e8e6, "7c18", "Table lookup jumps to return -0x12 when the search returns a negative index"),
+    (0x0042e8ee, "89d0", "Table lookup returns the index found (negated when EDI is set)"),
+    (0x0042e900, "b8eeffffff", "Table lookup returns -0x12 when nothing is found"),
+    (0x0042e92f, "895df0", "Reader opening keeps EBX, the reader type, at [ebp - 0x10]"),
+    (0x0042e939, "e8a2cdfdff", "Reader opening calls 0x0040b6e0 with EDX = 8 to allocate the reader"),
+    (0x0042e943, "89c1", "Reader opening keeps the new reader in ECX"),
+    (0x0042e961, "8b55f0", "Reader opening loads the reader type from [ebp - 0x10] into EDX"),
+    (0x0042e964, "83fa03", "Reader opening compares the reader type with 3"),
+    (0x0042e96b, "ff248510e94200", "Reader opening jumps through the table at 0x0042e910, indexed by the reader type"),
+    (0x0042e973, "6830bb5400", "Reader type 0 pushes the format string at 0x0054bb30"),
+    (0x0042e984, "c70100000000", "Reader type 0 stores the type dword 0 at [ECX], the reader's first dword"),
+    (0x0042e98a, "e85131fdff", "Reader opening calls 0x00401ae0 with a 0x100-byte buffer, the format string and the name (ESI)"),
+    (0x0042e99a, "e8e12efdff", "Reader opening calls 0x00401880 with that buffer"),
+    (0x0042e9a2, "894204", "Reader opening stores that call's result at reader + 4"),
+    (0x0042e9c7, "c70102000000", "Reader type 2 stores the type dword 2 at [ECX]"),
+    (0x0042e9e1, "c70101000000", "Reader type 1 stores the type dword 1 at [ECX]"),
+    (0x0042f453, "39c8", "Search compares the first index (EAX) with the last (ECX)"),
+    (0x0042f455, "7f29", "Search returns -1 once the first index is greater than the last"),
+    (0x0042f461, "d1f8", "Search halves first + last into the middle index"),
+    (0x0042f466, "0fafd0", "Search multiplies the middle index by the entry size"),
+    (0x0042f46b, "0355f4", "Search adds the table address, giving the middle entry"),
+    (0x0042f470, "ff550c", "Search calls the compare callback with the key (EAX) and the middle entry (EDX)"),
+    (0x0042f475, "7c19", "Search moves the last index below the middle when the callback returns less than 0"),
+    (0x0042f477, "7e0c", "Search returns the middle index when the callback returns 0"),
+    (0x0042f479, "8d7101", "Search moves the first index above the middle when the callback returns more than 0"),
+    (0x0042f480, "b9ffffffff", "Search sets the result to -1"),
+    (0x0042f485, "89c8", "Search returns the index in EAX"),
+    (0x004f8f80, "8b048530388e00", "0x004f8f80 loads EAX from the dword at 0x008e3830 + 4 * EAX, its only instruction before ret"),
+    (0x004f8fb4, "8b7508", "File-opening wrapper loads its stack argument into ESI"),
+    (0x004f8fb8, "e8c3ffffff", "File-opening wrapper calls 0x004f8f80"),
+    (0x004f8fbd, "e85e59f3ff", "File-opening wrapper calls the reader opening at 0x0042e920 with EBX and EDX as it received them"),
+    (0x004fa473, "b9944d5900", "Application tag setup passes the tag registry at 0x00594d94 in ECX"),
+    (0x004fa478, "bb6b010000", "Application tag setup passes EBX = 0x16b (363)"),
+    (0x004fa47d, "b802000000", "Application tag setup passes EAX = 2, the mode"),
+    (0x004fa482, "31d2", "Application tag setup passes EDX = 0"),
+    (0x004fa484, "e8b73ef3ff", "Application tag setup calls the table registration at 0x0042e340 for mode 2"),
     (0x00522804, "bab0000000", "Engine payload allocation size: EDX = 0xb0"),
+    (0x00522828, "31db", "Engine loader passes EBX = 0, the reader type, to the file-opening wrapper"),
+    (0x0052282a, "b80d000000", "Engine loader passes EAX = 0xd to the file-opening wrapper"),
+    (0x00522832, "bab41c5800", "Engine loader passes the name at 0x00581cb4 in EDX to the file-opening wrapper"),
+    (0x00522839, "e87267fdff", "Engine loader calls the file-opening wrapper at 0x004f8fb0"),
+    (0x0052283e, "89c6", "Engine loader keeps the reader it returns in ESI"),
+    (0x00522848, "ba02000000", "Engine loader passes EDX = 2, the lookup mode, to the next-tag dispatcher"),
+    (0x0052284d, "89f0", "Engine loader passes the reader (ESI) in EAX to the next-tag dispatcher"),
+    (0x0052284f, "e8dcbcf0ff", "Engine loader calls the next-tag dispatcher at 0x0042e530 at the head of its tag loop"),
     (0x00522856, "3dab000000", "Engine tag dispatch compares the tag ID in EAX with 0xab (MAX_AIRFLOW)"),
     (0x0052285d, "83f87f", "Engine tag dispatch compares the tag ID in EAX with 0x7f (ENGINE_BRAKING)"),
     (0x00522866, "83f801", "Engine tag dispatch compares the tag ID in EAX with 0x1 (ACCELERATOR_SPEED)"),
@@ -302,7 +459,34 @@ EVIDENCE = [
     (0x005240cd, "8b4a38", "Scalar copy loads the INHERIT_TYPE parent (EDX) + 0x38 into ECX"),
     (0x005240d0, "894838", "Scalar copy stores that dword (ECX) at record (EAX) + 0x38"),
     (0x005240d4, "c3", "Scalar copy returns after its eleventh store (ECX restored at 0x005240d3)"),
+    (0x00534987, "3c41", "String compare tests the first string's character (AL) against 0x41 'A'"),
+    (0x0053498b, "3c5a", "String compare tests AL against 0x5a 'Z'"),
+    (0x0053498f, "0420", "String compare adds 0x20 to AL in 'A'..'Z'"),
+    (0x00534991, "80fc41", "String compare tests the second string's character (AH) against 0x41 'A'"),
+    (0x00534996, "80fc5a", "String compare tests AH against 0x5a 'Z'"),
+    (0x0053499b, "80c420", "String compare adds 0x20 to AH in 'A'..'Z'"),
+    (0x0053499e, "38e0", "String compare compares the two characters after that change"),
+    (0x005349b5, "29c2", "String compare returns the first character minus the second"),
 ]
+
+# Data sites: bytes of tables and strings the instruction sites above read. They are byte-checked like the
+# instruction sites and written to field-evidence.json with "kind": "data"; they are not instructions.
+DATA_EVIDENCE = [
+    (0x0042e910, "72e94200cfe94200b5e94200e9e94200", "Data: the reader-opening jump table holds 0x0042e972, 0x0042e9cf, 0x0042e9b5 and 0x0042e9e9 for reader types 0 to 3"),
+    (0x0054bb30, "646174615c61736369695c25732e64617400", 'Data: the reader type 0 format string is "data\\ascii\\%s.dat"'),
+    (0x00564390, "494e48455249545f5459504500", 'Data: the string "INHERIT_TYPE" that tag registry entry 0x9c points to'),
+    (0x00581cb4, "636172735c656e676461746100", 'Data: the engine loader\'s file name is "cars\\engdata"'),
+    (0x00595004, "90435600", "Data: tag registry entry 0x9c (0x00594d94 + 4 * 0x9c) points to 0x00564390"),
+    (0x00597aa7, "0c", "Data: the character table at 0x00597a6d holds 0x0c for ':' (0x3a): no 0xc0 or 0xe0 bit"),
+    (0x00597ab6, "48", "Data: the character table at 0x00597a6d holds 0x48 for 'I' (0x49): bit 0x40 is set"),
+]
+
+
+def evidence_sites():
+    """Return EVIDENCE and DATA_EVIDENCE as field-evidence.json sites, in VA order; data sites carry "kind": "data"."""
+    sites = [{"va": va, "bytes": expected, "claim": claim} for va, expected, claim in EVIDENCE]
+    sites += [{"va": va, "bytes": expected, "claim": claim, "kind": "data"} for va, expected, claim in DATA_EVIDENCE]
+    return sorted(sites, key=lambda site: site["va"])
 
 
 def export_selected(data, output):
@@ -321,11 +505,12 @@ def export_selected(data, output):
         text += "\n".join(f"{i.address:08x} {i.bytes.hex():<24} {i.mnemonic} {i.op_str}" for i in decoder.disasm(raw, start))
         (output / f"{name}.asm").write_text(text + "\n")
     evidence = []
-    for va, expected, claim in EVIDENCE:
-        raw = read_va(pe, data, va, len(bytes.fromhex(expected)))
-        if raw.hex() != expected:
-            raise ValueError(f"Instruction mismatch at 0x{va:08x}")
-        evidence.append({"va": va, "bytes": expected, "claim": claim})
+    for site in evidence_sites():
+        raw = read_va(pe, data, site["va"], len(bytes.fromhex(site["bytes"])))
+        if raw.hex() != site["bytes"]:
+            kind = "Data" if site.get("kind") == "data" else "Instruction"
+            raise ValueError(f"{kind} mismatch at 0x{site['va']:08x}")
+        evidence.append(site)
     (output / "field-evidence.json").write_text(json.dumps(evidence, indent=2) + "\n")
     return len(ROUTINES), evidence
 
@@ -336,7 +521,7 @@ def main():
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
     spans, evidence = export_selected(verified_exe(args.executable), args.output)
-    print(f"Exported {spans} spans and verified {len(evidence)} instruction sites")
+    print(f"Exported {spans} spans and verified {len(evidence)} byte-checked sites")
 
 if __name__ == "__main__":
     main()

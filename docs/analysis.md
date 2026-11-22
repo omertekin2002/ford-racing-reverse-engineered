@@ -84,8 +84,10 @@ and every rejected construct; tags must exist in the executable's registry.
 
 One `ENGDATA.DAT` line, `INHERIT_TYPE DEFAULT_TRACK` in record `INDIGO`, lacks
 the leading colon. The parser keeps such a line in the record's `untagged` list
-rather than treating it as inheritance. Whether the game honours it is not
-established. Other non-tag lines outside a value block are rejected.
+rather than treating it as inheritance. Static instruction evidence, described in
+[The ASCII tag reader and INDIGO's line](#the-ascii-tag-reader-and-indigos-line),
+supports reading it as inheritance, but nothing has been run and the parser does
+not apply it. Other non-tag lines outside a value block are rejected.
 
 `TYREDATA.DAT` yields 109 tyre records, 108 with `:INHERIT_TYPE`. It has one
 9×11 longitudinal and one 10×21 lateral combined table, and three 10×2 blocks
@@ -107,7 +109,7 @@ resolves each inheriting engine's effective fields from them, as described in
 [Engine inheritance](#engine-inheritance). It maps every gearbox tag to its
 byte-checked payload offset the same way, as described in
 [New finding: gearbox stores and copy](#new-finding-gearbox-stores-and-copy). It
-does not decide the colon-less `INDIGO` line, resolve gearbox inheritance (no demo
+does not apply the colon-less `INDIGO` line, resolve gearbox inheritance (no demo
 gearbox inherits), or handle the other text files. The meaning of the
 sound table's first fifteen words, described below, is still unknown.
 
@@ -325,6 +327,70 @@ what depends on its colon-less line: for each of the 16 mapped tags `INDIGO`
 does not declare, `if_ignored` (zero-filled) and `if_applied` (the entry it
 would get with `DEFAULT_TRACK` as its parent). It does not choose between them;
 see the [Open questions page](#open-questions).
+
+### The ASCII tag reader and INDIGO's line
+
+This is static instruction evidence: bytes of the pinned `fr3.exe`, checked in
+[`field-evidence.json`](../analysis/selected/field-evidence.json) and the bounded
+`.asm` files under `analysis/selected/`. Nothing was run. The routine labels are
+the analyst's. It follows how the engine loader reads a tag, to show whether a
+missing colon changes the result.
+
+- **Which reader.** The engine loader passes reader type `EBX = 0`
+  (`0x00522828`), `EAX = 0xd` and the name `cars\engdata` (data site
+  `0x00581cb4`) to the wrapper at `0x004f8fb0`, which calls the reader opening
+  at `0x0042e920` with `EBX` and `EDX` unchanged (`open_database_file.asm`).
+  That routine keeps `EBX` as the reader type (`0x0042e92f`), jumps through the
+  table at `0x0042e910` (a data site) and, for type 0, formats
+  `data\ascii\%s.dat` (`0x0054bb30`) and stores 0 as the reader's first dword
+  (`0x0042e984`; `open_database_reader.asm`). The loader then calls
+  `fr3_next_tag` at `0x0042e530` with that reader and `EDX = 2`
+  (`0x00522848`–`0x0052284f`). It reads the type dword (`0x0042e535`) and calls
+  `0x0042d0a0` for type 0 (`0x0042e547`) and `0x0042da50` for type 1
+  (`next_tag.asm`). That is why `0x0042d0a0` is labelled the ASCII tag reader
+  (`read_ascii_tag.asm`).
+- **`:` before a token.** The reader first calls `0x0042cfc0`
+  (`skip_ascii_separators.asm`). It reads again for tab, LF, CR, space, `(`,
+  `)`, `,`, `;` and `{`, and gives any other character back, `:` included. The
+  reader's loop then reads `:`. Its byte in the character table at
+  `0x00597a6d` is `0x0c` (data site `0x00597aa7`), with no `0xc0` bit
+  (`0x0042d125`). `:` is not `!` (`0x0042d212`), the byte has no `0xe0` bit
+  (`0x0042d21f`), and `:` is not `-` or `+` (`0x0042d25e`, `0x0042d262`) and none
+  of `[`, `=`, `}` or `]` (`0x0042d230`–`0x0042d24e`). So the reader keeps it
+  only as the previous character (`0x0042d256`) and reads on (`0x0042d259`). `I`
+  has the byte `0x48` (`0x00597ab6`), which has the `0x40` bit, so the token
+  starts there unless the previous character is `\` (`0x0042d132`).
+- **Where the token ends.** Each following character goes to the delimiter test
+  at `0x0042d040` (`0x0042d17f`; `is_ascii_delimiter.asm`). It returns 1 for `:`
+  (`0x0042d05e`, `0x0042d072`) and space (`0x0042d08e`) and 0 for `_`
+  (`0x0042d080`, `0x0042d083`). So `INHERIT_TYPE` is collected whole and ends at
+  the space, and a `:` after a token would end it.
+- **The name lookup.** The token and mode 2 go to `0x0042d310` (`0x0042d1e7`),
+  which calls `0x0042e890`. Only a result of `-0x12`, nothing found, leads to a
+  second call with mode 1 (`0x0042d338`). Mode 2's table is registered at
+  `0x004fa484` (`register_application_tags.asm`): the tag registry at
+  `0x00594d94` with `0x16b`. So `0x0042e890` searches entries 1 to `0x16a`
+  (`0x0042e8bb`, `0x0042e8ca`) with the binary search at `0x0042f440`. Its
+  compare at `0x00534980` adds `0x20` to `A`–`Z` in both strings first, so case
+  is ignored and the token is not changed. The same search run over
+  `analysis/tags.json` returns `0x9c` for `INHERIT_TYPE`: the registry entry at
+  `0x00595004`, which points to the string at `0x00564390`.
+- **`0x0042d2a0`.** It reads up to the next `:`, gives the `:` back and calls the
+  ASCII tag reader (`skip_to_colon_and_read_tag.asm`). Its only direct call in
+  the committed spans is at `0x0042e5ff`, in `0x0042e5a0` (`seek_tag.asm`). No
+  committed span on the tag path calls either routine, so it is not on
+  `ENGDATA.DAT`'s tag path. Only direct calls in those spans were searched.
+- **The dispatch.** `0x9c` is the ID the engine loader compares at `0x00522b1d`.
+  That branch looks up the parent (`0x00522b3c`) and calls the engine copy
+  (`0x00522b47`), as described above for `:INHERIT_TYPE`.
+
+So, as static instruction evidence, `INHERIT_TYPE DEFAULT_TRACK` gives the same
+token and tag ID as `:INHERIT_TYPE DEFAULT_TRACK` and reaches the same copy:
+`INDIGO` would inherit from `DEFAULT_TRACK`, the second reading on the
+[Open questions page](#open-questions). The reading is **not applied**.
+`engines.json`, `ENGINE_FIELD_COUNTS`, `effective_fields`, the engine page,
+Compare records and the entrance answers still treat `INDIGO` as a root; a
+later change applies it.
 
 ## New finding: gearbox stores and copy
 
@@ -576,9 +642,10 @@ from two levels up:
 
 Engine inheritance is resolved the same way in
 [Engine inheritance](#engine-inheritance); the colon-less
-`INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` remains unresolved.
+`INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` is not applied (see
+[The ASCII tag reader and INDIGO's line](#the-ascii-tag-reader-and-indigos-line)).
 
-The tyre sites among the [274 byte-checked instruction sites](../analysis/selected/field-evidence.json)
+The tyre sites among the [432 byte-checked sites](../analysis/selected/field-evidence.json)
 and [the loader's disassembly](../analysis/selected/load_tyre_database.asm)
 preserve the concrete evidence for these new findings.
 
@@ -833,11 +900,12 @@ six tyre accessors share `tyre_table_accessors.asm`, so a site in a file that
 holds several routine entries is listed under the routine with the nearest entry
 VA at or below it. That is a placement rule of the page, not an established
 routine boundary. The nine reader routines (`fr3_read_integer` and the like)
-lie in no committed span. The four files that hold no routine entry
-(`allocate_database_record`, `create_database`, `fill_memory` and
-`fill_memory_body`) get their own sections, and any site in no span, or before
-every routine entry in its file, is listed apart; today there is none. Each of
-the 274 sites is shown exactly once. The page says that every label is
+lie in no committed span. The files that hold no routine entry (such as
+`allocate_database_record`, `create_database`, `fill_memory` and the ASCII tag
+reader's `read_ascii_tag`) get their own sections, and any site in no span, or
+before every routine entry in its file, is listed apart: today the seven data
+sites (`"kind": "data"`: the character table bytes, strings, the registry entry
+and a jump table). Each of the 432 sites is shown exactly once. The page says that every label is
 analyst-assigned, not an original symbol, and that the pseudocode is Ghidra
 output with unresolved callees and inferred types. The script exits non-zero
 without writing the page when an input is missing or malformed, the routines or
@@ -858,15 +926,30 @@ into the script. **Why it matters** links the places on the other pages that
 stay unresolved because of it. **Possible readings** lists only the
 alternatives the observations leave open, each labelled *untested*, unranked.
 **What would decide it** names the committed routine or the comparison that
-would settle it. The page resolves nothing and assigns no meaning to the
-unknown line, words or bytes.
+would settle it. `#indigo` adds a fifth part, **Instruction evidence**, between
+the readings and what would decide it. The page assigns no meaning to the
+unknown words or bytes.
 
 - `#indigo`: `INDIGO`'s record and untagged line with its line number and
   tokens, the `ENGDATA.DAT` SHA-256, `INDIGO`'s own declarations, the
   `DEFAULT_TRACK` record the line names and the records whose `:INHERIT_TYPE`
   names it, and the tags `DEFAULT_TRACK` declares that `INDIGO` does not. It
   points at the engine loader at `0x005227f0` and the call of
-  `copy_engine_record` it reads from `load_engine_database.asm`.
+  `copy_engine_record` it reads from `load_engine_database.asm`. Its
+  instruction evidence lists the six gaps of
+  [The ASCII tag reader and INDIGO's line](#the-ascii-tag-reader-and-indigos-line)
+  (`INDIGO_GAPS`), each with its sites linked to `routines.html#site-<va>`, their
+  bytes and claims, and says whether it is evidenced: every site is in
+  `field-evidence.json` and `check_indigo_evidence()` passes. That function
+  checks, on the committed `.asm` files, that the loader calls `fr3_next_tag`,
+  which calls the ASCII tag reader, that `seek_tag.asm` calls `0x0042d2a0` and
+  no span on the tag path calls it or `0x0042e5a0`; it runs the lookup over
+  `analysis/tags.json` and checks that the ID found matches the registry entry
+  and string sites and the dispatch compare at `0x00522b1d`. Only when every gap
+  is evidenced does the page state reading 2, labelled *static instruction
+  evidence*, adding that nothing has been run and that the other pages still
+  treat `INDIGO` as a root; otherwise it states no reading and names the gaps
+  left open.
 - `#sound-words`: the byte-checked `0x2d0` allocation and `+0x54` store from
   `field-evidence.json`, and the tyre loader's indexed stores into the table,
   read from `load_tyre_database.asm` (at `+0x3c` and `+0x78`, each within three
@@ -902,7 +985,7 @@ default (`--game` and `--output` change the paths). It parses the three text
 databases with `text_database.py` into a temporary working directory, so no
 parsed JSON is published, and runs the tyre, engine and gearbox, compare records, PCG and
 routine and open questions generators with their usual checks. The `analysis/` files the pages link
-to, all 15 bounded `.asm` files, `field-evidence.json`, `pcg-index.json`,
+to, all 29 bounded `.asm` files, `field-evidence.json`, `tags.json`, `pcg-index.json`,
 `unpacked-manifest.json` and the annotated `status.json` and `selected.c`, are copied unchanged
 to `evidence/` under their `analysis/` paths, and the pages link there instead
 of into the repository. It also writes `index.html`, the "Explore findings"
@@ -1079,7 +1162,7 @@ holds game data and stays out of Git.
 [Verification results](../analysis/verification.json) cover the exact executable,
 all game files, all tags, all identified compressed resources, every PCG index,
 the selected instruction sites, table dimensions, export counts and C layout
-assertions. All 274 instruction sites were byte-checked against the pinned
+assertions. All 432 sites (425 instructions, 7 data) were byte-checked against the pinned
 `fr3.exe` at `field_instruction_sites_verified_utc`, with the comparison
 `verify_findings.py` makes; the other results date from `verified_utc`. Nine parser tests additionally reject malformed synthetic
 resources, and eight helper tests cover virtual-address bounds and file identity checks.
