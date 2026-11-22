@@ -130,6 +130,7 @@ EXTRA_STYLE = (".wide { overflow-x: auto; }\ntable.matrix td { white-space: nowr
                "dd code, table:not(.matrix) li { overflow-wrap: anywhere; }\n"
                "table.matrix.engines td { white-space: normal; min-width: 9em; }\n"
                "table.matrix.tyres td { white-space: normal; min-width: 9em; }\n"
+               "table.tyre-differences td { overflow-wrap: anywhere; }\n"
                "@media (max-width: 40em) { body { padding: 0 0.5em; } th, td { padding: 0.2em 0.3em; } "
                "td ul { padding-left: 1.2em; } }\n")
 SCOPE = ('Scope: values are shown exactly as declared in <code>GEARDATA.DAT</code>, and linked to their declaration '
@@ -883,7 +884,8 @@ def tyre_differences_table(tyres):
         counts = ", ".join(f'{len(group["tyres"])} {e(group["source"])}' for group in groups)
         rows.append(f'<tr id="{e(anchor("differs-tyre", table))}"><td><code>{e(table).replace("_", "_<wbr>")}</code>'
                     f"</td><td>{len(groups)}, by source record</td><td>{values}</td><td>all {total}: {counts}</td></tr>")
-    return ("<table><tr><th>Field or table</th><th>Distinct values</th><th>Values as written (tyre count): tyres</th>"
+    return ('<table class="tyre-differences"><tr><th>Field or table</th><th>Distinct values</th><th>Values as written '
+            "(tyre count): tyres</th>"
             f'<th>Counts</th></tr>{"".join(rows)}</table>')
 
 

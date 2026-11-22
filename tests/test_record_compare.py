@@ -942,6 +942,9 @@ class TyreDifferencesTests(CompareTestCase):
 
     def test_table_rows_counts_and_same_in_all(self):
         page = self.build()
+        # Long record names may break anywhere in this table, so that it fits a phone's width.
+        self.assertIn('<table class="tyre-differences">', tyre_differences_of(page))
+        self.assertIn("table.tyre-differences td { overflow-wrap: anywhere; }", page)
         rows = dict(re.findall(r'<tr id="differs-tyre-(\w+)">(.*?)</tr>', tyre_differences_of(page)))
         self.assertEqual(list(rows), [*tyre_dossier.tyre_tags(), *RESOLVED_TYRE_TABLES])
         self.assertIn('<td>1, by number</td><td><span class="label">same in all 3</span>: <code>0.25</code>, '
