@@ -1,8 +1,729 @@
 [
   {
+    "va": 4378582,
+    "bytes": "e8d549fdff",
+    "claim": "ASCII separator skip calls 0x004019b0 to read one character into [ebp - 0x10]"
+  },
+  {
+    "va": 4378590,
+    "bytes": "80fc28",
+    "claim": "ASCII separator skip compares the character (AH) with 0x28 '(', the first of the compares that read again for tab, LF, CR, space, '(', ')', ',', ';' and '{'"
+  },
+  {
+    "va": 4378610,
+    "bytes": "baffffffff",
+    "claim": "ASCII separator skip passes EDX = -1 to 0x00401940 for any other character"
+  },
+  {
+    "va": 4378618,
+    "bytes": "e84149fdff",
+    "claim": "ASCII separator skip calls 0x00401940 with EDX = -1 and EBX = 1, the call the tag reader also makes to give back one character, and returns"
+  },
+  {
+    "va": 4378710,
+    "bytes": "b801000000",
+    "claim": "Delimiter test returns EAX = 1 from here"
+  },
+  {
+    "va": 4378718,
+    "bytes": "83f83a",
+    "claim": "Delimiter test compares the character in EAX with 0x3a ':'"
+  },
+  {
+    "va": 4378721,
+    "bytes": "7d0f",
+    "claim": "Delimiter test jumps to 0x0042d072 when the character is 0x3a or above"
+  },
+  {
+    "va": 4378733,
+    "bytes": "74e7",
+    "claim": "Delimiter test jumps to the return of 1 at 0x0042d056 when the last compare was equal"
+  },
+  {
+    "va": 4378735,
+    "bytes": "31c0",
+    "claim": "Delimiter test returns EAX = 0 from here"
+  },
+  {
+    "va": 4378738,
+    "bytes": "7ee2",
+    "claim": "Delimiter test jumps to the return of 1 at 0x0042d056 when the character equals 0x3a ':'"
+  },
+  {
+    "va": 4378740,
+    "bytes": "83f85b",
+    "claim": "Delimiter test compares a character above 0x3a with 0x5b '['"
+  },
+  {
+    "va": 4378743,
+    "bytes": "7d05",
+    "claim": "Delimiter test jumps to 0x0042d07e when the character is 0x5b or above"
+  },
+  {
+    "va": 4378750,
+    "bytes": "7ed6",
+    "claim": "Delimiter test jumps to the return of 1 when the character equals 0x5b '['"
+  },
+  {
+    "va": 4378752,
+    "bytes": "83f85d",
+    "claim": "Delimiter test compares a character above 0x5b, such as 0x5f '_', with 0x5d ']'"
+  },
+  {
+    "va": 4378755,
+    "bytes": "ebe8",
+    "claim": "Delimiter test jumps to 0x0042d06d, which returns 1 only if that compare was equal and otherwise falls to the return of 0 at 0x0042d06f"
+  },
+  {
+    "va": 4378766,
+    "bytes": "83f820",
+    "claim": "Delimiter test compares the character with 0x20 (space)"
+  },
+  {
+    "va": 4378769,
+    "bytes": "74c3",
+    "claim": "Delimiter test jumps to the return of 1 at 0x0042d056 when the character equals 0x20"
+  },
+  {
+    "va": 4378799,
+    "bytes": "8955ec",
+    "claim": "ASCII tag reader keeps the lookup mode it was passed in EDX at [ebp - 0x14]"
+  },
+  {
+    "va": 4378802,
+    "bytes": "e809ffffff",
+    "claim": "ASCII tag reader first calls the separator skip at 0x0042cfc0"
+  },
+  {
+    "va": 4378825,
+    "bytes": "31c9",
+    "claim": "ASCII tag reader starts with the previous character (ECX) = 0"
+  },
+  {
+    "va": 4378848,
+    "bytes": "e8cb48fdff",
+    "claim": "ASCII tag reader calls 0x004019b0 to read the next character into [ebp - 0x1c]"
+  },
+  {
+    "va": 4378917,
+    "bytes": "f6806d7a5900c0",
+    "claim": "ASCII tag reader tests the character's byte in the table at 0x00597a6d against 0xc0"
+  },
+  {
+    "va": 4378924,
+    "bytes": "0f84e0000000",
+    "claim": "ASCII tag reader jumps to 0x0042d212 when neither 0xc0 bit is set"
+  },
+  {
+    "va": 4378930,
+    "bytes": "83f95c",
+    "claim": "ASCII tag reader compares the previous character (ECX) with 0x5c '\\'"
+  },
+  {
+    "va": 4378933,
+    "bytes": "0f84df000000",
+    "claim": "ASCII tag reader jumps to 0x0042d21a, without starting a token, when the previous character is 0x5c"
+  },
+  {
+    "va": 4378952,
+    "bytes": "8d78ff",
+    "claim": "ASCII tag reader keeps the token's start position minus 1 in EDI"
+  },
+  {
+    "va": 4378961,
+    "bytes": "8885e0feffff",
+    "claim": "ASCII tag reader stores the token's first character at the start of its buffer [ebp - 0x120]"
+  },
+  {
+    "va": 4378972,
+    "bytes": "e8dffeffff",
+    "claim": "ASCII tag reader calls the delimiter test at 0x0042d040 on the token's first character"
+  },
+  {
+    "va": 4378997,
+    "bytes": "e83648fdff",
+    "claim": "ASCII tag reader calls 0x004019b0 to read the token's next character"
+  },
+  {
+    "va": 4379007,
+    "bytes": "e8bcfeffff",
+    "claim": "ASCII tag reader calls the delimiter test at 0x0042d040 on each following character"
+  },
+  {
+    "va": 4379014,
+    "bytes": "754c",
+    "claim": "ASCII tag reader ends the token, jumping to 0x0042d1d4, when the delimiter test returns non-zero"
+  },
+  {
+    "va": 4379020,
+    "bytes": "888429dffeffff",
+    "claim": "ASCII tag reader appends a character that is not a delimiter to the token buffer"
+  },
+  {
+    "va": 4379102,
+    "bytes": "8b55ec",
+    "claim": "ASCII tag reader passes the lookup mode from [ebp - 0x14] in EDX"
+  },
+  {
+    "va": 4379105,
+    "bytes": "8d85e0feffff",
+    "claim": "ASCII tag reader passes the token buffer [ebp - 0x120] in EAX"
+  },
+  {
+    "va": 4379111,
+    "bytes": "e824010000",
+    "claim": "ASCII tag reader calls the name lookup at 0x0042d310 with the collected token"
+  },
+  {
+    "va": 4379118,
+    "bytes": "83f8ee",
+    "claim": "ASCII tag reader compares the lookup result with -0x12; on -0x12 it returns the value kept at [ebp - 0x18] instead"
+  },
+  {
+    "va": 4379143,
+    "bytes": "89c8",
+    "claim": "ASCII tag reader returns the lookup result in EAX"
+  },
+  {
+    "va": 4379154,
+    "bytes": "3c21",
+    "claim": "ASCII tag reader compares a character without a 0xc0 bit with 0x21 '!'"
+  },
+  {
+    "va": 4379156,
+    "bytes": "0f8418ffffff",
+    "claim": "ASCII tag reader jumps to the token start at 0x0042d132 when that character is 0x21 '!'"
+  },
+  {
+    "va": 4379167,
+    "bytes": "f6806d7a5900e0",
+    "claim": "ASCII tag reader tests the character's byte in the table at 0x00597a6d against 0xe0"
+  },
+  {
+    "va": 4379174,
+    "bytes": "7436",
+    "claim": "ASCII tag reader jumps to 0x0042d25e when no 0xe0 bit is set"
+  },
+  {
+    "va": 4379184,
+    "bytes": "80fc5b",
+    "claim": "ASCII tag reader compares the character (AH) with 0x5b '['"
+  },
+  {
+    "va": 4379187,
+    "bytes": "0f8415ffffff",
+    "claim": "ASCII tag reader starts a one-character token at 0x0042d14e when the character is 0x5b '['"
+  },
+  {
+    "va": 4379193,
+    "bytes": "80fc3d",
+    "claim": "ASCII tag reader compares the character with 0x3d '='"
+  },
+  {
+    "va": 4379202,
+    "bytes": "80fc7d",
+    "claim": "ASCII tag reader compares the character with 0x7d '}'"
+  },
+  {
+    "va": 4379211,
+    "bytes": "80fc5d",
+    "claim": "ASCII tag reader compares the character with 0x5d ']'"
+  },
+  {
+    "va": 4379214,
+    "bytes": "0f84fafeffff",
+    "claim": "ASCII tag reader starts a token at 0x0042d14e when the character is 0x5d ']'"
+  },
+  {
+    "va": 4379222,
+    "bytes": "8a4de4",
+    "claim": "ASCII tag reader keeps the character just read as the previous character (CL)"
+  },
+  {
+    "va": 4379225,
+    "bytes": "e977feffff",
+    "claim": "ASCII tag reader jumps back to read the next character at 0x0042d0d5, without adding this one to a token"
+  },
+  {
+    "va": 4379230,
+    "bytes": "3c2d",
+    "claim": "ASCII tag reader compares the character with 0x2d '-'"
+  },
+  {
+    "va": 4379234,
+    "bytes": "3c2b",
+    "claim": "ASCII tag reader compares the character with 0x2b '+'"
+  },
+  {
+    "va": 4379238,
+    "bytes": "ebc5",
+    "claim": "ASCII tag reader jumps to the bracket and '=' compares at 0x0042d22d for any other character"
+  },
+  {
+    "va": 4379258,
+    "bytes": "b8f0ffffff",
+    "claim": "ASCII tag reader returns -0x10 after giving back a character with an 0xe0 bit, '-' or '+' that does not follow 0x5c"
+  },
+  {
+    "va": 4379346,
+    "bytes": "e8d946fdff",
+    "claim": "Colon search calls 0x004019b0 to read one character"
+  },
+  {
+    "va": 4379355,
+    "bytes": "807df03a",
+    "claim": "Colon search compares the character with 0x3a ':'"
+  },
+  {
+    "va": 4379359,
+    "bytes": "75e6",
+    "claim": "Colon search reads again until the character is 0x3a ':'"
+  },
+  {
+    "va": 4379374,
+    "bytes": "e84d46fdff",
+    "claim": "Colon search calls 0x00401940 with EDX = -1 and EBX = 1 once it has read 0x3a"
+  },
+  {
+    "va": 4379383,
+    "bytes": "e8a4fdffff",
+    "claim": "Colon search then calls the ASCII tag reader at 0x0042d0a0"
+  },
+  {
+    "va": 4379414,
+    "bytes": "89c2",
+    "claim": "Name lookup passes the token (EAX) in EDX to 0x0042e890"
+  },
+  {
+    "va": 4379416,
+    "bytes": "89d8",
+    "claim": "Name lookup passes the mode (EBX, from EDX) in EAX to 0x0042e890"
+  },
+  {
+    "va": 4379418,
+    "bytes": "e871150000",
+    "claim": "Name lookup calls 0x0042e890 with the caller's mode"
+  },
+  {
+    "va": 4379423,
+    "bytes": "83f8ee",
+    "claim": "Name lookup compares that result with -0x12"
+  },
+  {
+    "va": 4379428,
+    "bytes": "83fb01",
+    "claim": "Name lookup compares the caller's mode with 1"
+  },
+  {
+    "va": 4379441,
+    "bytes": "b801000000",
+    "claim": "Name lookup sets EAX = 1 for a second call"
+  },
+  {
+    "va": 4379448,
+    "bytes": "e853150000",
+    "claim": "Name lookup calls 0x0042e890 again, with mode 1, after a result of -0x12 in another mode"
+  },
+  {
+    "va": 4383487,
+    "bytes": "b9f41a5900",
+    "claim": "Tag table setup passes the table at 0x00591af4 in ECX for mode 1"
+  },
+  {
+    "va": 4383492,
+    "bytes": "bbeeffffff",
+    "claim": "Tag table setup passes EBX = -0x12 for mode 1"
+  },
+  {
+    "va": 4383497,
+    "bytes": "baffffffff",
+    "claim": "Tag table setup passes EDX = -1 for mode 1"
+  },
+  {
+    "va": 4383502,
+    "bytes": "89f8",
+    "claim": "Tag table setup passes EAX = EDI = 1, the mode"
+  },
+  {
+    "va": 4383510,
+    "bytes": "e825000000",
+    "claim": "Tag table setup calls the table registration at 0x0042e340 for mode 1"
+  },
+  {
+    "va": 4383577,
+    "bytes": "c1e004",
+    "claim": "Table registration scales the mode (EAX) by 16"
+  },
+  {
+    "va": 4383589,
+    "bytes": "89b024d77300",
+    "claim": "Table registration stores EDX (via ESI) at 0x0073d724 + 16 * mode"
+  },
+  {
+    "va": 4383595,
+    "bytes": "89b828d77300",
+    "claim": "Table registration stores EBX (via EDI) at 0x0073d728 + 16 * mode"
+  },
+  {
+    "va": 4383601,
+    "bytes": "89882cd77300",
+    "claim": "Table registration stores the table address (ECX) at 0x0073d72c + 16 * mode"
+  },
+  {
+    "va": 4384053,
+    "bytes": "8b00",
+    "claim": "Next-tag dispatcher reads the reader's type dword at [EAX]"
+  },
+  {
+    "va": 4384060,
+    "bytes": "83f801",
+    "claim": "Next-tag dispatcher compares the type with 1"
+  },
+  {
+    "va": 4384063,
+    "bytes": "7313",
+    "claim": "Next-tag dispatcher jumps to 0x0042e554 when the type is 1 or above"
+  },
+  {
+    "va": 4384065,
+    "bytes": "85c0",
+    "claim": "Next-tag dispatcher tests a type below 1 for zero"
+  },
+  {
+    "va": 4384067,
+    "bytes": "7516",
+    "claim": "Next-tag dispatcher jumps away from the ASCII call only when that type is not zero"
+  },
+  {
+    "va": 4384071,
+    "bytes": "e854ebffff",
+    "claim": "Next-tag dispatcher calls the ASCII tag reader at 0x0042d0a0 for type 0 (and type 2), with EDX unchanged"
+  },
+  {
+    "va": 4384084,
+    "bytes": "762c",
+    "claim": "Next-tag dispatcher jumps to the call at 0x0042e584 when the type equals 1"
+  },
+  {
+    "va": 4384089,
+    "bytes": "74ea",
+    "claim": "Next-tag dispatcher jumps to the call at 0x0042e545 when the type equals 2"
+  },
+  {
+    "va": 4384132,
+    "bytes": "e8c7f4ffff",
+    "claim": "Next-tag dispatcher calls 0x0042da50 for type 1"
+  },
+  {
+    "va": 4384255,
+    "bytes": "e89cecffff",
+    "claim": "0x0042e5a0 calls the colon search at 0x0042d2a0"
+  },
+  {
+    "va": 4384896,
+    "bytes": "8b00",
+    "claim": "Name compare callback loads the token pointer from [EAX]"
+  },
+  {
+    "va": 4384898,
+    "bytes": "8b12",
+    "claim": "Name compare callback loads the table entry's string pointer from [EDX]"
+  },
+  {
+    "va": 4384900,
+    "bytes": "e9f7601000",
+    "claim": "Name compare callback jumps to the string compare at 0x00534980"
+  },
+  {
+    "va": 4384924,
+    "bytes": "8955ec",
+    "claim": "Table lookup keeps the token pointer (EDX) at [ebp - 0x14]"
+  },
+  {
+    "va": 4384927,
+    "bytes": "c1e004",
+    "claim": "Table lookup scales the mode (EAX) by 16"
+  },
+  {
+    "va": 4384930,
+    "bytes": "8b9824d77300",
+    "claim": "Table lookup loads EBX from 0x0073d724 + 16 * mode"
+  },
+  {
+    "va": 4384936,
+    "bytes": "8b8828d77300",
+    "claim": "Table lookup loads ECX from 0x0073d728 + 16 * mode"
+  },
+  {
+    "va": 4384944,
+    "bytes": "7c47",
+    "claim": "Table lookup jumps to 0x0042e8f9, which sets EDI = 1 so the result is negated, when the first value (EBX) is negative"
+  },
+  {
+    "va": 4384955,
+    "bytes": "8d5801",
+    "claim": "Table lookup sets the search's first index: EBX = |first value| + 1"
+  },
+  {
+    "va": 4384965,
+    "bytes": "6880e84200",
+    "claim": "Table lookup pushes the compare callback 0x0042e880"
+  },
+  {
+    "va": 4384970,
+    "bytes": "8d48ff",
+    "claim": "Table lookup sets the search's last index: ECX = |second value| - 1"
+  },
+  {
+    "va": 4384975,
+    "bytes": "6a04",
+    "claim": "Table lookup pushes the entry size 4"
+  },
+  {
+    "va": 4384980,
+    "bytes": "8d45ec",
+    "claim": "Table lookup passes the address of the token pointer in EAX"
+  },
+  {
+    "va": 4384983,
+    "bytes": "8b922cd77300",
+    "claim": "Table lookup loads the table address from 0x0073d72c + 16 * mode into EDX"
+  },
+  {
+    "va": 4384989,
+    "bytes": "e85e0b0000",
+    "claim": "Table lookup calls the search at 0x0042f440"
+  },
+  {
+    "va": 4384998,
+    "bytes": "7c18",
+    "claim": "Table lookup jumps to return -0x12 when the search returns a negative index"
+  },
+  {
+    "va": 4385006,
+    "bytes": "89d0",
+    "claim": "Table lookup returns the index found (negated when EDI is set)"
+  },
+  {
+    "va": 4385024,
+    "bytes": "b8eeffffff",
+    "claim": "Table lookup returns -0x12 when nothing is found"
+  },
+  {
+    "va": 4385040,
+    "bytes": "72e94200cfe94200b5e94200e9e94200",
+    "claim": "Data: the reader-opening jump table holds 0x0042e972, 0x0042e9cf, 0x0042e9b5 and 0x0042e9e9 for reader types 0 to 3",
+    "kind": "data"
+  },
+  {
+    "va": 4385071,
+    "bytes": "895df0",
+    "claim": "Reader opening keeps EBX, the reader type, at [ebp - 0x10]"
+  },
+  {
+    "va": 4385081,
+    "bytes": "e8a2cdfdff",
+    "claim": "Reader opening calls 0x0040b6e0 with EDX = 8 to allocate the reader"
+  },
+  {
+    "va": 4385091,
+    "bytes": "89c1",
+    "claim": "Reader opening keeps the new reader in ECX"
+  },
+  {
+    "va": 4385121,
+    "bytes": "8b55f0",
+    "claim": "Reader opening loads the reader type from [ebp - 0x10] into EDX"
+  },
+  {
+    "va": 4385124,
+    "bytes": "83fa03",
+    "claim": "Reader opening compares the reader type with 3"
+  },
+  {
+    "va": 4385131,
+    "bytes": "ff248510e94200",
+    "claim": "Reader opening jumps through the table at 0x0042e910, indexed by the reader type"
+  },
+  {
+    "va": 4385139,
+    "bytes": "6830bb5400",
+    "claim": "Reader type 0 pushes the format string at 0x0054bb30"
+  },
+  {
+    "va": 4385156,
+    "bytes": "c70100000000",
+    "claim": "Reader type 0 stores the type dword 0 at [ECX], the reader's first dword"
+  },
+  {
+    "va": 4385162,
+    "bytes": "e85131fdff",
+    "claim": "Reader opening calls 0x00401ae0 with a 0x100-byte buffer, the format string and the name (ESI)"
+  },
+  {
+    "va": 4385178,
+    "bytes": "e8e12efdff",
+    "claim": "Reader opening calls 0x00401880 with that buffer"
+  },
+  {
+    "va": 4385186,
+    "bytes": "894204",
+    "claim": "Reader opening stores that call's result at reader + 4"
+  },
+  {
+    "va": 4385223,
+    "bytes": "c70102000000",
+    "claim": "Reader type 2 stores the type dword 2 at [ECX]"
+  },
+  {
+    "va": 4385249,
+    "bytes": "c70101000000",
+    "claim": "Reader type 1 stores the type dword 1 at [ECX]"
+  },
+  {
+    "va": 4387923,
+    "bytes": "39c8",
+    "claim": "Search compares the first index (EAX) with the last (ECX)"
+  },
+  {
+    "va": 4387925,
+    "bytes": "7f29",
+    "claim": "Search returns -1 once the first index is greater than the last"
+  },
+  {
+    "va": 4387937,
+    "bytes": "d1f8",
+    "claim": "Search halves first + last into the middle index"
+  },
+  {
+    "va": 4387942,
+    "bytes": "0fafd0",
+    "claim": "Search multiplies the middle index by the entry size"
+  },
+  {
+    "va": 4387947,
+    "bytes": "0355f4",
+    "claim": "Search adds the table address, giving the middle entry"
+  },
+  {
+    "va": 4387952,
+    "bytes": "ff550c",
+    "claim": "Search calls the compare callback with the key (EAX) and the middle entry (EDX)"
+  },
+  {
+    "va": 4387957,
+    "bytes": "7c19",
+    "claim": "Search moves the last index below the middle when the callback returns less than 0"
+  },
+  {
+    "va": 4387959,
+    "bytes": "7e0c",
+    "claim": "Search returns the middle index when the callback returns 0"
+  },
+  {
+    "va": 4387961,
+    "bytes": "8d7101",
+    "claim": "Search moves the first index above the middle when the callback returns more than 0"
+  },
+  {
+    "va": 4387968,
+    "bytes": "b9ffffffff",
+    "claim": "Search sets the result to -1"
+  },
+  {
+    "va": 4387973,
+    "bytes": "89c8",
+    "claim": "Search returns the index in EAX"
+  },
+  {
+    "va": 5214080,
+    "bytes": "8b048530388e00",
+    "claim": "0x004f8f80 loads EAX from the dword at 0x008e3830 + 4 * EAX, its only instruction before ret"
+  },
+  {
+    "va": 5214132,
+    "bytes": "8b7508",
+    "claim": "File-opening wrapper loads its stack argument into ESI"
+  },
+  {
+    "va": 5214136,
+    "bytes": "e8c3ffffff",
+    "claim": "File-opening wrapper calls 0x004f8f80"
+  },
+  {
+    "va": 5214141,
+    "bytes": "e85e59f3ff",
+    "claim": "File-opening wrapper calls the reader opening at 0x0042e920 with EBX and EDX as it received them"
+  },
+  {
+    "va": 5219443,
+    "bytes": "b9944d5900",
+    "claim": "Application tag setup passes the tag registry at 0x00594d94 in ECX"
+  },
+  {
+    "va": 5219448,
+    "bytes": "bb6b010000",
+    "claim": "Application tag setup passes EBX = 0x16b (363)"
+  },
+  {
+    "va": 5219453,
+    "bytes": "b802000000",
+    "claim": "Application tag setup passes EAX = 2, the mode"
+  },
+  {
+    "va": 5219458,
+    "bytes": "31d2",
+    "claim": "Application tag setup passes EDX = 0"
+  },
+  {
+    "va": 5219460,
+    "bytes": "e8b73ef3ff",
+    "claim": "Application tag setup calls the table registration at 0x0042e340 for mode 2"
+  },
+  {
     "va": 5384196,
     "bytes": "bab0000000",
     "claim": "Engine payload allocation size: EDX = 0xb0"
+  },
+  {
+    "va": 5384232,
+    "bytes": "31db",
+    "claim": "Engine loader passes EBX = 0, the reader type, to the file-opening wrapper"
+  },
+  {
+    "va": 5384234,
+    "bytes": "b80d000000",
+    "claim": "Engine loader passes EAX = 0xd to the file-opening wrapper"
+  },
+  {
+    "va": 5384242,
+    "bytes": "bab41c5800",
+    "claim": "Engine loader passes the name at 0x00581cb4 in EDX to the file-opening wrapper"
+  },
+  {
+    "va": 5384249,
+    "bytes": "e87267fdff",
+    "claim": "Engine loader calls the file-opening wrapper at 0x004f8fb0"
+  },
+  {
+    "va": 5384254,
+    "bytes": "89c6",
+    "claim": "Engine loader keeps the reader it returns in ESI"
+  },
+  {
+    "va": 5384264,
+    "bytes": "ba02000000",
+    "claim": "Engine loader passes EDX = 2, the lookup mode, to the next-tag dispatcher"
+  },
+  {
+    "va": 5384269,
+    "bytes": "89f0",
+    "claim": "Engine loader passes the reader (ESI) in EAX to the next-tag dispatcher"
+  },
+  {
+    "va": 5384271,
+    "bytes": "e8dcbcf0ff",
+    "claim": "Engine loader calls the next-tag dispatcher at 0x0042e530 at the head of its tag loop"
   },
   {
     "va": 5384278,
@@ -1368,5 +2089,81 @@
     "va": 5390548,
     "bytes": "c3",
     "claim": "Scalar copy returns after its eleventh store (ECX restored at 0x005240d3)"
+  },
+  {
+    "va": 5458311,
+    "bytes": "3c41",
+    "claim": "String compare tests the first string's character (AL) against 0x41 'A'"
+  },
+  {
+    "va": 5458315,
+    "bytes": "3c5a",
+    "claim": "String compare tests AL against 0x5a 'Z'"
+  },
+  {
+    "va": 5458319,
+    "bytes": "0420",
+    "claim": "String compare adds 0x20 to AL in 'A'..'Z'"
+  },
+  {
+    "va": 5458321,
+    "bytes": "80fc41",
+    "claim": "String compare tests the second string's character (AH) against 0x41 'A'"
+  },
+  {
+    "va": 5458326,
+    "bytes": "80fc5a",
+    "claim": "String compare tests AH against 0x5a 'Z'"
+  },
+  {
+    "va": 5458331,
+    "bytes": "80c420",
+    "claim": "String compare adds 0x20 to AH in 'A'..'Z'"
+  },
+  {
+    "va": 5458334,
+    "bytes": "38e0",
+    "claim": "String compare compares the two characters after that change"
+  },
+  {
+    "va": 5458357,
+    "bytes": "29c2",
+    "claim": "String compare returns the first character minus the second"
+  },
+  {
+    "va": 5552944,
+    "bytes": "646174615c61736369695c25732e64617400",
+    "claim": "Data: the reader type 0 format string is \"data\\ascii\\%s.dat\"",
+    "kind": "data"
+  },
+  {
+    "va": 5653392,
+    "bytes": "494e48455249545f5459504500",
+    "claim": "Data: the string \"INHERIT_TYPE\" that tag registry entry 0x9c points to",
+    "kind": "data"
+  },
+  {
+    "va": 5774516,
+    "bytes": "636172735c656e676461746100",
+    "claim": "Data: the engine loader's file name is \"cars\\engdata\"",
+    "kind": "data"
+  },
+  {
+    "va": 5853188,
+    "bytes": "90435600",
+    "claim": "Data: tag registry entry 0x9c (0x00594d94 + 4 * 0x9c) points to 0x00564390",
+    "kind": "data"
+  },
+  {
+    "va": 5864103,
+    "bytes": "0c",
+    "claim": "Data: the character table at 0x00597a6d holds 0x0c for ':' (0x3a): no 0xc0 or 0xe0 bit",
+    "kind": "data"
+  },
+  {
+    "va": 5864118,
+    "bytes": "48",
+    "claim": "Data: the character table at 0x00597a6d holds 0x48 for 'I' (0x49): bit 0x40 is set",
+    "kind": "data"
   }
 ]

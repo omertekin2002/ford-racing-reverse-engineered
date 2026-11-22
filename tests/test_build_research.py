@@ -26,7 +26,7 @@ PAGES = ("index.html", "engines.html", "gearboxes.html", "compare.html", "tyres.
          "questions.html")
 ASM = tuple(sorted(f"evidence/selected/{path.name}" for path in (REPO_ROOT / "analysis/selected").glob("*.asm")))
 EVIDENCE = ("evidence/annotated/selected.c", "evidence/annotated/status.json", "evidence/pcg-index.json", *ASM,
-            "evidence/selected/field-evidence.json", "evidence/unpacked-manifest.json")
+            "evidence/selected/field-evidence.json", "evidence/tags.json", "evidence/unpacked-manifest.json")
 COUNTS = {"engines": 7, "gearboxes": 3, "compared_gearboxes": 3, "compared_engines": 7, "compared_tyres": 3, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
           "questions": 3}
 
@@ -216,7 +216,7 @@ class BuildTests(ResearchTestCase):
                      "evidence/selected/field-evidence.json", *ASM):
             self.assertIn(f'href="{href}"', routines)
         self.assertEqual(routines.count('<section class="routine"'), 25)
-        self.assertEqual(routines.count('<tr class="site"'), 274)
+        self.assertEqual(routines.count('<tr class="site"'), 432)
         self.assertIn('<a href="index.html">Explore findings</a>', routines)
         # Each routine's anchor is a real id: verify_research() accepts a deep link to it from another page.
         index = self.output / INDEX_PAGE

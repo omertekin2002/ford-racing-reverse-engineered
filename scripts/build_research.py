@@ -72,7 +72,7 @@ ROUTINE_EVIDENCE = {"status": routine_index.STATUS.relative_to(ANALYSIS),
                     "pseudocode": routine_index.PSEUDOCODE.relative_to(ANALYSIS),
                     "evidence": routine_index.FIELD_EVIDENCE.relative_to(ANALYSIS),
                     **{name: (routine_index.SELECTED / name).relative_to(ANALYSIS) for name in routine_index.ASM_FILES}}
-# open_questions.py's hrefs keys: field evidence, the PCG index and the four .asm files it reads.
+# open_questions.py's hrefs keys: field evidence, the PCG index, the tag registry and the .asm files it reads.
 QUESTION_EVIDENCE = dict(open_questions.EVIDENCE)
 # Every path this script writes under the output directory, and the directories that hold them.
 OUTPUT_FILES = frozenset({*RESEARCH_PAGES, *(f"{EVIDENCE_DIR}/{relative.as_posix()}"
@@ -186,7 +186,8 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
             counts["questions"] = open_questions.build(
                 work / "engines.json", work / "tyres.json", analysis / QUESTION_EVIDENCE["evidence"],
                 analysis / QUESTION_EVIDENCE["pcg_index"], pe_path, staging / open_questions.PAGE, revision,
-                hrefs=question_hrefs, entrance=True, selected=analysis / "selected")
+                hrefs=question_hrefs, entrance=True, selected=analysis / "selected",
+                tags_path=analysis / QUESTION_EVIDENCE["tags"])
             # tyre_dossier.build() has accepted tyres.json and the field evidence, and record_dossier.build()
             # engines.json; the answers reuse them.
             field_evidence = load_json(analysis / TYRE_EVIDENCE["evidence"], "Field evidence")

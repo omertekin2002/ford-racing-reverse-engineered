@@ -30,7 +30,7 @@ from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, RESOLVED_TYRE_TABLES, S
 # Only the disassembly tests need capstone, and extract_selected also imports pefile.
 try:
     import capstone
-    from extract_selected import EVIDENCE, ROUTINES
+    from extract_selected import DATA_EVIDENCE, EVIDENCE, ROUTINES, evidence_sites
 except ImportError:
     capstone = None
 
@@ -996,7 +996,13 @@ def unevidenced_accessors(accessors, sites):
 class TyreTableAccessorByteEvidenceTests(unittest.TestCase):
     def test_field_evidence_matches_extract_selected(self):
         recorded = json.loads((text_database.REPO_ROOT / "analysis/selected/field-evidence.json").read_text())
-        self.assertEqual(recorded, [{"va": va, "bytes": expected, "claim": claim} for va, expected, claim in EVIDENCE])
+        self.assertEqual(recorded, evidence_sites())
+        instructions = [{"va": va, "bytes": expected, "claim": claim} for va, expected, claim in EVIDENCE]
+        self.assertEqual([site for site in recorded if "kind" not in site], instructions)
+        data = [{"va": va, "bytes": expected, "claim": claim, "kind": "data"} for va, expected, claim in DATA_EVIDENCE]
+        self.assertEqual([site for site in recorded if site.get("kind") == "data"], data)
+        self.assertEqual([site["va"] for site in recorded], sorted({site["va"] for site in recorded}))
+        self.assertTrue(all(claim.startswith("Data: ") for _, _, claim in DATA_EVIDENCE))
 
     def test_every_accessor_read_and_fallback_is_byte_checked(self):
         self.assertEqual(unevidenced_accessors(TYRE_TABLE_ACCESSORS, decoded_evidence()), [])
@@ -1330,7 +1336,7 @@ class EngineDecoderTests(unittest.TestCase):
     def test_decoder_agrees_with_capstone_on_every_engine_site(self):
         decoded = dict(decoded_evidence())
         engine = [(va, raw) for va, raw, _ in EVIDENCE if ENGINE_LOADER_SPAN[0] <= va < ENGINE_COPY["span"][1]]
-        self.assertEqual(len(engine), 130)
+        self.assertEqual(len(engine), 138)
         for va, raw in engine:
             mine = memory_operand(raw)
             if mine is None:

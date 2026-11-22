@@ -26,6 +26,7 @@ from test_tyre_dossier import tyres_json
 SCRIPT = REPO_ROOT / "scripts/open_questions.py"
 PE = json.loads((REPO_ROOT / "analysis/pe-metadata.json").read_text())
 EVIDENCE = json.loads((REPO_ROOT / "analysis/selected/field-evidence.json").read_text())
+TAGS = json.loads((REPO_ROOT / "analysis/tags.json").read_text())
 # ENGINES plus a DEFAULT_TRACK parent, a child that names it with :INHERIT_TYPE and INDIGO's colon-less line.
 QUESTION_ENGINES = ENGINES.removesuffix(":END\n") + """:TYPE DEFAULT_TRACK
 :CAPACITY 3.5
@@ -119,15 +120,16 @@ class QuestionsTestCase(unittest.TestCase):
         path.write_text(data if isinstance(data, str) else json.dumps(data, ensure_ascii=False), encoding="utf-8")
         return path
 
-    def paths(self, engines=None, tyres=None, evidence=None, index=None, pe=PE):
+    def paths(self, engines=None, tyres=None, evidence=None, index=None, pe=PE, tags=None):
         return (self.write("engines.json", engines_json() if engines is None else engines),
                 self.write("tyres.json", tyres_json() if tyres is None else tyres),
                 self.write("field-evidence.json", EVIDENCE if evidence is None else evidence),
                 self.write("pcg-index.json", question_pcg_index() if index is None else index),
-                self.write("pe.json", pe))
+                self.write("pe.json", pe), self.write("tags.json", TAGS if tags is None else tags))
 
     def build(self, **inputs):
-        count = open_questions.build(*self.paths(**inputs), self.output, revision="0123abcd", selected=self.selected)
+        *paths, tags = self.paths(**inputs)
+        count = open_questions.build(*paths, self.output, revision="0123abcd", selected=self.selected, tags_path=tags)
         self.assertEqual(count, 3)
         return self.output.read_text(encoding="utf-8")
 
@@ -275,6 +277,151 @@ class QuestionsPageTests(QuestionsTestCase):
                          (0x2D0, 0x3C, 0x78, 15, 10))
 
 
+def without(vas, evidence=EVIDENCE):
+    """The field evidence without the sites at `vas`."""
+    return [site for site in evidence if site["va"] not in set(vas)]
+
+
+class IndigoInstructionEvidenceTests(QuestionsTestCase):
+    """The #indigo instruction evidence: byte-checked sites per gap, and a reading only when every gap is evidenced."""
+
+    def test_every_gap_is_evidenced_and_the_static_reading_is_stated(self):
+        page = self.build()
+        instructions = part(page, "indigo", "instructions")
+        for gap in open_questions.INDIGO_GAPS:
+            with self.subTest(gap=gap["id"]):
+                self.assertIn(f'<h4 id="indigo-gap-{gap["id"]}">', instructions)
+                heading = instructions[instructions.index(f'id="indigo-gap-{gap["id"]}"'):]
+                self.assertIn('(<span class="label">evidenced</span>)</h4>', heading[:heading.index("</h4>") + 5])
+                for va in gap["sites"]:
+                    self.assertIn(f'<a href="routines.html#site-{va:08x}"><code>0x{va:08x}</code></a>', instructions)
+        reading = instructions[instructions.index('<p class="reading" id="indigo-static-reading">'):]
+        reading = reading[:reading.index("</p>")]
+        self.assertIn('<span class="label">static instruction evidence</span>', reading)
+        self.assertIn(f"line {INDIGO_LINE}, <code>INHERIT_TYPE DEFAULT_TRACK</code>", reading)
+        self.assertIn("(ID <code>0x9c</code>)", reading)
+        self.assertIn("applied as inheritance from DEFAULT_TRACK", reading)
+        self.assertIn("Nothing has been run", reading)
+        self.assertIn("still treat INDIGO as a root", reading)
+        self.assertIn("The search over <code>tags.json</code> returns <code>0x9c</code>", instructions)
+        self.assertIn('href="#indigo-static-reading">static instruction evidence</a> below supports the second',
+                      part(page, "indigo", "readings"))
+        decide = part(page, "indigo", "decide")
+        self.assertIn("A run of the demo", decide)
+        self.assertIn("separate, later change", decide)
+
+    def test_every_site_link_is_a_byte_checked_site(self):
+        instructions = part(self.build(), "indigo", "instructions")
+        linked = {int(va, 16) for va in re.findall(r'href="routines\.html#site-([0-9a-f]{8})"', instructions)}
+        self.assertEqual(linked, {va for gap in open_questions.INDIGO_GAPS for va in gap["sites"]})
+        self.assertLessEqual(linked, {site["va"] for site in EVIDENCE})
+        # Both character table bytes are data sites.
+        data = {site["va"] for site in EVIDENCE if site.get("kind") == "data"}
+        self.assertLessEqual({0x00597AA7, 0x00597AB6}, linked & data)
+
+    def assert_no_reading(self, page, gap_id, *fragments):
+        instructions = part(page, "indigo", "instructions")
+        heading = instructions[instructions.index(f'id="indigo-gap-{gap_id}"'):]
+        self.assertIn('(<span class="label">open</span>)</h4>', heading[:heading.index("</h4>") + 5])
+        reading = instructions[instructions.index('id="indigo-static-reading"'):]
+        reading = reading[:reading.index("</p>")]
+        self.assertIn("no reading is stated", reading)
+        self.assertIn(f'href="#indigo-gap-{gap_id}"', reading)
+        self.assertNotIn("applied as inheritance", page)
+        self.assertNotIn("A run of the demo", page)
+        self.assertIn("does not yet decide between them", part(page, "indigo", "readings"))
+        for fragment in fragments:
+            self.assertIn(fragment, instructions)
+
+    def test_a_missing_required_site_withholds_the_reading(self):
+        for gap in open_questions.INDIGO_GAPS:
+            for va in (gap["sites"][0], gap["sites"][-1]):
+                with self.subTest(gap=gap["id"], va=f"0x{va:08x}"):
+                    page = self.build(evidence=without([va]))
+                    self.assert_no_reading(page, gap["id"], f"Missing from field-evidence.json: <code>0x{va:08x}</code>")
+                    # The other gaps stay evidenced.
+                    instructions = part(page, "indigo", "instructions")
+                    self.assertEqual(instructions.count('(<span class="label">open</span>)'), 1)
+
+    def test_the_character_table_bytes_are_required(self):
+        for va in (0x00597AA7, 0x00597AB6):
+            with self.subTest(va=f"0x{va:08x}"):
+                self.assert_no_reading(self.build(evidence=without([va])), "colon-before")
+
+    def test_a_call_of_the_colon_search_on_the_tag_path_withholds_the_reading(self):
+        self.edit_asm("next_tag.asm", "call 0x42da50", "call 0x42d2a0")
+        self.assert_no_reading(self.build(), "colon-search", "The tag path calls the colon search: next_tag.asm at "
+                                                             "0x0042e584.")
+
+    def test_the_colon_search_must_still_be_called_from_seek_tag(self):
+        self.edit_asm("seek_tag.asm", "call 0x42d2a0", "call 0x42d2a4")
+        self.assert_no_reading(self.build(), "colon-search", "Seek_tag.asm has no call of 0x0042d2a0.")
+
+    def test_the_loader_must_reach_the_ascii_tag_reader(self):
+        self.edit_asm("next_tag.asm", "call 0x42d0a0", "call 0x42d0a4")
+        self.assert_no_reading(self.build(), "reader", "Next_tag.asm has no call of the ASCII tag reader at 0x0042d0a0.")
+
+    def test_a_dispatch_id_that_differs_from_the_lookup_withholds_the_reading(self):
+        evidence = copy.deepcopy(EVIDENCE)
+        next(site for site in evidence if site["va"] == 0x00522B1D)["bytes"] = "3d9d000000"
+        self.assert_no_reading(self.build(evidence=evidence), "dispatch",
+                               "does not compare the tag ID with the lookup&#x27;s result for INHERIT_TYPE (0x9c)")
+
+    def test_a_registry_without_inherit_type_withholds_the_reading(self):
+        tags = copy.deepcopy(TAGS)
+        tags[0x9C]["name"] = "INHERIT_TYPF"
+        self.assert_no_reading(self.build(tags=tags), "lookup", "The lookup over tags.json does not find INHERIT_TYPE.")
+
+    def test_a_registry_entry_that_disagrees_with_tags_json_withholds_the_reading(self):
+        tags = copy.deepcopy(TAGS)
+        tags[0x9C]["pointer_va"] += 4
+        self.assert_no_reading(self.build(tags=tags), "lookup", "do not match tags.json&#x27;s entry 0x9c for INHERIT_TYPE")
+
+    def test_malformed_tags_json_is_refused(self):
+        self.reject("tags.json must list the registry's entries in ID order", tags=TAGS[1:])
+        self.reject("tags.json has 3 entries", tags=TAGS[:3])
+
+
+class TagLookupTests(unittest.TestCase):
+    """The name lookup the #indigo evidence describes, run over the committed registry."""
+    names = open_questions.check_tags(TAGS)
+
+    def test_inherit_type_is_found_at_its_registry_id(self):
+        self.assertEqual(open_questions.lookup_tag(self.names, "INHERIT_TYPE"), 0x9C)
+        self.assertEqual(TAGS[0x9C]["name"], "INHERIT_TYPE")
+
+    def test_the_compare_ignores_case_and_a_colon_is_not_part_of_any_name(self):
+        self.assertEqual(open_questions.lookup_tag(self.names, "inherit_type"), 0x9C)
+        self.assertEqual(open_questions.lookup_tag(self.names, "Inherit_Type"), 0x9C)
+        self.assertEqual(open_questions.lookup_tag(self.names, ":INHERIT_TYPE"), -1)
+        self.assertEqual(open_questions.lookup_tag(self.names, "INHERIT_TYPE:"), -1)
+
+    def test_every_searched_entry_is_found_at_its_own_id(self):
+        for index in range(open_questions.LOOKUP_FIRST, open_questions.LOOKUP_LAST + 1):
+            self.assertEqual(open_questions.lookup_tag(self.names, self.names[index]), index, self.names[index])
+        self.assertEqual(open_questions.LOOKUP_LAST, len(TAGS) - 1)
+
+    def test_entry_zero_is_outside_the_search(self):
+        self.assertEqual(open_questions.lookup_tag(self.names, TAGS[0]["name"]), -1)
+
+    def test_compare_names_matches_the_routine(self):
+        self.assertEqual(open_questions.compare_names("ABC", "abc"), 0)
+        self.assertLess(open_questions.compare_names("AB", "ABC"), 0)
+        self.assertGreater(open_questions.compare_names("ABD", "abc"), 0)
+        # '_' (0x5f) is not folded: it sorts below lower-case letters, as the routine compares it.
+        self.assertEqual(open_questions.compare_names("A_", "Aa"), 0x5F - 0x61)
+
+    def test_registry_constant_matches_extract_tag_registry(self):
+        try:
+            from extract_tag_registry import COUNT, TABLE_VA
+        except ImportError:
+            self.skipTest("needs pefile from scripts/requirements.txt")
+        self.assertEqual(open_questions.REGISTRY, TABLE_VA)
+        self.assertEqual(open_questions.LOOKUP_LAST, COUNT - 1)
+        self.assertEqual(open_questions.REGISTRY_ENTRY, TABLE_VA + 4 * TAGS.index(
+            next(tag for tag in TAGS if tag["name"] == "INHERIT_TYPE")))
+
+
 class RefusalTests(QuestionsTestCase):
     def test_no_indigo_record(self):
         self.reject("engines.json has no INDIGO record", engines=engines_json(ENGINES))
@@ -360,10 +507,10 @@ class RefusalTests(QuestionsTestCase):
         self.reject("PE metadata has no sha256", pe={"file": "fr3.exe"})
 
     def test_cli_exits_non_zero_with_a_message(self):
-        engines, tyres, evidence, index, pe = self.paths(engines=engines_json(ENGINES))
+        engines, tyres, evidence, index, pe, tags = self.paths(engines=engines_json(ENGINES))
         result = subprocess.run([sys.executable, str(SCRIPT), "--engines", str(engines), "--tyres", str(tyres),
                                  "--evidence", str(evidence), "--index", str(index), "--pe", str(pe),
-                                 "--output", str(self.output)],
+                                 "--tags", str(tags), "--output", str(self.output)],
                                 capture_output=True, text=True, check=False, cwd=REPO_ROOT,
                                 env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
         self.assertNotEqual(result.returncode, 0)
