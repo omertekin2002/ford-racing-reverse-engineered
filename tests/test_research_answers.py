@@ -13,8 +13,8 @@ from unittest import mock
 import car_page
 from dossier_common import routine_labels
 import research_answers
-from text_database import (BYTE_CHECKED, CAR_REFERENCE_STORES, DECLARED, REPO_ROOT, ZERO_FILLED, car_usage,
-                           load_known_tags, parse, parse_cars, resolve_car_references)
+from text_database import (BYTE_CHECKED, CAR_REFERENCE_STORES, DECLARED, REPO_ROOT, SCALAR_COPY_CALL, ZERO_FILLED,
+                           car_usage, load_known_tags, parse, parse_cars, resolve_car_references)
 
 from test_record_dossier import TAGS, engines_json as dossier_engines_json, gearboxes_json, with_engine_fields
 from test_tyre_dossier import TYRES, tyres_json
@@ -606,6 +606,241 @@ class CarSharingSectionTests(unittest.TestCase):
         self.assertNotIn("<u>", markup)
         self.assertIn("&lt;i&gt; &quot;0.5&quot;", markup)
         self.assertIn("&lt;u&gt;child&lt;/u&gt;", markup)
+
+
+
+# OTHER is a second root, declared after CHILD with every table of its own.
+OTHER_TYRE = TYRES[:TYRES.index(":TYPE MID")].replace(":TYPE ROOT", ":TYPE OTHER")
+TYRES_WITH_OTHER = TYRES.replace(":END", OTHER_TYRE + ":END")
+
+
+def roots_data(text=CARS, tyre_text=TYRES, bases=CAR_BASES):
+    """(cars.json, tyres.json) for car text `text` resolved against the tyres in `tyre_text`."""
+    tyres = tyres_json(tyre_text)
+    records = parse_cars(text, KNOWN_TAGS)
+    targets = {"engines": dossier_engines_json()["records"], "gearboxes": gearboxes_json()["records"],
+               "tyres": tyres["records"]}
+    cars = {"source": "DATA/ASCII/CARS/CARDATA.DAT", "sha256": hashlib.sha256(text.encode()).hexdigest(),
+            "records": records, "references": resolve_car_references(records, targets, bases)}
+    return cars, tyres
+
+
+def roots_section(text=CARS, tyre_text=TYRES, bases=CAR_BASES, evidence=EVIDENCE):
+    cars, tyres = roots_data(text, tyre_text, bases)
+    return research_answers.car_tyre_roots_section(cars, tyres, evidence, LABELS)
+
+
+def roots_block(markup, title):
+    """The part of the #car-tyre-roots section under one heading, up to the next heading or the section's end."""
+    start = markup.index(f"<h3>{title}")
+    following = markup.find("<h3>", start + 1)
+    return markup[start:following if following != -1 else len(markup)]
+
+
+def lineage_of(lineages, car, tag):
+    return dict(lineages)[car][tag]
+
+
+class CarTyreRootsSelectionTests(unittest.TestCase):
+    # In CARS, ALPHA names MID front and back, BETA names CHILD front and MID back and GAMMA names ROOT front and CHILD
+    # back. MID inherits ROOT and declares its own VERTICAL_LOAD; CHILD inherits MID.
+    def test_per_root_counts(self):
+        cars, tyres = roots_data()
+        lineages = research_answers.car_tyre_lineages(cars, tyres)
+        self.assertEqual(research_answers.root_counts(cars, tyres, lineages),
+                         {"CAR_FRONT_TYRE_TYPE": {"ROOT": 3}, "CAR_BACK_TYRE_TYPE": {"ROOT": 3}})
+        # A second root is counted apart, after ROOT in TYREDATA.DAT order, whichever car comes first.
+        cars, tyres = roots_data(CARS.replace(":CAR_FRONT_TYRE_TYPE MID", ":CAR_FRONT_TYRE_TYPE OTHER"),
+                                 TYRES_WITH_OTHER)
+        lineages = research_answers.car_tyre_lineages(cars, tyres)
+        self.assertEqual(research_answers.root_counts(cars, tyres, lineages),
+                         {"CAR_FRONT_TYRE_TYPE": {"ROOT": 2, "OTHER": 1}, "CAR_BACK_TYRE_TYPE": {"ROOT": 3}})
+        self.assertEqual(list(research_answers.root_counts(cars, tyres, lineages)["CAR_FRONT_TYRE_TYPE"]),
+                         ["ROOT", "OTHER"])
+
+    def test_a_two_step_chain_ends_at_its_root(self):
+        cars, tyres = roots_data()
+        lineages = research_answers.car_tyre_lineages(cars, tyres)
+        beta = lineage_of(lineages, "BETA", "CAR_FRONT_TYRE_TYPE")
+        self.assertEqual((beta["tyre"], beta["chain"], beta["root"]), ("CHILD", ["CHILD", "MID", "ROOT"], "ROOT"))
+        self.assertEqual(lineage_of(lineages, "GAMMA", "CAR_FRONT_TYRE_TYPE")["chain"], ["ROOT"])
+        # With ALPHA on ROOT, BETA's two-step chain is the traced example, each :INHERIT_TYPE line linked.
+        text = CARS.replace(":CAR_FRONT_TYRE_TYPE MID\n:CAR_BACK_TYRE_TYPE MID",
+                            ":CAR_FRONT_TYRE_TYPE ROOT\n:CAR_BACK_TYRE_TYPE ROOT")
+        cars, tyres = roots_data(text)
+        self.assertEqual(research_answers.car_tyre_example(research_answers.car_tyre_lineages(cars, tyres)),
+                         ("BETA", "CAR_FRONT_TYRE_TYPE"))
+        trace = roots_block(roots_section(text), "Traced example")
+        self.assertIn('<a href="tyres.html#tyre-CHILD">CHILD</a>\'s <code>:INHERIT_TYPE</code> on '
+                      '<a href="tyres.html#tyre-CHILD-line-25">line 25</a> names '
+                      '<a href="tyres.html#tyre-MID">MID</a>', trace)
+        self.assertIn('<a href="tyres.html#tyre-MID">MID</a>\'s <code>:INHERIT_TYPE</code> on '
+                      '<a href="tyres.html#tyre-MID-line-19">line 19</a> names '
+                      '<a href="tyres.html#tyre-ROOT">ROOT</a>', trace)
+
+    def test_a_table_source_that_differs_from_its_root_is_listed_with_its_cars(self):
+        cars, tyres = roots_data()
+        lineages = research_answers.car_tyre_lineages(cars, tyres)
+        self.assertEqual(research_answers.below_root(lineage_of(lineages, "ALPHA", "CAR_FRONT_TYRE_TYPE")),
+                         {"MID": ["VERTICAL_LOAD"]})
+        self.assertEqual(research_answers.below_root(lineage_of(lineages, "GAMMA", "CAR_FRONT_TYRE_TYPE")), {})
+        self.assertEqual(research_answers.source_groups(tyres, lineages),
+                         [("ROOT", ("ROOT", "ROOT", "ROOT"), {"CAR_FRONT_TYRE_TYPE": ["GAMMA"],
+                                                              "CAR_BACK_TYRE_TYPE": []}),
+                          ("ROOT", ("MID", "ROOT", "ROOT"), {"CAR_FRONT_TYRE_TYPE": ["ALPHA", "BETA"],
+                                                             "CAR_BACK_TYRE_TYPE": ["ALPHA", "BETA", "GAMMA"]})])
+        below = roots_block(roots_section(), "Tables declared below the root")
+        front, back = below.split("CAR_BACK_TYRE_TYPE</code></a>: ")
+        self.assertEqual(re.findall(r'<td><a href="cars\.html#car-(\w+)">', front), ["ALPHA", "BETA"])
+        self.assertEqual(re.findall(r'<td><a href="cars\.html#car-(\w+)">', back), ["ALPHA", "BETA", "GAMMA"])
+        self.assertIn('<a href="tyres.html#tyre-MID-VERTICAL_LOAD">vertical load</a> from '
+                      '<a href="tyres.html#tyre-MID">MID</a>', front)
+        self.assertIn(" &rarr; ".join(f'<a href="tyres.html#tyre-{name}">{name}</a>' for name in ("CHILD", "MID", "ROOT")),
+                      front)
+        self.assertIn("2 cars of 3 read at least one of these tables from a record on the chain other than the root",
+                      text_of(front))
+
+    def test_none_below_the_root_is_stated(self):
+        text = CARS.replace(":CAR_FRONT_TYRE_TYPE MID", ":CAR_FRONT_TYRE_TYPE ROOT").replace(
+            ":CAR_FRONT_TYRE_TYPE CHILD", ":CAR_FRONT_TYRE_TYPE ROOT")
+        below = text_of(roots_block(roots_section(text), "Tables declared below the root"))
+        self.assertIn("CAR_FRONT_TYRE_TYPE : every car's tyre reads the vertical load, camber thrust and sound info "
+                      "tables from its root.", below)
+
+    def test_mixed_front_and_back_roots_are_listed(self):
+        mixed = text_of(roots_block(roots_section(), "Front and back on different roots"))
+        self.assertIn("None of the 3 cars: each car's front and back tyre chains end at the same root.", mixed)
+        # GAMMA reads ROOT's vertical load at the front and MID's at the back.
+        self.assertIn("1 car of 3 reads at least one of the vertical load, camber thrust and sound info tables from "
+                      "different records front and back: Car Vertical load (front / back) Camber thrust (front / back) "
+                      "Sound info (front / back) GAMMA ROOT / MID ROOT / ROOT ROOT / ROOT", mixed)
+        text = CARS.replace(":CAR_BACK_TYRE_TYPE MID\n:CAR_PERFORMANCE AGILITY 0.7",
+                            ":CAR_BACK_TYRE_TYPE OTHER\n:CAR_PERFORMANCE AGILITY 0.7")
+        markup = roots_block(roots_section(text, TYRES_WITH_OTHER), "Front and back on different roots")
+        self.assertIn("1 car of 3 names a front and a back tyre whose chains end at different roots:", text_of(markup))
+        self.assertIn('<tr><td><a href="cars.html#car-BETA">BETA</a></td><td><a href="cars.html#car-BETA-line-12">'
+                      "line 12</a>: <code>:CAR_FRONT_TYRE_TYPE CHILD</code>", markup)
+        self.assertIn('<td><a href="tyres.html#tyre-ROOT">ROOT</a></td><td><a href="cars.html#car-BETA-line-13">'
+                      "line 13</a>: <code>:CAR_BACK_TYRE_TYPE OTHER</code>", markup)
+        self.assertIn('<td><a href="tyres.html#tyre-OTHER">OTHER</a></td></tr>', markup)
+
+    def test_no_inheriting_tyre_is_refused(self):
+        text = re.sub(r":CAR_(FRONT|BACK)_TYRE_TYPE \w+", r":CAR_\1_TYRE_TYPE ROOT", CARS)
+        with self.assertRaisesRegex(ValueError, "#car-tyre-roots answer has no traced example"):
+            roots_section(text)
+
+    def test_a_missing_tyre_reference_is_refused(self):
+        cars, tyres = roots_data()
+        missing = copy.deepcopy(cars)
+        missing["references"]["BETA"]["CAR_BACK_TYRE_TYPE"]["target"] = "NOPE"
+        with self.assertRaisesRegex(ValueError, "Car 'BETA'\\'s CAR_BACK_TYRE_TYPE names 'NOPE', which is not a tyre "
+                                                "record in tyres.json"):
+            research_answers.car_tyre_roots_section(missing, tyres, EVIDENCE, LABELS)
+        missing = copy.deepcopy(cars)
+        del missing["references"]["GAMMA"]["CAR_FRONT_TYRE_TYPE"]
+        with self.assertRaisesRegex(ValueError, "Car 'GAMMA' has no CAR_FRONT_TYRE_TYPE reference in cars.json"):
+            research_answers.car_tyre_roots_section(missing, tyres, EVIDENCE, LABELS)
+
+    def test_a_count_mismatch_is_refused(self):
+        cars, tyres = roots_data()
+        del cars["references"]["BETA"]
+        with self.assertRaisesRegex(ValueError, "#car-tyre-roots answer counts 2 cars' CAR_FRONT_TYRE_TYPE by root, "
+                                                "not the 3 cars in cars.json"):
+            research_answers.car_tyre_roots_section(cars, tyres, EVIDENCE, LABELS)
+
+    def test_a_chain_inherit_chain_refuses_is_refused(self):
+        # MID inheriting CHILD, a later record, is what inherit_chain() refuses (and how a cycle would start).
+        cars, tyres = roots_data()
+        tyres = copy.deepcopy(tyres)
+        next(record for record in tyres["records"] if record["type"] == "MID")["fields"]["INHERIT_TYPE"]["values"] = [
+            "CHILD"]
+        with self.assertRaisesRegex(ValueError, "'MID' inherits 'CHILD', which is not an earlier record"):
+            research_answers.car_tyre_roots_section(cars, tyres, EVIDENCE, LABELS)
+
+    def test_a_linked_site_missing_from_the_evidence_is_refused(self):
+        evidence = [site for site in EVIDENCE if site["va"] != SCALAR_COPY_CALL]
+        with self.assertRaisesRegex(ValueError, "#car-tyre-roots answer links sites that are not in "
+                                                "field-evidence.json: 0x00523b3a"):
+            roots_section(evidence=evidence)
+
+
+class CarTyreRootsSectionTests(unittest.TestCase):
+    def test_summary_and_tables(self):
+        markup = roots_section()
+        self.assertTrue(markup.startswith('<section id="car-tyre-roots"><h2>Which cars run road, offroad or track '
+                                          "tyres?</h2>"))
+        text = text_of(markup)
+        self.assertIn("The 3 cars in DATA/ASCII/CARS/CARDATA.DAT each name a front and a back tyre record. Following "
+                      "each named record's :INHERIT_TYPE chain to the record that declares none, its root: for the "
+                      "front tyres ( CAR_FRONT_TYRE_TYPE ), 3 cars end at ROOT ; for the back tyres "
+                      "( CAR_BACK_TYRE_TYPE ), 3 cars end at ROOT .", text)
+        # The front tyres split the vertical load table only, so the tables are named; the back tyres all read MID's.
+        self.assertIn("The cars read the vertical load, camber thrust and sound info tables from these records: the "
+                      "front tyres (vertical load) 1 from ROOT and 2 from MID ; the front tyres (camber thrust and "
+                      "sound info) 3 from ROOT ; the back tyres (vertical load) 3 from MID ; the back tyres (camber "
+                      "thrust and sound info) 3 from ROOT .", text)
+        self.assertIn("All 6 front and back tyre references read the longitudinal and lateral tables from ROOT .", text)
+        self.assertIn("Root (no :INHERIT_TYPE ) Cars, CAR_FRONT_TYRE_TYPE Cars, CAR_BACK_TYRE_TYPE ROOT 3 3 All roots "
+                      "3 3", text)
+        self.assertIn("ROOT ROOT ROOT ROOT 1 0 ROOT MID ROOT ROOT 2 3", text)
+        self.assertIn('href="#tyre-tables"', markup)
+
+    def test_trace_links_declaration_store_row_inherit_lines_and_tables(self):
+        markup = roots_section()
+        trace = roots_block(markup, "Traced example")
+        self.assertIn("<h3>Traced example: ALPHA's front tyre</h3>", trace)
+        links = re.findall(r'href="([^"]+)"', trace)
+        for href in ("cars.html#car-ALPHA", "cars.html#car-ALPHA-line-5", "cars.html#car-store-CAR_FRONT_TYRE_TYPE",
+                     "tyres.html#tyre-MID", "tyres.html#tyre-MID-line-19", "tyres.html#tyre-ROOT",
+                     "tyres.html#tyre-MID-line-21", "tyres.html#tyre-ROOT-line-10", "tyres.html#tyre-ROOT-line-12",
+                     "tyres.html#tyre-MID-VERTICAL_LOAD", "tyres.html#tyre-MID-CAMBER_THRUST",
+                     "tyres.html#tyre-MID-sound_info", "routines.html#fr3_copy_tyre_scalar_fields",
+                     "routines.html#site-00523b3a", "routines.html#fr3_get_tyre_vertical_load",
+                     "routines.html#fr3_get_tyre_camber_thrust", "routines.html#fr3_get_tyre_sound_info"):
+            self.assertIn(href, links)
+        # The only byte-checked site it links is the INHERIT_TYPE call; the car loader's sites are on the store row.
+        self.assertEqual([href for href in links if "#site-" in href], ["routines.html#site-00523b3a"])
+        text = text_of(trace)
+        self.assertIn("ALPHA declares its front tyre on line 5 : :CAR_FRONT_TYRE_TYPE MID ; the reference is labelled "
+                      "resolved by the loader&#x27;s lookup (byte-checked) .", text)
+        self.assertIn("The name matches MID , declared at line 18.", text)
+        self.assertIn("ROOT declares no :INHERIT_TYPE , so the chain ends there", text)
+        self.assertIn("Vertical load: read through 0x00523e50 at + 0x4c from MID (not the root ROOT ), which "
+                      "declares it on line 21 ; the table-source row of MID .", text)
+        self.assertIn("Camber thrust: read through 0x00523e70 at + 0x50 from ROOT (the root), which declares it on "
+                      "line 10 ;", text)
+
+    def test_each_car_carries_its_reference_basis(self):
+        bases = {**CAR_BASES, "CAR_BACK_TYRE_TYPE": DECLARED}
+        markup = roots_section(bases=bases)
+        below = roots_block(markup, "Tables declared below the root")
+        front, back = below.split("CAR_BACK_TYRE_TYPE</code></a>: ")
+        self.assertEqual(front.count("byte-checked)</span>"), 2)
+        self.assertEqual(back.count(f'<span class="label">{DECLARED}</span>'), 3)
+        self.assertNotIn("byte-checked", back)
+
+    def test_names_are_record_names_and_the_answer_says_where_it_ends(self):
+        markup = roots_section()
+        ends = text_of(roots_block(markup, "Where the answer ends"))
+        self.assertIn("ROOT and MID are the names of records declared by :TYPE lines in DATA/ASCII/CARS/TYREDATA.DAT , "
+                      "and this answer groups the cars by those record names only. These pages do not establish that "
+                      "the game treats them as road, offroad or track tyres", ends)
+        self.assertIn("Sharing a root or a table source does not establish that two cars handle alike", ends)
+        self.assertIn("CAR_BRAKE_TYPE , CAR_BODY_TYPE , CAR_SETUP_TYPE and CAR_CONTROL_TYPE name records whose "
+                      "databases are not parsed", ends)
+        self.assertIn("No units, surface meaning or physics are claimed.", ends)
+        text = text_of(markup[markup.index("</h2>"):]).lower()
+        for word in ("faster", "slower", "grippier", "mph", "km/h", "newton", "kilogram", "asphalt", "gravel", "dirt",
+                     "performs", "handles better"):
+            self.assertNotIn(word, text)
+        self.assertEqual(text.count("handle"), 1)
+
+    def test_names_are_escaped(self):
+        cars, tyres = roots_data()
+        cars["references"]["ALPHA"]["CAR_FRONT_TYRE_TYPE"]["name"] = "<u>mid</u>"
+        markup = research_answers.car_tyre_roots_section(cars, tyres, EVIDENCE, LABELS)
+        self.assertNotIn("<u>", markup)
+        self.assertIn("&lt;u&gt;mid&lt;/u&gt;", markup)
 
 
 if __name__ == "__main__":

@@ -44,9 +44,25 @@ engine, gearbox or tyre record?", again with nothing written by hand:
     that naming the same record does not establish the same performance or handling. The brake, body, setup and
     control records are named but not parsed, so they are not compared.
 
+It also calls car_tyre_roots_section() with that cars.json and the tyres.json. That section answers "Which cars run
+road, offroad or track tyres?", again with nothing written by hand:
+  * for CAR_FRONT_TYRE_TYPE and CAR_BACK_TYRE_TYPE apart, how many cars' named tyres end, along their :INHERIT_TYPE
+    chain (text_database.inherit_chain()), at each root, a record without :INHERIT_TYPE; refused unless each tag's
+    counts add up to the cars in cars.json;
+  * the record each car tyre reads the vertical load, camber thrust and sound info tables from (`resolved_tables`),
+    grouped by root and sources, and the cars whose source is not the root, with their chains; the other two tables in
+    one sentence;
+  * the cars whose front and back tyres end at different roots or read those tables from different records, or a
+    line saying there are none;
+  * one traced example, chosen by car_tyre_example(): the first car in CARDATA.DAT order whose front or back tyre,
+    front first, inherits, from its declaration line through the cars page's car-store-<TAG> row, each :INHERIT_TYPE
+    line, the scalar copy and its byte-checked call to each table's declaring line and table-source row;
+  * where the answer ends: the roots' and sources' names are record names in TYREDATA.DAT, sharing them does not
+    establish that cars handle alike, and the brake, body, setup and control records are not parsed.
+
 Every link points at an anchor the car, tyre, engine, gearbox or routines page writes, so verify_research() refuses
-the build when one goes missing. When the data has no example, no pair, no shared torque table or no shared car
-record, or a linked site is not in field-evidence.json, the section refuses to render rather than state an empty
+the build when one goes missing. When the data has no example, no pair, no shared torque table, no shared car
+record or no car tyre that inherits, or a linked site is not in field-evidence.json, the section refuses to render rather than state an empty
 claim. Nothing here interprets units, physics or handling.
 """
 from itertools import zip_longest
@@ -57,7 +73,8 @@ from dossier_common import (INDIGO_ANCHOR, INDIGO_RECORD, basis_html, e, line_an
                             routine_link, site_link)
 import record_dossier
 from text_database import (CAR_REFERENCE_STORES, ENGINE_COPY, ENGINE_FIELD_STORES, RESOLVED_TYRE_TABLES,
-                           TYRE_SCALAR_STORES, ZERO_FILLED, check_car_usage, require, table_sources)
+                           SCALAR_COPY_CALL, TYRE_SCALAR_STORES, ZERO_FILLED, check_car_usage, inherit_chain, require,
+                           table_sources)
 import tyre_dossier
 
 SECTION_ID = "tyre-tables"
@@ -819,4 +836,324 @@ def car_sharing_section(cars, usage, written, evidence):
         front_back_html(cars),
         car_trace(cars, tag, record, named),
         car_comparison_ends(cars, written, tag, named[:2]),
+        "</section>"])
+
+
+
+ROOTS_SECTION_ID = "car-tyre-roots"
+ROOTS_QUESTION = "Which cars run road, offroad or track tyres?"
+# The tables whose sources split across records in the #tyre-tables answer; this answer shows each car tyre's source
+# for each of them. The other resolved tables are summarised in one sentence.
+ROOT_TABLES = ("VERTICAL_LOAD", "CAMBER_THRUST", "sound_info")
+
+
+def car_tyre_lineages(cars, tyres):
+    """Return [(car, {tag: lineage})] in CARDATA.DAT order for every car cars.json holds references for.
+
+    For CAR_FRONT_TYRE_TYPE and CAR_BACK_TYRE_TYPE, lineage is {"tyre": the record the car names, "chain": its
+    :INHERIT_TYPE chain from text_database.inherit_chain(), "root": the chain's last record, which declares no
+    :INHERIT_TYPE, "sources": its `resolved_tables`}. Refuses, with ValueError, a car without a tyre reference, a
+    reference to a record tyres.json lacks, a chain inherit_chain() refuses (a cycle, or a parent later in the file)
+    and a resolved source that is not on the chain.
+    """
+    by_name = {record["type"]: record for record in tyres["records"]}
+    order = {record["type"]: i for i, record in enumerate(tyres["records"])}
+    found = []
+    for record in cars["records"]:
+        car = record["type"]
+        if car not in cars["references"]:
+            continue
+        lineage = {}
+        for tag in dossier_common.car_tags("tyres"):
+            reference = cars["references"][car].get(tag)
+            require(reference is not None, f"Car {car!r} has no {tag} reference in cars.json, so the "
+                                           f"#{ROOTS_SECTION_ID} answer cannot place it")
+            tyre = reference["target"]
+            require(tyre in by_name and tyre in tyres["resolved_tables"],
+                    f"Car {car!r}'s {tag} names {tyre!r}, which is not a tyre record in tyres.json")
+            chain = inherit_chain(by_name[tyre], by_name, order)
+            sources = tyres["resolved_tables"][tyre]
+            require(all(sources[table] in chain for table in RESOLVED_TYRE_TABLES),
+                    f"Tyre {tyre!r} resolves a table to a record that is not on its :INHERIT_TYPE chain")
+            lineage[tag] = {"tyre": tyre, "chain": chain, "root": chain[-1], "sources": sources}
+        found.append((car, lineage))
+    return found
+
+
+def tyre_order(tyres):
+    order = {record["type"]: i for i, record in enumerate(tyres["records"])}
+    return order.__getitem__
+
+
+def root_counts(cars, tyres, lineages):
+    """Return {tag: {root: cars}} in TYREDATA.DAT order; refuse counts that do not add up to the cars in cars.json."""
+    total = len(cars["records"])
+    counts = {}
+    for tag in dossier_common.car_tags("tyres"):
+        counts[tag] = dict(tyre_counts(tyres, (lineage[tag]["root"] for _, lineage in lineages)))
+        counted = sum(counts[tag].values())
+        require(counted == total, f"The #{ROOTS_SECTION_ID} answer counts {counted} cars' {tag} by root, not the "
+                                  f"{total} cars in cars.json")
+    return counts
+
+
+def source_groups(tyres, lineages):
+    """Return [(root, (source per ROOT_TABLES), {tag: [car, ...]})], ordered by the records' TYREDATA.DAT order."""
+    tags = dossier_common.car_tags("tyres")
+    groups = {}
+    for car, lineage in lineages:
+        for tag in tags:
+            key = (lineage[tag]["root"], tuple(lineage[tag]["sources"][table] for table in ROOT_TABLES))
+            groups.setdefault(key, {name: [] for name in tags})[tag].append(car)
+    position = tyre_order(tyres)
+    return [(root, sources, named) for (root, sources), named in
+            sorted(groups.items(), key=lambda item: (position(item[0][0]), *map(position, item[0][1])))]
+
+
+def below_root(lineage):
+    """The ROOT_TABLES a car tyre reads from a record other than its root, as {source: [table, ...]}."""
+    found = {}
+    for table in ROOT_TABLES:
+        source = lineage["sources"][table]
+        if source != lineage["root"]:
+            found.setdefault(source, []).append(table)
+    return found
+
+
+def car_tyre_example(lineages):
+    """Return (car, tag): the first car in CARDATA.DAT order, front tyre before back, whose tyre inherits."""
+    for car, lineage in lineages:
+        for tag in dossier_common.car_tags("tyres"):
+            if len(lineage[tag]["chain"]) > 1:
+                return car, tag
+    raise ValueError("No car in cars.json names a front or back tyre that inherits through :INHERIT_TYPE, so the "
+                     f"entrance page's #{ROOTS_SECTION_ID} answer has no traced example")
+
+
+def table_names(tables):
+    return names_list(e(tyre_dossier.TABLE_LABELS[table].lower()) for table in tables)
+
+
+def tyre_counts(tyres, names):
+    """Return ((record, count), ...) for the record names in `names`, in TYREDATA.DAT order."""
+    found = {}
+    for name in names:
+        found[name] = found.get(name, 0) + 1
+    return tuple(sorted(found.items(), key=lambda item: tyre_order(tyres)(item[0])))
+
+
+def cars_end(count):
+    return f"{plural(count, 'car')} {'ends' if count == 1 else 'end'}"
+
+
+def roots_summary(cars, tyres, counts, lineages):
+    """Return the lead paragraphs: where each tag's chains end, and where the three split tables are read from."""
+    front, back = dossier_common.car_tags("tyres")
+    ends = "; ".join(f"for the {e(tag_noun(tag, 2))} ({store_link(tag)}), "
+                     + names_list(f"{cars_end(n)} at {tyre_link(root)}" for root, n in counts[tag].items())
+                     for tag in (front, back))
+    parts = [f"<p>The {plural(len(cars['records']), 'car')} in <code>{e(cars['source'])}</code> each name a front and "
+             "a back tyre record. Following each named record's <code>:INHERIT_TYPE</code> chain to the record that "
+             f"declares none, its root: {ends}.</p>"]
+    splits = []
+    for tag in (front, back):
+        groups = {}
+        for table in ROOT_TABLES:
+            split = tyre_counts(tyres, (lineage[tag]["sources"][table] for _, lineage in lineages))
+            groups.setdefault(split, []).append(table)
+        noun = e(tag_noun(tag, 2))
+        for split, tables in groups.items():
+            which = "" if len(groups) == 1 else f" ({table_names(tables)})"
+            splits.append(f"the {noun}{which} {names_list(f'{n} from {tyre_link(source)}' for source, n in split)}")
+    parts.append("<p>A root does not by itself say which tables a tyre reads: each table comes from the nearest record "
+                 "along the chain that declares it, as the accessors resolve it "
+                 f'(<a href="#{e(SECTION_ID)}">the tyre tables answer</a>). The cars read the '
+                 f"{table_names(ROOT_TABLES)} tables from these records: {'; '.join(splits)}.")
+    references = 2 * len(lineages)
+    groups = {}
+    for table in RESOLVED_TYRE_TABLES:
+        if table not in ROOT_TABLES:
+            split = tyre_counts(tyres, (lineage[tag]["sources"][table] for _, lineage in lineages
+                                        for tag in (front, back)))
+            groups.setdefault(split, []).append(table)
+    for split, tables in groups.items():
+        noun = f"{table_names(tables)} {'table' if len(tables) == 1 else 'tables'}"
+        if len(split) == 1:
+            parts.append(f" All {references} front and back tyre references read the {noun} from "
+                         f"{tyre_link(split[0][0])}.")
+        else:
+            parts.append(f" The {references} front and back tyre references read the {noun} "
+                         f"{names_list(f'{n} from {tyre_link(source)}' for source, n in split)}.")
+    parts.append("</p>")
+    return "".join(parts)
+
+
+def roots_table(counts):
+    front, back = dossier_common.car_tags("tyres")
+    roots = list(dict.fromkeys([*counts[front], *counts[back]]))
+    rows = "".join(f'<tr><td>{tyre_link(root)}</td><td class="num">{counts[front].get(root, 0)}</td>'
+                   f'<td class="num">{counts[back].get(root, 0)}</td></tr>' for root in roots)
+    total = (f'<tr><td>All roots</td><td class="num">{sum(counts[front].values())}</td>'
+             f'<td class="num">{sum(counts[back].values())}</td></tr>')
+    return (f"<table><tr><th>Root (no <code>:INHERIT_TYPE</code>)</th><th>Cars, {store_link(front)}</th>"
+            f"<th>Cars, {store_link(back)}</th></tr>{rows}{total}</table>")
+
+
+def sources_table(groups):
+    front, back = dossier_common.car_tags("tyres")
+    head = "".join(f"<th>{e(tyre_dossier.TABLE_LABELS[table])} from</th>" for table in ROOT_TABLES)
+    rows = "".join(f"<tr><td>{tyre_link(root)}</td>" + "".join(f"<td>{tyre_link(source)}</td>" for source in sources)
+                   + f'<td class="num">{len(named[front])}</td><td class="num">{len(named[back])}</td></tr>'
+                   for root, sources, named in groups)
+    return (f"<table><tr><th>Root</th>{head}<th>Cars, {store_link(front)}</th><th>Cars, {store_link(back)}</th></tr>"
+            f"{rows}</table>")
+
+
+def basis_label(cars, car, tag):
+    return f'<span class="label">{e(cars["references"][car][tag]["basis"])}</span>'
+
+
+def chain_links(chain):
+    return " &rarr; ".join(tyre_link(hop) for hop in chain)
+
+
+def below_root_html(cars, tyres, lineages):
+    """Per tag, the cars whose tyre reads a split table from a record other than its root, or a line saying none."""
+    parts = ["<h3>Tables declared below the root</h3>"]
+    for tag in dossier_common.car_tags("tyres"):
+        found = [(car, lineage[tag]) for car, lineage in lineages if below_root(lineage[tag])]
+        if not found:
+            parts.append(f"<p>{store_link(tag)}: every car's tyre reads the {table_names(ROOT_TABLES)} tables from its "
+                         "root.</p>")
+            continue
+        rows = []
+        for car, lineage in found:
+            read = "; ".join(
+                f"{names_list(tyre_link(lineage['tyre'], table, tyre_dossier.TABLE_LABELS[table].lower()) for table in tables)} "
+                f"from {tyre_link(source)}" for source, tables in below_root(lineage).items())
+            rows.append(f"<tr><td>{car_link(car)}</td><td>{reference_html(cars, car, tag)}</td>"
+                        f"<td>{basis_label(cars, car, tag)}</td><td>{chain_links(lineage['chain'])}</td>"
+                        f"<td>{read}</td></tr>")
+        parts.append(f"<p>{store_link(tag)}: {plural(len(found), 'car')} of {len(lineages)} "
+                     f"read{'s' if len(found) == 1 else ''} at least one of these tables from a record on the chain "
+                     "other than the root, which declares that table itself:</p>"
+                     "<table><tr><th>Car</th><th>Declared</th><th>Basis</th><th>Chain to the root</th>"
+                     f"<th>Read from a record other than the root</th></tr>{''.join(rows)}</table>")
+    return "".join(parts)
+
+
+def mixed_html(cars, lineages):
+    """The cars whose front and back tyres end at different roots, and those that read the split tables differently."""
+    front, back = dossier_common.car_tags("tyres")
+    total = len(lineages)
+    roots = [(car, lineage) for car, lineage in lineages if lineage[front]["root"] != lineage[back]["root"]]
+    parts = ["<h3>Front and back on different roots</h3>"]
+    if roots:
+        rows = "".join(f"<tr><td>{car_link(car)}</td><td>{reference_html(cars, car, front)} "
+                       f"{basis_label(cars, car, front)}</td><td>{tyre_link(lineage[front]['root'])}</td>"
+                       f"<td>{reference_html(cars, car, back)} {basis_label(cars, car, back)}</td>"
+                       f"<td>{tyre_link(lineage[back]['root'])}</td></tr>" for car, lineage in roots)
+        parts.append(f"<p>{plural(len(roots), 'car')} of {total} name{'s' if len(roots) == 1 else ''} a front and a "
+                     "back tyre whose chains end at different roots:</p>"
+                     "<table><tr><th>Car</th><th>Front tyre declared</th><th>Front root</th><th>Back tyre declared</th>"
+                     f"<th>Back root</th></tr>{rows}</table>")
+    else:
+        parts.append(f"<p>None of the {plural(total, 'car')}: each car's front and back tyre chains end at the same "
+                     "root.</p>")
+    split = [(car, lineage) for car, lineage in lineages
+             if any(lineage[front]["sources"][table] != lineage[back]["sources"][table] for table in ROOT_TABLES)]
+    if split:
+        rows = "".join(f"<tr><td>{car_link(car)}</td>"
+                       + "".join(f"<td>{tyre_link(lineage[front]['sources'][table])} / "
+                                 f"{tyre_link(lineage[back]['sources'][table])}</td>" for table in ROOT_TABLES)
+                       + "</tr>" for car, lineage in split)
+        head = "".join(f"<th>{e(tyre_dossier.TABLE_LABELS[table])} (front / back)</th>" for table in ROOT_TABLES)
+        parts.append(f"<p>{plural(len(split), 'car')} of {total} read{'s' if len(split) == 1 else ''} at least one of "
+                     f"the {table_names(ROOT_TABLES)} tables from different records front and back:</p>"
+                     f"<table><tr><th>Car</th>{head}</tr>{rows}</table>")
+    else:
+        parts.append(f"<p>No car reads the {table_names(ROOT_TABLES)} tables from different records front and "
+                     "back.</p>")
+    return "".join(parts)
+
+
+def roots_trace(cars, tyres, car, tag, lineage, labels):
+    """Return the traced example: the car's declaration, the loader's row, each :INHERIT_TYPE line, the root's tables."""
+    by_name = {record["type"]: record for record in tyres["records"]}
+    tyre, chain, root = lineage["tyre"], lineage["chain"], lineage["root"]
+    reference = cars["references"][car][tag]
+    noun = tag_noun(tag, 1)
+    copy_va = tyre_dossier.SCALAR_COPY_VA
+    copy = routine_label(labels, copy_va, *tyre_dossier.LINKED_ROUTINES[copy_va])
+    steps = [f"<li>{car_link(car)} declares its {e(noun)} on {reference_html(cars, car, tag)}; the reference is "
+             f"labelled {basis_label(cars, car, tag)}.</li>",
+             f"<li>The cars page's {store_link(tag, 'row for <code>' + e(tag) + '</code>')} shows how the car loader "
+             f"looks that name up in <code>{e(tyres['source'])}</code> and where it stores the record. The name "
+             f"matches {tyre_link(tyre)}, declared at line {e(reference['target_line'])}.</li>"]
+    for hop, parent in zip(chain[:-1], chain[1:], strict=True):
+        inherit = by_name[hop]["fields"]["INHERIT_TYPE"]
+        steps.append(f"<li>{tyre_link(hop)}'s <code>:INHERIT_TYPE</code> on {line_link(hop, inherit['line'])} names "
+                     f"{tyre_link(parent)}.</li>")
+    steps.append(f"<li>{tyre_link(root)} declares no <code>:INHERIT_TYPE</code>, so the chain ends there: it is the "
+                 "root counted above.</li>")
+    steps.append(f"<li>For each <code>:INHERIT_TYPE</code> the tyre loader calls the scalar copy {routine_link(copy)} "
+                 f"({site_link(SCALAR_COPY_CALL)}), which copies the parent's scalar fields at <code>+ 0x18</code> to "
+                 "<code>+ 0x40</code> and no table address. Each table accessor instead returns the record's own table "
+                 "when its address is non-zero and otherwise repeats the test on the record at <code>+ 0x14</code>, "
+                 "the inherited record.</li>")
+    for table in ROOT_TABLES:
+        entry = tyres["table_provenance"][tyre][table]
+        accessor = entry["accessor"]
+        routine = routine_label(labels, int(accessor, 16), f"{table} accessor {accessor}")
+        where = "the root" if entry["source"] == root else f"not the root {tyre_link(root)}"
+        steps.append(f"<li>{e(tyre_dossier.TABLE_LABELS[table])}: read through {routine_link(routine, accessor)} at "
+                     f"<code>+ {e(entry['record_offset'])}</code> from {tyre_link(entry['source'])} ({where}), which "
+                     f"declares it on {line_link(entry['source'], entry['source_line'])}; "
+                     f"{tyre_link(tyre, table, 'the table-source row of ' + tyre)}.</li>")
+    return (f"<h3>Traced example: {e(car)}'s {e(noun)}</h3><p>Chosen from the data: the first car in "
+            f"<code>{e(cars['source'])}</code> order whose front or back tyre, front first, inherits through at least "
+            f"one <code>:INHERIT_TYPE</code> step. {car_link(car)}'s {e(noun)} {tyre_link(tyre)} reaches the root "
+            f"{tyre_link(root)} through {chain_links(chain)}.</p><ol>{''.join(steps)}</ol>")
+
+
+def roots_ends(tyres, groups):
+    names = list(dict.fromkeys(name for root, sources, _ in groups for name in (root, *sources)))
+    unparsed = names_list(f"<code>{e(name)}</code>" for name in UNPARSED_CAR_TAGS)
+    return (f"<h3>Where the answer ends</h3><p>{names_list(f'<code>{e(name)}</code>' for name in names)} "
+            f"{is_are(len(names))} the names of records declared by <code>:TYPE</code> lines in "
+            f"<code>{e(tyres['source'])}</code>, and this answer groups the cars by those record names only. These pages "
+            "do not establish that the game treats them as road, offroad or track tyres, or as any vehicle or surface "
+            "classification. Sharing a root or a table source does not establish that two cars handle alike: the "
+            "effective scalar fields of tyres that read the same tables can differ "
+            f'(<a href="#{e(SECTION_ID)}">the tyre tables answer</a> shows such a pair; each tyre\'s are on the '
+            f'<a href="{e(tyre_dossier.PAGE)}">tyre page</a>), and {unparsed} name records whose databases are not '
+            "parsed. No units, surface meaning or physics are claimed.</p>")
+
+
+def car_tyre_roots_section(cars, tyres, evidence, labels):
+    """Return the entrance page's #car-tyre-roots section.
+
+    cars is the cars.json car_page.build() accepted, tyres the tyres.json tyre_dossier.build() accepted, evidence the
+    field-evidence.json whose sites the routines page anchors and labels the routine labels from status.json.
+    Refuses, with ValueError, a missing tyre reference, a chain text_database.inherit_chain() refuses, per-root counts
+    that do not add up to the cars, data where no car's tyre inherits and a linked site not in field-evidence.json.
+    """
+    require(SCALAR_COPY_CALL in {site["va"] for site in evidence},
+            f"The #{ROOTS_SECTION_ID} answer links sites that are not in field-evidence.json: 0x{SCALAR_COPY_CALL:08x}")
+    lineages = car_tyre_lineages(cars, tyres)
+    counts = root_counts(cars, tyres, lineages)
+    groups = source_groups(tyres, lineages)
+    car, tag = car_tyre_example(lineages)
+    lineage = dict(lineages)[car][tag]
+    return "".join([
+        f'<section id="{ROOTS_SECTION_ID}"><h2>{e(ROOTS_QUESTION)}</h2>',
+        roots_summary(cars, tyres, counts, lineages),
+        roots_table(counts),
+        "<p>Each car tyre's root, with the record it reads each of these tables from, front and back counted "
+        "apart:</p>",
+        sources_table(groups),
+        below_root_html(cars, tyres, lineages),
+        mixed_html(cars, lineages),
+        roots_trace(cars, tyres, car, tag, lineage, labels),
+        roots_ends(tyres, groups),
         "</section>"])

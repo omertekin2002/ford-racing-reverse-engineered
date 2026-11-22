@@ -368,6 +368,41 @@ class BuildTests(ResearchTestCase):
             self.build()
         self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)}, before)
 
+    def test_entrance_page_answers_which_cars_run_which_tyres(self):
+        self.build()
+        index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
+        start = index.index('<section id="car-tyre-roots">')
+        answer = index[start:index.index("</section>", start)]
+        # It follows the three other answers, before the page list.
+        self.assertLess(index.index('<section id="car-shared-records">'), start)
+        self.assertLess(start, index.index("<h2>Pages</h2>"))
+        text = " ".join(re.sub(r"<[^>]+>", " ", answer).split())
+        self.assertIn("Which cars run road, offroad or track tyres?", text)
+        self.assertIn("for the front tyres ( CAR_FRONT_TYRE_TYPE ), 3 cars end at ROOT ; for the back tyres "
+                      "( CAR_BACK_TYRE_TYPE ), 3 cars end at ROOT .", text)
+        self.assertIn("None of the 3 cars: each car's front and back tyre chains end at the same root.", text)
+        # ROADSTER names ROOT at the front, so its back tyre MID is the first that inherits.
+        self.assertIn("Traced example: ROADSTER's back tyre", text)
+        links = set(re.findall(r'href="([^"#]*)#([^"]+)"', answer))
+        self.assertEqual({page for page, _ in links}, {"", "cars.html", "tyres.html", "routines.html"})
+        for link in (("cars.html", "car-ROADSTER-line-5"), ("cars.html", "car-store-CAR_BACK_TYRE_TYPE"),
+                     ("tyres.html", "tyre-MID"), ("tyres.html", "tyre-MID-VERTICAL_LOAD"),
+                     ("routines.html", "site-00523b3a"), ("routines.html", "fr3_copy_tyre_scalar_fields"),
+                     ("", "tyre-tables")):
+            self.assertIn(link, links)
+        for page, fragment in links:
+            self.assertIn(f'id="{fragment}"', (self.output / (page or INDEX_PAGE)).read_text(encoding="utf-8"),
+                          (page, fragment))
+
+    def test_car_data_without_an_inheriting_tyre_refuses_the_build(self):
+        self.build()
+        before = {name: (self.output / name).read_bytes() for name in files_under(self.output)}
+        text = re.sub(r":CAR_(FRONT|BACK)_TYRE_TYPE \w+", r":CAR_\1_TYRE_TYPE ROOT", CARS)
+        (self.game / DATABASES["cars"]).write_bytes(text.replace("\n", "\r\n").encode("ascii"))
+        with self.assertRaisesRegex(ValueError, "#car-tyre-roots answer has no traced example"):
+            self.build()
+        self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)}, before)
+
     def test_routines_page_links_its_copied_evidence(self):
         self.build()
         routines = (self.output / "routines.html").read_text(encoding="utf-8")
