@@ -49,8 +49,9 @@ from collections import Counter
 import hashlib
 from pathlib import Path
 
-from dossier_common import (NOTICE_ID, NOTICE_TITLE_ID, ROUTINES_PAGE, STYLE, anchor, check_fields, check_pe, e,
-                            line_anchor, load_json, page_start, producer_revision, relative_href, site_link)
+from dossier_common import (CARS_PAGE, NOTICE_ID, NOTICE_TITLE_ID, ROUTINES_PAGE, STYLE, anchor, car_store_anchor,
+                            check_fields, check_pe, e, line_anchor, load_json, page_start, producer_revision,
+                            relative_href, site_link)
 from record_compare import GAME_MANIFEST, game_file, is_demo
 from record_dossier import DATABASES as RECORD_PAGES, check_records
 import routine_index
@@ -60,7 +61,7 @@ from text_database import (CAR_LOADER_SPAN, CAR_LOOKUPS, CAR_PERFORMANCE_ENTRIES
                            resolve_car_references, value)
 import tyre_dossier
 
-PAGE = "cars.html"
+PAGE = CARS_PAGE
 ANALYSIS = REPO_ROOT / "analysis"
 FIELD_EVIDENCE = ANALYSIS / "selected/field-evidence.json"
 TAGS = ANALYSIS / "tags.json"
@@ -161,7 +162,7 @@ def check_demo_counts(database, references, targets):
 
 def store_anchor(tag):
     """The id of the tag's row in the "How the car loader resolves each reference" table."""
-    return anchor("car", "store", tag)
+    return car_store_anchor(tag)
 
 
 def lookup_anchor(database):

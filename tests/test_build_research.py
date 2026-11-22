@@ -13,7 +13,8 @@ import build_research
 import record_dossier
 from dossier_common import INDEX_PAGE, NOTICE_LINKS, rights_notice
 from fr3_common import DEMO_PAGE
-from text_database import DATABASES, REPO_ROOT, SCALAR_COPY_CALL, SCALAR_COPY_SPAN, TYRE_SCALAR_STORES
+from text_database import (BYTE_CHECKED, DATABASES, DECLARED, REPO_ROOT, SCALAR_COPY_CALL, SCALAR_COPY_SPAN,
+                           TYRE_SCALAR_STORES)
 from verify_web import ISSUES_PAGE, RIGHTS_CREDIT
 
 from test_open_questions import QUESTION_ENGINES, question_manifest, question_pcg_index, question_verification
@@ -27,6 +28,9 @@ PAGES = ("index.html", "cars.html", "engines.html", "gearboxes.html", "compare.h
 ASM = tuple(sorted(f"evidence/selected/{path.name}" for path in (REPO_ROOT / "analysis/selected").glob("*.asm")))
 EVIDENCE = ("evidence/annotated/selected.c", "evidence/annotated/status.json", "evidence/pcg-index.json", *ASM,
             "evidence/selected/field-evidence.json", "evidence/tags.json", "evidence/unpacked-manifest.json")
+# The car loader's store of the back tyre record; without it in field-evidence.json, CAR_BACK_TYRE_TYPE is declared by
+# name.
+BACK_TYRE_STORE = 0x005210AC
 COUNTS = {"cars": 2, "engines": 7, "gearboxes": 3, "compared_gearboxes": 3, "compared_engines": 7, "compared_tyres": 3, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
           "questions": 3}
 
@@ -255,6 +259,58 @@ class BuildTests(ResearchTestCase):
         with self.assertRaisesRegex(ValueError, "'GONE' matches no tyres record"):
             self.build()
         self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)}, before)
+
+    def test_record_pages_list_the_cars_that_name_each_record(self):
+        self.build()
+        pages = {page: (self.output / page).read_text(encoding="utf-8") for page in PAGES}
+        label = BYTE_CHECKED.replace("'", "&#x27;")
+        expected = {("engines.html", "engine-BASE"): [("ROADSTER", "CAR_ENGINE_TYPE")],
+                    ("engines.html", "engine-CHILD"): [("RALLY_CAR", "CAR_ENGINE_TYPE")],
+                    ("gearboxes.html", "gearbox-ROAD"): [("ROADSTER", "CAR_GEARBOX_TYPE")],
+                    ("gearboxes.html", "gearbox-RALLY"): [("RALLY_CAR", "CAR_GEARBOX_TYPE")],
+                    ("gearboxes.html", "gearbox-TRACK"): [],
+                    ("tyres.html", "tyre-ROOT"): [("ROADSTER", "CAR_FRONT_TYRE_TYPE")],
+                    ("tyres.html", "tyre-MID"): [("ROADSTER", "CAR_BACK_TYRE_TYPE")],
+                    ("tyres.html", "tyre-CHILD"): [("RALLY_CAR", "CAR_FRONT_TYRE_TYPE"),
+                                                   ("RALLY_CAR", "CAR_BACK_TYRE_TYPE")]}
+        for (page, prefix), cars in expected.items():
+            with self.subTest(page=page, record=prefix):
+                text = pages[page]
+                start = text.index(f'<h3 id="{prefix}-used-by">')
+                block = text[start:text.index("<h3>", start + 1)]
+                self.assertEqual(re.findall(r'href="cars\.html#car-(\w+)">\1</a></td><td><a href="cars\.html#'
+                                            r'car-store-(\w+)"><code>\2</code></a></td><td><span class="label">'
+                                            + re.escape(label), block), cars)
+                if not cars:
+                    self.assertIn("Not named by any car", block)
+        # Every engine section has the block; the ones no car names say so.
+        self.assertEqual(pages["engines.html"].count("-used-by\">Used by cars</h3>"), COUNTS["engines"])
+        self.assertEqual(pages["engines.html"].count("<p>Not named by any car in"), COUNTS["engines"] - 2)
+        # Every cars.html link the record and compare pages carry names an id there.
+        cars = pages["cars.html"]
+        for page in ("engines.html", "gearboxes.html", "tyres.html", "compare.html"):
+            fragments = set(re.findall(r'href="cars\.html#([^"]+)"', pages[page]))
+            self.assertTrue(fragments or page == "compare.html", page)
+            for fragment in fragments:
+                self.assertIn(f'id="{fragment}"', cars, (page, fragment))
+        compare = pages["compare.html"]
+        self.assertEqual(compare.count("<th>Used by cars"), 3)
+        self.assertIn('<td>front <a href="tyres.html#tyre-CHILD-used-by">1</a><br>back '
+                      '<a href="tyres.html#tyre-CHILD-used-by">1</a></td>', compare)
+        self.assertIn('<td class="num"><a href="gearboxes.html#gearbox-TRACK-used-by">0</a></td>', compare)
+
+    def test_a_reference_the_loader_evidence_does_not_check_is_declared_by_name_on_the_record_pages(self):
+        path = self.analysis / "selected/field-evidence.json"
+        evidence = json.loads(path.read_text(encoding="utf-8"))
+        path.write_text(json.dumps([site for site in evidence if site["va"] != BACK_TYRE_STORE]), encoding="utf-8")
+        self.build()
+        tyres = (self.output / "tyres.html").read_text(encoding="utf-8")
+        mid = tyres[tyres.index('<h3 id="tyre-MID-used-by">'):]
+        mid = mid[:mid.index("<h3>", 1)]
+        self.assertIn(f'<span class="label">{DECLARED}</span>', mid)
+        self.assertNotIn("byte-checked)", mid)
+        root = tyres[tyres.index('<h3 id="tyre-ROOT-used-by">'):]
+        self.assertIn("resolved by the loader&#x27;s lookup (byte-checked)", root[:root.index("<h3>", 1)])
 
     def test_engine_data_without_a_shared_torque_table_refuses_the_build(self):
         self.build()
@@ -547,6 +603,23 @@ class VerifierTests(unittest.TestCase):
                 self.setUp()
                 self.edit("tyres.html", f'id="{anchor}"', 'id="gone"')
                 self.reject(f"compare.html has a broken local link: 'tyres.html#{anchor}' names no id in tyres.html")
+
+    def test_record_pages_link_a_missing_cars_page_anchor(self):
+        # A car section and a car loader row on the cars page, each linked from the record pages' "Used by cars"
+        # blocks and the compare page's counts link those blocks.
+        for page, old, new in (("engines.html", "cars.html#car-ROADSTER", "cars.html#car-NOPE"),
+                               ("tyres.html", "cars.html#car-store-CAR_BACK_TYRE_TYPE", "cars.html#car-store-NOPE")):
+            with self.subTest(page=page, new=new):
+                self.setUp()
+                self.edit(page, f'href="{old}"', f'href="{new}"')
+                self.reject(f"{page} has a broken local link: '{new}' names no id in cars.html")
+        self.setUp()
+        self.edit("cars.html", 'id="car-RALLY_CAR"', 'id="gone"')
+        self.reject("gearboxes.html has a broken local link: 'cars.html#car-RALLY_CAR' names no id in cars.html")
+        self.setUp()
+        self.edit("gearboxes.html", 'id="gearbox-TRACK-used-by"', 'id="gone"')
+        self.reject("compare.html has a broken local link: 'gearboxes.html#gearbox-TRACK-used-by' names no id in "
+                    "gearboxes.html")
 
     def test_every_page_names_the_entrance_page_producer_revision(self):
         revision = "<dt>Producer revision</dt><dd><code>0123abcd</code>"

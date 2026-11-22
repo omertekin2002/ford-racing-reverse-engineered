@@ -7,7 +7,9 @@ Run it after scripts/acquire_demo.py has extracted the demo. It:
   2. writes cars.html, tyres.html, engines.html, gearboxes.html, compare.html, pcg.html,
      routines.html and questions.html with scripts/car_page.py, scripts/tyre_dossier.py,
      scripts/record_dossier.py, scripts/record_compare.py, scripts/pcg_catalogue.py,
-     scripts/routine_index.py and scripts/open_questions.py;
+     scripts/routine_index.py and scripts/open_questions.py; the cars' references, indexed the other way round by
+     text_database.car_usage() and checked against them, give each engine, gearbox and tyre section a "Used by
+     cars" block and each Compare records matrix a "Used by cars" column;
   3. copies every committed analysis/ file those pages link to into
      <output>/evidence/, keeping its path under analysis/, and points the pages there;
   4. writes <output>/index.html, which links the eight pages with their car, record,
@@ -25,8 +27,9 @@ Run it after scripts/acquire_demo.py has extracted the demo. It:
      links to routines.html#<label> and routines.html#site-<va> and the compare page's
      links to gearboxes.html#<id>, engines.html#<id>, tyres.html#<id> and routines.html#<label>, and the car
      page's links to engines.html#engine-<name>, gearboxes.html#gearbox-<name>, tyres.html#tyre-<name>,
-     routines.html#site-<va> and routines.html#asm-load_car_database, names an id on
-     that page, and the directory holds
+     routines.html#site-<va> and routines.html#asm-load_car_database, the record pages' links to
+     cars.html#car-<name> and cars.html#car-store-<TAG>, and the compare page's links to their
+     <prefix>-<name>-used-by blocks, names an id on that page, and the directory holds
      no file other than the ones this script writes.
 
 The pages are built in a staging directory next to the output and only replace it
@@ -51,8 +54,8 @@ import record_compare
 import record_dossier
 import research_answers
 import routine_index
-from text_database import (REPO_ROOT, RESOLVED_TYRE_TABLES, TYRE_SCALAR_STORES, car_reference_bases, load_known_tags,
-                           load_tag_ids, require, write_databases)
+from text_database import (REPO_ROOT, RESOLVED_TYRE_TABLES, TYRE_SCALAR_STORES, car_reference_bases, car_usage,
+                           check_car_usage, load_known_tags, load_tag_ids, require, write_databases)
 import tyre_dossier
 from verify_web import PRODUCER_REVISION, RIGHTS_CREDIT
 
@@ -189,18 +192,23 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
                                              revision, hrefs=routine_hrefs, entrance=True, evidence_path=evidence_path,
                                              tags_path=analysis / "tags.json", selected=analysis / "selected",
                                              manifest_path=analysis / GAME_MANIFEST)}
+            # car_page.build() has accepted cars.json's references; the engine, gearbox, tyre and compare pages show
+            # them the other way round, as the cars that name each record.
+            references = load_json(work / "cars.json", "Car database")["references"]
+            usage = car_usage(references)
+            check_car_usage(usage, references)
             # The tyre, engine and gearbox pages link routines.html, so they read the same status.json it does.
             status_path = analysis / ROUTINE_EVIDENCE["status"]
             counts["tyres"] = tyre_dossier.build(work / "tyres.json", analysis / TYRE_EVIDENCE["evidence"], pe_path,
                                                  staging / tyre_dossier.PAGE, revision, hrefs=tyre_hrefs,
-                                                 entrance=True, status_path=status_path)
+                                                 entrance=True, status_path=status_path, car_usage=usage)
             counts.update(record_dossier.build(work / "engines.json", work / "gearboxes.json", pe_path, staging, revision,
                                                entrance=True, status_path=status_path,
-                                               evidence_path=analysis / TYRE_EVIDENCE["evidence"]))
+                                               evidence_path=analysis / TYRE_EVIDENCE["evidence"], car_usage=usage))
             counts.update(record_compare.build(work / "gearboxes.json", work / "engines.json", work / "tyres.json",
                                                game_dir, pe_path, staging / record_compare.PAGE, revision,
                                                entrance=True, manifest_path=analysis / GAME_MANIFEST,
-                                               status_path=status_path))
+                                               status_path=status_path, car_usage=usage))
             counts["questions"] = open_questions.build(
                 work / "engines.json", work / "tyres.json", analysis / QUESTION_EVIDENCE["evidence"],
                 analysis / QUESTION_EVIDENCE["pcg_index"], pe_path, staging / open_questions.PAGE, revision,

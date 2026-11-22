@@ -91,6 +91,11 @@ are listed under the matrix all the same), when resolved_tables, table_provenanc
 text_database.py derives, when a mapped declaration is not one inline number or its written token does not parse to
 the value tyres.json holds, and when the demo counts differ as above.
 
+Given the cars' reverse index (text_database.car_usage(), as scripts/build_research.py passes it), each of the three
+matrices gets a "Used by cars" column after the record name: how many cars name the record directly, front and back
+apart for tyres, 0 for none, each count linked to the record's "Used by cars" block on its page
+(<prefix>-<name>-used-by). Without it, as from the command line, the page has no such column.
+
 It also refuses when an input is missing or malformed as record_dossier.py checks it. The page has inline CSS, no
 JavaScript and no external resources other than the rights-holder notice's two links. It links gearboxes.html,
 engines.html, tyres.html, routines.html and questions.html, so it belongs beside them.
@@ -99,9 +104,10 @@ import argparse
 import hashlib
 from pathlib import Path
 
-from dossier_common import (INDIGO_ANCHOR, QUESTIONS_PAGE, ROUTINE_STATUS, STYLE, anchor, basis_html, check_fields,
-                            check_pe, e, is_indigo_line, line_anchor, load_json, page_start, producer_revision,
-                            routine_label, routine_labels, routine_link)
+from dossier_common import (CARS_PAGE, INDIGO_ANCHOR, QUESTIONS_PAGE, ROUTINE_STATUS, STYLE, anchor, basis_html,
+                            car_tags, check_car_users, check_fields, check_pe, e, is_indigo_line, line_anchor,
+                            load_json, page_start, producer_revision, routine_label, routine_labels, routine_link,
+                            used_by_anchor)
 from record_dossier import (DATABASES, TORQUE, check_engine_fields, check_records, engine_store_anchor, engine_tags,
                             gearbox_tags, store_anchor)
 from text_database import (ENGINE_FIELD_COUNTS, ENGINE_FIELD_STORES, GEARBOX_FIELD_STORES, REPO_ROOT,
@@ -163,6 +169,38 @@ TYRE_SCOPE = ("Scope: each tyre's scalar values are its effective ones, the decl
               "(<code>ROAD_MAGIC_GRIP_NUMBER</code> and <code>OFFROAD_MAGIC_GRIP_NUMBER</code>) by the global float at "
               "<code>0x00597484</code> when it stores them; that scale is not applied here. Each table cell names only "
               "the record whose table the game reads; the table's contents are on the tyre page.")
+
+
+# The word each tyre reference tag's count is labelled with in the tyre matrix's "Used by cars" column.
+TYRE_ROLES = {"CAR_FRONT_TYRE_TYPE": "front", "CAR_BACK_TYRE_TYPE": "back"}
+
+
+def used_by_header(database):
+    """The "Used by cars" column header: the tag it counts, or front and back for the tyres."""
+    tags = car_tags(database)
+    detail = ", ".join(TYRE_ROLES[tag] for tag in tags) if len(tags) > 1 else f"<code>{e(tags[0])}</code>"
+    return f"<th>Used by cars<br><small>{detail}</small></th>"
+
+
+def used_by_cell(page, prefix, name, users, database):
+    """How many cars name record `name`, per tag, each count linked to the record's "Used by cars" block on `page`;
+    0 for a record no car names."""
+    href = f'{e(page)}#{e(used_by_anchor(prefix, name))}'
+    counts = [(tag, sum(user_tag == tag for _, user_tag, _ in users.get(name, []))) for tag in car_tags(database)]
+    if len(counts) == 1:
+        return f'<td class="num"><a href="{href}">{counts[0][1]}</a></td>'
+    return "<td>" + "<br>".join(f'{TYRE_ROLES[tag]} <a href="{href}">{count}</a>' for tag, count in counts) + "</td>"
+
+
+def used_by_note(database, noun, page):
+    """The sentence under a section's matrix intro that says what its "Used by cars" column counts."""
+    tags = " and ".join(f"<code>{e(tag)}</code>" for tag in car_tags(database))
+    split = ", front and back counted apart" if len(car_tags(database)) > 1 else ""
+    return (f'<p>The "Used by cars" column counts the cars in <code>CARDATA.DAT</code> whose {tags} names the {noun} '
+            f"directly{split}, and links to the list of them in the {noun}'s section on "
+            f'<a href="{e(page)}">the {noun} page</a>, each car linked to the <a href="{CARS_PAGE}">cars page</a>. A '
+            f"{noun} no car names counts 0, even when other records inherit from it: inheritance is not counted as "
+            "use.</p>")
 
 
 def is_float(tag):
@@ -247,8 +285,9 @@ def column_header(tag):
             "</small></th>")
 
 
-def matrix(gearboxes):
-    header = "<tr><th>Gearbox</th>" + "".join(column_header(tag) for tag in gearbox_tags()) + "</tr>"
+def matrix(gearboxes, users=None):
+    header = ("<tr><th>Gearbox</th>" + ("" if users is None else used_by_header("gearboxes"))
+              + "".join(column_header(tag) for tag in gearbox_tags()) + "</tr>")
     rows = []
     for gearbox in gearboxes:
         name = gearbox["name"]
@@ -256,8 +295,9 @@ def matrix(gearboxes):
             f'<td class="num"><a href="{e(GEARBOX_PAGE)}#{e(line_anchor("gearbox", name, cell["line"]))}" '
             f'title="{e(name)} line {e(cell["line"])}">{e(cell["written"])}</a></td>'
             for cell in (gearbox["cells"][tag] for tag in gearbox_tags()))
+        used = "" if users is None else used_by_cell(GEARBOX_PAGE, "gearbox", name, users, "gearboxes")
         rows.append(f'<tr id="{e(row_anchor(name))}"><td><a href="{e(GEARBOX_PAGE)}#{e(anchor("gearbox", name))}">'
-                    f"{e(name)}</a></td>{cells}</tr>")
+                    f"{e(name)}</a></td>{used}{cells}</tr>")
     return f'<div class="wide"><table class="matrix">{header}{"".join(rows)}</table></div>'
 
 
@@ -553,8 +593,9 @@ def engine_column_header(tag):
             f"<small>{where}<br>{kind}</small></th>")
 
 
-def engine_matrix(engines):
-    header = "<tr><th>Engine</th>" + "".join(engine_column_header(tag) for tag in engine_tags()) + "</tr>"
+def engine_matrix(engines, users=None):
+    header = ("<tr><th>Engine</th>" + ("" if users is None else used_by_header("engines"))
+              + "".join(engine_column_header(tag) for tag in engine_tags()) + "</tr>")
     rows = []
     for engine in engines:
         name = engine["name"]
@@ -564,8 +605,9 @@ def engine_matrix(engines):
             hop = engine["applied"]
             kind += (f' {e(hop["parent"])} through colon-less '
                      f'{engine_line_link(name, hop["line"], f"line {hop["line"]}")}, {basis_html(hop["basis"])}')
+        used = "" if users is None else used_by_cell(ENGINE_PAGE, "engine", name, users, "engines")
         rows.append(f'<tr id="{e(engine_row_anchor(name))}"><td><a href="{e(ENGINE_PAGE)}#{e(anchor("engine", name))}">'
-                    f"{e(name)}</a><br><small>{kind}</small></td>{cells}</tr>")
+                    f"{e(name)}</a><br><small>{kind}</small></td>{used}{cells}</tr>")
     return f'<div class="wide"><table class="matrix engines">{header}{"".join(rows)}</table></div>'
 
 
@@ -611,7 +653,7 @@ def engine_differences_table(engines):
             f'<th>Counts</th></tr>{"".join(rows)}</table>')
 
 
-def engines_section(engines, counts_checked):
+def engines_section(engines, counts_checked, users=None):
     total = len(engines)
     inheriting = sum(not engine["root"] for engine in engines)
     if counts_checked:
@@ -633,8 +675,8 @@ def engines_section(engines, counts_checked):
         "record and line that declare the table, its row count and the <code>MAX_RPM</code> declaration it was parsed "
         "with, and links the engine's effective <code>TORQUE_ARRAY</code> row. Each column header links to that "
         "field's row in the engine page's \"Where each field is stored\" table, with the byte-checked compare and "
-        "store sites.</p>",
-        engine_matrix(engines),
+        "store sites.</p>" + ("" if users is None else used_by_note("engines", "engine", ENGINE_PAGE)),
+        engine_matrix(engines, users),
         f'<h3 id="engine-differences">What differs</h3><p>For each field, how many distinct effective values the {total} '
         "engines hold, and which engines hold each. Numbers are grouped by the number, so two spellings of one number "
         "are one value, with each spelling shown; enum words are grouped exactly as written, and torque tables by the "
@@ -852,8 +894,9 @@ def tyre_table_header(table, accessors):
             f"{routine_link(accessors[table], entry['accessor'])}</small></th>")
 
 
-def tyre_matrix(tyres, accessors):
-    header = ("<tr><th>Tyre</th>" + "".join(tyre_scalar_header(tag) for tag in tyre_dossier.tyre_tags())
+def tyre_matrix(tyres, accessors, users=None):
+    header = ("<tr><th>Tyre</th>" + ("" if users is None else used_by_header("tyres"))
+              + "".join(tyre_scalar_header(tag) for tag in tyre_dossier.tyre_tags())
               + "".join(tyre_table_header(table, accessors) for table in RESOLVED_TYRE_TABLES) + "</tr>")
     rows = []
     for tyre in tyres:
@@ -861,8 +904,9 @@ def tyre_matrix(tyres, accessors):
         cells = ("".join(tyre_scalar_html(tyre["scalars"][tag]) for tag in tyre_dossier.tyre_tags())
                  + "".join(tyre_table_html(name, table, tyre["tables"][table]) for table in RESOLVED_TYRE_TABLES))
         kind = "root" if tyre["root"] else "inherits"
+        used = "" if users is None else used_by_cell(TYRE_PAGE, "tyre", name, users, "tyres")
         rows.append(f'<tr id="{e(tyre_row_anchor(name))}"><td><a href="{e(TYRE_PAGE)}#{e(tyre_dossier.anchor(name))}">'
-                    f"{e(name)}</a><br><small>{kind}</small></td>{cells}</tr>")
+                    f"{e(name)}</a><br><small>{kind}</small></td>{used}{cells}</tr>")
     return f'<div class="wide"><table class="matrix tyres">{header}{"".join(rows)}</table></div>'
 
 
@@ -924,7 +968,7 @@ def tyre_differences_table(tyres):
             f'<th>Counts</th></tr>{"".join(rows)}</table>')
 
 
-def tyres_section(checked, accessors, counts_checked):
+def tyres_section(checked, accessors, counts_checked, users=None):
     tyres = checked["tyres"]
     total = len(tyres)
     inheriting = sum(not tyre["root"] for tyre in tyres)
@@ -948,8 +992,9 @@ def tyres_section(checked, accessors, counts_checked):
         "<code>INHERIT_TYPE</code> path when that is more than one step. Each table cell names the record whose table "
         "the game reads and links this tyre's row for that table on the tyre page, with its Why? trail. Each scalar "
         "column header links to that field's row in the tyre page's \"Where each field is stored\" table; each table "
-        "column header gives the record offset its accessor tests and links the accessor on the routines page.</p>",
-        tyre_matrix(tyres, accessors),
+        "column header gives the record offset its accessor tests and links the accessor on the routines page.</p>"
+        + ("" if users is None else used_by_note("tyres", "tyre", TYRE_PAGE)),
+        tyre_matrix(tyres, accessors, users),
         no_column_html(checked),
         f'<h3 id="tyre-differences">What differs</h3><p>For each scalar field, how many distinct effective values the '
         f"{total} tyres hold, and which tyres hold each, grouped by the number, so two spellings of one number (such as "
@@ -967,11 +1012,13 @@ def tyre_accessor_labels(labels):
 
 
 def render(database, gearboxes, pe, revision, entrance=False, engine_database=None, engines=(), counts_checked=False,
-           tyre_database=None, tyres=None, accessors=None, tyre_counts_checked=False):
+           tyre_database=None, tyres=None, accessors=None, tyre_counts_checked=False, users=None):
     """Return the page. check_gearboxes() must have accepted the inputs and returned `gearboxes`, check_engines()
     `engine_database` and `engines`, and check_tyres() `tyre_database` and `tyres`; counts_checked and
     tyre_counts_checked say whether they checked the counts against the demo's. accessors is
-    tyre_accessor_labels()."""
+    tyre_accessor_labels(). users, when given, maps gearboxes, engines and tyres to check_car_users()'s
+    {record: [(car, tag, basis)]}: each matrix then has a "Used by cars" column."""
+    users = users or {}
     total = len(gearboxes)
     fields = len(GEARBOX_FIELD_STORES)
     return "\n".join([
@@ -999,15 +1046,16 @@ def render(database, gearboxes, pe, revision, entrance=False, engine_database=No
         f"<code>GEARDATA.DAT</code> order, and one column per field, in payload offset order. Read any two rows to "
         f'compare two gearboxes. Each value links to its declaration row on <a href="{e(GEARBOX_PAGE)}">the gearbox '
         "page</a>; each column header links to that field's row in its \"Where each field is stored\" table, with "
-        "the byte-checked compare and store sites.</p>",
-        matrix(gearboxes),
+        "the byte-checked compare and store sites.</p>"
+        + ("" if users.get("gearboxes") is None else used_by_note("gearboxes", "gearbox", GEARBOX_PAGE)),
+        matrix(gearboxes, users.get("gearboxes")),
         f'<h3 id="gearbox-differences">What differs</h3><p>For each field, how many distinct values the {total} '
         "gearboxes declare, and which gearboxes declare each. Fields read as a float are grouped by the number, so "
         "two spellings of one number (such as <code>0.2</code> and <code>0.20</code>) are one value, with each "
         "spelling shown; enum words are grouped exactly as written.</p>",
         differences_table(gearboxes),
-        engines_section(engines, counts_checked),
-        tyres_section(tyres, accessors, tyre_counts_checked),
+        engines_section(engines, counts_checked, users.get("engines")),
+        tyres_section(tyres, accessors, tyre_counts_checked, users.get("tyres")),
         "</body></html>\n"])
 
 
@@ -1022,7 +1070,8 @@ def game_file(database, label, game_dir):
 
 
 def build(gearboxes_path, engines_path, tyres_path, game_dir, pe_path, output, revision=None, entrance=False,
-          engine_counts=None, manifest_path=GAME_MANIFEST, tyre_counts=None, status_path=ROUTINE_STATUS):
+          engine_counts=None, manifest_path=GAME_MANIFEST, tyre_counts=None, status_path=ROUTINE_STATUS,
+          car_usage=None):
     """Read and check the inputs, then write the page to `output`; return the gearbox, engine and tyre counts compared.
 
     game_dir is the extracted Program_Executable_Files directory holding the GEARDATA.DAT, ENGDATA.DAT and
@@ -1031,7 +1080,9 @@ def build(gearboxes_path, engines_path, tyres_path, game_dir, pe_path, output, r
     likewise the tyres' counts must equal tyre_counts ({"scalars", "tables"}) when given, else TYRE_COUNTS when
     TYREDATA.DAT is the demo's. status_path is the status.json whose labels the routines page beside `output` uses;
     the tyre table columns link their accessors there. entrance=True adds the entrance page to the nav bar, for
-    scripts/build_research.py.
+    scripts/build_research.py. car_usage, when given, is text_database.car_usage() of the cars' references: each
+    matrix then has a "Used by cars" column linked to the record pages' "Used by cars" blocks, which those pages must
+    have been built with.
     """
     database = load_json(gearboxes_path, "Gearbox database (run scripts/text_database.py first)")
     engine_database = load_json(engines_path, "Engine database (run scripts/text_database.py first)")
@@ -1048,8 +1099,11 @@ def build(gearboxes_path, engines_path, tyres_path, game_dir, pe_path, output, r
     tyre_expected = tyre_counts if tyre_counts is not None else demo_tyre_counts(tyre_database, manifest_path)
     tyres = check_tyres(tyre_database, tyre_data, tyre_expected)
     accessors = tyre_accessor_labels(routine_labels(status_path))
+    users = None if car_usage is None else {
+        kind: check_car_users(car_usage, kind, source["records"])
+        for kind, source in (("gearboxes", database), ("engines", engine_database), ("tyres", tyre_database))}
     page = render(database, gearboxes, pe, revision or producer_revision(), entrance, engine_database, engines,
-                  expected is not None, tyre_database, tyres, accessors, tyre_expected is not None)
+                  expected is not None, tyre_database, tyres, accessors, tyre_expected is not None, users)
     Path(output).parent.mkdir(parents=True, exist_ok=True)
     Path(output).write_text(page, encoding="utf-8")
     return {"compared_gearboxes": len(gearboxes), "compared_engines": len(engines),

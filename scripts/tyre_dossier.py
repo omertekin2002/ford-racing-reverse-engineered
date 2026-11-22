@@ -28,6 +28,13 @@ has the id tyre-store-<TAG>, which the Compare records page
 sound table's leading words, before its START_RPM values, unresolved and links
 to their section on the Open questions page (scripts/open_questions.py).
 
+Given the cars' reverse index (text_database.car_usage(), as scripts/build_research.py
+passes it), each tyre section also gets a "Used by cars" block, tyre-<name>-used-by:
+the cars whose CAR_FRONT_TYRE_TYPE, then whose CAR_BACK_TYRE_TYPE, names the tyre
+directly, each linked to cars.html with the car loader's row for the tag and the
+reference's basis; a tyre no car names, an inheritance parent included, says so.
+Without it, as from the command line, the page has no such block.
+
 The page links into the sibling routines page, routines.html: a "Loaded by"
 line links the tyre loader's section, each Why? trail links its accessor's
 section and every byte-checked site's row (#site-<va>), and each scalar section
@@ -56,9 +63,9 @@ import argparse
 from pathlib import Path
 
 import dossier_common
-from dossier_common import (ROUTINE_STATUS, SOUND_ANCHOR, SOUND_NOTE_ID, check_fields, check_pe, e, line_anchor,
-                            load_json, page_start, producer_revision, question_link, relative_href, routine_label,
-                            routine_labels, routine_link, site_link)
+from dossier_common import (ROUTINE_STATUS, SOUND_ANCHOR, SOUND_NOTE_ID, check_car_users, check_fields, check_pe, e,
+                            line_anchor, load_json, page_start, producer_revision, question_link, relative_href,
+                            routine_label, routine_labels, routine_link, site_link, used_by_scope, used_by_section)
 from text_database import (REPO_ROOT, RESOLVED_TYRE_TABLES, SCALAR_COPY_CALL, SCALAR_COPY_SPAN, TYRE_SCALAR_STORES,
                            ZERO_FILLED, check_effective_scalars, check_table_provenance, effective_scalars, require,
                            scalar_evidence_problems, table_sources)
@@ -392,10 +399,12 @@ def scalar_section(name, entry, copies, routines):
     return "".join(parts)
 
 
-def render(tyres, sites, copies, pe, revision, hrefs, routines, entrance=False):
+def render(tyres, sites, copies, pe, revision, hrefs, routines, entrance=False, users=None):
     """Return the dossier HTML. check_inputs() and check_routines() must have accepted the inputs first.
 
-    copies is copy_sites(evidence): the scalar copy's load and store sites per payload offset.
+    copies is copy_sites(evidence): the scalar copy's load and store sites per payload offset. users, when given, is
+    check_car_users()'s {record: [(car, tag, basis)]}: each tyre section then gets a "Used by cars" block, front and
+    back tyre listed apart. Without it the page has none and does not mention the cars.
     """
     records = tyres["records"]
     by_name = {record["type"]: record for record in records}
@@ -417,6 +426,8 @@ def render(tyres, sites, copies, pe, revision, hrefs, routines, entrance=False):
              'the colon-less <code>INDIGO</code> line in <code>ENGDATA.DAT</code> (applied there on static '
              'instruction evidence only), is covered on the engine page, not here. Two tyres that share a '
              'table source do not necessarily handle identically: their scalar fields can differ.</p>']
+    if users is not None:
+        parts.append(used_by_scope("tyres", "tyre"))
     counts = table_sources(tyres["resolved_tables"])
     parts.append('<h2>Table sources</h2><table><tr><th>Table</th><th>Accessor</th><th>Records per source</th></tr>')
     for table in RESOLVED_TYRE_TABLES:
@@ -441,7 +452,8 @@ def render(tyres, sites, copies, pe, revision, hrefs, routines, entrance=False):
         name = record["type"]
         parts.append(f'<section class="tyre" id="{e(anchor(name))}"><h2>{e(name)}</h2>'
                      f'<p>Declared at line {e(record["line"])} of <code>{e(tyres["source"])}</code>.</p>'
-                     f'<h3>Declarations, as written</h3>{dossier_common.declarations(record, "tyre", row_ids=True)}'
+                     + ("" if users is None else used_by_section("tyre", name, users.get(name, []), "tyres"))
+                     + f'<h3>Declarations, as written</h3>{dossier_common.declarations(record, "tyre", row_ids=True)}'
                      '<h3>Table sources</h3>'
                      '<table><tr><th>Table</th><th>Source</th><th>Path</th><th>Source line</th><th>Accessor</th>'
                      '<th>Record offset</th></tr>')
@@ -464,12 +476,14 @@ def render(tyres, sites, copies, pe, revision, hrefs, routines, entrance=False):
 
 
 def build(tyres_path, evidence_path, pe_path, output, revision=None, hrefs=None, entrance=False,
-          status_path=ROUTINE_STATUS):
+          status_path=ROUTINE_STATUS, car_usage=None):
     """Read the inputs, check them and write the dossier; return the number of records.
 
     status_path is the status.json whose labels the routines page beside `output` uses. hrefs maps "accessors", "loader" and "evidence" to the links the page uses for its evidence files; by
     default they are relative links from `output` to the files in this repository. entrance=True adds the
-    entrance page to the nav bar, for scripts/build_research.py.
+    entrance page to the nav bar, for scripts/build_research.py. car_usage, when given, is text_database.car_usage() of
+    the cars' references: each tyre section then lists the cars whose front or back tyre names it, linked to
+    cars.html, which must be beside `output`.
     """
     tyres = load_json(tyres_path, "Tyre database (run scripts/text_database.py first)")
     evidence = load_json(evidence_path, "Field evidence")
@@ -479,7 +493,9 @@ def build(tyres_path, evidence_path, pe_path, output, revision=None, hrefs=None,
     routines = check_routines(routine_labels(status_path), sites, evidence)
     hrefs = hrefs or {"accessors": relative_href(ACCESSORS_ASM, output), "loader": relative_href(LOADER_ASM, output),
                       "evidence": relative_href(Path(evidence_path).resolve(), output)}
-    page = render(tyres, sites, copy_sites(evidence), pe, revision or producer_revision(), hrefs, routines, entrance)
+    users = None if car_usage is None else check_car_users(car_usage, "tyres", tyres["records"])
+    page = render(tyres, sites, copy_sites(evidence), pe, revision or producer_revision(), hrefs, routines, entrance,
+                  users)
     Path(output).parent.mkdir(parents=True, exist_ok=True)
     Path(output).write_text(page, encoding="utf-8")
     return len(tyres["records"])
