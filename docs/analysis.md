@@ -1219,6 +1219,32 @@ derived `+ 0x2c`, which gets no value. The example is chosen from the data, the
 build fails when no table is shared, and `INDIGO` links its open question.
 Values are shown as declared, and unresolved items stay labelled unresolved.
 
+The build also turns the cars' references round. `car_usage()` in
+`text_database.py` indexes `cars.json`'s `references` by the record each one
+resolves to: `{database: {record: [(car, tag, basis)]}}`, cars in `CARDATA.DAT`
+order, the front and back tyre kept apart, and a car whose front and back tyre
+are one record listed once per tag. Only a record a car names directly counts:
+a parent such as `DEFAULT_ROAD`, which the named records inherit from, is not
+used by those cars. `check_car_usage()` refuses an index that drops, duplicates
+or moves any car's reference or changes its basis, so the distinct records per
+tag are the car page's: 52 engines, 14 gearboxes, 53 front and 53 back tyres in
+the demo, which the car page already checks against `CAR_REFERENCE_TARGETS`,
+with 55 links per tag. The engine, gearbox and tyre pages then give every record
+section a "Used by cars" block, `#<engine|gearbox|tyre>-<name>-used-by`: per tag
+(front and back apart on the tyre page), each car that names the record, linked
+to its section on `cars.html` (`#car-<name>`), the tag linked to the car
+loader's row for it (`#car-store-<TAG>`) and the reference's basis, *resolved by
+the loader's lookup (byte-checked)* or, when that path's sites are not all in
+`field-evidence.json`, *declared by name*. A record no car names says "Not
+named by any car in `CARDATA.DAT`"; in the demo that is the four `DEFAULT_*`
+engines and the three `DEFAULT_*` tyres, while every gearbox is named. The
+Compare records page adds a "Used by cars" column to its gearbox, engine and
+tyre matrices: the number of cars that name each record (front and back apart
+for tyres), `0` for none, linked to the record's block. No units, physics or
+menu meaning are claimed, and `CAR_PERFORMANCE` is not shown there. The
+generators take the index as an optional `car_usage` argument; run on their
+own, they write the same pages as before, without the blocks or the column.
+
 Every research page, the entrance included, carries the browser preview's
 rights-holder notice (the credit, the official demo link and the removal-request
 link) before its main content, and a link bar to the other eight pages. The pages
@@ -1235,7 +1261,10 @@ store, effective `TORQUE_ARRAY` or tyre table row, and each `routines.html#<labe
 section, and each `engines.html#engine-<name>`, `gearboxes.html#gearbox-<name>`,
 `tyres.html#tyre-<name>`, `routines.html#site-<va>` and
 `routines.html#asm-load_car_database` link on the car page a record section, site
-row or disassembly section), and that the directory
+row or disassembly section, each `cars.html#car-<name>` and
+`cars.html#car-store-<TAG>` link on the engine, gearbox and tyre pages a car
+section or car loader row, and each `<page>#<prefix>-<name>-used-by` link on the
+compare page a "Used by cars" block), and that the directory
 holds no file other than the ones the script writes. Only then does the
 staging directory replace the output; an existing output that holds anything
 else is left alone. The directory is not committed because it holds game data.

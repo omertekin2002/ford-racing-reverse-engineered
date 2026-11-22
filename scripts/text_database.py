@@ -126,6 +126,7 @@ refusing a dangling or ambiguous name, and main() writes the result to cars.json
 byte-checked or declared by name. Nothing interprets CAR_PERFORMANCE or the other car tags.
 """
 import argparse
+from collections import Counter
 from copy import deepcopy
 import hashlib
 import json
@@ -1736,6 +1737,43 @@ def resolve_car_references(cars, targets, bases=None):
 def car_reference_targets(references):
     """Count, per reference tag, the distinct records the cars reference."""
     return {tag: len({entries[tag]["target"] for entries in references.values()}) for tag in CAR_REFERENCE_STORES}
+
+
+def car_usage(references):
+    """Return {database: {record: [(car, tag, basis), ...]}}, the cars that name each record, from `references`.
+
+    references is resolve_car_references()'s result (cars.json's `references`), whose cars are in CARDATA.DAT order;
+    each record's list keeps that order, and within one car the CAR_REFERENCE_STORES order, so a car whose front and
+    back tyre name the same record is listed twice, once per tag. Only a record a car names directly is counted: a
+    record that the named one inherits from is not, so a parent such as DEFAULT_ROAD is used by no car through its
+    children. Every database a reference resolves into has an entry, even when it is empty.
+    """
+    usage = {entry["database"]: {} for entry in CAR_REFERENCE_STORES.values()}
+    for car, entries in references.items():
+        for tag in CAR_REFERENCE_STORES:
+            reference = entries[tag]
+            usage[reference["database"]].setdefault(reference["target"], []).append((car, tag, reference["basis"]))
+    return usage
+
+
+def check_car_usage(usage, references):
+    """Refuse a reverse index that drops, duplicates or moves a car reference; return the distinct records per tag.
+
+    Each (car, tag) of `references` must appear exactly once in `usage`, under the record and database it resolves to
+    and with its basis, and nothing else may, so the distinct records per tag are car_reference_targets()'s.
+    """
+    expected = Counter((reference["database"], reference["target"], car, tag, reference["basis"])
+                       for car, entries in references.items() for tag, reference in entries.items())
+    found = Counter((database, record, car, tag, basis) for database, records in usage.items()
+                    for record, users in records.items() for car, tag, basis in users)
+    missing, extra = sorted(expected - found), sorted(found - expected)
+    require(not missing and not extra, "The cars' reverse index disagrees with their references: "
+                                       + "; ".join([*(f"missing {car} {tag} -> {database} {record}"
+                                                      for database, record, car, tag, _ in missing),
+                                                    *(f"unexpected {car} {tag} -> {database} {record}"
+                                                      for database, record, car, tag, _ in extra)]))
+    return {tag: len({record for records in usage.values() for record, users in records.items()
+                      if any(user_tag == tag for _, user_tag, _ in users)}) for tag in CAR_REFERENCE_STORES}
 
 
 def engine_derived_offsets(tag):

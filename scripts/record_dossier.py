@@ -52,6 +52,12 @@ engine-store-<TAG>, which the Compare records page's engine columns link.
 Gearbox inheritance is not resolved: no demo gearbox declares :INHERIT_TYPE,
 and a gearbox's :INHERIT_TYPE is labelled unresolved.
 
+Given the cars' reverse index (text_database.car_usage(), as scripts/build_research.py passes it), each record
+section also gets a "Used by cars" block, <engine|gearbox>-<name>-used-by: the cars whose CAR_ENGINE_TYPE or
+CAR_GEARBOX_TYPE names the record directly, in CARDATA.DAT order, each linked to cars.html#car-<name> with the car
+loader's row for the tag (cars.html#car-store-<TAG>) and the reference's basis; a record no car names, an inheritance
+parent included, says so. Without it, as from the command line, the pages have no such block.
+
 A "Loaded by" line near the top of each page links its database's load and
 copy routines to their sections on the routines page (scripts/routine_index.py),
 and each inheriting record's section links the copy routine. The routines are
@@ -70,9 +76,10 @@ labelled differently there.
 import argparse
 from pathlib import Path
 
-from dossier_common import (INDIGO_ANCHOR, ROUTINE_STATUS, STYLE, anchor, basis_html, check_fields, check_pe,
-                            declarations, e, is_indigo_line, line_anchor, link, load_json, page_start, producer_revision,
-                            question_link, routine_label, routine_labels, routine_link, site_link)
+from dossier_common import (INDIGO_ANCHOR, ROUTINE_STATUS, STYLE, anchor, basis_html, check_car_users, check_fields,
+                            check_pe, declarations, e, is_indigo_line, line_anchor, link, load_json, page_start,
+                            producer_revision, question_link, routine_label, routine_labels, routine_link, site_link,
+                            used_by_scope, used_by_section)
 from text_database import (ENGINE_COPY, ENGINE_FIELD_STORES, ENGINE_RECORD_SIZE, FLOAT_READER, ENUM_READER, GEARBOX_COPY,
                            GEARBOX_FIELD_STORES, GEARBOX_FLOAT_TO_BYTE_CALL, REPO_ROOT, ZERO_FILLED,
                            check_effective_engine_fields, effective_engine_fields, require,
@@ -508,10 +515,12 @@ def consequence_section(record, consequence):
             f"{note}</div>")
 
 
-def render(database, kind, pe, revision, routines, entrance=False):
+def render(database, kind, pe, revision, routines, entrance=False, users=None):
     """Return one dossier page. check_records() and check_routines() must have accepted the inputs first.
 
-    routines maps "load" and "copy" to the labels of this database's routines.
+    routines maps "load" and "copy" to the labels of this database's routines. users, when given, is
+    check_car_users()'s {record: [(car, tag, basis)]}: each record section then gets a "Used by cars" block. Without
+    it the page has none and does not mention the cars.
     """
     spec = DATABASES[kind]
     prefix, title = spec["prefix"], spec["title"]
@@ -531,6 +540,8 @@ def render(database, kind, pe, revision, routines, entrance=False):
              f'{routine_ref(spec, routines, "copy")}; on the routines page. Routine labels are analyst-assigned, not '
              'original symbols.</dd></dl>',
              f'<p class="scope">{ENGINE_SCOPE + untagged_scope(database["untagged_inherit_consequences"]) if engines else GEARBOX_SCOPE}</p>']
+    if users is not None:
+        parts.append(used_by_scope(kind, title))
     parts.append(engine_store_section(routines) if engines else gearbox_store_section(routines))
     parts.append('<h2>Summary</h2><table><tr><th>Record</th><th>Line</th>'
                  + (f"<th>Parent{'' if engines else ' (unresolved)'}</th>" if inherits else "")
@@ -555,6 +566,8 @@ def render(database, kind, pe, revision, routines, entrance=False):
         name = record["type"]
         parts.append(f'<section class="record" id="{e(anchor(prefix, name))}"><h2>{e(name)}</h2>'
                      f'<p>Declared at line {e(record["line"])} of <code>{e(database["source"])}</code>.</p>')
+        if users is not None:
+            parts.append(used_by_section(prefix, name, users.get(name, []), kind))
         inherit = record["fields"].get("INHERIT_TYPE")
         if engines and name in database["effective_fields"]:
             parts.append(effective_section(name, database["effective_fields"][name], routines, record))
@@ -574,12 +587,13 @@ def render(database, kind, pe, revision, routines, entrance=False):
 
 
 def build(engines_path, gearboxes_path, pe_path, output_dir, revision=None, entrance=False,
-          status_path=ROUTINE_STATUS, evidence_path=EVIDENCE):
+          status_path=ROUTINE_STATUS, evidence_path=EVIDENCE, car_usage=None):
     """Read and check every input, then write both pages; return the record count per database.
 
     status_path is the status.json whose labels the routines page beside the pages uses, and evidence_path the
     field-evidence.json whose sites it anchors. entrance=True adds the entrance page to the nav bar, for
-    scripts/build_research.py.
+    scripts/build_research.py. car_usage, when given, is text_database.car_usage() of the cars' references: each
+    record section then lists the cars that name it, linked to cars.html, which must be beside the pages.
     """
     databases = {"engines": load_json(engines_path, "Engine database (run scripts/text_database.py first)"),
                  "gearboxes": load_json(gearboxes_path, "Gearbox database (run scripts/text_database.py first)")}
@@ -591,8 +605,11 @@ def build(engines_path, gearboxes_path, pe_path, output_dir, revision=None, entr
     check_sites(evidence)
     check_engine_fields(databases["engines"], evidence)
     routines = check_routines(routine_labels(status_path))
+    users = {kind: None if car_usage is None else
+             check_car_users(car_usage, kind, database["records"])
+             for kind, database in databases.items()}
     revision = revision or producer_revision()
-    pages = {kind: render(database, kind, pe, revision, routines[kind], entrance)
+    pages = {kind: render(database, kind, pe, revision, routines[kind], entrance, users[kind])
              for kind, database in databases.items()}
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     for kind, page in pages.items():
