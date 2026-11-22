@@ -31,13 +31,33 @@ COUNTS = {"engines": 7, "gearboxes": 3, "compared_gearboxes": 3, "compared_engin
           "questions": 3}
 
 
+# Two cars whose references resolve against the engines, gearboxes and tyres below. No page reads them; the analysis
+# bundle packages cars.json.
+CARS = """:CAR_TYPE ROADSTER
+:CAR_ENGINE_TYPE BASE
+:CAR_GEARBOX_TYPE ROAD
+:CAR_FRONT_TYRE_TYPE ROOT
+:CAR_BACK_TYRE_TYPE MID
+:CAR_PERFORMANCE AGILITY 0.5
+:CAR_PERFORMANCE SPEED 0.2
+:CAR_TYPE RALLY_CAR
+:CAR_ENGINE_TYPE CHILD
+:CAR_GEARBOX_TYPE RALLY
+:CAR_FRONT_TYRE_TYPE CHILD
+:CAR_BACK_TYRE_TYPE CHILD
+:VALID_LIVERY DEFAULT RALLYD
+:END
+"""
+
+
 def write_game(root):
-    """Write the three text databases, with the demo's CRLF line ends, under root; return root.
+    """Write the four text databases, with the demo's CRLF line ends, under root; return root.
 
     The engines include INDIGO's colon-less line, which the Open questions page requires, and every gearbox declares
     the nine mapped tags, which the Compare records page requires.
     """
-    for stem, text in (("engines", QUESTION_ENGINES), ("gearboxes", COMPARE_GEARBOXES), ("tyres", TYRES)):
+    for stem, text in (("engines", QUESTION_ENGINES), ("gearboxes", COMPARE_GEARBOXES), ("tyres", TYRES),
+                       ("cars", CARS)):
         path = root / DATABASES[stem]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(text.replace("\n", "\r\n").encode("ascii"))
@@ -220,7 +240,7 @@ class BuildTests(ResearchTestCase):
                      "evidence/selected/field-evidence.json", *ASM):
             self.assertIn(f'href="{href}"', routines)
         self.assertEqual(routines.count('<section class="routine"'), 25)
-        self.assertEqual(routines.count('<tr class="site"'), 432)
+        self.assertEqual(routines.count('<tr class="site"'), 541)
         self.assertIn('<a href="index.html">Explore findings</a>', routines)
         # Each routine's anchor is a real id: verify_research() accepts a deep link to it from another page.
         index = self.output / INDEX_PAGE

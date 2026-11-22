@@ -84,7 +84,7 @@ python3 scripts/package_analysis.py
 The bundle holds one folder, `fr3-analysis-<short revision>/`, in layers: the
 source (`README.md`, `ruff.toml`, `scripts/`, `tests/`, `recovered/`, `docs/`
 and `analysis/`, read from Git at the producer revision), the parsed engine,
-gearbox and tyre databases in `text-databases/`, the checked research pages in
+gearbox, tyre and car databases in `text-databases/`, the checked research pages in
 `research/` and, only when they match the committed verification record, the
 Ghidra outputs in `artifacts/`. Its `MANIFEST.json` names the input build, the
 producer revision, the tool versions and each verification level: `read`,
@@ -191,7 +191,12 @@ same way, with the `MAX_RPM` each torque table was parsed with and the derived
 `INHERIT_TYPE DEFAULT_TRACK` line is among them: it is applied on static
 instruction evidence only, through a narrow allow-list, and marked with that
 basis ([details](docs/analysis.md#engine-inheritance)). The meaning of the sound
-table's first fifteen words is unknown:
+table's first fifteen words is unknown.
+`cars.json` lists the 55 cars, keeping each repeated `:CAR_PERFORMANCE` and
+`:VALID_LIVERY` line. Under `references` it gives the engine, gearbox, front
+tyre and back tyre record each car names. The car loader resolves all four
+through lookups whose dispatch, name compare and stores are byte-checked
+([details](docs/analysis.md#new-finding-car-references)):
 
 ```sh
 python3 scripts/acquire_demo.py inputs
@@ -338,7 +343,7 @@ python3 scripts/verify_findings.py . --level instructions
 | Level | Needs | Proves |
 | --- | --- | --- |
 | `data` | `inputs/` from `acquire_demo.py` | The archive's SHA-256 and the mirror's MD5, the `fr3.exe` identity, every file in `analysis/game-file-manifest.json`, the tag registry in `analysis/tags.json`, every compressed resource in `analysis/unpacked-manifest.json`, every PCG index and its two trailing-byte exceptions, the engine, gearbox and tyre text-database checks and the tyre table dimensions |
-| `instructions` | `inputs/fr3.exe` | The PE build metadata and import counts, all 432 `field-evidence.json` sites (425 instructions, 7 data) byte-checked against `fr3.exe`, and `analysis/selected/` matching, byte for byte, a fresh `extract_selected.py` export written to a temporary directory |
+| `instructions` | `inputs/fr3.exe` | The PE build metadata and import counts, all 541 `field-evidence.json` sites (533 instructions, 8 data) byte-checked against `fr3.exe`, and `analysis/selected/` matching, byte for byte, a fresh `extract_selected.py` export written to a temporary directory |
 | `full` (default) | both of the above, plus the Ghidra outputs from `scripts/run_analysis.py` and `gcc` | Everything above, plus the Ghidra baseline and C export counts, the 25 annotated exports, the fresh snapshot import and the C layout assertions; only this level rewrites `analysis/verification.json` |
 
 `data` and `instructions` never write to the checkout. A level whose inputs are

@@ -6,7 +6,7 @@ artifacts/fr3-analysis-<short revision>.zip, holding a single folder fr3-analysi
   source          README.md, ruff.toml and the tracked files under scripts/, tests/, recovered/, docs/ and
                   analysis/, read from Git at the producer revision; any uncommitted or untracked change under
                   those paths refuses the build
-  text-databases/ engines.json, gearboxes.json and tyres.json, regenerated with text_database.write_databases()
+  text-databases/ engines.json, gearboxes.json, tyres.json and cars.json, regenerated with text_database.write_databases()
                   from the extracted demo
   research/       the research directory from build_research.py, unchanged, after package_research.read_research()
                   has checked it against a fresh build at the producer revision

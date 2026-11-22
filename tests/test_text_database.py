@@ -21,6 +21,9 @@ from indigo_evidence import INDIGO_EVIDENCE_SITES, INDIGO_GAPS
 from text_database import (APPLIED_UNTAGGED_INHERIT, with_applied_inherits)
 from text_database import (GEARBOX_COPY, GEARBOX_FIELD_STORES, GEARBOX_LOADER_SPAN, GEARBOX_RECORD,
                            gearbox_evidence_problems, gearbox_layout_problems, unmapped_gearbox_tags)
+from text_database import (BYTE_CHECKED, CAR_LOOKUPS, CAR_RECORD, CAR_REFERENCE_STORES, CAR_REFERENCE_TARGETS,
+                           DECLARED, LOOKUP_SHAPE, car_evidence_problems, car_reference_bases, car_reference_targets,
+                           conditional_jump, parse_cars, resolve_car_references, selected_ids)
 from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, RESOLVED_TYRE_TABLES, SCALAR_COPY_CALL, SCALAR_COPY_OFFSETS,
                            SCALAR_COPY_SPAN, SOUND_INFO_COUNTS, TYRE_SCALAR_COUNTS, TYRE_SCALAR_STORES,
                            TYRE_TABLE_ACCESSORS, TYRE_TABLE_SOURCES, TYRE_TABLES, UNMAPPED, ZERO_FILLED,
@@ -38,7 +41,8 @@ except ImportError:
 
 TAGS = {"CAPACITY", "LOCATION_TYPE", "INHERIT_TYPE", "TORQUE_ARRAY", "MAX_RPM", "ENGINE_BRAKING", *GEARBOX_TAGS,
         *ENGINE_FIELD_STORES,
-        *TYRE_SCALAR_STORES, "SOUND_INFO", "START_RPM", *TYRE_TABLES}
+        *TYRE_SCALAR_STORES, "SOUND_INFO", "START_RPM", *TYRE_TABLES,
+        "CAR_TYPE", *CAR_REFERENCE_STORES, "CAR_PERFORMANCE", "VALID_LIVERY", "CAR_MODEL_YEAR", "CAR_BODY_TYPE"}
 VALID = """//////////////////////
 // Banner comment
 //////////////////////
@@ -1182,11 +1186,13 @@ def engine_dispatch(lines, tag_id, head=ENGINE_DISPATCH, next_tag=ENGINE_NEXT_TA
     reached, pending = set(), [va]
     while pending:
         va = pending.pop()
-        if va in reached or va in (next_tag, default):
+        # None: the fall-through past the last exported instruction.
+        if va is None or va in reached or va in (next_tag, default):
             continue
         reached.add(va)
         mnemonic, _, operands = text[va].partition(" ")
-        following = order[order.index(va) + 1]
+        index = order.index(va) + 1
+        following = order[index] if index < len(order) else None
         if mnemonic == "jmp":
             pending.append(int(operands, 16))
         elif mnemonic.startswith("j"):
@@ -1442,7 +1448,8 @@ class EngineDecoderTests(unittest.TestCase):
     def test_decoder_agrees_with_capstone_on_every_engine_site(self):
         decoded = dict(decoded_evidence())
         engine = [(va, raw) for va, raw, _ in EVIDENCE if ENGINE_LOADER_SPAN[0] <= va < ENGINE_COPY["span"][1]]
-        self.assertEqual(len(engine), 138)
+        # 138 engine sites, plus the engine database store and name read the car references cite.
+        self.assertEqual(len(engine), 142)
         for va, raw in engine:
             mine = memory_operand(raw)
             if mine is None:
@@ -1695,7 +1702,8 @@ class GearboxEvidenceTests(unittest.TestCase):
     def test_decoder_agrees_with_capstone_on_every_gearbox_site(self):
         decoded = dict(decoded_evidence())
         gearbox = [(va, raw) for va, raw, _ in EVIDENCE if GEARBOX_LOADER_SPAN[0] <= va < GEARBOX_COPY["span"][1]]
-        self.assertEqual(len(gearbox), 80)
+        # 80 gearbox sites, plus the gearbox database store the car references cite.
+        self.assertEqual(len(gearbox), 81)
         for va, raw in gearbox:
             mine = memory_operand(raw)
             if mine is None:
@@ -1827,6 +1835,22 @@ def tyre_file(sounds=SOUND_INFO_COUNTS, parents=DEMO_PARENTS, scalar_first=()):
     return "\r\n".join(lines + [":END"]) + "\r\n"
 
 
+def car_file(count=55):
+    """Mirror the demo's car database: each car references an engine, a gearbox and two tyres of the synthetic files
+    above (52, 14, 53 and 53 distinct ones, as CAR_REFERENCE_TARGETS counts), with six :CAR_PERFORMANCE lines and two
+    :VALID_LIVERY lines."""
+    engines = ["DEFAULT_CLASSIC", "DEFAULT_MODERN", "DEFAULT_OFFROAD", "DEFAULT_TRACK"] + [f"CHILD{i}" for i in range(51)]
+    lines = []
+    for i in range(count):
+        lines += [f":CAR_TYPE CAR{i}", f":CAR_ENGINE_TYPE {engines[min(i, 51)]}", f":CAR_GEARBOX_TYPE GEAR{i % 14}",
+                  f":CAR_FRONT_TYRE_TYPE TYRE{min(i, 52)}", f":CAR_BACK_TYRE_TYPE TYRE{53 + min(i, 52)}",
+                  ":CAR_BODY_TYPE 46_CONVERTIBLE", ":CAR_MODEL_YEAR 1949",
+                  *(f":CAR_PERFORMANCE {word} 0.2" for word in ("AGILITY", "ACCELERATION", "SPEED", "WEIGHT", "BHP",
+                                                               "WEIGHT_IN_KILOS")),
+                  ":VALID_LIVERY DEFAULT MODELTD", ":VALID_LIVERY A MODELAA"]
+    return "\r\n".join(lines + [":END"]) + "\r\n"
+
+
 class VerifyTextDatabaseTests(unittest.TestCase):
     def setUp(self):
         directory = tempfile.TemporaryDirectory()
@@ -1836,6 +1860,7 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.write("engines", engine_file())
         self.write("gearboxes", gearbox_file())
         self.write("tyres", tyre_file())
+        self.write("cars", car_file())
 
     def write(self, stem, text):
         (self.game / text_database.DATABASES[stem]).write_text(text, newline="")
@@ -1862,6 +1887,9 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.assertEqual(summary["tyre_effective_scalar_counts"], TYRE_SCALAR_COUNTS)
         self.assertEqual(summary["sound_info_entries"], 40)
         self.assertEqual(summary["sound_info_per_record"], SOUND_INFO_COUNTS)
+        self.assertEqual(summary["car_records"], 55)
+        self.assertEqual(summary["car_mapped_references"], 4)
+        self.assertEqual(summary["car_reference_targets"], CAR_REFERENCE_TARGETS)
 
     def test_read_database_records_sound_info(self):
         records = read_database(self.game, text_database.DATABASES["tyres"], TAGS, sound_info=True)["records"]
@@ -2118,6 +2146,470 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.write("engines", engine_file().replace(":TYPE CHILD49\r\n:INHERIT_TYPE CHILD41\r\n:TORQUE_MODIFIER 1\r\n", ""))
         with self.assertRaisesRegex(ValueError, "Engine record count mismatch"):
             verify_text_databases(self.game, TAGS)
+
+    def test_reject_wrong_car_count(self):
+        self.write("cars", car_file(54))
+        with self.assertRaisesRegex(ValueError, "Car record count mismatch: 54"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_wrong_car_performance_count(self):
+        self.write("cars", car_file().replace(":CAR_PERFORMANCE SPEED 0.2\r\n", "", 1))
+        with self.assertRaisesRegex(ValueError, r"CAR_PERFORMANCE entries per car mismatch: \[5, 6\]"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_wrong_car_reference_targets(self):
+        self.write("cars", car_file().replace(":CAR_GEARBOX_TYPE GEAR13\r\n", ":CAR_GEARBOX_TYPE GEAR12\r\n"))
+        with self.assertRaisesRegex(ValueError, "Car reference target counts mismatch"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_dangling_or_case_only_car_reference(self):
+        self.write("cars", car_file().replace(":CAR_ENGINE_TYPE CHILD3\r\n", ":CAR_ENGINE_TYPE CHILD99\r\n"))
+        with self.assertRaisesRegex(TextDatabaseError, "'CHILD99' matches no engines record"):
+            verify_text_databases(self.game, TAGS)
+        self.write("cars", car_file().replace(":CAR_ENGINE_TYPE CHILD3\r\n", ":CAR_ENGINE_TYPE child3\r\n"))
+        with self.assertRaisesRegex(ValueError, "Car references that match only ignoring case: CAR7 CAR_ENGINE_TYPE"):
+            verify_text_databases(self.game, TAGS)
+
+    def test_reject_car_reference_without_evidence(self):
+        evidence = [site for site in load_field_evidence() if site["va"] != 0x00520f1b]
+        with self.assertRaisesRegex(ValueError, "Car references lack byte-checked evidence: CAR_FRONT_TYRE_TYPE lookup "
+                                                "call: no byte-checked car loader site at 0x00520f1b"):
+            verify_text_databases(self.game, TAGS, evidence)
+
+    def test_main_writes_cars_with_their_references(self):
+        output = self.game / "out"
+        argv = ["text_database.py", str(self.game), "--output", str(output),
+                "--tags", str(text_database.REPO_ROOT / "analysis/tags.json")]
+        with mock.patch.object(sys, "argv", argv), mock.patch("builtins.print"):
+            text_database.main()
+        cars = json.loads((output / "cars.json").read_text())
+        expected = read_database(self.game, text_database.DATABASES["cars"], TAGS)
+        self.assertEqual(list(cars), ["source", "sha256", "records", "references"])
+        self.assertEqual((cars["source"], cars["sha256"]), (expected["source"], expected["sha256"]))
+        self.assertEqual(cars["records"], expected["records"])
+        self.assertEqual(len(cars["references"]), 55)
+        self.assertEqual(cars["references"]["CAR0"]["CAR_FRONT_TYRE_TYPE"],
+                         {"name": "TYRE0", "line": 4, "database": "tyres", "target": "TYRE0", "target_line": 680,
+                          "match": "exact", "lookup": "0x005240e0", "record_offset": "0x1b4", "basis": BYTE_CHECKED})
+        self.assertEqual(car_reference_targets(cars["references"]), CAR_REFERENCE_TARGETS)
+
+
+CAR = """// Banner
+:CAR_TYPE MODEL_T
+:CAR_ENGINE_TYPE MODEL_T
+:CAR_GEARBOX_TYPE ROAD_OLD
+:CAR_FRONT_TYRE_TYPE ROAD_R385x140
+:CAR_BACK_TYRE_TYPE ROAD_R385x141
+:CAR_BODY_TYPE 46_CONVERTIBLE
+:CAR_PERFORMANCE AGILITY 0.5
+:CAR_PERFORMANCE SPEED 0.2
+
+:CAR_MODEL_YEAR 1949
+:VALID_LIVERY DEFAULT MODELTD
+:VALID_LIVERY A MODELAA
+:CAR_PERFORMANCE BHP 40.0
+:END\t\t
+"""
+
+
+class ParseCarTests(unittest.TestCase):
+    def reject(self, text, line, fragment):
+        with self.assertRaises(TextDatabaseError) as caught:
+            parse_cars(text, TAGS)
+        self.assertEqual(caught.exception.line, line)
+        self.assertIn(fragment, str(caught.exception))
+
+    def test_valid(self):
+        records = parse_cars(CAR.replace("\n", "\r\n").encode("ascii"), TAGS)
+        self.assertEqual(len(records), 1)
+        car = records[0]
+        self.assertEqual((car["type"], car["line"]), ("MODEL_T", 2))
+        self.assertEqual(car["fields"]["CAR_FRONT_TYRE_TYPE"], {"line": 5, "values": ["ROAD_R385x140"], "rows": []})
+        self.assertEqual(car["fields"]["CAR_BODY_TYPE"]["values"], ["46_CONVERTIBLE"])
+        self.assertEqual(car["fields"]["CAR_MODEL_YEAR"]["values"], [1949])
+        self.assertEqual(car["untagged"], [])
+
+    def test_repeated_tags_are_kept_in_file_order(self):
+        car = parse_cars(CAR, TAGS)[0]
+        self.assertNotIn("CAR_PERFORMANCE", car["fields"])
+        self.assertNotIn("VALID_LIVERY", car["fields"])
+        self.assertEqual(car["repeated"], {
+            "CAR_PERFORMANCE": [{"line": 8, "values": ["AGILITY", 0.5]}, {"line": 9, "values": ["SPEED", 0.2]},
+                                {"line": 14, "values": ["BHP", 40.0]}],
+            "VALID_LIVERY": [{"line": 12, "values": ["DEFAULT", "MODELTD"]}, {"line": 13, "values": ["A", "MODELAA"]}]})
+
+    def test_other_databases_are_parsed_as_before(self):
+        records = parse(":TYPE A\n:CAPACITY 1\n:END\n", TAGS)
+        self.assertEqual(records, [{"type": "A", "line": 1, "fields": {"CAPACITY": {"line": 2, "values": [1], "rows": []}},
+                                    "untagged": []}])
+        with self.assertRaises(TextDatabaseError) as caught:
+            parse(":TYPE A\n:CAR_PERFORMANCE AGILITY 0.5\n:CAR_PERFORMANCE SPEED 0.2\n:END\n", TAGS)
+        self.assertIn("duplicate tag 'CAR_PERFORMANCE'", str(caught.exception))
+
+    def test_unknown_tag(self):
+        self.reject(CAR.replace(":CAR_MODEL_YEAR", ":CAR_MODEL_YEARS"), 11, "unknown tag 'CAR_MODEL_YEARS'")
+
+    def test_untagged_line(self):
+        self.reject(CAR.replace(":CAR_MODEL_YEAR", "CAR_MODEL_YEAR"), 11, "line does not start with a :TAG")
+        self.reject(CAR.replace(":CAR_MODEL_YEAR 1949", "1949"), 11, "line does not start with a :TAG")
+
+    def test_tag_without_a_value(self):
+        self.reject(CAR.replace(":CAR_MODEL_YEAR 1949", ":CAR_MODEL_YEAR"), 11, ":CAR_MODEL_YEAR has no value")
+
+    def test_record_without_car_type(self):
+        self.reject(CAR.replace(":CAR_TYPE MODEL_T\n", ""), 2, "content before the first :CAR_TYPE")
+        self.reject(CAR.replace(":CAR_TYPE", ":TYPE"), 2, "content before the first :CAR_TYPE")
+        self.reject(CAR.replace(":CAR_MODEL_YEAR 1949", ":TYPE MODEL_A"), 11, "unknown tag 'TYPE'")
+
+    def test_non_repeating_tag_that_repeats(self):
+        self.reject(CAR.replace(":CAR_MODEL_YEAR 1949", ":CAR_MODEL_YEAR 1949\n:CAR_MODEL_YEAR 1950"), 12,
+                    "duplicate tag 'CAR_MODEL_YEAR' in record 'MODEL_T'")
+        self.reject(CAR.replace(":CAR_GEARBOX_TYPE ROAD_OLD", ":CAR_GEARBOX_TYPE ROAD_OLD\n:CAR_GEARBOX_TYPE ROAD_NEW"),
+                    5, "duplicate tag 'CAR_GEARBOX_TYPE'")
+
+    def test_name_length_follows_the_loader_name_read(self):
+        self.assertEqual(text_database.CAR_NAME_BYTES, 0x20)
+        name = "N" * 31
+        self.assertEqual(parse_cars(CAR.replace("CAR_TYPE MODEL_T", "CAR_TYPE " + name), TAGS)[0]["type"], name)
+        self.reject(CAR.replace("CAR_TYPE MODEL_T", "CAR_TYPE " + "N" * 32), 2, "does not fit char[32]")
+
+    def test_reference_takes_one_name(self):
+        self.reject(CAR.replace(":CAR_ENGINE_TYPE MODEL_T", ":CAR_ENGINE_TYPE MODEL_T V8"), 3,
+                    ":CAR_ENGINE_TYPE needs exactly one name")
+        self.reject(CAR.replace(":CAR_ENGINE_TYPE MODEL_T", ":CAR_ENGINE_TYPE MODEL-T"), 3,
+                    ":CAR_ENGINE_TYPE needs exactly one name")
+        car = parse_cars(CAR.replace(":CAR_ENGINE_TYPE MODEL_T", ":CAR_ENGINE_TYPE 1949"), TAGS)[0]
+        self.assertEqual(car["fields"]["CAR_ENGINE_TYPE"]["values"], ["1949"])
+
+    def test_car_performance_needs_a_word_and_a_number(self):
+        self.reject(CAR.replace(":CAR_PERFORMANCE SPEED 0.2", ":CAR_PERFORMANCE SPEED"), 9,
+                    ":CAR_PERFORMANCE needs one word and one number")
+        self.reject(CAR.replace(":CAR_PERFORMANCE SPEED 0.2", ":CAR_PERFORMANCE 0.2 SPEED"), 9,
+                    ":CAR_PERFORMANCE needs one word and one number")
+        self.reject(CAR.replace(":CAR_PERFORMANCE SPEED 0.2", ":CAR_PERFORMANCE SPEED 0.2 1"), 9,
+                    ":CAR_PERFORMANCE needs one word and one number")
+
+    def test_missing_end(self):
+        self.reject(CAR.replace(":END", ""), 16, "missing :END")
+
+
+def target_records(text):
+    """Parse the targets a car resolves against from one `:TYPE` list per database."""
+    return {name: parse(f"{records}\n:END\n", TAGS) for name, records in text.items()}
+
+
+TARGETS = {"engines": ":TYPE DEFAULT\n:TYPE MODEL_T", "gearboxes": ":TYPE ROAD_OLD",
+           "tyres": ":TYPE DEFAULT_ROAD\n:TYPE ROAD_R385x140\n:TYPE ROAD_R385x141"}
+BASES = {tag: BYTE_CHECKED for tag in CAR_REFERENCE_STORES}
+
+
+class ResolveCarReferenceTests(unittest.TestCase):
+    def resolve(self, car=CAR, targets=None, bases=BASES):
+        return resolve_car_references(parse_cars(car, TAGS), target_records({**TARGETS, **(targets or {})}), bases)
+
+    def test_each_reference_names_its_source_target_lookup_and_basis(self):
+        references = self.resolve()["MODEL_T"]
+        self.assertEqual(list(references), list(CAR_REFERENCE_STORES))
+        self.assertEqual(references["CAR_ENGINE_TYPE"],
+                         {"name": "MODEL_T", "line": 3, "database": "engines", "target": "MODEL_T", "target_line": 2,
+                          "match": "exact", "lookup": "0x00522d70", "record_offset": "0x1a8", "basis": BYTE_CHECKED})
+        self.assertEqual({tag: (entry["target"], entry["target_line"], entry["lookup"], entry["record_offset"])
+                          for tag, entry in references.items()},
+                         {"CAR_ENGINE_TYPE": ("MODEL_T", 2, "0x00522d70", "0x1a8"),
+                          "CAR_GEARBOX_TYPE": ("ROAD_OLD", 1, "0x005234b0", "0x1ac"),
+                          "CAR_FRONT_TYRE_TYPE": ("ROAD_R385x140", 2, "0x005240e0", "0x1b4"),
+                          "CAR_BACK_TYRE_TYPE": ("ROAD_R385x141", 3, "0x005240e0", "0x1b8")})
+
+    def test_names_match_ignoring_case_of_a_to_z_only(self):
+        entry = self.resolve(CAR.replace(":CAR_GEARBOX_TYPE ROAD_OLD", ":CAR_GEARBOX_TYPE road_old"))["MODEL_T"]
+        self.assertEqual((entry["CAR_GEARBOX_TYPE"]["target"], entry["CAR_GEARBOX_TYPE"]["match"]),
+                         ("ROAD_OLD", "ignoring case"))
+        self.assertEqual(text_database.fold_name("ROAD_R385X140"), "road_r385x140")
+
+    def test_missing_record_is_refused(self):
+        with self.assertRaises(TextDatabaseError) as caught:
+            self.resolve(targets={"gearboxes": ":TYPE ROAD_NEW"})
+        self.assertEqual(caught.exception.line, 4)
+        self.assertIn("car 'MODEL_T' :CAR_GEARBOX_TYPE 'ROAD_OLD' matches no gearboxes record", str(caught.exception))
+
+    def test_ambiguous_record_is_refused(self):
+        with self.assertRaises(TextDatabaseError) as caught:
+            self.resolve(targets={"tyres": ":TYPE ROAD_R385x140\n:TYPE ROAD_R385X140\n:TYPE ROAD_R385x141"})
+        self.assertEqual(caught.exception.line, 5)
+        self.assertIn("matches 2 tyres records ignoring case: ROAD_R385x140 (line 1), ROAD_R385X140 (line 2)",
+                      str(caught.exception))
+
+    def test_reference_in_the_wrong_database_is_refused(self):
+        with self.assertRaisesRegex(TextDatabaseError, "'ROAD_OLD' matches no engines record"):
+            self.resolve(CAR.replace(":CAR_ENGINE_TYPE MODEL_T", ":CAR_ENGINE_TYPE ROAD_OLD"))
+
+    def test_missing_or_over_long_reference_is_refused(self):
+        with self.assertRaisesRegex(TextDatabaseError, "car 'MODEL_T' has no :CAR_BACK_TYRE_TYPE"):
+            self.resolve(CAR.replace(":CAR_BACK_TYRE_TYPE ROAD_R385x141\n", ""))
+        with self.assertRaisesRegex(TextDatabaseError, "does not fit the loader's 0x40-byte read"):
+            self.resolve(CAR.replace(":CAR_ENGINE_TYPE MODEL_T", ":CAR_ENGINE_TYPE " + "M" * 64))
+
+    def test_basis_comes_from_the_evidence_check(self):
+        self.assertEqual(car_reference_bases(), BASES)
+        evidence = [site for site in load_field_evidence() if site["va"] != 0x0052109f]
+        bases = car_reference_bases(evidence)
+        self.assertEqual(bases, {**BASES, "CAR_BACK_TYRE_TYPE": DECLARED})
+        self.assertEqual(self.resolve(bases=bases)["MODEL_T"]["CAR_BACK_TYRE_TYPE"]["basis"], DECLARED)
+        # A shared site (a lookup the tyre references use, or the record) leaves every reference declared by name.
+        evidence = [site for site in load_field_evidence() if site["va"] != 0x005240f9]
+        self.assertEqual(set(car_reference_bases(evidence).values()), {DECLARED})
+
+    def test_target_counts(self):
+        self.assertEqual(car_reference_targets(self.resolve()), dict.fromkeys(CAR_REFERENCE_STORES, 1))
+
+
+def car_loader_lines():
+    lines = (text_database.REPO_ROOT / "analysis/selected/load_car_database.asm").read_text().splitlines()
+    return [(int(match[1], 16), match[2]) for match in map(ASM_LINE.match, lines) if match]
+
+
+CAR_DISPATCH = 0x00520AD2
+CAR_NEXT_TAG = 0x00520AC4
+CAR_DEFAULT = 0x00520AF2
+# Any instruction that writes memory at [esi +/- n] or [esi + reg + n].
+CAR_RECORD_WRITE = re.compile(r"(?:mov|fstp?|inc|dec) (?:byte|word|dword) ptr \[(?:[a-z]+ \+ )?esi(?: \+ [a-z]+)?"
+                              r"(?: [+-] (0x[0-9a-f]+))?\](?:, .*)?")
+
+
+class CarDispatchTests(unittest.TestCase):
+    """Emulate the committed car loader disassembly's compare tree; an independent check of each select path."""
+
+    def setUp(self):
+        self.lines = car_loader_lines()
+        self.text = dict(self.lines)
+        self.tags = load_tag_ids()
+
+    def dispatch(self, tag_id):
+        return engine_dispatch(self.lines, tag_id, CAR_DISPATCH, CAR_NEXT_TAG, CAR_DEFAULT)
+
+    def test_each_reference_reaches_its_handler_through_its_select_path(self):
+        for tag, entry in CAR_REFERENCE_STORES.items():
+            with self.subTest(tag=tag):
+                compares, reached = self.dispatch(self.tags[tag])
+                path = [(int(step["compare"], 16), immediate(self.text[int(step["compare"], 16)].split(", ")[1]))
+                        for step in entry["select"] if "compare" in step]
+                self.assertIsNotNone(reached)
+                self.assertEqual(compares[-len(path):], [(va, value) for va, value in path])
+                self.assertIn(int(entry["read"]["size"], 16), reached)
+                self.assertEqual(min(reached), int(entry["read"]["size"], 16))
+
+    def test_each_handler_calls_its_lookup_and_writes_only_its_offset(self):
+        for tag, entry in CAR_REFERENCE_STORES.items():
+            with self.subTest(tag=tag):
+                reached = self.dispatch(entry["id"])[1]
+                calls = {va: self.text[va] for va in reached if self.text[va].startswith("call ")}
+                self.assertEqual(set(calls.values()), {"call 0x42e7c0", f"call 0x{int(entry['lookup']['target'], 16):x}",
+                                                       "call 0x40a580", "call 0x40a640"})
+                writes = {va for va in reached if CAR_RECORD_WRITE.fullmatch(self.text[va])}
+                self.assertEqual(writes, {int(entry["store"], 16)})
+                self.assertEqual(self.text[int(entry["store"], 16)],
+                                 f"mov dword ptr [esi + 0x{int(entry['offset'], 16):x}], eax")
+
+    def test_car_type_reaches_the_record_branch(self):
+        compares, reached = self.dispatch(self.tags["CAR_TYPE"])
+        self.assertEqual(compares[-1], (0x00520db1, 0x4d))
+        self.assertEqual(min(reached), int(CAR_RECORD["handler"], 16))
+        self.assertIn(int(CAR_RECORD["name"]["call"], 16), reached)
+
+    def test_no_other_registry_tag_reaches_a_reference_handler(self):
+        handlers = {int(entry["read"]["size"], 16): tag for tag, entry in CAR_REFERENCE_STORES.items()}
+        for tag, tag_id in self.tags.items():
+            reached = self.dispatch(tag_id)[1] or set()
+            with self.subTest(tag=tag):
+                self.assertEqual({handlers[va] for va in reached & set(handlers)},
+                                 {tag} if tag in CAR_REFERENCE_STORES else set())
+
+
+class SelectPathTests(unittest.TestCase):
+    def test_conditional_jump(self):
+        self.assertEqual(conditional_jump("7d1b", 0x00520e98), ("ge", 0x00520eb5, 0x00520e9a))
+        self.assertEqual(conditional_jump("0f8538fdffff", 0x00520db4), ("ne", 0x00520af2, 0x00520dba))
+        self.assertIsNone(conditional_jump("7317", 0))  # jae: unsigned, not used by the dispatch
+        self.assertIsNone(conditional_jump("eb10", 0))
+
+    def test_paths_admit_exactly_their_tag(self):
+        by_va = {site["va"]: site["bytes"] for site in load_field_evidence()}
+        for tag, entry in CAR_REFERENCE_STORES.items():
+            with self.subTest(tag=tag):
+                problems = []
+                self.assertEqual(selected_ids(by_va, entry["select"], problems, tag),
+                                 ([entry["id"]], int(entry["read"]["size"], 16)))
+                self.assertEqual(problems, [])
+
+    def test_a_shorter_path_admits_more_than_its_tag(self):
+        by_va = {site["va"]: site["bytes"] for site in load_field_evidence()}
+        # Without the jg at 0x00520eb5 the front tyre path admits every ID from 0x42 to 0x43.
+        path = [{"compare": "0x00520f04"}, {"jump": "0x00520f07", "taken": False}]
+        ids, end = selected_ids(by_va, path, [], "CAR_FRONT_TYRE_TYPE")
+        self.assertIsNone(ids)
+        self.assertEqual(end, 0x00520f09)
+        path = [{"compare": "0x00520e95"}, {"jump": "0x00520e98", "taken": True}, {"jump": "0x00520eb5", "taken": True},
+                {"compare": "0x00520f04"}, {"jump": "0x00520f07", "taken": True}]
+        self.assertEqual(selected_ids(by_va, path, [], "CAR_GEARBOX_TYPE")[1], 0x00520f56)
+
+    def test_steps_must_follow_on(self):
+        by_va = {site["va"]: site["bytes"] for site in load_field_evidence()}
+        problems = []
+        path = [{"compare": "0x00520e95"}, {"jump": "0x00520e98", "taken": False}, {"jump": "0x00520eb5", "taken": False}]
+        self.assertEqual(selected_ids(by_va, path, problems, "X"), (None, None))
+        self.assertEqual(problems, ["X: select site 0x00520eb5 does not follow the previous step, which leads to "
+                                    "0x00520e9a"])
+        problems = []
+        self.assertEqual(selected_ids(by_va, [{"jump": "0x00520e98", "taken": True}], problems, "X"), (None, None))
+        self.assertIn("is not a signed conditional jump after a compare", problems[0])
+
+
+class CarEvidenceTests(unittest.TestCase):
+    def setUp(self):
+        self.evidence = load_field_evidence()
+        self.tags = load_tag_ids()
+
+    def problems(self, evidence=None, stores=None, record=None, lookups=None, tags=None):
+        found = car_evidence_problems(self.evidence if evidence is None else evidence,
+                                      self.tags if tags is None else tags, stores, record, lookups)
+        return [problem for problems in found.values() for problem in problems]
+
+    def without(self, *vas):
+        return [site for site in self.evidence if site["va"] not in vas]
+
+    def replaced(self, va, **fields):
+        return [{**site, **fields} if site["va"] == va else site for site in self.evidence]
+
+    def assertReports(self, fragment, problems):
+        self.assertTrue(any(fragment in problem for problem in problems), problems)
+
+    def test_committed_evidence_agrees_with_the_map(self):
+        self.assertEqual(car_evidence_problems(self.evidence, self.tags),
+                         {None: [], **{tag: [] for tag in CAR_REFERENCE_STORES}})
+
+    def test_the_map_says_which_tag_selects_which_lookup_and_offset(self):
+        self.assertEqual({tag: (entry["id"], entry["database"], entry["lookup"]["target"], entry["offset"])
+                          for tag, entry in CAR_REFERENCE_STORES.items()},
+                         {"CAR_ENGINE_TYPE": (0x42, "engines", "0x00522d70", "0x1a8"),
+                          "CAR_FRONT_TYRE_TYPE": (0x43, "tyres", "0x005240e0", "0x1b4"),
+                          "CAR_GEARBOX_TYPE": (0x44, "gearboxes", "0x005234b0", "0x1ac"),
+                          "CAR_BACK_TYRE_TYPE": (0x3b, "tyres", "0x005240e0", "0x1b8")})
+        self.assertEqual({tag: self.tags[tag] for tag in CAR_REFERENCE_STORES},
+                         {tag: entry["id"] for tag, entry in CAR_REFERENCE_STORES.items()})
+
+    def test_wrong_offset_or_call_target_is_reported(self):
+        stores = drifted(CAR_REFERENCE_STORES, ("CAR_ENGINE_TYPE", "offset"), "0x1ac")
+        problems = self.problems(stores=stores)
+        self.assertReports("CAR_ENGINE_TYPE + 0x1ac: site 0x00520ece (8986a8010000) is not a kind store", problems)
+        self.assertIn("CAR_GEARBOX_TYPE + 0x1ac: CAR_ENGINE_TYPE stores there too", problems)
+        stores = drifted(CAR_REFERENCE_STORES, ("CAR_GEARBOX_TYPE", "lookup", "target"), "0x00522d70")
+        problems = self.problems(stores=stores)
+        self.assertIn("CAR_GEARBOX_TYPE: it calls 0x00522d70, but the gearboxes lookup is 0x005234b0", problems)
+        self.assertReports("CAR_GEARBOX_TYPE lookup call: site 0x00520f6a (e841250000) is not", problems)
+        stores = drifted(CAR_REFERENCE_STORES, ("CAR_FRONT_TYRE_TYPE", "database"), "engines")
+        self.assertIn("CAR_FRONT_TYRE_TYPE: it calls 0x005240e0, but the engines lookup is 0x00522d70",
+                      self.problems(stores=stores))
+
+    def test_swapped_tags_are_reported(self):
+        # Claiming the front tyre handler stores the back tyre: each select path admits the other tag's ID.
+        stores = copy.deepcopy(CAR_REFERENCE_STORES)
+        stores["CAR_FRONT_TYRE_TYPE"]["id"], stores["CAR_BACK_TYRE_TYPE"]["id"] = 0x3b, 0x43
+        problems = self.problems(stores=stores)
+        self.assertIn("CAR_FRONT_TYRE_TYPE: analysis/tags.json gives registry ID 0x43, the map says 0x3b", problems)
+        self.assertIn("CAR_FRONT_TYRE_TYPE: its select path admits 0x43, not its registry ID 0x3b", problems)
+        self.assertIn("CAR_BACK_TYRE_TYPE: its select path admits 0x3b, not its registry ID 0x43", problems)
+
+    def test_select_path_must_reach_the_handler(self):
+        stores = drifted(CAR_REFERENCE_STORES, ("CAR_GEARBOX_TYPE", "select", 2, "taken"), True)
+        self.assertIn("CAR_GEARBOX_TYPE: its select path admits more than 4096 IDs, not its registry ID 0x44",
+                      self.problems(stores=stores))
+        self.assertIn("CAR_GEARBOX_TYPE: its select path ends at 0x00520fa5, not at its handler 0x00520f58",
+                      self.problems(stores=stores))
+        self.assertIn("CAR_ENGINE_TYPE: the claim at its selecting jump 0x00520eb5 is not about CAR_ENGINE_TYPE",
+                      self.problems(self.replaced(0x00520eb5, claim="Car tag dispatch")))
+
+    def test_missing_site_is_reported(self):
+        removals = {
+            0x00520a75: "Car allocation size: no byte-checked car loader site at 0x00520a75",
+            0x00581884: "Car file name: no byte-checked data 'cars\\\\cardata' at 0x00581884",
+            0x00520aa1: "Car database store: no byte-checked car loader site at 0x00520aa1",
+            0x00520db4: "CAR_TYPE: no byte-checked select site at 0x00520db4",
+            0x00520dd6: "CAR_TYPE record link: no byte-checked car loader site at 0x00520dd6",
+            0x00520de4: "CAR_TYPE name size: no byte-checked car loader site at 0x00520de4",
+            0x00520de9: "CAR_TYPE name destination: no byte-checked car loader site at 0x00520de9",
+            0x0042f003: "Record link restores ECX: no byte-checked record link site at 0x0042f003",
+            0x0042efe5: "Record link database's first record: no byte-checked record link site at 0x0042efe5",
+            0x00520f07: "CAR_FRONT_TYRE_TYPE: no byte-checked select site at 0x00520f07",
+            0x00521095: "CAR_BACK_TYRE_TYPE name size: no byte-checked car loader site at 0x00521095",
+            0x00520ec6: "CAR_ENGINE_TYPE lookup name: no byte-checked car loader site at 0x00520ec6",
+            0x00520f6f: "CAR_GEARBOX_TYPE + 0x1ac: no byte-checked car loader site at 0x00520f6f",
+            0x005234b6: "gearboxes lookup + 0x06: no byte-checked gearboxes lookup site at 0x005234b6",
+            0x005240f9: "tyres lookup + 0x19: no byte-checked tyres lookup site at 0x005240f9",
+            0x00522d90: "engines lookup + 0x20: no byte-checked engines lookup site at 0x00522d90",
+            0x00522821: "engines database created: no byte-checked engine loader site at 0x00522821",
+            0x005238e7: "tyres name destination: no byte-checked tyre loader site at 0x005238e7",
+            0x0052340f: "gearboxes name destination: no byte-checked gearbox loader site at 0x0052340f",
+        }
+        for va, fragment in removals.items():
+            with self.subTest(va=f"0x{va:08x}"):
+                self.assertReports(fragment, self.problems(self.without(va)))
+
+    def test_wrong_bytes_are_reported(self):
+        self.assertReports("Car allocation size: site 0x00520a75 (bab0010000) is not babc010000",
+                           self.problems(self.replaced(0x00520a75, bytes="bab0010000")))
+        self.assertReports("CAR_TYPE name size: site 0x00520de4 (bb14000000) is not bb20000000",
+                           self.problems(self.replaced(0x00520de4, bytes="bb14000000")))
+        self.assertReports("CAR_ENGINE_TYPE: the lookup at 0x00520ec9 is not passed the buffer the name was read into",
+                           self.problems(self.replaced(0x00520ec6, bytes="8d45a0")))
+        self.assertReports("tyres: 0x005238e1 (83c720) and 0x005238e7 (89ca) are not `add r32, 0x20`",
+                           self.problems(self.replaced(0x005238e1, bytes="83c720")))
+        lookups = drifted(CAR_LOOKUPS, ("engines", "database"), "0x00597474")
+        problems = self.problems(lookups=lookups)
+        self.assertReports("engines lookup + 0x06: site 0x00522d76 (a118745900) is not a174745900", problems)
+        self.assertReports("engines database created: site 0x00522821 (a318745900) is not a374745900", problems)
+
+    def test_unmapped_car_record_store_is_reported(self):
+        evidence = self.evidence + [{"va": 0x00520d52, "bytes": "898660010000", "claim": "SPEECH_TYPE store"}]
+        self.assertIn("byte-checked car record store at 0x00520d52 (898660010000) is in no mapped reference",
+                      self.problems(evidence))
+
+    def test_offset_outside_the_record_or_in_its_name_is_reported(self):
+        for offset in ("0x1bc", "0x20"):
+            with self.subTest(offset=offset):
+                stores = drifted(CAR_REFERENCE_STORES, ("CAR_BACK_TYRE_TYPE", "offset"), offset)
+                self.assertIn(f"CAR_BACK_TYRE_TYPE + {offset}: not a dword inside the 0x1bc-byte record past its name",
+                              self.problems(stores=stores))
+
+    @unittest.skipIf(capstone is None, "needs capstone and pefile from scripts/requirements.txt")
+    def test_decoder_agrees_with_capstone_on_every_car_site(self):
+        decoded = dict(decoded_evidence())
+        spans = [text_database.CAR_LOADER_SPAN, text_database.RECORD_LINK_SPAN,
+                 *((int(entry["routine"], 16), int(entry["routine"], 16) + text_database.LOOKUP_SIZE)
+                   for entry in CAR_LOOKUPS.values())]
+        sites = [(va, raw) for va, raw, _ in EVIDENCE if any(start <= va < end for start, end in spans)]
+        self.assertEqual(len(sites), 51 + 7 + 3 * 13)
+        for va, raw in sites:
+            with self.subTest(va=f"0x{va:08x}"):
+                mine, jump = memory_operand(raw), conditional_jump(raw, va)
+                if mine is not None:
+                    sign, disp = "-" if mine["disp"] < 0 else "+", abs(mine["disp"])
+                    # Capstone writes displacements below 10 in decimal.
+                    self.assertIn(f"[{mine['base']} {sign} {disp if disp < 10 else hex(disp)}]", decoded[va])
+                if jump is not None:
+                    self.assertEqual(decoded[va], f"j{jump[0]} 0x{jump[1]:x}")
+        for tag, entry in CAR_REFERENCE_STORES.items():
+            with self.subTest(tag=tag):
+                self.assertEqual(decoded[int(entry["lookup"]["call"], 16)],
+                                 f"call 0x{int(entry['lookup']['target'], 16):x}")
+                self.assertEqual(decoded[int(entry["store"], 16)],
+                                 f"mov dword ptr [esi + 0x{int(entry['offset'], 16):x}], eax")
+
+    def test_lookup_shape_is_the_committed_disassembly(self):
+        for name, entry in CAR_LOOKUPS.items():
+            routine = int(entry["routine"], 16)
+            with self.subTest(name=name):
+                for relative in LOOKUP_SHAPE:
+                    self.assertIn(routine + relative, {site["va"] for site in self.evidence})
 
 
 if __name__ == "__main__":

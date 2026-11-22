@@ -330,7 +330,7 @@ class CommittedFilesTests(unittest.TestCase):
     def test_builds_from_the_committed_analysis_files(self):
         result = self.run_script("--output", str(self.output))
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("Wrote 25 routines, 29 disassembly files and 432 byte-checked sites", result.stdout)
+        self.assertIn("Wrote 25 routines, 32 disassembly files and 541 byte-checked sites", result.stdout)
         page = self.output.read_text(encoding="utf-8")
         committed = json.loads(routine_index.STATUS.read_text(encoding="utf-8"))
         self.assertEqual(page.count('<section class="routine"'), 25)
@@ -340,19 +340,25 @@ class CommittedFilesTests(unittest.TestCase):
         self.assertEqual(sorted(site_vas(page)), sorted(f"{site['va']:08x}" for site in sites))
         asm = {Path(href).name for href in re.findall(r'href="([^"]+\.asm)"', page)}
         self.assertEqual(asm, set(routine_index.ASM_FILES))
-        self.assertEqual(len(routine_index.ASM_FILES), 29)
+        self.assertEqual(len(routine_index.ASM_FILES), 32)
         found = sections(page)
         self.assertEqual(site_vas(found["fr3_get_tyre_sound_info"]), ["00523f10", "00523f1c", "00523f27"])
-        self.assertEqual(len(site_vas(found["fr3_load_tyre_database"])), 30)
+        # 30 tyre loader sites, plus where it keeps its database and reads a record's name (the car references).
+        self.assertEqual(len(site_vas(found["fr3_load_tyre_database"])), 36)
         # The scalar copy's eleven load/store pairs and its ret.
         self.assertEqual(len(site_vas(found["fr3_copy_tyre_scalar_fields"])), 23)
         # The engine loader: allocation size, the reader it opens and its next-tag call, 21 dispatch compares and the
         # stores, zero-fill, derived values, enum tables and INHERIT_TYPE setup; the engine copy: every load/store
-        # pair, the block and its ret.
+        # pair, the block and its ret; and, for the car references, where the loader keeps its database and reads a
+        # record's name, and the 13 sites of the engine lookup at 0x00522d70, which copy_engine_record.asm also spans.
         engine_loader, engine_copy = site_vas(found["fr3_load_engine_database"]), site_vas(found["fr3_copy_engine_record"])
-        self.assertEqual((len(engine_loader), len(engine_copy)), (83, 55))
+        self.assertEqual((len(engine_loader), len(engine_copy)), (87, 68))
         self.assertTrue(all(0x005227F0 <= int(va, 16) < 0x00522C80 for va in engine_loader))
-        self.assertTrue(all(0x00522C80 <= int(va, 16) < 0x00522D6C for va in engine_copy))
+        self.assertEqual(len([va for va in engine_copy if 0x00522C80 <= int(va, 16) < 0x00522D6C]), 55)
+        self.assertEqual(len([va for va in engine_copy if 0x00522D70 <= int(va, 16) < 0x00522DA7]), 13)
+        # The car loader, the tyre lookup and the record link hold no routine entry and get their own sections.
+        self.assertEqual([len(site_vas(found[f"asm-{name}"]))
+                          for name in ("load_car_database", "find_tyre_record", "link_database_record")], [51, 13, 7])
         for name in ("fill_memory", "allocate_database_record", "create_database", "fill_memory_body"):
             self.assertIn(f"asm-{name}", found)
         # The ASCII tag path: the next-tag dispatcher is an annotated routine; the files around it hold no routine
@@ -366,7 +372,7 @@ class CommittedFilesTests(unittest.TestCase):
         unplaced = page[page.index('id="unplaced-sites"'):]
         data = sorted(f"{site['va']:08x}" for site in sites if site.get("kind") == "data")
         self.assertEqual(site_vas(unplaced), data)
-        self.assertEqual(len(data), 7)
+        self.assertEqual(len(data), 8)
 
     def test_asm_files_names_exactly_the_committed_disassembly(self):
         committed = sorted(path.name for path in routine_index.SELECTED.glob("*.asm"))
@@ -387,7 +393,7 @@ class CommittedFilesTests(unittest.TestCase):
         script = copy_root / "scripts/routine_index.py"
         result = self.run_script("--output", str(self.output), script=script)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("29 disassembly files", result.stdout)
+        self.assertIn("32 disassembly files", result.stdout)
         self.output.unlink()
         (copy_root / "analysis/selected/fill_memory_body.asm").unlink()
         for args in ((), ("--selected", str(copy_root / "analysis/selected"))):

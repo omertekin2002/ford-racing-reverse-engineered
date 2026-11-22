@@ -114,6 +114,16 @@ gearbox_layout_problems() checks every mapped offset against
 recovered/fr3_database_layouts.h, and unmapped_gearbox_tags() compares the map
 with GEARBOX_TAGS. No demo gearbox declares INHERIT_TYPE, so nothing resolves
 gearbox inheritance: gearboxes.json holds the records as parsed.
+
+parse_cars() reads CARDATA.DAT with parse(): records start with :CAR_TYPE, names fit the car loader's 0x20-byte
+read, CAR_PERFORMANCE and VALID_LIVERY repeat (every occurrence kept in `repeated`), and no tag opens a block or is
+written without its colon. CAR_REFERENCE_STORES maps the four tags the car loader at 0x00520a60 resolves to another
+database's record: its select path through the dispatch's compares and jumps, the 0x40-byte name read, the lookup
+call (CAR_LOOKUPS) and the store of its result in the 0x1bc-byte car payload. car_evidence_problems() checks that
+map, CAR_RECORD and the lookups against field-evidence.json and derives from the bytes the one tag ID each path
+admits. resolve_car_references() resolves each car's four names the way the lookups compare them (A-Z lower-cased),
+refusing a dangling or ambiguous name, and main() writes the result to cars.json as `references`, each labelled
+byte-checked or declared by name. Nothing interprets CAR_PERFORMANCE or the other car tags.
 """
 import argparse
 from copy import deepcopy
@@ -133,7 +143,7 @@ WORD = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
 NAME = re.compile(r"[A-Za-z0-9_]+\Z")
 CONTROL = re.compile(r"[\x00-\x08\x0a-\x1f\x7f]")
 DATABASES = {"engines": "DATA/ASCII/CARS/ENGDATA.DAT", "gearboxes": "DATA/ASCII/CARS/GEARDATA.DAT",
-             "tyres": "DATA/ASCII/CARS/TYREDATA.DAT"}
+             "tyres": "DATA/ASCII/CARS/TYREDATA.DAT", "cars": "DATA/ASCII/CARS/CARDATA.DAT"}
 SOUND_INFO_DATABASES = frozenset({"tyres"})
 TYRE_TABLES = {"LONGITUDINAL_COMBINED_VALUES": {"blocks": 1, "rows": 9, "columns": 11},
                "LATERAL_COMBINED_VALUES": {"blocks": 1, "rows": 10, "columns": 21},
@@ -387,6 +397,101 @@ GEARBOX_COPY = {
               "ret": "0x005234aa"},
     "offsets": {**{f"0x{offset:x}": "dword" for offset in range(0x14, 0x30, 4)}, "0x30": "byte", "0x31": "byte"},
 }
+# CARDATA.DAT (parse_cars()): records start with :CAR_TYPE, whose name the loader reads into 0x20 bytes at payload + 3;
+# CAR_PERFORMANCE and VALID_LIVERY repeat within a record and every occurrence is kept.
+CAR_RECORD_TAG = "CAR_TYPE"
+CAR_REPEATABLE_TAGS = frozenset({"CAR_PERFORMANCE", "VALID_LIVERY"})
+CAR_RECORD_SIZE = 0x1bc
+CAR_NAME_OFFSET = 3
+CAR_NAME_BYTES = 0x20
+# The car loader reads each reference name into a 0x40-byte stack buffer before looking it up.
+CAR_REFERENCE_NAME_BYTES = 0x40
+CAR_LOADER_SPAN = (0x00520A60, 0x005211F5)
+RECORD_ALLOCATOR = 0x0042EED0
+RECORD_LINK = 0x0042EFD0
+RECORD_LINK_SPAN = (0x0042EFD0, 0x0042F005)
+CREATE_DATABASE = 0x0042ED50
+STRING_COMPARE = 0x00534980
+# The car loader's database: the 0x1bc-byte payload allocation, the file it opens, where it keeps the database, and the
+# :CAR_TYPE branch, selected by `select` (see CAR_REFERENCE_STORES), that allocates a node, links it with 0x0042efd0
+# (which saves and restores ECX, so ECX still holds the node), points ESI at its payload and reads the name into
+# payload + 3. `link` holds the link routine's ECX save and restores and its stores of the next-node pointers: the
+# database's first record at database + 0x10 and each node's next at node + 0x10, the list each lookup walks.
+CAR_RECORD = {
+    "allocation": {"size": "0x00520a75", "call": "0x00520a8d"},
+    "file": {"site": "0x00520a9c", "va": "0x00581884", "name": "cars\\cardata"},
+    "database": {"site": "0x00520aa1", "va": "0x005973c8"},
+    "select": [{"compare": "0x00520db1"}, {"jump": "0x00520db4", "taken": False}],
+    "handler": "0x00520dba",
+    "allocate": "0x00520dc6", "node_in_ecx": "0x00520dd4", "link": "0x00520dd6", "payload_in_esi": "0x00520de1",
+    "name": {"size": "0x00520de4", "destination": "0x00520de9", "call": "0x00520df0"},
+}
+RECORD_LINK_SITES = {"push_ecx": "0x0042efd0", "pop_ecx": ["0x0042efeb", "0x0042f003"],
+                     "first": {"node_next": "0x0042efe2", "database_first": "0x0042efe5"},
+                     "after": {"previous_next": "0x0042eff0", "node_next": "0x0042effd"}}
+# Each car tag the loader resolves to another database's record (load_car_database.asm): its registry ID, the dispatch
+# path that selects its handler, the name read into the 0x40-byte buffer at EBP - 0x64, the lookup it calls with that
+# buffer and the car payload offset (ESI + offset) where it stores the record the lookup returns. `select` is the
+# path, in order, from a `cmp eax, <imm>` through the conditional jumps that read its flags, each taken or not, to
+# the handler; car_evidence_problems() derives from it the only tag ID that reaches the handler. CAR_FRONT_TYRE_TYPE
+# has no compare of its own: it is the ID above 0x42 and below 0x44.
+CAR_REFERENCE_STORES = {
+    "CAR_ENGINE_TYPE": {
+        "id": 0x42, "database": "engines",
+        "select": [{"compare": "0x00520e95"}, {"jump": "0x00520e98", "taken": True},
+                   {"jump": "0x00520eb5", "taken": False}],
+        "read": {"size": "0x00520eb7", "buffer": "0x00520ebc", "call": "0x00520ec1"},
+        "lookup": {"name": "0x00520ec6", "call": "0x00520ec9", "target": "0x00522d70"},
+        "offset": "0x1a8", "store": "0x00520ece"},
+    "CAR_FRONT_TYRE_TYPE": {
+        "id": 0x43, "database": "tyres",
+        "select": [{"compare": "0x00520e95"}, {"jump": "0x00520e98", "taken": True},
+                   {"jump": "0x00520eb5", "taken": True}, {"compare": "0x00520f04"},
+                   {"jump": "0x00520f07", "taken": False}],
+        "read": {"size": "0x00520f09", "buffer": "0x00520f0e", "call": "0x00520f13"},
+        "lookup": {"name": "0x00520f18", "call": "0x00520f1b", "target": "0x005240e0"},
+        "offset": "0x1b4", "store": "0x00520f20"},
+    "CAR_GEARBOX_TYPE": {
+        "id": 0x44, "database": "gearboxes",
+        "select": [{"compare": "0x00520f04"}, {"jump": "0x00520f07", "taken": True},
+                   {"jump": "0x00520f56", "taken": False}],
+        "read": {"size": "0x00520f58", "buffer": "0x00520f5d", "call": "0x00520f62"},
+        "lookup": {"name": "0x00520f67", "call": "0x00520f6a", "target": "0x005234b0"},
+        "offset": "0x1ac", "store": "0x00520f6f"},
+    "CAR_BACK_TYRE_TYPE": {
+        "id": 0x3b, "database": "tyres",
+        "select": [{"compare": "0x0052102e"}, {"jump": "0x00521031", "taken": True},
+                   {"jump": "0x00521093", "taken": False}],
+        "read": {"size": "0x00521095", "buffer": "0x0052109a", "call": "0x0052109f"},
+        "lookup": {"name": "0x005210a4", "call": "0x005210a7", "target": "0x005240e0"},
+        "offset": "0x1b8", "store": "0x005210ac"},
+}
+# The lookup each referenced database is searched with, the global where its loader keeps the database (`created`,
+# the store of the database creation result) and where that loader reads a record's 0x14-byte name: `payload`
+# advances the node register by 0x20 to the payload, which `destination` passes to the string reader, so the name is
+# at payload + 0, the address each lookup compares.
+CAR_LOOKUPS = {
+    "engines": {"routine": "0x00522d70", "database": "0x00597418", "created": "0x00522821", "loader": "engine loader",
+                "name": {"size": "0x00522c0a", "payload": "0x00522c0f", "destination": "0x00522c14", "call": "0x00522c16"}},
+    "gearboxes": {"routine": "0x005234b0", "database": "0x00597474", "created": "0x00523251", "loader": "gearbox loader",
+                  "name": {"size": "0x00523405", "payload": "0x0052340a", "destination": "0x0052340f",
+                           "call": "0x00523411"}},
+    "tyres": {"routine": "0x005240e0", "database": "0x0059747c", "created": "0x00523851", "loader": "tyre loader",
+              "name": {"size": "0x005238dc", "payload": "0x005238e1", "destination": "0x005238e7", "call": "0x005238ec"}},
+}
+# The three lookups share one shape (find_tyre_record.asm, and the same code at 0x00522d70 in copy_engine_record.asm
+# and 0x005234b0 in copy_gearbox_record.asm): {offset from the routine: bytes}, with DATABASE and COMPARE standing for
+# the `mov eax, [database]` and the call of the string compare. It keeps the name in ESI, walks the record list from
+# database + 0x10 through each node's + 0x10, compares the payload (node + 0x20) with the name, ignoring case, and
+# returns the first matching payload, or 0.
+LOOKUP_SHAPE = {0x04: "89c6", 0x06: "DATABASE", 0x0b: "8b4810", 0x12: "8d5920", 0x15: "89f2", 0x17: "89d8",
+                0x19: "COMPARE", 0x1e: "85c0", 0x20: "740e", 0x22: "8b4910", 0x27: "75e9", 0x29: "31c0", 0x30: "89d8"}
+LOOKUP_SIZE = 0x37
+# How many distinct records the 55 demo cars reference through each tag.
+CAR_REFERENCE_TARGETS = {"CAR_ENGINE_TYPE": 52, "CAR_FRONT_TYRE_TYPE": 53, "CAR_GEARBOX_TYPE": 14, "CAR_BACK_TYRE_TYPE": 53}
+CAR_PERFORMANCE_ENTRIES = 6
+BYTE_CHECKED = "resolved by the loader's lookup (byte-checked)"
+DECLARED = "declared by name"
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -409,10 +514,10 @@ def number(token, line):
     raise TextDatabaseError(line, f"unparsable number {token!r}")
 
 
-def value(token, line):
+def value(token, line, word=WORD):
     if INTEGER.match(token) or DECIMAL.match(token):
         return number(token, line)
-    if WORD.match(token):
+    if word.match(token):
         return token
     raise TextDatabaseError(line, f"unparsable value {token!r}")
 
@@ -460,10 +565,17 @@ def sound_info_tag(entry, expect, tag, values, line):
     return None
 
 
-def parse(text, known_tags, sound_info=False):
+def parse(text, known_tags, sound_info=False, record_tag="TYPE", name_bytes=NAME_FIELD_BYTES, repeatable=frozenset(),
+          blocks=True, name_tags=frozenset(), word=WORD):
     """Return the records of one text database in file order.
 
-    sound_info=True accepts the tyre database's nested :SOUND_INFO entries.
+    sound_info=True accepts the tyre database's nested :SOUND_INFO entries. record_tag is the tag that starts a record
+    and name_bytes the name field its name must fit, NUL included. Each tag in `repeatable` may appear any number of
+    times in a record: every occurrence is kept, in file order, in the record's `repeated` lists instead of `fields`.
+    blocks=False refuses a tag with no inline values and any line that does not start with a tag, so nothing opens a
+    block or lands in `untagged`. Each tag in name_tags takes exactly one record name (letters, digits and
+    underscores, so `46_CONVERTIBLE` too), kept as written. `word` is the pattern another value that is not a number
+    must match to be kept as a string.
     """
     records = []
     names = set()
@@ -495,8 +607,10 @@ def parse(text, known_tags, sound_info=False):
                     expect = "START_RPM"
                 continue
             if record is None:
-                raise TextDatabaseError(line, "content before the first :TYPE")
+                raise TextDatabaseError(line, f"content before the first :{record_tag}")
             if block is None:
+                if not blocks:
+                    raise TextDatabaseError(line, "line does not start with a :TAG")
                 if head in known_tags:
                     record["untagged"].append({"line": line, "tokens": tokens})
                     continue
@@ -521,17 +635,19 @@ def parse(text, known_tags, sound_info=False):
                 closed_entry = True
             continue
         after_entry, closed_entry = closed_entry, False
-        if tag == "TYPE":
+        if tag == record_tag:
             if len(values) != 1:
-                raise TextDatabaseError(line, ":TYPE needs exactly one name")
+                raise TextDatabaseError(line, f":{record_tag} needs exactly one name")
             name = values[0]
             if not NAME.match(name):
                 raise TextDatabaseError(line, f"record name {name!r} has characters other than A-Z, a-z, 0-9 and _")
-            if len(name.encode("ascii")) >= NAME_FIELD_BYTES:
-                raise TextDatabaseError(line, f"record name {name!r} does not fit char[{NAME_FIELD_BYTES}]")
+            if len(name.encode("ascii")) >= name_bytes:
+                raise TextDatabaseError(line, f"record name {name!r} does not fit char[{name_bytes}]")
             if name in names:
                 raise TextDatabaseError(line, f"duplicate record name {name!r}")
             record = {"type": name, "line": line, "fields": {}, "untagged": []}
+            if repeatable:
+                record["repeated"] = {tag: [] for tag in sorted(repeatable)}
             if sound_info:
                 record["sound_info"] = []
             records.append(record)
@@ -543,7 +659,7 @@ def parse(text, known_tags, sound_info=False):
             ended = line
             continue
         if record is None:
-            raise TextDatabaseError(line, "content before the first :TYPE")
+            raise TextDatabaseError(line, f"content before the first :{record_tag}")
         if sound_info and tag == "SOUND_INFO":
             if values:
                 raise TextDatabaseError(line, ":SOUND_INFO takes no inline values")
@@ -557,6 +673,11 @@ def parse(text, known_tags, sound_info=False):
             raise TextDatabaseError(line, f":{tag} outside a :SOUND_INFO entry")
         if tag not in known_tags:
             raise TextDatabaseError(line, f"unknown tag {tag!r}")
+        if not values and not blocks:
+            raise TextDatabaseError(line, f":{tag} has no value")
+        if tag in repeatable:
+            record["repeated"][tag].append({"line": line, "values": [value(token, line, word) for token in values]})
+            continue
         if tag in record["fields"]:
             raise TextDatabaseError(line, f"duplicate tag {tag!r} in record {record['type']!r}")
         if tag == "INHERIT_TYPE":
@@ -565,8 +686,12 @@ def parse(text, known_tags, sound_info=False):
             if values[0] not in names or values[0] == record["type"]:
                 raise TextDatabaseError(line, f"inherits {values[0]!r}, which is not an earlier record")
             parsed = list(values)
+        elif tag in name_tags:
+            if len(values) != 1 or not NAME.match(values[0]):
+                raise TextDatabaseError(line, f":{tag} needs exactly one name of A-Z, a-z, 0-9 and _")
+            parsed = list(values)
         else:
-            parsed = [value(token, line) for token in values]
+            parsed = [value(token, line, word) for token in values]
         field = {"line": line, "values": parsed, "rows": []}
         record["fields"][tag] = field
         if not parsed:
@@ -1303,6 +1428,316 @@ def unmapped_gearbox_tags(stores=None):
     return sorted(GEARBOX_TAGS - set(stores)), sorted(set(stores) - GEARBOX_TAGS)
 
 
+def parse_cars(text, known_tags):
+    """Return CARDATA.DAT's records: parse() with :CAR_TYPE records, no blocks, repeatable CAR_REPEATABLE_TAGS and
+    the CAR_REFERENCE_STORES tags taking one record name each. A value that is not a number may start with a digit
+    (`:CAR_BODY_TYPE 46_CONVERTIBLE`): any name of A-Z, a-z, 0-9 and _ is kept as a string.
+
+    Names must fit the loader's 0x20-byte name read (NUL included). Each :CAR_PERFORMANCE must be one word and one
+    number; nothing here interprets them.
+    """
+    records = parse(text, known_tags, record_tag=CAR_RECORD_TAG, name_bytes=CAR_NAME_BYTES,
+                    repeatable=CAR_REPEATABLE_TAGS, blocks=False, name_tags=frozenset(CAR_REFERENCE_STORES), word=NAME)
+    for record in records:
+        for field in record["repeated"]["CAR_PERFORMANCE"]:
+            values = field["values"]
+            if len(values) != 2 or not isinstance(values[0], str) or isinstance(values[1], str):
+                raise TextDatabaseError(field["line"], ":CAR_PERFORMANCE needs one word and one number")
+    return records
+
+
+# Conditional jumps by their condition nibble (7x rel8, 0f 8x rel32): the signed compares the dispatch trees use.
+JUMP_CONDITIONS = {0x4: "e", 0x5: "ne", 0xc: "l", 0xd: "ge", 0xe: "le", 0xf: "g"}
+INT32 = (-(1 << 31), (1 << 31) - 1)
+
+
+def conditional_jump(raw, va):
+    """Decode `j<cc> rel8/rel32` at va into (condition, target, fall-through), or None for anything else."""
+    data = bytes.fromhex(raw)
+    if len(data) == 2 and data[0] >> 4 == 0x7:
+        condition, displacement = data[0] & 0xf, int.from_bytes(data[1:], "little", signed=True)
+    elif len(data) == 6 and data[0] == 0x0f and data[1] >> 4 == 0x8:
+        condition, displacement = data[1] & 0xf, int.from_bytes(data[2:], "little", signed=True)
+    else:
+        return None
+    if condition not in JUMP_CONDITIONS:
+        return None
+    return JUMP_CONDITIONS[condition], va + len(data) + displacement, va + len(data)
+
+
+def narrow(bounds, excluded, condition, immediate, taken):
+    """Apply one signed jump on `cmp eax, immediate` to the ID interval bounds [low, high] and the excluded set."""
+    low, high = bounds
+    if condition == "ne":
+        condition, taken = "e", not taken
+    if condition == "e":
+        if taken:
+            low, high = max(low, immediate), min(high, immediate)
+        else:
+            excluded.add(immediate)
+    else:
+        # Each condition taken keeps IDs at or above (lower bound) or at or below (upper bound) a limit.
+        above = {"ge": immediate, "g": immediate + 1}
+        below = {"l": immediate - 1, "le": immediate}
+        if not taken:
+            above, below = {"l": immediate, "le": immediate + 1}, {"ge": immediate - 1, "g": immediate}
+        if condition in above:
+            low = max(low, above[condition])
+        else:
+            high = min(high, below[condition])
+    return low, high
+
+
+def selected_ids(by_va, path, problems, label):
+    """Follow a `select` path through its byte-checked compares and jumps; return (the IDs it admits, its end).
+
+    Each step must start where the previous one leads: a compare at the next address, a jump at its target when taken
+    or its fall-through when not. Every jump narrows the IDs by the last compare. Returns (None, None) after
+    appending a problem when a site is missing, is not a compare or conditional jump, or does not follow on.
+    """
+    bounds, excluded, immediate, at = INT32, set(), None, None
+    for step in path:
+        va = int(step["compare"] if "compare" in step else step["jump"], 16)
+        raw = by_va.get(va)
+        if raw is None:
+            problems.append(f"{label}: no byte-checked select site at 0x{va:08x}")
+            return None, None
+        if at is not None and va != at:
+            problems.append(f"{label}: select site 0x{va:08x} does not follow the previous step, which leads to 0x{at:08x}")
+            return None, None
+        if "compare" in step:
+            immediate = compare_immediate(raw)
+            if immediate is None:
+                problems.append(f"{label}: select site 0x{va:08x} ({raw}) is not cmp eax, imm")
+                return None, None
+            at = va + len(raw) // 2
+            continue
+        decoded = conditional_jump(raw, va)
+        if decoded is None or immediate is None:
+            problems.append(f"{label}: select site 0x{va:08x} ({raw}) is not a signed conditional jump after a compare")
+            return None, None
+        condition, target, fall_through = decoded
+        bounds = narrow(bounds, excluded, condition, immediate, step["taken"])
+        at = target if step["taken"] else fall_through
+    low, high = bounds
+    if high - low > 0x1000:
+        return None, at
+    return [value for value in range(low, high + 1) if value not in excluded], at
+
+
+def select_problems(checks, path, tag, tag_id, handler):
+    """List how a select path fails to admit exactly tag_id and end at handler, its last jump's claim about tag."""
+    problems = []
+    ids, end = selected_ids(checks.by_va, path, problems, tag)
+    if end is None:
+        return problems
+    if ids != [tag_id]:
+        shown = "more than 4096 IDs" if ids is None else ", ".join(f"0x{value:x}" for value in ids) or "no ID"
+        problems.append(f"{tag}: its select path admits {shown}, not its registry ID "
+                        + ("(none)" if tag_id is None else f"0x{tag_id:x}"))
+    if end != int(handler, 16):
+        problems.append(f"{tag}: its select path ends at 0x{end:08x}, not at its handler {handler}")
+    last = next((step["jump"] for step in reversed(path) if "jump" in step), None)
+    if last is None or not checks.about(last, tag):
+        problems.append(f"{tag}: the claim at its selecting jump {last} is not about {tag}")
+    return problems
+
+
+def car_evidence_problems(evidence, tag_ids, stores=None, record=None, lookups=None):
+    """List, per car reference tag (key None for the record and the shared sites), how its map lacks byte-checked sites.
+
+    Returns {None or tag: [problems]}. tag_ids maps tag names to analysis/tags.json registry IDs. The record: the
+    0x1bc allocation passed to 0x0042ed50, the file name and its data bytes, the database store, the :CAR_TYPE
+    select path (which must admit exactly the CAR_TYPE ID) and branch, which allocates, links, points ESI 0x20
+    past the node and reads 0x20 name bytes into ESI + 3; the link routine's ECX save, restores and list stores.
+    Each tag: its registry ID, a select path admitting exactly that ID and ending at the handler (its name size
+    site), whose last jump's claim starts with the tag; `mov ebx, 0x40`, `lea edx, [ebp + n]`, the string reader
+    call, `lea eax` of the same buffer and the call of its database's lookup; a dword store of EAX at
+    [esi + offset] whose claim starts with the tag, inside the record and past the name. Offsets must be distinct,
+    and every byte-checked [esi + n] store in the car loader must be a mapped one. Each lookup used: every
+    LOOKUP_SHAPE site, its database the one its loader stores from 0x0042ed50, and that loader's name read into the
+    payload's first 0x14 bytes.
+    """
+    stores = CAR_REFERENCE_STORES if stores is None else stores
+    record = CAR_RECORD if record is None else record
+    lookups = CAR_LOOKUPS if lookups is None else lookups
+    spans = {"car loader": CAR_LOADER_SPAN, "record link": RECORD_LINK_SPAN, "engine loader": ENGINE_LOADER_SPAN,
+             "gearbox loader": GEARBOX_LOADER_SPAN, "tyre loader": TYRE_LOADER_SPAN,
+             **{f"{name} lookup": (int(entry["routine"], 16), int(entry["routine"], 16) + LOOKUP_SIZE)
+                for name, entry in lookups.items()}}
+    found = {None: []}
+    checks = SiteChecks(evidence, tag_ids, found[None], spans)
+
+    checks.exact("Car allocation size", record["allocation"]["size"], "ba" + CAR_RECORD_SIZE.to_bytes(4, "little").hex())
+    checks.call("Car allocation call", record["allocation"]["call"], CREATE_DATABASE)
+    file = record["file"]
+    checks.exact("Car file name", file["site"], "ba" + int(file["va"], 16).to_bytes(4, "little").hex())
+    if checks.by_va.get(int(file["va"], 16)) != (file["name"].encode("ascii") + b"\0").hex():
+        found[None].append(f"Car file name: no byte-checked data {file['name']!r} at {file['va']}")
+    checks.exact("Car database store", record["database"]["site"],
+                 "a3" + int(record["database"]["va"], 16).to_bytes(4, "little").hex())
+    found[None] += select_problems(checks, record["select"], CAR_RECORD_TAG, tag_ids.get(CAR_RECORD_TAG),
+                                   record["handler"])
+    checks.call(f"{CAR_RECORD_TAG} record allocation", record["allocate"], RECORD_ALLOCATOR)
+    checks.exact(f"{CAR_RECORD_TAG} node in ECX", record["node_in_ecx"], "89c1")
+    checks.call(f"{CAR_RECORD_TAG} record link", record["link"], RECORD_LINK)
+    checks.operand(f"{CAR_RECORD_TAG} payload", record["payload_in_esi"],
+                   {"kind": "lea", "register": "esi", "base": "ecx", "disp": 0x20})
+    checks.exact(f"{CAR_RECORD_TAG} name size", record["name"]["size"], "bb" + CAR_NAME_BYTES.to_bytes(4, "little").hex())
+    checks.operand(f"{CAR_RECORD_TAG} name destination", record["name"]["destination"],
+                   {"kind": "lea", "register": "edx", "base": "esi", "disp": CAR_NAME_OFFSET})
+    checks.call(f"{CAR_RECORD_TAG} name read", record["name"]["call"], STRING_READER)
+    link = RECORD_LINK_SITES
+    checks.exact("Record link saves ECX", link["push_ecx"], "51", "record link")
+    for va in link["pop_ecx"]:
+        checks.exact("Record link restores ECX", va, "59", "record link")
+    for label, va, expected in (("first record's next", link["first"]["node_next"], ("store", "eax", "ebx")),
+                                ("database's first record", link["first"]["database_first"], ("store", "edx", "eax")),
+                                ("previous node's next", link["after"]["previous_next"], ("store", "ebx", "eax")),
+                                ("linked node's next", link["after"]["node_next"], ("store", "eax", "ecx"))):
+        kind, base, register = expected
+        checks.operand(f"Record link {label}", va, {"kind": kind, "width": "dword", "base": base, "disp": 0x10,
+                                                    "register": register}, "record link")
+
+    used = set()
+    offsets = {}
+    for tag, entry in stores.items():
+        problems = found.setdefault(tag, [])
+        checks.problems = problems
+        if tag_ids.get(tag) != entry["id"]:
+            registered = "no registry ID" if tag not in tag_ids else f"registry ID 0x{tag_ids[tag]:x}"
+            problems.append(f"{tag}: analysis/tags.json gives {registered}, the map says 0x{entry['id']:x}")
+        read, lookup = entry["read"], entry["lookup"]
+        problems += select_problems(checks, entry["select"], tag, entry["id"], read["size"])
+        checks.exact(f"{tag} name size", read["size"], "bb" + CAR_REFERENCE_NAME_BYTES.to_bytes(4, "little").hex())
+        buffer, passed = checks.site(f"{tag} name buffer", read["buffer"]), checks.site(f"{tag} lookup name", lookup["name"])
+        checks.call(f"{tag} name read", read["call"], STRING_READER)
+        if buffer is not None and passed is not None:
+            into, out = memory_operand(buffer), memory_operand(passed)
+            if not (into and out and (into["kind"], into["register"], out["kind"], out["register"])
+                    == ("lea", "edx", "lea", "eax") and (into["base"], into["disp"]) == (out["base"], out["disp"])):
+                problems.append(f"{tag}: the lookup at {lookup['call']} is not passed the buffer the name was read into "
+                                f"({read['buffer']} {buffer}, {lookup['name']} {passed})")
+        target = lookups.get(entry["database"], {}).get("routine")
+        if target != lookup["target"]:
+            problems.append(f"{tag}: it calls {lookup['target']}, but the {entry['database']} lookup is {target}")
+        checks.call(f"{tag} lookup call", lookup["call"], lookup["target"])
+        offset = int(entry["offset"], 16)
+        checks.operand(f"{tag} + {entry['offset']}", entry["store"],
+                       {"kind": "store", "width": "dword", "base": "esi", "disp": offset, "register": "eax"})
+        if int(entry["store"], 16) in checks.by_va and not checks.about(entry["store"], tag):
+            problems.append(f"{tag} + {entry['offset']}: the claim at {entry['store']} is not about {tag}")
+        if not CAR_NAME_OFFSET + CAR_NAME_BYTES <= offset <= CAR_RECORD_SIZE - 4:
+            problems.append(f"{tag} + {entry['offset']}: not a dword inside the 0x{CAR_RECORD_SIZE:x}-byte record past "
+                            "its name")
+        if offset in offsets:
+            problems.append(f"{tag} + {entry['offset']}: {offsets[offset]} stores there too")
+        offsets.setdefault(offset, tag)
+        used.add(entry["database"])
+    checks.problems = found[None]
+    mapped = {int(entry["store"], 16) for entry in stores.values()}
+    for va, raw in sorted(checks.by_va.items()):
+        decoded = memory_operand(raw)
+        if (CAR_LOADER_SPAN[0] <= va < CAR_LOADER_SPAN[1] and decoded and decoded["kind"] == "store"
+                and decoded["base"] == "esi" and va not in mapped):
+            found[None].append(f"byte-checked car record store at 0x{va:08x} ({raw}) is in no mapped reference")
+
+    for name in sorted(used):
+        entry = lookups.get(name)
+        if entry is None:
+            found[None].append(f"no lookup for the {name} database")
+            continue
+        where, routine = f"{name} lookup", int(entry["routine"], 16)
+        database = int(entry["database"], 16)
+        for relative, expected in LOOKUP_SHAPE.items():
+            va = f"0x{routine + relative:08x}"
+            if expected == "DATABASE":
+                expected = "a1" + database.to_bytes(4, "little").hex()
+            elif expected == "COMPARE":
+                expected = call_bytes(routine + relative, STRING_COMPARE)
+            checks.exact(f"{where} + 0x{relative:02x}", va, expected, where)
+        checks.exact(f"{name} database created", entry["created"], "a3" + database.to_bytes(4, "little").hex(),
+                     entry["loader"])
+        reads = entry["name"]
+        checks.exact(f"{name} name size", reads["size"], "bb" + ENGINE_NAME_BYTES.to_bytes(4, "little").hex(),
+                     entry["loader"])
+        advance = checks.site(f"{name} payload", reads["payload"], entry["loader"])
+        destination = checks.site(f"{name} name destination", reads["destination"], entry["loader"])
+        if advance is not None and destination is not None:
+            # add r32, 0x20 (83 /0 ib) then mov edx, r32 (89 /r): the name is read at the payload's start.
+            add, move = bytes.fromhex(advance), bytes.fromhex(destination)
+            if not (len(add) == 3 and add[0] == 0x83 and add[1] >> 3 == 0x18 and add[2] == 0x20 and len(move) == 2
+                    and move[0] == 0x89 and move[1] >> 6 == 3 and move[1] & 7 == 2 and (move[1] >> 3) & 7 == add[1] & 7):
+                found[None].append(f"{name}: {reads['payload']} ({advance}) and {reads['destination']} ({destination}) "
+                                   "are not `add r32, 0x20` and `mov edx, r32` of the same register")
+        checks.call(f"{name} name read", reads["call"], STRING_READER, entry["loader"])
+    return found
+
+
+def car_reference_bases(evidence=None, tag_ids=None):
+    """Return {tag: BYTE_CHECKED or DECLARED}: byte-checked only when the record, shared and tag's sites all check."""
+    evidence = load_field_evidence() if evidence is None else evidence
+    found = car_evidence_problems(evidence, load_tag_ids() if tag_ids is None else tag_ids)
+    return {tag: BYTE_CHECKED if not found[None] and not found.get(tag) else DECLARED for tag in CAR_REFERENCE_STORES}
+
+
+def fold_name(name):
+    """Lower-case A-Z only, as the string compare at 0x00534980 does to both names."""
+    return name.translate(str.maketrans("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"))
+
+
+def resolve_car_references(cars, targets, bases=None):
+    """Return {car: {tag: reference}} resolving each car's CAR_REFERENCE_STORES tags against `targets`.
+
+    targets maps each database name (engines, gearboxes, tyres) to its parsed records; bases is
+    car_reference_bases() (read from the committed evidence when None). Names match as the lookups compare them:
+    equal once A-Z are lower-cased. A reference that is missing, has other than one value, does not fit the
+    0x40-byte name read, matches no record or matches more than one is refused (the lookups return the first match
+    in their list, whose order this does not establish). Each reference names its source line, the target record
+    and the line that declares it, whether the match was exact, the lookup and offset, and its basis.
+    """
+    bases = car_reference_bases() if bases is None else bases
+    index = {name: {} for name in targets}
+    for name, records in targets.items():
+        for record in records:
+            index[name].setdefault(fold_name(record["type"]), []).append(record)
+    references = {}
+    for car in cars:
+        resolved = {}
+        for tag, entry in CAR_REFERENCE_STORES.items():
+            field = car["fields"].get(tag)
+            if field is None:
+                raise TextDatabaseError(car["line"], f"car {car['type']!r} has no :{tag}")
+            if len(field["values"]) != 1 or not isinstance(field["values"][0], str):
+                raise TextDatabaseError(field["line"], f":{tag} needs exactly one name")
+            name = field["values"][0]
+            if len(name) >= CAR_REFERENCE_NAME_BYTES:
+                raise TextDatabaseError(field["line"], f":{tag} name {name!r} does not fit the loader's "
+                                                       f"0x{CAR_REFERENCE_NAME_BYTES:x}-byte read")
+            matches = index[entry["database"]].get(fold_name(name), [])
+            if not matches:
+                raise TextDatabaseError(field["line"], f"car {car['type']!r} :{tag} {name!r} matches no "
+                                                       f"{entry['database']} record")
+            if len(matches) > 1:
+                raise TextDatabaseError(field["line"], f"car {car['type']!r} :{tag} {name!r} matches "
+                                                       f"{len(matches)} {entry['database']} records ignoring case: "
+                                                       + ", ".join(f"{match['type']} (line {match['line']})"
+                                                                   for match in matches))
+            target, = matches
+            resolved[tag] = {"name": name, "line": field["line"], "database": entry["database"],
+                             "target": target["type"], "target_line": target["line"],
+                             "match": "exact" if target["type"] == name else "ignoring case",
+                             "lookup": entry["lookup"]["target"], "record_offset": entry["offset"],
+                             "basis": bases[tag]}
+        references[car["type"]] = resolved
+    return references
+
+
+def car_reference_targets(references):
+    """Count, per reference tag, the distinct records the cars reference."""
+    return {tag: len({entries[tag]["target"] for entries in references.values()}) for tag in CAR_REFERENCE_STORES}
+
+
 def engine_derived_offsets(tag):
     """Return {offset: conditional} for each derived offset the tag's handler writes."""
     return {offset: bool(store.get("conditional")) for offset, store in ENGINE_FIELD_STORES[tag]["offsets"].items()
@@ -1651,9 +2086,10 @@ def load_layout_header(path=REPO_ROOT / "recovered/fr3_database_layouts.h"):
 
 
 def read_database(game_dir, relative, known_tags, sound_info=False):
+    """Read and parse one database; CARDATA.DAT (DATABASES["cars"]) with parse_cars()."""
     data = (Path(game_dir) / relative).read_bytes()
-    return {"source": relative, "sha256": hashlib.sha256(data).hexdigest(),
-            "records": parse(data, known_tags, sound_info)}
+    records = parse_cars(data, known_tags) if relative == DATABASES["cars"] else parse(data, known_tags, sound_info)
+    return {"source": relative, "sha256": hashlib.sha256(data).hexdigest(), "records": records}
 
 
 def require(condition, message):
@@ -1762,6 +2198,20 @@ def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, hea
                 for record in engines + gearboxes + tyres for item in record["untagged"]]
     require(untagged == [{"record": "INDIGO", "line": 1410, "tokens": ["INHERIT_TYPE", "DEFAULT_TRACK"]}],
             "Untagged line set mismatch")
+    cars = read_database(game_dir, DATABASES["cars"], known_tags)["records"]
+    require(len(cars) == 55, f"Car record count mismatch: {len(cars)}")
+    performance = {len(record["repeated"]["CAR_PERFORMANCE"]) for record in cars}
+    require(performance == {CAR_PERFORMANCE_ENTRIES}, f"CAR_PERFORMANCE entries per car mismatch: {sorted(performance)}")
+    found = car_evidence_problems(evidence, load_tag_ids() if tag_ids is None else tag_ids)
+    problems = [problem for items in found.values() for problem in items]
+    require(not problems, "Car references lack byte-checked evidence: " + "; ".join(problems))
+    bases = {tag: BYTE_CHECKED for tag in CAR_REFERENCE_STORES}
+    references = resolve_car_references(cars, {"engines": engines, "gearboxes": gearboxes, "tyres": tyres}, bases)
+    targets = car_reference_targets(references)
+    require(targets == CAR_REFERENCE_TARGETS, f"Car reference target counts mismatch: {targets}")
+    inexact = sorted(f"{car} {tag}" for car, entries in references.items() for tag, entry in entries.items()
+                     if entry["match"] != "exact")
+    require(not inexact, "Car references that match only ignoring case: " + ", ".join(inexact))
     return {"engine_records": len(engines), "gearbox_records": len(gearboxes), "torque_arrays": len(torque),
             "engine_mapped_tags": len(ENGINE_FIELD_STORES), "gearbox_mapped_tags": len(GEARBOX_FIELD_STORES),
             "torque_rows": [min(len(f["rows"]) for f in torque), max(len(f["rows"]) for f in torque)],
@@ -1773,16 +2223,33 @@ def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, hea
             "tyre_records": len(tyres), "tyre_inheritances": len(tyre_inherits), "tyre_tables": tables,
             "tyre_table_sources": sources, "tyre_effective_scalar_records": len(scalars),
             "tyre_effective_scalar_counts": counts,
-            "sound_info_entries": len(entries), "sound_info_per_record": sounds}
+            "sound_info_entries": len(entries), "sound_info_per_record": sounds,
+            "car_records": len(cars), "car_mapped_references": len(CAR_REFERENCE_STORES),
+            "car_reference_targets": targets}
 
 
-def write_databases(game_dir, output, known_tags):
-    """Parse the three text databases under game_dir into <output>/<stem>.json; return the record count per stem."""
+def write_databases(game_dir, output, known_tags, stems=tuple(DATABASES)):
+    """Parse the text databases under game_dir named by stems (by default all four) into <output>/<stem>.json;
+    return the record count per stem.
+
+    cars.json adds `references`, each car's resolve_car_references() against the other three, with the basis
+    car_reference_bases() gives on the committed field-evidence.json and tag registry.
+    """
     require(Path(game_dir).is_dir(), f"Game directory does not exist: {game_dir}")
+    require(set(stems) <= set(DATABASES), f"Unknown text databases: {sorted(set(stems) - set(DATABASES))}")
     Path(output).mkdir(parents=True, exist_ok=True)
     counts = {}
+    parsed = {}
     for stem, relative in DATABASES.items():
+        if stem not in stems:
+            continue
         database = read_database(game_dir, relative, known_tags, stem in SOUND_INFO_DATABASES)
+        parsed[stem] = database["records"]
+        if stem == "cars":
+            targets = {name: parsed.get(name) or read_database(game_dir, DATABASES[name], known_tags,
+                                                               name in SOUND_INFO_DATABASES)["records"]
+                       for name in ("engines", "gearboxes", "tyres")}
+            database["references"] = resolve_car_references(database["records"], targets)
         if stem == "tyres":
             database["resolved_tables"] = resolve_tyre_tables(database["records"])
             database["table_provenance"] = tyre_table_provenance(database["records"])
@@ -1798,7 +2265,8 @@ def write_databases(game_dir, output, known_tags):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("game_dir", type=Path, help="Extracted Program_Executable_Files directory")
-    parser.add_argument("--output", type=Path, default=Path("artifacts/text-databases"), help="Directory for engines.json, gearboxes.json and tyres.json")
+    parser.add_argument("--output", type=Path, default=Path("artifacts/text-databases"),
+                        help="Directory for engines.json, gearboxes.json, tyres.json and cars.json")
     parser.add_argument("--tags", type=Path, default=REPO_ROOT / "analysis/tags.json", help="Tag registry JSON")
     args = parser.parse_args()
     for stem, count in write_databases(args.game_dir, args.output, load_known_tags(args.tags)).items():
