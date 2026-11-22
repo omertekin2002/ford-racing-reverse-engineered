@@ -15,9 +15,11 @@ Run it after scripts/acquire_demo.py has extracted the demo. It:
   4. writes <output>/index.html, which links the eight pages with their car, record,
      comparison, graphic, routine and question counts, the fr3.exe SHA-256 and the producer revision,
      and answers "Do road, offroad and track tyres use different tables?" in its
-     #tyre-tables section, generated from tyres.json, and "Which engines share a
+     #tyre-tables section, generated from tyres.json, "Which engines share a
      torque table, and what do they declare differently?" in its
-     #engine-torque-tables section, generated from engines.json, both by
+     #engine-torque-tables section, generated from engines.json, and "Which cars
+     share an engine, gearbox or tyre record?" in its #car-shared-records section,
+     generated from the cars' reverse index and cars.json, all by
      scripts/research_answers.py;
   5. checks the directory with verify_research(): all nine pages exist, each carries
      the rights-holder notice before its main content and names the same producer
@@ -51,6 +53,7 @@ from dossier_common import (INDEX_PAGE, NOTICE_ID, NOTICE_LINKS, PAGES, e, load_
 import open_questions
 import pcg_catalogue
 import record_compare
+from record_compare import game_file
 import record_dossier
 import research_answers
 import routine_index
@@ -194,7 +197,8 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
                                              manifest_path=analysis / GAME_MANIFEST)}
             # car_page.build() has accepted cars.json's references; the engine, gearbox, tyre and compare pages show
             # them the other way round, as the cars that name each record.
-            references = load_json(work / "cars.json", "Car database")["references"]
+            cars = load_json(work / "cars.json", "Car database")
+            references = cars["references"]
             usage = car_usage(references)
             check_car_usage(usage, references)
             # The tyre, engine and gearbox pages link routines.html, so they read the same status.json it does.
@@ -221,7 +225,10 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
             answers = (research_answers.tyre_tables_section(load_json(work / "tyres.json", "Tyre database"),
                                                             field_evidence, labels, tyre_hrefs)
                        + research_answers.engine_torque_section(load_json(work / "engines.json", "Engine database"),
-                                                                field_evidence, labels))
+                                                                field_evidence, labels)
+                       + research_answers.car_sharing_section(
+                           cars, usage, car_page.check_cars(cars, game_file(cars, "cars.json", game_dir)),
+                           field_evidence))
         counts["pcg_collections"], counts["pcg_graphics"] = pcg_catalogue.build(
             analysis / PCG_EVIDENCE["index"], analysis / PCG_EVIDENCE["manifest"], pe_path,
             analysis / "verification.json", staging / pcg_catalogue.PAGE, revision, hrefs=pcg_hrefs, entrance=True)

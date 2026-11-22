@@ -31,12 +31,13 @@ EVIDENCE = ("evidence/annotated/selected.c", "evidence/annotated/status.json", "
 # The car loader's store of the back tyre record; without it in field-evidence.json, CAR_BACK_TYRE_TYPE is declared by
 # name.
 BACK_TYRE_STORE = 0x005210AC
-COUNTS = {"cars": 2, "engines": 7, "gearboxes": 3, "compared_gearboxes": 3, "compared_engines": 7, "compared_tyres": 3, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
+COUNTS = {"cars": 3, "engines": 7, "gearboxes": 3, "compared_gearboxes": 3, "compared_engines": 7, "compared_tyres": 3, "tyres": 3, "pcg_collections": 2, "pcg_graphics": 5, "routines": 25,
           "questions": 3}
 
 
-# Two cars whose references resolve against the engines, gearboxes and tyres below; cars.html shows them, and the
-# analysis bundle packages cars.json.
+# Three cars whose references resolve against the engines, gearboxes and tyres below; cars.html shows them, and the
+# analysis bundle packages cars.json. COUPE names a record of each kind another car names too, so the entrance
+# page's #car-shared-records answer has records to show: it traces the engine BASE, which ROADSTER also names.
 CARS = """:CAR_TYPE ROADSTER
 :CAR_ENGINE_TYPE BASE
 :CAR_GEARBOX_TYPE ROAD
@@ -50,6 +51,11 @@ CARS = """:CAR_TYPE ROADSTER
 :CAR_FRONT_TYRE_TYPE CHILD
 :CAR_BACK_TYRE_TYPE CHILD
 :VALID_LIVERY DEFAULT RALLYD
+:CAR_TYPE COUPE
+:CAR_ENGINE_TYPE BASE
+:CAR_GEARBOX_TYPE RALLY
+:CAR_FRONT_TYRE_TYPE CHILD
+:CAR_BACK_TYRE_TYPE MID
 :END
 """
 
@@ -138,7 +144,7 @@ class BuildTests(ResearchTestCase):
     def test_entrance_page_shows_counts_identity_and_scope(self):
         self.build()
         index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
-        for text in ("2 cars", "7 engine records", "3 gearbox records", "3 gearboxes, 9 fields each; 7 engines, 20 fields each; 3 tyres, 9 scalar fields and 5 tables each", "3 tyre records", "2 collections, 5 graphics",
+        for text in ("3 cars", "7 engine records", "3 gearbox records", "3 gearboxes, 9 fields each; 7 engines, 20 fields each; 3 tyres, 9 scalar fields and 5 tables each", "3 tyre records", "2 collections, 5 graphics",
                      "25 annotated routines", "3 open questions",
                      f'SHA-256 <code>{PE["sha256"]}</code>', "<code>0123abcd</code>",
                      "Values are shown exactly as declared", "stays labelled unresolved"):
@@ -228,7 +234,7 @@ class BuildTests(ResearchTestCase):
     def test_car_page_links_records_routines_and_evidence_that_exist(self):
         self.build()
         cars = (self.output / "cars.html").read_text(encoding="utf-8")
-        self.assertEqual(cars.count('<section class="car"'), 2)
+        self.assertEqual(cars.count('<section class="car"'), 3)
         linked = set(re.findall(r'href="([a-z]+\.html)#([^"]+)"', cars))
         for page, fragment in linked:
             self.assertIn(f'id="{fragment}"', (self.output / page).read_text(encoding="utf-8"), (page, fragment))
@@ -264,14 +270,15 @@ class BuildTests(ResearchTestCase):
         self.build()
         pages = {page: (self.output / page).read_text(encoding="utf-8") for page in PAGES}
         label = BYTE_CHECKED.replace("'", "&#x27;")
-        expected = {("engines.html", "engine-BASE"): [("ROADSTER", "CAR_ENGINE_TYPE")],
+        expected = {("engines.html", "engine-BASE"): [("ROADSTER", "CAR_ENGINE_TYPE"), ("COUPE", "CAR_ENGINE_TYPE")],
                     ("engines.html", "engine-CHILD"): [("RALLY_CAR", "CAR_ENGINE_TYPE")],
                     ("gearboxes.html", "gearbox-ROAD"): [("ROADSTER", "CAR_GEARBOX_TYPE")],
-                    ("gearboxes.html", "gearbox-RALLY"): [("RALLY_CAR", "CAR_GEARBOX_TYPE")],
+                    ("gearboxes.html", "gearbox-RALLY"): [("RALLY_CAR", "CAR_GEARBOX_TYPE"),
+                                                          ("COUPE", "CAR_GEARBOX_TYPE")],
                     ("gearboxes.html", "gearbox-TRACK"): [],
                     ("tyres.html", "tyre-ROOT"): [("ROADSTER", "CAR_FRONT_TYRE_TYPE")],
-                    ("tyres.html", "tyre-MID"): [("ROADSTER", "CAR_BACK_TYRE_TYPE")],
-                    ("tyres.html", "tyre-CHILD"): [("RALLY_CAR", "CAR_FRONT_TYRE_TYPE"),
+                    ("tyres.html", "tyre-MID"): [("ROADSTER", "CAR_BACK_TYRE_TYPE"), ("COUPE", "CAR_BACK_TYRE_TYPE")],
+                    ("tyres.html", "tyre-CHILD"): [("RALLY_CAR", "CAR_FRONT_TYRE_TYPE"), ("COUPE", "CAR_FRONT_TYRE_TYPE"),
                                                    ("RALLY_CAR", "CAR_BACK_TYRE_TYPE")]}
         for (page, prefix), cars in expected.items():
             with self.subTest(page=page, record=prefix):
@@ -295,7 +302,7 @@ class BuildTests(ResearchTestCase):
                 self.assertIn(f'id="{fragment}"', cars, (page, fragment))
         compare = pages["compare.html"]
         self.assertEqual(compare.count("<th>Used by cars"), 3)
-        self.assertIn('<td>front <a href="tyres.html#tyre-CHILD-used-by">1</a><br>back '
+        self.assertIn('<td>front <a href="tyres.html#tyre-CHILD-used-by">2</a><br>back '
                       '<a href="tyres.html#tyre-CHILD-used-by">1</a></td>', compare)
         self.assertIn('<td class="num"><a href="gearboxes.html#gearbox-TRACK-used-by">0</a></td>', compare)
 
@@ -321,6 +328,43 @@ class BuildTests(ResearchTestCase):
         (self.game / DATABASES["engines"]).write_bytes(
             QUESTION_ENGINES.replace(table, "\n" * 4).replace("\n", "\r\n").encode("ascii"))
         with self.assertRaisesRegex(ValueError, "#engine-torque-tables answer has no shared torque table"):
+            self.build()
+        self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)}, before)
+
+    def test_entrance_page_answers_which_cars_share_a_record(self):
+        self.build()
+        index = (self.output / INDEX_PAGE).read_text(encoding="utf-8")
+        start = index.index('<section id="car-shared-records">')
+        answer = index[start:index.index("</section>", start)]
+        # It follows the two other answers, before the page list, and leaves them as they were.
+        self.assertLess(index.index('<section id="engine-torque-tables">'), start)
+        self.assertLess(start, index.index("<h2>Pages</h2>"))
+        text = " ".join(re.sub(r"<[^>]+>", " ", answer).split())
+        self.assertIn("Which cars share an engine, gearbox or tyre record?", text)
+        self.assertIn("The 3 cars in DATA/ASCII/CARS/CARDATA.DAT name 2 engines, 2 gearboxes, 2 front tyres and 2 back "
+                      "tyres.", text)
+        self.assertIn("Traced example: BASE", text)
+        self.assertIn("ROADSTER names it on line 2 : :CAR_ENGINE_TYPE BASE , and COUPE on line 15 :", text)
+        self.assertIn(":CAR_PERFORMANCE AGILITY 0.5 ( line 6 ) none", text)
+        # Every link names a page and id the build wrote: verify_research() checked them, and these are the ones the
+        # answer must carry.
+        links = set(re.findall(r'href="([^"#]+)#([^"]+)"', answer))
+        self.assertEqual({page for page, _ in links}, {"cars.html", "engines.html", "gearboxes.html", "tyres.html",
+                                                       "routines.html"})
+        for link in (("cars.html", "car-ROADSTER-line-2"), ("cars.html", "car-COUPE-line-15"),
+                     ("cars.html", "car-store-CAR_ENGINE_TYPE"), ("routines.html", "site-00520ece"),
+                     ("engines.html", "engine-BASE"), ("engines.html", "engine-BASE-used-by"),
+                     ("gearboxes.html", "gearbox-RALLY-used-by"), ("tyres.html", "tyre-MID-used-by")):
+            self.assertIn(link, links)
+        for page, fragment in links:
+            self.assertIn(f'id="{fragment}"', (self.output / page).read_text(encoding="utf-8"), (page, fragment))
+
+    def test_car_data_without_a_shared_record_refuses_the_build(self):
+        self.build()
+        before = {name: (self.output / name).read_bytes() for name in files_under(self.output)}
+        coupe = CARS[CARS.index(":CAR_TYPE COUPE"):CARS.index(":END")]
+        (self.game / DATABASES["cars"]).write_bytes(CARS.replace(coupe, "").replace("\n", "\r\n").encode("ascii"))
+        with self.assertRaisesRegex(ValueError, "#car-shared-records answer has no shared record to show"):
             self.build()
         self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)}, before)
 
@@ -705,7 +749,7 @@ class CommandTests(unittest.TestCase):
         result = self.run_script("--game", str(write_game(self.root / "game")), "--output", str(output))
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Wrote 9 verified pages", result.stdout)
-        self.assertIn("2 cars, 7 engines (7 compared), 3 gearboxes (3 compared), 3 tyres (3 compared), 62 PCG collections, 654 graphics, 25 routines and "
+        self.assertIn("3 cars, 7 engines (7 compared), 3 gearboxes (3 compared), 3 tyres (3 compared), 62 PCG collections, 654 graphics, 25 routines and "
                       "3 open questions", result.stdout)
         self.assertEqual(files_under(output), sorted((*PAGES, *EVIDENCE)))
         self.assertIn("62 collections, 654 graphics", (output / INDEX_PAGE).read_text(encoding="utf-8"))

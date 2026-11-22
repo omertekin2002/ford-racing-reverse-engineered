@@ -28,16 +28,36 @@ INDIGO, wherever it is named, links to its section on the Open questions page. I
 colon-less INHERIT_TYPE line, which engines.json applies on static instruction evidence; the lead paragraph says so
 and links that basis.
 
-Every link points at an anchor the tyre, engine or routines page writes, so verify_research() refuses the build when
-one goes missing. When the data has no example, no pair or no shared torque table, the section refuses to render
-rather than state an empty claim. Nothing here interprets units, physics or handling.
+Finally it calls car_sharing_section() with the cars.json scripts/car_page.py has accepted, its reverse index from
+text_database.car_usage() and the declarations as written in CARDATA.DAT. That section answers "Which cars share an
+engine, gearbox or tyre record?", again with nothing written by hand:
+  * per CAR_REFERENCE_STORES tag, how many distinct records the cars name (refused unless it equals
+    check_car_usage()'s count), how many of those more than one car names, and how many cars name them; only a record
+    a car names directly counts, never one it reaches through :INHERIT_TYPE;
+  * one table per tag of the shared records, in their database file's order, each with the cars that name it in
+    CARDATA.DAT order, their declaration lines and each reference's basis; the front and back tyre are kept apart, and
+    a line says how many cars name the same tyre record for both, listing those that do not;
+  * one traced example, chosen by sharing_example(): the first shared record in CAR_REFERENCE_STORES order and then
+    in file order, with its first two cars' declaration lines, the loader's car-store-<TAG> row and the byte-checked
+    handler sites, each linked to its anchor on cars.html, routines.html or the record's page;
+  * where the comparison ends: that pair's other references and CAR_PERFORMANCE lines as written, and a statement
+    that naming the same record does not establish the same performance or handling. The brake, body, setup and
+    control records are named but not parsed, so they are not compared.
+
+Every link points at an anchor the car, tyre, engine, gearbox or routines page writes, so verify_research() refuses
+the build when one goes missing. When the data has no example, no pair, no shared torque table or no shared car
+record, or a linked site is not in field-evidence.json, the section refuses to render rather than state an empty
+claim. Nothing here interprets units, physics or handling.
 """
+from itertools import zip_longest
+
+import car_page
 import dossier_common
 from dossier_common import (INDIGO_ANCHOR, INDIGO_RECORD, basis_html, e, line_anchor, question_link, routine_label,
                             routine_link, site_link)
 import record_dossier
-from text_database import (ENGINE_COPY, ENGINE_FIELD_STORES, RESOLVED_TYRE_TABLES, TYRE_SCALAR_STORES, ZERO_FILLED,
-                           require, table_sources)
+from text_database import (CAR_REFERENCE_STORES, ENGINE_COPY, ENGINE_FIELD_STORES, RESOLVED_TYRE_TABLES,
+                           TYRE_SCALAR_STORES, ZERO_FILLED, check_car_usage, require, table_sources)
 import tyre_dossier
 
 SECTION_ID = "tyre-tables"
@@ -525,4 +545,278 @@ def engine_torque_section(engines, evidence, labels):
         f'line. Every engine\'s full set of effective fields is on the <a href="{e(ENGINE_PAGE)}">engine page</a>.</p>',
         torque_trace(engines, name, labels),
         comparison_ends(engines, shared),
+        "</section>"])
+
+
+
+CAR_SECTION_ID = "car-shared-records"
+CAR_QUESTION = "Which cars share an engine, gearbox or tyre record?"
+CAR_PERFORMANCE = "CAR_PERFORMANCE"
+# The car tags that name records of databases these pages do not parse, so the answer does not compare them.
+UNPARSED_CAR_TAGS = ("CAR_BRAKE_TYPE", "CAR_BODY_TYPE", "CAR_SETUP_TYPE", "CAR_CONTROL_TYPE")
+
+
+def car_link(name, part=None, text=None):
+    """Return a link to a car's section, or one of its rows, on the cars page."""
+    return (f'<a href="{e(car_page.PAGE)}#{e(dossier_common.anchor("car", name, part))}">'
+            f'{e(name if text is None else text)}</a>')
+
+
+def car_line_link(name, line):
+    """Return a link to the declarations row for line `line` of car `name` on the cars page."""
+    return f'<a href="{e(car_page.PAGE)}#{e(line_anchor("car", name, line))}">line {e(line)}</a>'
+
+
+def store_link(tag, text=None):
+    """Return a link to the cars page's row for how the car loader resolves `tag`."""
+    return (f'<a href="{e(car_page.PAGE)}#{e(dossier_common.car_store_anchor(tag))}">'
+            f'{text if text is not None else f"<code>{e(tag)}</code>"}</a>')
+
+
+def record_link(database, name, part=None, text=None):
+    """Return a link to a record's section, or one of its blocks, on its engine, gearbox or tyre page."""
+    page, prefix = car_page.TARGET_PAGES[database]
+    return (f'<a href="{e(page)}#{e(dossier_common.anchor(prefix, name, part))}">'
+            f'{e(name if text is None else text)}</a>')
+
+
+def tag_noun(tag, count):
+    """The record noun for `tag`: engine, gearbox, front tyre or back tyre, plural unless count is 1."""
+    return car_page.TAG_COUNTED[tag][count != 1]
+
+
+def tag_users(cars, usage, tag):
+    """Return [(record, [car, ...])] for the records the cars name through `tag`, from car_usage()'s reverse index.
+
+    Records are in their database file's order (the line that declares them) and each record's cars in CARDATA.DAT
+    order. Only a record a car names directly is in the index, so a parent reached through :INHERIT_TYPE is not here.
+    """
+    database = CAR_REFERENCE_STORES[tag]["database"]
+    order = {record["type"]: i for i, record in enumerate(cars["records"])}
+    found = []
+    for record, users in usage.get(database, {}).items():
+        named = [car for car, user_tag, _ in users if user_tag == tag]
+        if not named:
+            continue
+        require(all(car in cars["references"] for car in named),
+                f"The cars' reverse index names a car cars.json lacks under {database} {record}")
+        found.append((record, sorted(named, key=order.__getitem__)))
+    line = {entries[tag]["target"]: entries[tag]["target_line"] for entries in cars["references"].values()}
+    require(all(record in line for record, _ in found),
+            f"The cars' reverse index names a {database} record no car's {tag} resolves to")
+    return sorted(found, key=lambda item: line[item[0]])
+
+
+def sharing_counts(cars, usage):
+    """Return {tag: (distinct records, records named by more than one car, cars naming a shared record)}.
+
+    The distinct records come from car_usage()'s reverse index and must equal what check_car_usage() returns for it
+    against cars.json's references; the build refuses when they disagree.
+    """
+    checked = check_car_usage(usage, cars["references"])
+    counts = {}
+    for tag in CAR_REFERENCE_STORES:
+        named = tag_users(cars, usage, tag)
+        shared = [users for _, users in named if len(users) > 1]
+        counts[tag] = (len(named), len(shared), sum(len(users) for users in shared))
+    distinct = {tag: counts[tag][0] for tag in CAR_REFERENCE_STORES}
+    require(distinct == checked, f"The #{CAR_SECTION_ID} answer's distinct records per tag, {distinct}, disagree "
+                                 f"with check_car_usage()'s {checked}")
+    return counts
+
+
+def sharing_example(cars, usage):
+    """Return (tag, record, cars) for the traced example.
+
+    The record is the first, in CAR_REFERENCE_STORES order and then in its database file's order, that more than one
+    car names; cars lists every car that names it through `tag`, in CARDATA.DAT order, and the example traces the
+    first two. Refuses data where no record is shared.
+    """
+    for tag in CAR_REFERENCE_STORES:
+        for record, named in tag_users(cars, usage, tag):
+            if len(named) > 1:
+                return tag, record, named
+    raise ValueError("No two cars in cars.json name the same engine, gearbox or tyre record, so the entrance page's "
+                     f"#{CAR_SECTION_ID} answer has no shared record to show")
+
+
+def reference_html(cars, car, tag):
+    """A car's declaration of `tag`: its line on the cars page and the name as written, with a case-match note."""
+    reference = cars["references"][car][tag]
+    match = "" if reference["match"] == "exact" else " (matches ignoring case, as the lookup compares)"
+    return f'{car_line_link(car, reference["line"])}: <code>:{e(tag)} {e(reference["name"])}</code>{match}'
+
+
+def car_counts_table(counts):
+    rows = "".join(f"<tr><td>{e(car_page.TAG_TITLES[tag])} ({store_link(tag)})</td>"
+                   + "".join(f'<td class="num">{e(count)}</td>' for count in counts[tag]) + "</tr>"
+                   for tag in car_page.SUMMARY_TAGS)
+    return ("<table><tr><th>Record (tag)</th><th>Distinct records</th><th>Shared</th><th>Cars naming a shared "
+            f"record</th></tr>{rows}</table>")
+
+
+def car_sharing_summary(cars, counts):
+    total = len(cars["records"])
+    named = names_list(f"{counts[tag][0]} {e(tag_noun(tag, counts[tag][0]))}" for tag in car_page.SUMMARY_TAGS)
+    shared = names_list(f"{counts[tag][1]} {e(tag_noun(tag, counts[tag][1]))} named by {plural(counts[tag][2], 'car')}"
+                        for tag in car_page.SUMMARY_TAGS)
+    return (f"<p>The {plural(total, 'car')} in <code>{e(cars['source'])}</code> name {named}. Of those records, "
+            f"{shared} are shared: more than one car names them through the same tag. Counts come from the cars' "
+            "references indexed the other way round, the index the record pages' \"Used by cars\" blocks show, "
+            "checked against the references themselves. Only a record a car names directly is counted: a record "
+            "that one inherits from through <code>:INHERIT_TYPE</code> is not counted through it.</p>")
+
+
+def shared_tables(cars, usage):
+    """One table per tag of the records more than one car names, each car on its own row, or a line saying none."""
+    parts = []
+    for tag in car_page.SUMMARY_TAGS:
+        database = CAR_REFERENCE_STORES[tag]["database"]
+        shared = [(record, named) for record, named in tag_users(cars, usage, tag) if len(named) > 1]
+        title = car_page.TAG_TITLES[tag]
+        parts.append(f"<h3>{e(title)} records named by more than one car</h3>")
+        if not shared:
+            parts.append(f"<p>No two cars' {store_link(tag)} name the same record.</p>")
+            continue
+        rows = []
+        for record, named in shared:
+            line = cars["references"][named[0]][tag]["target_line"]
+            source = (f'<td rowspan="{len(named)}">{record_link(database, record)} (line {e(line)} of '
+                      f"<code>{e(car_page.TARGET_FILES[database])}</code>; "
+                      f"{record_link(database, record, dossier_common.USED_BY, 'its Used by cars block')})</td>")
+            for i, car in enumerate(named):
+                basis = cars["references"][car][tag]["basis"]
+                rows.append(f"<tr>{source if i == 0 else ''}<td>{car_link(car)}</td>"
+                            f"<td>{reference_html(cars, car, tag)}</td>"
+                            f'<td><span class="label">{e(basis)}</span></td></tr>')
+        parts.append(f"<p>{store_link(tag)}: {plural(len(shared), 'record')} named by more than one car.</p>"
+                     '<table><tr><th>Record</th><th>Car</th><th>Declared</th><th>Basis</th></tr>'
+                     f"{''.join(rows)}</table>")
+    return "".join(parts)
+
+
+def front_back_html(cars):
+    """How many cars name one tyre record front and back, and the cars that name different ones, linked."""
+    front, back = dossier_common.car_tags("tyres")
+    names = [record["type"] for record in cars["records"]]
+    same = [car for car in names
+            if cars["references"][car][front]["target"] == cars["references"][car][back]["target"]]
+    different = [car for car in names if car not in same]
+    text = (f"<h3>Same tyre front and back</h3><p>The front and back tyre are counted apart above. "
+            f"{plural(len(same), 'car names', 'cars name')} the same tyre record through {store_link(front)} and "
+            f"{store_link(back)}; {plural(len(different), 'car names', 'cars name')} different ones"
+            f"{':' if different else '.'}</p>")
+    if not different:
+        return text
+    rows = "".join(f"<tr><td>{car_link(car)}</td>"
+                   f"<td>{record_link('tyres', cars['references'][car][front]['target'])}</td>"
+                   f"<td>{record_link('tyres', cars['references'][car][back]['target'])}</td></tr>"
+                   for car in different)
+    return text + f'<table><tr><th>Car</th><th>Front tyre</th><th>Back tyre</th></tr>{rows}</table>'
+
+
+def store_site_vas(tag):
+    """Every byte-checked site the traced example links for `tag`: its handler's path, name read, lookup and store."""
+    entry = CAR_REFERENCE_STORES[tag]
+    path = [step.get("compare") or step["jump"] for step in entry["select"]]
+    read = [entry["read"][key] for key in ("size", "buffer", "call")]
+    return [int(va, 16) for va in (*path, *read, entry["lookup"]["call"], entry["store"])]
+
+
+def car_trace(cars, tag, record, named):
+    """Return the traced example: the first two cars' declarations, the loader's handler and its sites, the record."""
+    entry = CAR_REFERENCE_STORES[tag]
+    database = entry["database"]
+    first, second = named[:2]
+    path = ", ".join(f"compare {site_link(int(step['compare'], 16))}" if "compare" in step else
+                     f"jump {site_link(int(step['jump'], 16))} {'taken' if step['taken'] else 'not taken'}"
+                     for step in entry["select"])
+    read = ", ".join(site_link(int(entry["read"][key], 16)) for key in ("size", "buffer", "call"))
+    target_line = cars["references"][first][tag]["target_line"]
+    order = ", ".join(f"<code>{e(name)}</code>" for name in CAR_REFERENCE_STORES)
+    steps = [f"<li>{car_link(first)} names it on {reference_html(cars, first, tag)}, and {car_link(second)} on "
+             f"{reference_html(cars, second, tag)}, in <code>{e(cars['source'])}</code>.</li>",
+             f"<li>For each, the car loader's handler for <code>{e(tag)}</code> "
+             f"({store_link(tag, 'its row on the cars page')}), reached by {path}, reads the name into the "
+             f"<code>0x40</code>-byte buffer ({read}), calls the {e(database)} lookup "
+             f"<code>{e(entry['lookup']['target'])}</code> ({site_link(int(entry['lookup']['call'], 16))}) and stores "
+             f"the record it returns at car payload <code>+ {e(entry['offset'])}</code> "
+             f"({site_link(int(entry['store'], 16))}).</li>",
+             f"<li>The lookup compares names ignoring the case of A&ndash;Z; both names resolve to "
+             f"{record_link(database, record)}, declared at line {e(target_line)} of "
+             f"<code>{e(car_page.TARGET_FILES[database])}</code>, so both references resolve to that one record "
+             f"({record_link(database, record, dossier_common.USED_BY, 'its Used by cars block')} lists the "
+             f"{plural(len(named), 'car')} that name it).</li>"]
+    return (f"<h3>Traced example: {e(record)}</h3><p>Chosen from the data: the first record, in the car loader's tag "
+            f"order ({order}) and then in file order, that more than one car names, traced for the first two cars "
+            f"that name it in <code>{e(cars['source'])}</code> order. Both references are labelled "
+            f'<span class="label">{e(cars["references"][first][tag]["basis"])}</span>'
+            + ("" if cars["references"][second][tag]["basis"] == cars["references"][first][tag]["basis"] else
+               f' and <span class="label">{e(cars["references"][second][tag]["basis"])}</span>')
+            + f".</p><ol>{''.join(steps)}</ol>")
+
+
+def performance_html(car, item):
+    if item is None:
+        return '<span class="label">none</span>'
+    line, _, tokens = item
+    return f'<code>{e(" ".join(tokens))}</code> ({car_line_link(car, line)})'
+
+
+def car_comparison_ends(cars, written, tag, pair):
+    """Return where the comparison ends: the pair's other references and their CAR_PERFORMANCE lines as written."""
+    first, second = pair
+    rows = []
+    for other in car_page.SUMMARY_TAGS:
+        if other == tag:
+            continue
+        database = CAR_REFERENCE_STORES[other]["database"]
+        cells = "".join(f"<td>{record_link(database, cars['references'][car][other]['target'])} "
+                        f"({car_line_link(car, cars['references'][car][other]['line'])})</td>" for car in pair)
+        rows.append(f"<tr><td>{store_link(other)}</td>{cells}</tr>")
+    for car in pair:
+        require(car in written, f"No written declarations for car {car!r}")
+    lines = [[item for item in written[car] if item[1] == CAR_PERFORMANCE] for car in pair]
+    for a, b in zip_longest(*lines):
+        rows.append(f"<tr><td><code>:{CAR_PERFORMANCE}</code></td><td>{performance_html(first, a)}</td>"
+                    f"<td>{performance_html(second, b)}</td></tr>")
+    unparsed = names_list(f"<code>{e(name)}</code>" for name in UNPARSED_CAR_TAGS)
+    return (f"<h3>Where the comparison ends</h3><p>{car_link(first)} and {car_link(second)} both name "
+            f"{record_link(CAR_REFERENCE_STORES[tag]['database'], cars['references'][first][tag]['target'])} through "
+            f"<code>{e(tag)}</code>. Their other references, and their <code>:{CAR_PERFORMANCE}</code> lines as "
+            "written, in file order:</p>"
+            f'<table><tr><th>Tag</th><th>{e(first)}</th><th>{e(second)}</th></tr>{"".join(rows)}'
+            "</table>"
+            "<p>Naming the same record does not establish that two cars have the same performance or handling: this "
+            f"answer compares only the records the loader's lookups resolve. {unparsed} also name records, but their "
+            "databases are not parsed, so they are not compared. Values are shown as written; no units, menu meaning "
+            "or physics are claimed for them.</p>")
+
+
+def car_sharing_section(cars, usage, written, evidence):
+    """Return the entrance page's #car-shared-records section.
+
+    cars is the cars.json car_page.build() accepted, usage text_database.car_usage() of its references, written
+    car_page.check_cars()'s {car: [(line, tag, written tokens)]} and evidence the field-evidence.json whose sites the
+    routines page anchors. Refuses, with ValueError, distinct counts that disagree with check_car_usage(), data where
+    no two cars name the same record, and a linked site that is not in field-evidence.json.
+    """
+    counts = sharing_counts(cars, usage)
+    tag, record, named = sharing_example(cars, usage)
+    missing = sorted(set(store_site_vas(tag)) - {site["va"] for site in evidence})
+    require(not missing, f"The #{CAR_SECTION_ID} answer links sites that are not in field-evidence.json: "
+                         + ", ".join(f"0x{va:08x}" for va in missing))
+    return "".join([
+        f'<section id="{CAR_SECTION_ID}"><h2>{e(CAR_QUESTION)}</h2>',
+        car_sharing_summary(cars, counts),
+        car_counts_table(counts),
+        "<p>Each table lists a record once with every car that names it through that tag, in "
+        f"<code>{e(cars['source'])}</code> order, each with its declaration line and the basis of the reference: "
+        "<em>resolved by the loader's lookup (byte-checked)</em> only when every site of that path is byte-checked, "
+        f'otherwise <em>declared by name</em>. Each car\'s four references are on the <a href="{e(car_page.PAGE)}">'
+        "cars page</a>.</p>",
+        shared_tables(cars, usage),
+        front_back_html(cars),
+        car_trace(cars, tag, record, named),
+        car_comparison_ends(cars, written, tag, named[:2]),
         "</section>"])
