@@ -19,9 +19,8 @@ Grammar accepted by parse():
     parse() records it as a field and does not resolve it.
   * A line outside a block whose first word is a registered tag written without
     its colon (the demo's ENGDATA.DAT has `INHERIT_TYPE DEFAULT_TRACK` in
-    INDIGO) is kept verbatim in the record's `untagged` list. It is not applied
-    as a field, and nothing is assumed about how the game reads it. Any other
-    line outside a block is rejected.
+    INDIGO) is kept verbatim in the record's `untagged` list. parse() does not
+    apply it as a field. Any other line outside a block is rejected.
   * One `:END` closes the file. Only comments and whitespace may follow it.
 
 The tyre database is parsed with sound_info=True, which adds `:SOUND_INFO`
@@ -86,9 +85,19 @@ when it was parsed. The derived +0x2c and +0xa4 get no value: their entries
 name the declarations that may have produced them (both of +0x2c's possible
 origins, as its stores are conditional). Values stay the declared text, with
 no units. engine_fields_by_recursion() derives the same fields parent first.
+APPLIED_UNTAGGED_INHERIT is a narrow allow-list of colon-less INHERIT_TYPE lines
+read as :INHERIT_TYPE: only INDIGO's line 1410, `INHERIT_TYPE DEFAULT_TRACK`, on
+static instruction evidence (the INDIGO_GAPS sites in scripts/indigo_evidence.py,
+shown on questions.html#indigo); nothing has been run to confirm it.
+with_applied_inherits() adds it to the record's fields, marked `colon: false`
+with its basis, for effective_engine_fields() and engine_fields_by_recursion();
+the record's `untagged` line stays verbatim. It refuses, and the build fails,
+when the record's colon-less INHERIT_TYPE line is not exactly the listed one,
+when the record also has a :INHERIT_TYPE, or when a required site is missing
+from field-evidence.json. Any other colon-less line stays unapplied.
 untagged_inherit_consequences() lists, as `untagged_inherit_consequences`, the
-fields that depend on a root's colon-less INHERIT_TYPE line (the demo's INDIGO)
-under both readings, without choosing one; INDIGO stays a root as parsed.
+fields that depend on a root's colon-less INHERIT_TYPE line under both readings:
+`applied` with its basis for an allow-listed line, otherwise `unresolved`.
 
 GEARBOX_FIELD_STORES maps each of the nine gearbox tags the loader at 0x00523220
 stores to its registry ID, the `cmp eax, <id>` that finally selects it (and,
@@ -113,6 +122,8 @@ import json
 import math
 from pathlib import Path
 import re
+
+from indigo_evidence import INDIGO_EVIDENCE_SITES, INDIGO_GAPS
 
 MAX_TEXT_BYTES = 1 << 20
 NAME_FIELD_BYTES = 20
@@ -245,29 +256,41 @@ ENGINE_FIELD_STORES = {
 # in EBX and writes `offsets` (each a load of parent + n into AL/EAX followed by a store at record + n) and the
 # `block` with a repeated movsd of size >> 2 dwords and a repeated movsb of size & 3 bytes. It leaves the name and
 # +0x18 alone.
-# How many of the 51 inheriting demo engines end up with each status, per mapped tag. The five roots declare every
-# mapped tag, so in the demo no field is zero-filled; none is overwritten and no tag is unmapped.
+# How many of the 52 inheriting demo engines (the 51 with :INHERIT_TYPE and INDIGO, through its applied colon-less
+# line) end up with each status, per mapped tag. INDIGO adds one `declared` for each of the four tags it declares and
+# one `inherited` for each of the other 16. The roots declare every mapped tag, so in the demo no field is
+# zero-filled; none is overwritten and no tag is unmapped.
 ENGINE_FIELD_COUNTS = {
-    "LOCATION_TYPE": {"declared": 6, "inherited": 45},
-    "FUEL_CUTOFF": {"declared": 8, "inherited": 43},
-    "ENGINE_BRAKING": {"declared": 1, "inherited": 50},
-    "TORQUE_MODIFIER": {"declared": 51},
-    "ROUGHNESS": {"declared": 16, "inherited": 35},
-    "TORQUE_ARRAY": {"declared": 38, "inherited": 13},
-    "MAX_RPM": {"declared": 38, "inherited": 13},
-    "CAPACITY": {"declared": 14, "inherited": 37},
-    "TICKOVER_RPM": {"declared": 6, "inherited": 45},
-    "MAX_TURBO_PRESSURE": {"declared": 14, "inherited": 37},
-    "FLYWHEEL_MASS": {"declared": 7, "inherited": 44},
-    "FLYWHEEL_RADIUS": {"declared": 4, "inherited": 47},
-    "ACCELERATOR_SPEED": {"declared": 3, "inherited": 48},
-    "NUMBER_OF_TURBOS": {"declared": 14, "inherited": 37},
-    "NUMBER_OF_CYLINDERS": {"declared": 8, "inherited": 43},
-    "ASPIRATION_TYPE": {"declared": 18, "inherited": 33},
-    "MAX_AIRFLOW": {"declared": 3, "inherited": 48},
-    "TURBO_MASS": {"declared": 14, "inherited": 37},
-    "MAX_FUELFLOW": {"declared": 4, "inherited": 47},
-    "MAX_DELTA_FUELFLOW": {"declared": 3, "inherited": 48},
+    "LOCATION_TYPE": {"declared": 6, "inherited": 46},
+    "FUEL_CUTOFF": {"declared": 8, "inherited": 44},
+    "ENGINE_BRAKING": {"declared": 1, "inherited": 51},
+    "TORQUE_MODIFIER": {"declared": 52},
+    "ROUGHNESS": {"declared": 16, "inherited": 36},
+    "TORQUE_ARRAY": {"declared": 39, "inherited": 13},
+    "MAX_RPM": {"declared": 39, "inherited": 13},
+    "CAPACITY": {"declared": 14, "inherited": 38},
+    "TICKOVER_RPM": {"declared": 6, "inherited": 46},
+    "MAX_TURBO_PRESSURE": {"declared": 14, "inherited": 38},
+    "FLYWHEEL_MASS": {"declared": 7, "inherited": 45},
+    "FLYWHEEL_RADIUS": {"declared": 4, "inherited": 48},
+    "ACCELERATOR_SPEED": {"declared": 3, "inherited": 49},
+    "NUMBER_OF_TURBOS": {"declared": 14, "inherited": 38},
+    "NUMBER_OF_CYLINDERS": {"declared": 8, "inherited": 44},
+    "ASPIRATION_TYPE": {"declared": 19, "inherited": 33},
+    "MAX_AIRFLOW": {"declared": 3, "inherited": 49},
+    "TURBO_MASS": {"declared": 14, "inherited": 38},
+    "MAX_FUELFLOW": {"declared": 4, "inherited": 48},
+    "MAX_DELTA_FUELFLOW": {"declared": 3, "inherited": 49},
+}
+# The colon-less INHERIT_TYPE lines applied as :INHERIT_TYPE, by record: only INDIGO's, on the static instruction
+# evidence that the engine loader's tag reader gives `INHERIT_TYPE` the same tag ID with or without the colon
+# (questions.html#indigo, resting on every INDIGO_GAPS site). Nothing has been run to confirm it. The line and tokens
+# must match the parsed file exactly; any other colon-less line is not applied.
+APPLIED_UNTAGGED_INHERIT = {
+    "INDIGO": {"line": 1410, "tokens": ("INHERIT_TYPE", "DEFAULT_TRACK"),
+               "basis": {"label": "static instruction evidence", "question": "questions.html#indigo",
+                         "gaps": tuple(gap["id"] for gap in INDIGO_GAPS)},
+               "sites": INDIGO_EVIDENCE_SITES},
 }
 ENGINE_LOADER_SPAN = (0x005227F0, 0x00522C80)
 ENGINE_COPY = {
@@ -1332,8 +1355,61 @@ def engine_events(record):
     return sorted(record["fields"].items(), key=lambda item: item[1]["line"])
 
 
-def effective_engine_fields(records):
+def untagged_inherit_lines(record):
+    """Return the record's colon-less `INHERIT_TYPE <name>` lines, as parsed into its `untagged` list."""
+    return [item for item in record["untagged"] if len(item["tokens"]) == 2 and item["tokens"][0] == "INHERIT_TYPE"]
+
+
+def with_applied_inherits(records, evidence=None, allowed=None):
+    """Return the records with each allow-listed colon-less INHERIT_TYPE line added as its INHERIT_TYPE field.
+
+    `allowed` defaults to APPLIED_UNTAGGED_INHERIT and `evidence` to the committed field-evidence.json (read only when
+    an allow-listed record is present). The added field is `{"line", "values": [parent], "rows": [], "basis"}`; the
+    record's `untagged` list is unchanged and no other record is touched. Refuses, with ValueError, an allow-listed
+    record whose colon-less INHERIT_TYPE lines are not exactly the listed one (line and tokens), one that also has a
+    :INHERIT_TYPE, and any required instruction site missing from the evidence.
+    """
+    allowed = APPLIED_UNTAGGED_INHERIT if allowed is None else allowed
+    merged = []
+    for record in records:
+        name = record["type"]
+        entry = allowed.get(name)
+        if entry is None:
+            merged.append(record)
+            continue
+        listed = {"line": entry["line"], "tokens": list(entry["tokens"])}
+        lines = untagged_inherit_lines(record)
+        found = "; ".join(f"line {item['line']}: {' '.join(item['tokens'])}" for item in lines) or "none"
+        require(lines == [listed], f"Refusing to apply {name}'s colon-less INHERIT_TYPE line: the allow-list names "
+                f"line {entry['line']}: {' '.join(entry['tokens'])}, the file has {found}")
+        require("INHERIT_TYPE" not in record["fields"], f"Refusing to apply {name}'s colon-less INHERIT_TYPE line: "
+                f"the record also has :INHERIT_TYPE on line {record['fields'].get('INHERIT_TYPE', {}).get('line')}")
+        if evidence is None:
+            evidence = load_field_evidence()
+        present = {site["va"] for site in evidence}
+        missing = [va for va in entry["sites"] if va not in present]
+        require(not missing, f"Refusing to apply {name}'s colon-less INHERIT_TYPE line: its {entry['basis']['label']} "
+                "lacks field-evidence.json sites " + ", ".join(f"0x{va:08x}" for va in missing))
+        inherit = {"line": entry["line"], "values": [entry["tokens"][1]], "rows": [],
+                   "basis": {key: list(value) if isinstance(value, tuple) else value
+                             for key, value in entry["basis"].items()}}
+        merged.append({**record, "fields": {**record["fields"], "INHERIT_TYPE": inherit}})
+    return merged
+
+
+def inherit_entry(inherit):
+    """The `inherit_type` of an effective entry: line, parent, whether it is written with a colon and any basis."""
+    entry = {"line": inherit["line"], "parent": inherit["values"][0], "colon": "basis" not in inherit}
+    if "basis" in inherit:
+        entry["basis"] = inherit["basis"]
+    return entry
+
+
+def effective_engine_fields(records, evidence=None):
     """Return, for each engine with :INHERIT_TYPE, the declaration that ends up in each mapped tag's fields.
+
+    An allow-listed colon-less INHERIT_TYPE line counts as :INHERIT_TYPE (with_applied_inherits(), which `evidence`
+    is passed to); its entry's `inherit_type` has `colon: false` and the basis.
 
     Replays the loader at 0x005227f0 in file order: each record starts zero-filled, each tag in ENGINE_FIELD_STORES
     stores its declaration, and INHERIT_TYPE copies the parent's effective state over every offset ENGINE_COPY
@@ -1344,6 +1420,11 @@ def effective_engine_fields(records):
     producing declaration and, for a conditional store, whatever the offset held before. Tags without a
     byte-checked store are listed under `unmapped`. Values stay the declared text; nothing is computed.
     """
+    return replay_engine_fields(with_applied_inherits(records, evidence))
+
+
+def replay_engine_fields(records):
+    """effective_engine_fields() on records whose INHERIT_TYPE fields are already final (allow-list applied)."""
     state = {}
     entries = {}
     for record in records:
@@ -1376,7 +1457,7 @@ def effective_engine_fields(records):
         inherit = record["fields"].get("INHERIT_TYPE")
         if inherit is None:
             continue
-        entries[name] = {"inherit_type": {"line": inherit["line"], "parent": inherit["values"][0]},
+        entries[name] = {"inherit_type": inherit_entry(inherit),
                          "fields": {tag: engine_field(tag, fields[tag], {offset: derived[tag, offset]
                                                                           for offset in engine_derived_offsets(tag)})
                                     for tag in ENGINE_FIELD_STORES},
@@ -1384,8 +1465,10 @@ def effective_engine_fields(records):
     return entries
 
 
-def engine_fields_by_recursion(records):
+def engine_fields_by_recursion(records, evidence=None):
     """Derive each inheriting engine's effective fields a second way, independent of effective_engine_fields().
+
+    An allow-listed colon-less INHERIT_TYPE line counts as :INHERIT_TYPE, as there (with_applied_inherits()).
 
     Parent first, per record and tag: the record's own declaration counts when it follows its INHERIT_TYPE line (or
     the record has none), otherwise the field is whatever the parent ends up with, and a root that does not declare
@@ -1393,6 +1476,7 @@ def engine_fields_by_recursion(records):
     table and in effect, else the parent's final one when INHERIT_TYPE precedes the table, else zero. A derived
     offset holds its tag's own declaration in effect, followed, for a conditional store, by what it held before.
     """
+    records = with_applied_inherits(records, evidence)
     by_name = {record["type"]: record for record in records}
     order = {record["type"]: i for i, record in enumerate(records)}
 
@@ -1446,9 +1530,9 @@ def engine_fields_by_recursion(records):
             for record in records if "INHERIT_TYPE" in record["fields"]}
 
 
-def check_effective_engine_fields(records, effective):
+def check_effective_engine_fields(records, effective, evidence=None):
     """Compare effective_engine_fields() output with engine_fields_by_recursion(); refuse any difference."""
-    expected = engine_fields_by_recursion(records)
+    expected = engine_fields_by_recursion(records, evidence)
     require(set(effective) == set(expected), "Engine effective field record set mismatch")
     for name, fields in expected.items():
         for tag, entry in fields.items():
@@ -1472,26 +1556,29 @@ def torque_without_own_max_rpm(effective):
             for field in [entry["fields"]["TORQUE_ARRAY"]] if "max_rpm" in field and field["max_rpm"]["status"] != "declared"]
 
 
-def untagged_inherit_consequences(records):
+def untagged_inherit_consequences(records, evidence=None):
     """Return, per root record with one untagged `INHERIT_TYPE <earlier record>` line, what depends on that line.
 
-    Nothing here decides whether the game honours the line. For each mapped tag the record does not declare, `fields`
-    gives both readings: `if_ignored`, the zero fill the record keeps as parsed, and `if_applied`, the effective
-    entry effective_engine_fields() gives when the line is read as :INHERIT_TYPE. `overwritten_if_applied` lists the
-    record's own declarations that reading would overwrite.
+    For each mapped tag the record does not declare, `fields` gives both readings: `if_ignored`, the zero fill the
+    record keeps as parsed, and `if_applied`, the effective entry effective_engine_fields() gives when the line is read
+    as :INHERIT_TYPE. `overwritten_if_applied` lists the record's own declarations that reading would overwrite.
+    `status` is `applied`, with the allow-list's `basis`, for a line with_applied_inherits() applies, and otherwise
+    `unresolved`: nothing here decides whether the game honours a line that is not allow-listed.
     """
+    merged = with_applied_inherits(records, evidence)
     consequences = {}
     for index, record in enumerate(records):
         names = {earlier["type"] for earlier in records[:index]}
-        lines = [item for item in record["untagged"] if len(item["tokens"]) == 2 and item["tokens"][0] == "INHERIT_TYPE"
-                 and item["tokens"][1] in names]
+        lines = [item for item in untagged_inherit_lines(record) if item["tokens"][1] in names]
         if len(lines) != 1 or "INHERIT_TYPE" in record["fields"]:
             continue
         line, parent, name = lines[0]["line"], lines[0]["tokens"][1], record["type"]
-        applied = {**record, "fields": {**record["fields"],
-                                        "INHERIT_TYPE": {"line": line, "values": [parent], "rows": []}}}
-        entry = effective_engine_fields(records[:index] + [applied])[name]
-        consequences[name] = {"line": line, "tokens": lines[0]["tokens"], "parent": parent, "status": "unresolved",
+        inherit = merged[index]["fields"].get("INHERIT_TYPE", {"line": line, "values": [parent], "rows": []})
+        applied = {**record, "fields": {**record["fields"], "INHERIT_TYPE": inherit}}
+        entry = replay_engine_fields(merged[:index] + [applied])[name]
+        consequences[name] = {"line": line, "tokens": lines[0]["tokens"], "parent": parent,
+                              "status": "applied" if "basis" in inherit else "unresolved",
+                              **({"basis": inherit["basis"]} if "basis" in inherit else {}),
                               "fields": {tag: {"if_ignored": described(zero_origin(name)),
                                                "if_applied": entry["fields"][tag]}
                                          for tag in ENGINE_FIELD_STORES if tag not in record["fields"]},
@@ -1610,9 +1697,11 @@ def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, hea
     unmapped = unmapped_engine_tags(engines)
     require(not unmapped, "Engine tags without a byte-checked store: "
             + ", ".join(f"{tag} (first in {name}, line {line})" for tag, (name, line) in unmapped.items()))
-    fields = effective_engine_fields(engines)
-    require(set(fields) == {record["type"] for record in inherits}, "Engine effective field record set mismatch")
-    check_effective_engine_fields(engines, fields)
+    fields = effective_engine_fields(engines, evidence)
+    require(set(fields) == {record["type"] for record in inherits} | set(APPLIED_UNTAGGED_INHERIT),
+            "Engine effective field record set mismatch")
+    require(len(fields) == 52, f"Engine effective field record count mismatch: {len(fields)}")
+    check_effective_engine_fields(engines, fields, evidence)
     early = sorted(name for name, entry in fields.items() if entry["overwritten"])
     require(not early, "Engine fields declared before INHERIT_TYPE: " + ", ".join(early))
     unmapped = sorted(name for name, entry in fields.items() if entry["unmapped"])
@@ -1622,9 +1711,13 @@ def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, hea
             + ", ".join(f"{name} (from {source})" for name, source in stray))
     engine_counts = engine_field_counts(fields)
     require(engine_counts == ENGINE_FIELD_COUNTS, f"Engine effective field counts mismatch: {engine_counts}")
-    consequences = untagged_inherit_consequences(engines)
+    consequences = untagged_inherit_consequences(engines, evidence)
     require(set(consequences) == {"INDIGO"}, "Engines with a colon-less INHERIT_TYPE line to an earlier record: "
             + (", ".join(consequences) or "none") + "; expected INDIGO only")
+    indigo = fields["INDIGO"]["inherit_type"]
+    require(consequences["INDIGO"]["status"] == "applied" and not consequences["INDIGO"]["overwritten_if_applied"]
+            and (indigo["line"], indigo["parent"], indigo["colon"]) == (1410, "DEFAULT_TRACK", False),
+            "INDIGO's colon-less INHERIT_TYPE line is not applied from line 1410 to DEFAULT_TRACK without overwriting")
     for record in gearboxes:
         require(set(record["fields"]) == GEARBOX_TAGS, "Gearbox tag set mismatch: " + record["type"])
     missing, extra = unmapped_gearbox_tags()
@@ -1673,6 +1766,8 @@ def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, hea
             "engine_mapped_tags": len(ENGINE_FIELD_STORES), "gearbox_mapped_tags": len(GEARBOX_FIELD_STORES),
             "torque_rows": [min(len(f["rows"]) for f in torque), max(len(f["rows"]) for f in torque)],
             "engine_inheritances": len(inherits), "engine_effective_field_records": len(fields),
+            "engine_applied_untagged_inherits": sorted(name for name, entry in fields.items()
+                                                       if not entry["inherit_type"]["colon"]),
             "engine_effective_field_counts": engine_counts,
             "indigo_dependent_tags": sorted(consequences["INDIGO"]["fields"]), "gearbox_tags": sorted(GEARBOX_TAGS), "untagged_lines": untagged,
             "tyre_records": len(tyres), "tyre_inheritances": len(tyre_inherits), "tyre_tables": tables,

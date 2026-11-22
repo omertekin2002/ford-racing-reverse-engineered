@@ -115,7 +115,8 @@ def render_index(counts, pe, revision, evidence, answers=""):
     """Return the "Explore findings" entrance page; `answers` is the HTML of its answered questions."""
     rows = (("engines.html", "Engines", "Each engine record's declarations as written, and the declaration each "
              "inheriting engine's fields end up with, traced to its record and line, with the byte-checked store "
-             "sites behind each. Untagged lines are labelled unresolved.", f'{counts["engines"]} engine records'),
+             "sites behind each. INDIGO's colon-less INHERIT_TYPE line is applied on static instruction evidence; any "
+             "other untagged line would be labelled unresolved.", f'{counts["engines"]} engine records'),
             ("gearboxes.html", "Gearboxes", "Each gearbox record's declarations as written.",
              f'{counts["gearboxes"]} gearbox records'),
             ("compare.html", "Compare records", "Every gearbox, and every engine's and tyre's effective values, lined "
@@ -134,9 +135,10 @@ def render_index(counts, pe, revision, evidence, answers=""):
             ("routines.html", "Routines", "Each analyst-labelled routine's signature, Ghidra pseudocode, bounded "
              "disassembly and the byte-checked instruction sites in it. Labels are analyst-assigned, not original "
              "symbols.", f'{counts["routines"]} annotated routines'),
-            ("questions.html", "Open questions", "Findings labelled unresolved elsewhere: what was observed, what "
-             "depends on each, the alternatives the observations leave open (all untested) and what evidence would "
-             "decide it. Nothing is resolved.", f'{counts["questions"]} open questions'))
+            ("questions.html", "Open questions", "Findings no run has settled: what was observed, what depends on "
+             "each, the alternatives the observations leave open (all untested) and what evidence would decide it, "
+             "with the static instruction evidence INDIGO's applied line rests on.",
+             f'{counts["questions"]} open questions'))
     table = "".join(f'<tr><td><a href="{e(page)}">{e(title)}</a></td><td>{text}</td><td>{e(count)}</td></tr>'
                     for page, title, text, count in rows)
     files = "".join(f'<li><a href="{e(href)}"><code>{e(href)}</code></a></li>' for href in evidence)

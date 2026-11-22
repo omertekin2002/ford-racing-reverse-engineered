@@ -14,20 +14,24 @@ The output is two static HTML files, engines.html and gearboxes.html, with
 inline CSS, no JavaScript and no external resources. For each record they show
 the declarations exactly as written, in line order: scalar values, multi-row
 fields such as TORQUE_ARRAY as row tables with their dimensions, :INHERIT_TYPE
-as a link to the parent, and every untagged line verbatim labelled unresolved;
-INDIGO's colon-less line links to its section on the Open questions page
+as a link to the parent, and every untagged line verbatim. An untagged line
+is labelled unresolved, except INDIGO's colon-less INHERIT_TYPE line, which
+text_database.py applies on static instruction evidence: it is labelled with
+that basis, linked to its section on the Open questions page
 (scripts/open_questions.py).
 
-Each inheriting engine also gets an effective-fields table: for every tag in
+Each inheriting engine, INDIGO included through its applied colon-less line
+(shown verbatim with its parent and basis), also gets an effective-fields table: for every tag in
 ENGINE_FIELD_STORES, its status (declared, inherited or zero-filled), the
 declared values, the source record and line (linked to that line's row), the
 INHERIT_TYPE path and the byte-checked store sites. A TORQUE_ARRAY row, whose
 id the entrance page's torque-table answer links, names the MAX_RPM
 declaration its row count was read from; the derived +0x2c and
 +0xa4 are labelled derived (+0x2c also conditional) with their possible
-origins and no value. A root with a colon-less INHERIT_TYPE line (INDIGO) lists
-the fields that depend on it under both readings, labelled unresolved. Units
-and physics are not interpreted.
+origins and no value. A root with a colon-less INHERIT_TYPE line that is not
+allow-listed lists the fields that depend on it under both readings, labelled
+unresolved; for INDIGO's applied line the page names the tags that would be
+zero-filled had it been ignored. Units and physics are not interpreted.
 
 The gearbox page has a "Where each field is stored" table: for each tag in
 GEARBOX_FIELD_STORES, its payload offset, width and Fr3GearboxRecord field, how
@@ -66,9 +70,9 @@ labelled differently there.
 import argparse
 from pathlib import Path
 
-from dossier_common import (INDIGO_ANCHOR, ROUTINE_STATUS, STYLE, anchor, check_fields, check_pe, declarations, e,
-                            is_indigo_line, line_anchor, link, load_json, page_start, producer_revision, question_link,
-                            routine_label, routine_labels, routine_link, site_link)
+from dossier_common import (INDIGO_ANCHOR, ROUTINE_STATUS, STYLE, anchor, basis_html, check_fields, check_pe,
+                            declarations, e, is_indigo_line, line_anchor, link, load_json, page_start, producer_revision,
+                            question_link, routine_label, routine_labels, routine_link, site_link)
 from text_database import (ENGINE_COPY, ENGINE_FIELD_STORES, ENGINE_RECORD_SIZE, FLOAT_READER, ENUM_READER, GEARBOX_COPY,
                            GEARBOX_FIELD_STORES, GEARBOX_FLOAT_TO_BYTE_CALL, REPO_ROOT, ZERO_FILLED,
                            check_effective_engine_fields, effective_engine_fields, require,
@@ -96,9 +100,20 @@ ENGINE_SCOPE = ('Scope: values are shown exactly as declared in <code>ENGDATA.DA
                 "torque table included, over everything declared before it. A shared parent does not make two "
                 "engines behave identically: each one's own declarations replace the parent's. The meaning, units "
                 "and physics of the values, including the torque arrays, are not established, and nothing is "
-                "computed, including the derived <code>+ 0x2c</code> and <code>+ 0xa4</code>. Untagged lines, such "
-                "as the colon-less <code>INHERIT_TYPE DEFAULT_TRACK</code> in the demo's <code>INDIGO</code> engine, "
-                "are kept verbatim and not applied; whether the game honours them is not established.")
+                "computed, including the derived <code>+ 0x2c</code> and <code>+ 0xa4</code>. Untagged lines are "
+                "kept verbatim.")
+
+
+def untagged_scope(consequences):
+    """The scope's last sentences: which colon-less INHERIT_TYPE lines are applied, on what basis, and that no other
+    untagged line is."""
+    applied = [(name, item) for name, item in consequences.items() if item["status"] == "applied"]
+    lines = "".join(f' The colon-less <code>{e(" ".join(item["tokens"]))}</code> in <code>{e(name)}</code> (line '
+                    f'{e(item["line"])}) is applied as inheritance on {basis_html(item["basis"])}: the tag reader '
+                    "gives it the same tag as <code>:INHERIT_TYPE</code>. Nothing has been run to confirm it."
+                    for name, item in applied)
+    return (f"{lines} Any {'other ' if applied else ''}untagged line is not applied; whether the game honours it is "
+            "not established.")
 GEARBOX_SCOPE = ('Scope: values are shown exactly as declared in <code>GEARDATA.DAT</code>. Gearbox inheritance '
                  "(<code>:INHERIT_TYPE</code>) is unresolved: no parent value is copied into a child here. The meaning "
                  "and units of the values are not established. Untagged lines are kept verbatim and not applied; "
@@ -109,11 +124,25 @@ UNTAGGED_NOTE = (' kept verbatim, not applied <div class="unresolved"><span clas
                  "established{}</div>")
 
 
-def untagged_note(record, item):
-    """The unresolved note after an untagged line; INDIGO's colon-less line links to its open question."""
-    if is_indigo_line(record, item):
-        return UNTAGGED_NOTE.format(" (" + question_link(INDIGO_ANCHOR, "open question") + ")")
-    return UNTAGGED_NOTE.format("")
+APPLIED_NOTE = (" kept verbatim, applied as <code>:INHERIT_TYPE</code> {parent} on {basis}: the tag reader gives "
+                "it the same tag with or without the colon. Nothing has been run to confirm it (see Effective fields)")
+
+
+def untagged_notes(consequences):
+    """Return untagged_note(record, item) for declarations(): an applied line's basis, else the unresolved note.
+
+    INDIGO's colon-less line links to its open question either way.
+    """
+    def untagged_note(record, item):
+        consequence = consequences.get(record["type"])
+        if consequence and consequence["status"] == "applied" and consequence["line"] == item["line"]:
+            return APPLIED_NOTE.format(parent=link("engine", consequence["parent"]),
+                                       basis=basis_html(consequence["basis"]))
+        if is_indigo_line(record, item):
+            return UNTAGGED_NOTE.format(" (" + question_link(INDIGO_ANCHOR, "open question") + ")")
+        return UNTAGGED_NOTE.format("")
+    return untagged_note
+
 
 
 def scalar(item):
@@ -149,14 +178,18 @@ def check_records(database, label):
         names.add(name)
 
 
-def check_engine_fields(database):
-    """Check engines.json's effective fields and colon-less line consequences against its records."""
+def check_engine_fields(database, evidence=None):
+    """Check engines.json's effective fields and colon-less line consequences against its records.
+
+    `evidence` is the field-evidence.json site list an allow-listed colon-less line rests on (text_database.py's
+    with_applied_inherits()); by default the committed one.
+    """
     check_fields(database, {"effective_fields": dict, "untagged_inherit_consequences": dict}, "engines.json")
     records = database["records"]
-    require(database["effective_fields"] == effective_engine_fields(records),
+    require(database["effective_fields"] == effective_engine_fields(records, evidence),
             "engines.json effective_fields disagrees with the record declarations (rerun scripts/text_database.py)")
-    check_effective_engine_fields(records, database["effective_fields"])
-    require(database["untagged_inherit_consequences"] == untagged_inherit_consequences(records),
+    check_effective_engine_fields(records, database["effective_fields"], evidence)
+    require(database["untagged_inherit_consequences"] == untagged_inherit_consequences(records, evidence),
             "engines.json untagged_inherit_consequences disagrees with the record declarations "
             "(rerun scripts/text_database.py)")
 
@@ -273,11 +306,23 @@ FIELD_HEADER = ("<table><tr><th>Tag</th><th>Offsets</th><th>Effective declaratio
                 "<th>Path</th><th>Store sites</th></tr>")
 
 
-def effective_section(name, entry, routines):
+def inherit_html(inherit, record=None):
+    """Where a record's INHERIT_TYPE is: `:INHERIT_TYPE <parent>` on its line, or an applied colon-less line verbatim
+    with its parent and basis (`record` gives the verbatim tokens)."""
+    if inherit["colon"]:
+        return f'<code>:INHERIT_TYPE</code> {link("engine", inherit["parent"])} is on line {e(inherit["line"])}'
+    item = next((item for item in (record or {}).get("untagged", []) if item["line"] == inherit["line"]), None)
+    tokens = " ".join(item["tokens"]) if item else f'INHERIT_TYPE {inherit["parent"]}'
+    return (f'Line {e(inherit["line"])}, <code>{e(tokens)}</code>, has no colon. It is applied here as '
+            f'<code>:INHERIT_TYPE</code> {link("engine", inherit["parent"])} on {basis_html(inherit["basis"])}: the '
+            "tag reader gives the token the same tag ID with or without the colon. That is read from the "
+            "executable's instructions; nothing has been run to confirm it")
+
+
+def effective_section(name, entry, routines, record=None):
     inherit = entry["inherit_type"]
     torque = ENGINE_FIELD_STORES["TORQUE_ARRAY"]
-    parts = [f'<h3>Effective fields</h3><p><code>:INHERIT_TYPE</code> {link("engine", inherit["parent"])} is on line '
-             f'{e(inherit["line"])}. When the loader parses it, it calls the record copy {routine_link(routines["copy"])} '
+    parts = [f'<h3>Effective fields</h3><p>{inherit_html(inherit, record)}. When the loader parses it, it calls the record copy {routine_link(routines["copy"])} '
              f'({site_link(int(ENGINE_COPY["call"], 16))}), which copies the parent\'s effective fields, the 18 torque '
              'slots included, over this record\'s, all but the name and <code>+ 0x18</code>. So each field '
              f'holds {e(name)}\'s own declaration when that follows <code>INHERIT_TYPE</code>, and otherwise the '
@@ -435,17 +480,24 @@ def engine_store_section(routines):
 
 
 def consequence_section(record, consequence):
-    """What depends on a root's colon-less INHERIT_TYPE line, under both readings, without choosing one."""
+    """What depends on a root's colon-less INHERIT_TYPE line: for an applied line, what ignoring it would zero-fill;
+    otherwise both readings, without choosing one."""
     item = {"line": consequence["line"], "tokens": consequence["tokens"]}
+    overwritten = ", ".join(f'<code>{e(entry["tag"])}</code> (line {e(entry["line"])})'
+                            for entry in consequence["overwritten_if_applied"])
+    if consequence["status"] == "applied":
+        tags = ", ".join(f"<code>{e(tag)}</code>" for tag in consequence["fields"]) or "none"
+        return (f'<p>Had line {e(consequence["line"])} been ignored, {e(record["type"])} would be a root, and the '
+                f'{len(consequence["fields"])} mapped tags it does not declare would be zero-filled: {tags}. Applying '
+                "it overwrites " + (f"these earlier declarations: {overwritten}." if overwritten
+                                    else "none of its own declarations.") + "</p>")
     question = (" (" + question_link(INDIGO_ANCHOR, "open question") + ")") if is_indigo_line(record, item) else ""
-    rows = "".join(f'<tr><td><code>{e(tag)}</code></td><td><span class="label">zero-filled</span></td>'
+    rows ="".join(f'<tr><td><code>{e(tag)}</code></td><td><span class="label">zero-filled</span></td>'
                    f'<td>{value_html(field["if_applied"])}, '
                    + ("" if field["if_applied"]["status"] == ZERO_FILLED
                       else f'{source_link(field["if_applied"]["source"], field["if_applied"]["source_line"])}, ')
                    + f'path {path_html(field["if_applied"]["path"])}</td></tr>'
                    for tag, field in consequence["fields"].items())
-    overwritten = ", ".join(f'<code>{e(entry["tag"])}</code> (line {e(entry["line"])})'
-                            for entry in consequence["overwritten_if_applied"])
     note = (f"<p>Applying it would also overwrite these earlier declarations: {overwritten}.</p>" if overwritten else "")
     return (f'<div class="unresolved"><p><span class="label">unresolved</span>: {e(record["type"])} is a root as parsed, '
             f'because line {e(consequence["line"])}, <code>{e(" ".join(consequence["tokens"]))}</code>, has no colon'
@@ -478,7 +530,7 @@ def render(database, kind, pe, revision, routines, entrance=False):
              f'<dt>Loaded by</dt><dd>{routine_ref(spec, routines, "load")}; record copy '
              f'{routine_ref(spec, routines, "copy")}; on the routines page. Routine labels are analyst-assigned, not '
              'original symbols.</dd></dl>',
-             f'<p class="scope">{ENGINE_SCOPE if engines else GEARBOX_SCOPE}</p>']
+             f'<p class="scope">{ENGINE_SCOPE + untagged_scope(database["untagged_inherit_consequences"]) if engines else GEARBOX_SCOPE}</p>']
     parts.append(engine_store_section(routines) if engines else gearbox_store_section(routines))
     parts.append('<h2>Summary</h2><table><tr><th>Record</th><th>Line</th>'
                  + (f"<th>Parent{'' if engines else ' (unresolved)'}</th>" if inherits else "")
@@ -487,7 +539,14 @@ def render(database, kind, pe, revision, routines, entrance=False):
         fields = record["fields"]
         row = f'<tr><td>{link(prefix, record["type"])}</td><td>{e(record["line"])}</td>'
         if inherits:
-            row += f'<td>{link(prefix, fields["INHERIT_TYPE"]["values"][0]) if "INHERIT_TYPE" in fields else ""}</td>'
+            applied = database["effective_fields"].get(record["type"], {}).get("inherit_type") if engines else None
+            if "INHERIT_TYPE" in fields:
+                row += f'<td>{link(prefix, fields["INHERIT_TYPE"]["values"][0])}</td>'
+            elif applied:
+                row += (f'<td>{link(prefix, applied["parent"])} (colon-less line {e(applied["line"])}, '
+                        f'{basis_html(applied["basis"])})</td>')
+            else:
+                row += "<td></td>"
         if torque:
             row += f"<td>{shape(fields[TORQUE]) if TORQUE in fields else ''}</td>"
         parts.append(row + "</tr>")
@@ -498,7 +557,7 @@ def render(database, kind, pe, revision, routines, entrance=False):
                      f'<p>Declared at line {e(record["line"])} of <code>{e(database["source"])}</code>.</p>')
         inherit = record["fields"].get("INHERIT_TYPE")
         if engines and name in database["effective_fields"]:
-            parts.append(effective_section(name, database["effective_fields"][name], routines))
+            parts.append(effective_section(name, database["effective_fields"][name], routines, record))
         elif inherit:
             parts.append(f'<div class="unresolved"><p><span class="label">unresolved</span>: <code>:INHERIT_TYPE</code> '
                          f'{link(prefix, inherit["values"][0])} on line {e(inherit["line"])}. Which of the parent\'s '
@@ -507,8 +566,9 @@ def render(database, kind, pe, revision, routines, entrance=False):
         if engines and name in database["untagged_inherit_consequences"]:
             parts.append(consequence_section(record, database["untagged_inherit_consequences"][name]))
         note = ENGINE_INHERIT_NOTE if engines else INHERIT_NOTE
+        notes = untagged_notes(database["untagged_inherit_consequences"] if engines else {})
         parts.append(f"<h3>Declarations, as written</h3>"
-                     f"{declarations(record, prefix, note, untagged_note, row_ids=True)}</section>")
+                     f"{declarations(record, prefix, note, notes, row_ids=True)}</section>")
     parts.append("</body></html>\n")
     return "\n".join(parts)
 
@@ -527,8 +587,9 @@ def build(engines_path, gearboxes_path, pe_path, output_dir, revision=None, entr
     check_pe(pe)
     for kind, database in databases.items():
         check_records(database, f"{kind}.json")
-    check_engine_fields(databases["engines"])
-    check_sites(load_json(evidence_path, "Field evidence (analysis/selected/field-evidence.json)"))
+    evidence = load_json(evidence_path, "Field evidence (analysis/selected/field-evidence.json)")
+    check_sites(evidence)
+    check_engine_fields(databases["engines"], evidence)
     routines = check_routines(routine_labels(status_path))
     revision = revision or producer_revision()
     pages = {kind: render(database, kind, pe, revision, routines[kind], entrance)

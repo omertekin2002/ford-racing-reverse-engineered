@@ -17,6 +17,8 @@ from text_database import (ENGINE_COPY, ENGINE_FIELD_COUNTS, ENGINE_FIELD_STORES
                            untagged_inherit_consequences,
                            engine_evidence_problems, engine_layout_problems, load_layout_header, load_tag_ids,
                            memory_operand, unmapped_engine_tags)
+from indigo_evidence import INDIGO_EVIDENCE_SITES, INDIGO_GAPS
+from text_database import (APPLIED_UNTAGGED_INHERIT, with_applied_inherits)
 from text_database import (GEARBOX_COPY, GEARBOX_FIELD_STORES, GEARBOX_LOADER_SPAN, GEARBOX_RECORD,
                            gearbox_evidence_problems, gearbox_layout_problems, unmapped_gearbox_tags)
 from text_database import (GEARBOX_TAGS, MAX_TEXT_BYTES, RESOLVED_TYRE_TABLES, SCALAR_COPY_CALL, SCALAR_COPY_OFFSETS,
@@ -664,6 +666,109 @@ CHAIN = (":TYPE ROOT\n:CAPACITY 2.0\n:MAX_RPM 6000\n:TORQUE_ARRAY\n0 100\n1000 2
          ":TYPE TIP\n:INHERIT_TYPE LEAF\n:TORQUE_MODIFIER 1.2\n")
 
 
+# The tags the demo's INDIGO declares after its colon-less line, and the basis the allow-list gives that line.
+INDIGO_TAGS = ("ASPIRATION_TYPE", "MAX_RPM", "TORQUE_MODIFIER", "TORQUE_ARRAY")
+BASIS = {"label": "static instruction evidence", "question": "questions.html#indigo",
+         "gaps": [gap["id"] for gap in INDIGO_GAPS]}
+
+
+def indigo_at(line, parent="DEFAULT_TRACK", tokens=None, before=""):
+    """A root DEFAULT_TRACK, then INDIGO whose colon-less line (`tokens`, by default INHERIT_TYPE <parent>) sits on
+    `line`, padded with comment lines, followed by its own CAPACITY. `before` goes right after :TYPE INDIGO."""
+    head = [":TYPE DEFAULT_TRACK", ":MAX_RPM 7000", ":LOCATION_TYPE REAR", ":TYPE INDIGO", *before.splitlines()]
+    return "\n".join([*head, *["//"] * (line - len(head) - 1), tokens or f"INHERIT_TYPE {parent}", ":CAPACITY 4.0"]) + "\n"
+
+
+class AppliedUntaggedInheritTests(unittest.TestCase):
+    """INDIGO's allow-listed colon-less line is applied as :INHERIT_TYPE; anything else about it is refused."""
+
+    def test_the_allow_list_names_indigo_line_1410_on_static_instruction_evidence(self):
+        self.assertEqual(list(APPLIED_UNTAGGED_INHERIT), ["INDIGO"])
+        entry = APPLIED_UNTAGGED_INHERIT["INDIGO"]
+        self.assertEqual((entry["line"], entry["tokens"]), (1410, ("INHERIT_TYPE", "DEFAULT_TRACK")))
+        self.assertEqual(entry["basis"]["label"], "static instruction evidence")
+        self.assertEqual(entry["basis"]["question"], "questions.html#indigo")
+        # The sites are INDIGO_GAPS's, not a copy, and every one is in the committed field evidence.
+        self.assertIs(entry["sites"], INDIGO_EVIDENCE_SITES)
+        self.assertEqual(entry["sites"], tuple(va for gap in INDIGO_GAPS for va in gap["sites"]))
+        self.assertLessEqual(set(entry["sites"]), {site["va"] for site in load_field_evidence()})
+
+    def test_the_allow_listed_line_is_applied_with_colon_false_and_its_basis(self):
+        records = parse_engines(indigo_at(1410))
+        before = copy.deepcopy(records)
+        effective = effective_engine_fields(records)
+        self.assertEqual(effective["INDIGO"]["inherit_type"],
+                         {"line": 1410, "parent": "DEFAULT_TRACK", "colon": False, "basis": BASIS})
+        fields = effective["INDIGO"]["fields"]
+        self.assertEqual(fields["LOCATION_TYPE"], engine_entry("LOCATION_TYPE", "inherited", ["INDIGO", "DEFAULT_TRACK"],
+                                                               "DEFAULT_TRACK", 3, ["REAR"]))
+        self.assertEqual(fields["CAPACITY"], engine_entry("CAPACITY", "declared", ["INDIGO"], "INDIGO", 1411, [4.0]))
+        self.assertEqual(fields["FUEL_CUTOFF"]["status"], ZERO_FILLED)
+        self.assertEqual(effective["INDIGO"]["overwritten"], [])
+        self.assertEqual(engine_fields_by_recursion(records)["INDIGO"], fields)
+        check_effective_engine_fields(records, effective)
+        consequence = untagged_inherit_consequences(records)["INDIGO"]
+        self.assertEqual((consequence["status"], consequence["basis"]), ("applied", BASIS))
+        self.assertEqual(consequence["fields"]["LOCATION_TYPE"],
+                         {"if_ignored": zero(["INDIGO"]), "if_applied": fields["LOCATION_TYPE"]})
+        # The records themselves keep the line verbatim and gain no field.
+        self.assertEqual(records, before)
+        self.assertNotIn("INHERIT_TYPE", records[1]["fields"])
+
+    def test_a_child_inherits_through_the_applied_line(self):
+        records = parse_engines(indigo_at(1410), ":TYPE CHILD\n:INHERIT_TYPE INDIGO\n")
+        child = effective_engine_fields(records)["CHILD"]
+        self.assertEqual(child["inherit_type"], {"line": 1413, "parent": "INDIGO", "colon": True})
+        self.assertEqual(child["fields"]["MAX_RPM"]["path"], ["CHILD", "INDIGO", "DEFAULT_TRACK"])
+        self.assertEqual(engine_fields_by_recursion(records)["CHILD"], child["fields"])
+
+    def test_a_line_that_is_not_allow_listed_is_not_applied(self):
+        records = parse_engines(indigo_at(1410).replace("INDIGO", "OTHER"))
+        self.assertEqual(records[1]["untagged"], [{"line": 1410, "tokens": ["INHERIT_TYPE", "DEFAULT_TRACK"]}])
+        self.assertEqual(effective_engine_fields(records), {})
+        self.assertEqual(engine_fields_by_recursion(records), {})
+        self.assertEqual(untagged_inherit_consequences(records)["OTHER"]["status"], "unresolved")
+        self.assertNotIn("basis", untagged_inherit_consequences(records)["OTHER"])
+
+    def test_a_listed_line_with_another_line_number_or_tokens_is_refused(self):
+        cases = {"line 1409": (indigo_at(1409), "the file has line 1409: INHERIT_TYPE DEFAULT_TRACK"),
+                 "line 1411": (indigo_at(1411), "the file has line 1411: INHERIT_TYPE DEFAULT_TRACK"),
+                 "parent": (":TYPE OTHER\n" + indigo_at(1409, "OTHER"), "the file has line 1410: INHERIT_TYPE OTHER"),
+                 "no line": (indigo_at(1410, tokens="//"), "the file has none"),
+                 "two lines": (indigo_at(1410, before="INHERIT_TYPE DEFAULT_TRACK"),
+                               "the file has line 5: INHERIT_TYPE DEFAULT_TRACK; line 1410: INHERIT_TYPE DEFAULT_TRACK")}
+        for name, (text, found) in cases.items():
+            records = parse_engines(text)
+            for resolve in (effective_engine_fields, engine_fields_by_recursion, untagged_inherit_consequences):
+                with self.subTest(case=name, resolve=resolve.__name__), self.assertRaisesRegex(
+                        ValueError, "Refusing to apply INDIGO's colon-less INHERIT_TYPE line: the allow-list names "
+                                    "line 1410: INHERIT_TYPE DEFAULT_TRACK, " + re.escape(found)):
+                    resolve(records)
+
+    def test_a_listed_record_that_also_has_a_colon_inherit_type_is_refused(self):
+        records = parse_engines(indigo_at(1410, before=":INHERIT_TYPE DEFAULT_TRACK"))
+        with self.assertRaisesRegex(ValueError, "the record also has :INHERIT_TYPE on line 5"):
+            effective_engine_fields(records)
+
+    def test_a_missing_evidence_site_refuses_to_apply_the_line(self):
+        records = parse_engines(indigo_at(1410))
+        evidence = load_field_evidence()
+        for gap in INDIGO_GAPS:
+            for va in (gap["sites"][0], gap["sites"][-1]):
+                reduced = [site for site in evidence if site["va"] != va]
+                for resolve in (effective_engine_fields, engine_fields_by_recursion, untagged_inherit_consequences):
+                    with self.subTest(gap=gap["id"], va=f"0x{va:08x}", resolve=resolve.__name__), self.assertRaisesRegex(
+                            ValueError, "Refusing to apply INDIGO's colon-less INHERIT_TYPE line: its static instruction "
+                                        f"evidence lacks field-evidence.json sites 0x{va:08x}"):
+                        resolve(records, reduced)
+        self.assertIn("INDIGO", effective_engine_fields(records, evidence))
+
+    def test_evidence_is_read_only_when_a_listed_record_is_present(self):
+        with mock.patch.object(text_database, "load_field_evidence", side_effect=AssertionError("read")):
+            self.assertEqual(with_applied_inherits(parse_engines(*CHAIN))[0]["fields"],
+                             parse_engines(*CHAIN)[0]["fields"])
+
+
 class EffectiveEngineFieldsTests(unittest.TestCase):
     def fields(self, records, name):
         effective = effective_engine_fields(records)
@@ -697,7 +802,7 @@ class EffectiveEngineFieldsTests(unittest.TestCase):
         # ROOT never declares FUEL_CUTOFF, so the copy overwrites CHILD's with ROOT's zero fill.
         self.assertEqual(entry["fields"]["FUEL_CUTOFF"], engine_entry("FUEL_CUTOFF", ZERO_FILLED, ["CHILD", "ROOT"]))
         self.assertEqual(entry["fields"]["ROUGHNESS"]["status"], "declared")
-        self.assertEqual(entry["inherit_type"], {"line": 6, "parent": "ROOT"})
+        self.assertEqual(entry["inherit_type"], {"line": 6, "parent": "ROOT", "colon": True})
 
     def test_own_torque_array_replaces_the_whole_parent_table(self):
         records = parse_engines(":TYPE ROOT\n:MAX_RPM 6000\n:TORQUE_ARRAY\n0 1\n1 2\n2 3\n3 4\n",
@@ -804,20 +909,21 @@ class EffectiveEngineFieldsTests(unittest.TestCase):
 
 class UntaggedInheritConsequenceTests(unittest.TestCase):
     def test_lists_both_readings_for_each_undeclared_tag(self):
-        records = parse_engines(*CHAIN, ":TYPE INDIGO\nINHERIT_TYPE LEAF\n:CAPACITY 4.0\n:MAX_RPM 9000\n")
+        records = parse_engines(*CHAIN, ":TYPE LONER\nINHERIT_TYPE LEAF\n:CAPACITY 4.0\n:MAX_RPM 9000\n")
         consequences = untagged_inherit_consequences(records)
-        self.assertEqual(list(consequences), ["INDIGO"])
-        entry = consequences["INDIGO"]
+        self.assertEqual(list(consequences), ["LONER"])
+        entry = consequences["LONER"]
         self.assertEqual({key: entry[key] for key in ("line", "tokens", "parent", "status", "overwritten_if_applied")},
                          {"line": 18, "tokens": ["INHERIT_TYPE", "LEAF"], "parent": "LEAF", "status": "unresolved",
                           "overwritten_if_applied": []})
         self.assertEqual(set(entry["fields"]), set(ENGINE_FIELD_STORES) - {"CAPACITY", "MAX_RPM"})
         self.assertEqual(entry["fields"]["ROUGHNESS"], {
-            "if_ignored": zero(["INDIGO"]),
-            "if_applied": engine_entry("ROUGHNESS", "inherited", ["INDIGO", "LEAF", "MID"], "MID", 10, [0.1])})
+            "if_ignored": zero(["LONER"]),
+            "if_applied": engine_entry("ROUGHNESS", "inherited", ["LONER", "LEAF", "MID"], "MID", 10, [0.1])})
         self.assertEqual(entry["fields"]["FUEL_CUTOFF"]["if_applied"]["status"], ZERO_FILLED)
-        # INDIGO stays a root as parsed: it gets no effective entry.
-        self.assertNotIn("INDIGO", effective_engine_fields(records))
+        # A line that is not allow-listed is not applied: LONER stays a root as parsed and gets no effective entry.
+        self.assertNotIn("LONER", effective_engine_fields(records))
+        self.assertNotIn("LONER", engine_fields_by_recursion(records))
 
     def test_declarations_before_the_line_would_be_overwritten(self):
         records = parse_engines(":TYPE ROOT\n:CAPACITY 1\n", ":TYPE LONE\n:CAPACITY 2\nINHERIT_TYPE ROOT\n")
@@ -1660,19 +1766,26 @@ def engine_tags(tags, rows):
 def engine_file(parents=None):
     """Mirror the demo's engine database shape: four roots that declare every mapped tag, 51 inheriting engines
     (child i declares a tag after its INHERIT_TYPE when i is below the tag's declared count in ENGINE_FIELD_COUNTS),
-    and the root INDIGO, whose colon-less `INHERIT_TYPE DEFAULT_TRACK` line sits on line 1410."""
+    and INDIGO, whose colon-less `INHERIT_TYPE DEFAULT_TRACK` line sits on line 1410 and is applied. INDIGO declares
+    INDIGO_TAGS, so the children declare each of those tags once fewer than ENGINE_FIELD_COUNTS counts."""
     roots = ["DEFAULT_CLASSIC", "DEFAULT_MODERN", "DEFAULT_OFFROAD", "DEFAULT_TRACK"]
     parents = parents or [roots[i % 4] if i < 8 else f"CHILD{i - 8}" for i in range(51)]
     lines = []
     for i, name in enumerate(roots):
         lines += [f":TYPE {name}", *engine_tags(ENGINE_FIELD_STORES, 5 + i)]
     for i, parent in enumerate(parents):
-        declared = [tag for tag, counts in ENGINE_FIELD_COUNTS.items() if i < counts.get("declared", 0)]
+        declared = [tag for tag, counts in ENGINE_FIELD_COUNTS.items()
+                    if i < counts.get("declared", 0) - (tag in INDIGO_TAGS)]
         lines += [f":TYPE CHILD{i}", f":INHERIT_TYPE {parent}", *engine_tags(declared, 10)]
     lines += [":TYPE INDIGO"]
     lines += ["//"] * (1409 - len(lines)) + ["INHERIT_TYPE DEFAULT_TRACK"]
-    lines += [*engine_tags(["ASPIRATION_TYPE", "MAX_RPM", "TORQUE_MODIFIER", "TORQUE_ARRAY"], 9), ":END"]
+    lines += [*engine_tags(INDIGO_TAGS, 9), ":END"]
     return "\r\n".join(lines) + "\r\n"
+
+
+def one_line_less(text):
+    """Drop one comment line before INDIGO's colon-less line, so that the line stays on 1410 after an insertion."""
+    return text.replace("//\r\n//\r\nINHERIT_TYPE DEFAULT_TRACK", "//\r\nINHERIT_TYPE DEFAULT_TRACK", 1)
 
 
 def gearbox_file(tags=GEARBOX_TAGS):
@@ -1739,11 +1852,12 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.assertEqual(summary["tyre_inheritances"], 108)
         self.assertEqual(summary["tyre_tables"], TYRE_TABLES)
         self.assertEqual(summary["tyre_table_sources"], TYRE_TABLE_SOURCES)
-        self.assertEqual(summary["engine_effective_field_records"], 51)
+        self.assertEqual(summary["engine_effective_field_records"], 52)
+        self.assertEqual(summary["engine_applied_untagged_inherits"], ["INDIGO"])
         self.assertEqual(summary["gearbox_mapped_tags"], 9)
         self.assertEqual(summary["engine_effective_field_counts"], ENGINE_FIELD_COUNTS)
         self.assertEqual(summary["indigo_dependent_tags"],
-                         sorted(set(ENGINE_FIELD_STORES) - {"ASPIRATION_TYPE", "MAX_RPM", "TORQUE_MODIFIER", "TORQUE_ARRAY"}))
+                         sorted(set(ENGINE_FIELD_STORES) - set(INDIGO_TAGS)))
         self.assertEqual(summary["tyre_effective_scalar_records"], 108)
         self.assertEqual(summary["tyre_effective_scalar_counts"], TYRE_SCALAR_COUNTS)
         self.assertEqual(summary["sound_info_entries"], 40)
@@ -1815,10 +1929,17 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.assertEqual(list(engines), ["source", "sha256", "records", "effective_fields",
                                          "untagged_inherit_consequences"])
         self.assertEqual(engines["effective_fields"], effective_engine_fields(records))
-        self.assertEqual(len(engines["effective_fields"]), 51)
-        self.assertNotIn("INDIGO", engines["effective_fields"])
+        self.assertEqual(len(engines["effective_fields"]), 52)
+        self.assertEqual(engines["effective_fields"]["INDIGO"]["inherit_type"],
+                         {"line": 1410, "parent": "DEFAULT_TRACK", "colon": False, "basis": BASIS})
+        self.assertEqual(engines["effective_fields"]["INDIGO"]["overwritten"], [])
+        self.assertEqual(engines["records"][-1]["untagged"],
+                         [{"line": 1410, "tokens": ["INHERIT_TYPE", "DEFAULT_TRACK"]}])
+        self.assertNotIn("INHERIT_TYPE", engines["records"][-1]["fields"])
         self.assertEqual(engines["untagged_inherit_consequences"], untagged_inherit_consequences(records))
         self.assertEqual(list(engines["untagged_inherit_consequences"]), ["INDIGO"])
+        self.assertEqual(engines["untagged_inherit_consequences"]["INDIGO"]["status"], "applied")
+        self.assertEqual(engines["untagged_inherit_consequences"]["INDIGO"]["basis"], BASIS)
         self.assertEqual(engines["effective_fields"]["CHILD45"]["fields"]["TORQUE_ARRAY"]["path"],
                          ["CHILD45", "CHILD37"])
 
@@ -1889,7 +2010,9 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         tyre_only = [site for site in load_field_evidence() if site["va"] >= text_database.TYRE_LOADER_SPAN[0]]
         with self.assertRaisesRegex(ValueError, "Engine stores lack byte-checked evidence: LOCATION_TYPE compare"):
             verify_text_databases(self.game, TAGS, tyre_only)
-        engine_only = [site for site in load_field_evidence() if site["va"] < text_database.TYRE_LOADER_SPAN[0]]
+        # INDIGO's applied line also rests on data sites above the tyre loader.
+        engine_only = [site for site in load_field_evidence() if site["va"] < text_database.TYRE_LOADER_SPAN[0]
+                       or site["va"] in INDIGO_EVIDENCE_SITES]
         with self.assertRaisesRegex(ValueError, "Tyre scalar stores lack byte-checked evidence"):
             verify_text_databases(self.game, TAGS, engine_only)
 
@@ -1934,8 +2057,8 @@ class VerifyTextDatabaseTests(unittest.TestCase):
                 verify_text_databases(self.game, TAGS)
 
     def test_reject_engine_field_before_inherit_type(self):
-        self.write("engines", engine_file().replace(":TYPE CHILD40\r\n:INHERIT_TYPE CHILD32\r\n",
-                                                    ":TYPE CHILD40\r\n:CAPACITY 2\r\n:INHERIT_TYPE CHILD32\r\n"))
+        self.write("engines", one_line_less(engine_file().replace(":TYPE CHILD40\r\n:INHERIT_TYPE CHILD32\r\n",
+                                                                  ":TYPE CHILD40\r\n:CAPACITY 2\r\n:INHERIT_TYPE CHILD32\r\n")))
         with self.assertRaisesRegex(ValueError, "Engine fields declared before INHERIT_TYPE: CHILD40"):
             verify_text_databases(self.game, TAGS)
 
@@ -1952,16 +2075,16 @@ class VerifyTextDatabaseTests(unittest.TestCase):
             verify_text_databases(self.game, TAGS)
 
     def test_reject_wrong_engine_field_counts(self):
-        self.write("engines", engine_file().replace(":TYPE CHILD50\r\n:INHERIT_TYPE CHILD42\r\n:TORQUE_MODIFIER 1\r\n",
-                                                    ":TYPE CHILD50\r\n:INHERIT_TYPE CHILD42\r\n:TORQUE_MODIFIER 1\r\n"
-                                                    ":CAPACITY 1\r\n"))
+        self.write("engines", one_line_less(engine_file().replace(
+            ":TYPE CHILD50\r\n:INHERIT_TYPE CHILD42\r\n:TORQUE_MODIFIER 1\r\n",
+            ":TYPE CHILD50\r\n:INHERIT_TYPE CHILD42\r\n:TORQUE_MODIFIER 1\r\n:CAPACITY 1\r\n")))
         with self.assertRaisesRegex(ValueError, "Engine effective field counts mismatch"):
             verify_text_databases(self.game, TAGS)
 
     def test_reject_engine_fields_that_disagree_with_the_independent_derivation(self):
         # Pointing one field at another source keeps every status count, so only the derivation catches it.
-        def tampered(records):
-            entries = effective_engine_fields(records)
+        def tampered(records, evidence=None):
+            entries = effective_engine_fields(records, evidence)
             entries["CHILD45"]["fields"]["CAPACITY"].update(source="DEFAULT_MODERN", source_line=28)
             return entries
         with mock.patch.object(text_database, "effective_engine_fields", tampered), \
@@ -1969,8 +2092,8 @@ class VerifyTextDatabaseTests(unittest.TestCase):
             verify_text_databases(self.game, TAGS)
 
     def test_reject_wrong_engine_effective_records(self):
-        def tampered(records):
-            entries = effective_engine_fields(records)
+        def tampered(records, evidence=None):
+            entries = effective_engine_fields(records, evidence)
             del entries["CHILD7"]
             return entries
         with mock.patch.object(text_database, "effective_engine_fields", tampered), \
@@ -1979,8 +2102,17 @@ class VerifyTextDatabaseTests(unittest.TestCase):
 
     def test_reject_missing_indigo_consequence(self):
         self.write("engines", engine_file().replace("//\r\nINHERIT_TYPE DEFAULT_TRACK\r\n", "//\r\nINHERIT_TYPE LATER\r\n"))
-        with self.assertRaisesRegex(ValueError, "colon-less INHERIT_TYPE line to an earlier record: none; expected INDIGO"):
+        with self.assertRaisesRegex(ValueError, "Refusing to apply INDIGO's colon-less INHERIT_TYPE line: the allow-list "
+                                                "names line 1410: INHERIT_TYPE DEFAULT_TRACK, the file has line 1410: "
+                                                "INHERIT_TYPE LATER"):
             verify_text_databases(self.game, TAGS)
+
+    def test_reject_indigo_line_without_its_evidence(self):
+        evidence = [site for site in load_field_evidence() if site["va"] != INDIGO_EVIDENCE_SITES[0]]
+        with self.assertRaisesRegex(ValueError, "Refusing to apply INDIGO's colon-less INHERIT_TYPE line: its static "
+                                                f"instruction evidence lacks field-evidence.json sites "
+                                                f"0x{INDIGO_EVIDENCE_SITES[0]:08x}"):
+            verify_text_databases(self.game, TAGS, evidence=evidence)
 
     def test_reject_wrong_engine_count(self):
         self.write("engines", engine_file().replace(":TYPE CHILD49\r\n:INHERIT_TYPE CHILD41\r\n:TORQUE_MODIFIER 1\r\n", ""))

@@ -174,8 +174,11 @@ class BuildTests(ResearchTestCase):
         self.assertLess(start, index.index("<h2>Pages</h2>"))
         text = " ".join(re.sub(r"<[^>]+>", " ", answer).split())
         self.assertIn("Which engines share a torque table, and what do they declare differently?", text)
-        self.assertIn("Of the 3 engines with :INHERIT_TYPE , 0 declare their own TORQUE_ARRAY and 2 inherit one; 1 has "
-                      "no TORQUE_ARRAY along its :INHERIT_TYPE path and keeps the zero-filled slots.", text)
+        # INDIGO's colon-less line sits on line 1410, so it is applied: INDIGO inherits DEFAULT_TRACK's zero fill.
+        self.assertIn("Of the 4 inheriting engines, 0 declare their own TORQUE_ARRAY and 2 inherit one; 2 have no "
+                      "TORQUE_ARRAY along its :INHERIT_TYPE path and keep the zero-filled slots. 3 of them inherit "
+                      "through :INHERIT_TYPE , and INDIGO ( open question ) through its colon-less INHERIT_TYPE line 1410 "
+                      ", applied on static instruction evidence : nothing has been run to confirm it.", text)
         self.assertIn("1 table is read by more than one engine, 3 engines in all", text)
         self.assertIn("BASE is counted among the readers of the shared tables", text)
         self.assertIn("Traced example: CHILD", text)
@@ -203,8 +206,9 @@ class BuildTests(ResearchTestCase):
         before = {name: (self.output / name).read_bytes() for name in files_under(self.output)}
         table = ":TORQUE_ARRAY\n0 100.5\n1000 200.5\n2000 150.5\n"
         self.assertIn(table, QUESTION_ENGINES)
+        # Blank lines in its place keep INDIGO's colon-less line on 1410, where it is applied.
         (self.game / DATABASES["engines"]).write_bytes(
-            QUESTION_ENGINES.replace(table, "").replace("\n", "\r\n").encode("ascii"))
+            QUESTION_ENGINES.replace(table, "\n" * 4).replace("\n", "\r\n").encode("ascii"))
         with self.assertRaisesRegex(ValueError, "#engine-torque-tables answer has no shared torque table"):
             self.build()
         self.assertEqual({name: (self.output / name).read_bytes() for name in files_under(self.output)}, before)

@@ -137,8 +137,8 @@ class SectionTests(unittest.TestCase):
 
 ENGINE_TAGS = {*TAGS, "TORQUE_MODIFIER"}
 # ROOT declares a table nobody inherits. A declares its own table, which B (through A) and C (through B and A) read,
-# so A's table is shared by three engines. LONE declares a table only it reads. INDIGO is a root with a colon-less
-# line.
+# so A's table is shared by three engines. LONE declares a table only it reads. ODD is a root with a colon-less line
+# that is not allow-listed, so it is not applied.
 ENGINES = """:TYPE ROOT
 :MAX_RPM 6000
 :TORQUE_MODIFIER 1.0
@@ -165,11 +165,16 @@ ENGINES = """:TYPE ROOT
 :TORQUE_MODIFIER 2.0
 :TORQUE_ARRAY
 0 1.5
-:TYPE INDIGO
+:TYPE ODD
 INHERIT_TYPE ROOT
 :TORQUE_MODIFIER 1.5
 :END
 """
+# ENGINES plus DEFAULT_TRACK, a root with a table, INDIGO, whose colon-less line is padded onto line 1410 where
+# text_database.APPLIED_UNTAGGED_INHERIT applies it, and INDIGO_KID, which inherits DEFAULT_TRACK's table through it.
+INDIGO_HEAD = ENGINES.removesuffix(":END\n") + ":TYPE DEFAULT_TRACK\n:MAX_RPM 7500\n:TORQUE_ARRAY\n0 5.5\n"
+INDIGO_ENGINES = (INDIGO_HEAD + "//\n" * (1408 - INDIGO_HEAD.count("\n")) + ":TYPE INDIGO\nINHERIT_TYPE DEFAULT_TRACK\n"
+                  ":TORQUE_MODIFIER 1.5\n:TYPE INDIGO_KID\n:INHERIT_TYPE INDIGO\n:END\n")
 
 
 def engines_json(text=ENGINES):
@@ -240,7 +245,7 @@ class EngineSectionTests(unittest.TestCase):
         self.assertIn("Of the 4 engines with :INHERIT_TYPE , 2 declare their own TORQUE_ARRAY and 2 inherit one. "
                       "1 table is read by more than one engine, 3 engines in all; the other 1 inheriting engine each "
                       "reads a table that no other engine reads.", text)
-        self.assertIn("The 2 records without :INHERIT_TYPE ( ROOT and INDIGO ( open question )) are not counted above. "
+        self.assertIn("The 2 records that inherit nothing ( ROOT and ODD ) are not counted above. "
                       "No inheriting engine reads a table one of them declares.", text)
         self.assertIn("A line 11 A declares it ( line 11 ) MAX_RPM 7000 ( line 9 ); TORQUE_MODIFIER 3.9 ( line 10 ) "
                       "B inherits it: B &rarr; A TORQUE_MODIFIER 3.0 ( line 16 ) "
@@ -269,11 +274,11 @@ class EngineSectionTests(unittest.TestCase):
                      "routines.html#fr3_copy_engine_record", "routines.html#site-0052292b",
                      "routines.html#site-00522b47", "routines.html#site-00522ccd", "routines.html#site-00522cd4",
                      "routines.html#site-00522926", "routines.html#site-00522a0e", "routines.html#site-005229c1",
-                     "routines.html#site-005229f8", "questions.html#indigo"):
+                     "routines.html#site-005229f8"):
             self.assertIn(href, links)
         for href in links:
             self.assertRegex(href, r"\A(engines\.html(#engine-[A-Za-z0-9_]+(-line-\d+|-torque-array)?)?|"
-                                   r"routines\.html#(site-[0-9a-f]{8}|fr3_\w+)|questions\.html#indigo)\Z")
+                                   r"routines\.html#(site-[0-9a-f]{8}|fr3_\w+))\Z")
         text = text_of(markup)
         self.assertIn("Traced example: B Chosen from the data: the first engine in file order that inherits its "
                       "TORQUE_ARRAY . B reads the table A declares on line 11 .", text)
@@ -334,7 +339,28 @@ class EngineSectionTests(unittest.TestCase):
                          '(<a href="questions.html#indigo">open question</a>)')
         self.assertEqual(research_answers.engine_ref("A"), '<a href="engines.html#engine-A">A</a>')
         self.assertIn('<a href="engines.html#engine-INDIGO">INDIGO</a> (<a href="questions.html#indigo">open question'
-                      "</a>)", engine_section())
+                      "</a>)", engine_section(engines_json(INDIGO_ENGINES)))
+        self.assertNotIn("questions.html", engine_section())
+
+    def test_indigo_inherits_through_its_applied_line_with_the_basis(self):
+        engines = engines_json(INDIGO_ENGINES)
+        self.assertFalse(engines["effective_fields"]["INDIGO"]["inherit_type"]["colon"])
+        markup = engine_section(engines)
+        basis = '<a href="questions.html#indigo"><span class="label">static instruction evidence</span></a>'
+        self.assertIn(basis, markup)
+        text = text_of(markup)
+        self.assertIn("Of the 6 inheriting engines, 2 declare their own TORQUE_ARRAY and 4 inherit one. 5 of them "
+                      "inherit through :INHERIT_TYPE , and INDIGO ( open question ) through its colon-less INHERIT_TYPE "
+                      "line 1410 , applied on static instruction evidence : nothing has been run to confirm it.", text)
+        self.assertIn("The 3 records that inherit nothing ( ROOT , ODD and DEFAULT_TRACK ) are not counted above.", text)
+        self.assertIn("INDIGO_KID inherits it: INDIGO_KID &rarr; INDIGO ( open question ) &rarr; DEFAULT_TRACK", text)
+        trace = research_answers.torque_trace(engines, "INDIGO_KID", LABELS)
+        self.assertIn(basis, trace)
+        trace = text_of(trace)
+        self.assertIn("INDIGO_KID declares no TORQUE_ARRAY after its :INHERIT_TYPE on line 1413 , which names INDIGO "
+                      "( open question ).", trace)
+        self.assertIn("INDIGO ( open question ) declares no TORQUE_ARRAY after its colon-less INHERIT_TYPE line, "
+                      "applied on static instruction evidence , on line 1410 , which names DEFAULT_TRACK .", trace)
 
     def test_names_are_escaped(self):
         markup = research_answers.engine_ref('<b>"x"</b>') + research_answers.engine_line_link('<b>"x"</b>', 3)

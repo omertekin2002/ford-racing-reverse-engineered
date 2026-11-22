@@ -24,15 +24,17 @@ with nothing written by hand:
     zero fill, each linked to its anchor on engines.html or routines.html;
   * where the comparison ends: each sharing engine's own TORQUE_MODIFIER, stored at + 0x24, which is not combined
     with the table, and the derived + 0x2c, which gets no value.
-INDIGO, wherever it is named, links to its section on the Open questions page.
+INDIGO, wherever it is named, links to its section on the Open questions page. INDIGO inherits through its
+colon-less INHERIT_TYPE line, which engines.json applies on static instruction evidence; the lead paragraph says so
+and links that basis.
 
 Every link points at an anchor the tyre, engine or routines page writes, so verify_research() refuses the build when
 one goes missing. When the data has no example, no pair or no shared torque table, the section refuses to render
 rather than state an empty claim. Nothing here interprets units, physics or handling.
 """
 import dossier_common
-from dossier_common import (INDIGO_ANCHOR, INDIGO_RECORD, e, line_anchor, question_link, routine_label, routine_link,
-                            site_link)
+from dossier_common import (INDIGO_ANCHOR, INDIGO_RECORD, basis_html, e, line_anchor, question_link, routine_label,
+                            routine_link, site_link)
 import record_dossier
 from text_database import (ENGINE_COPY, ENGINE_FIELD_STORES, RESOLVED_TYRE_TABLES, TYRE_SCALAR_STORES, ZERO_FILLED,
                            require, table_sources)
@@ -364,12 +366,20 @@ def torque_summary(engines, groups, shared):
     sharing = {name for group in shared for name in group["readers"]}
     alone = sum(1 for group in groups if len(group["readers"]) == 1)
     zero_text = (f"; {plural(zero, 'has', 'have')} no <code>{TORQUE}</code> along its <code>:INHERIT_TYPE</code> "
-                 "path and keeps the zero-filled slots" if zero else "")
-    parts = [f"Of the {len(names)} engines with <code>:INHERIT_TYPE</code>, {declared} declare their own "
-             f"<code>{TORQUE}</code> and {inherited} inherit one{zero_text}.",
-             f"{plural(len(shared), 'table')} {is_are(len(shared))} read by more than one engine, "
-             f"{len(sharing)} engines in all; the other {plural(alone, 'inheriting engine')} each "
-             f"read{'s' if alone == 1 else ''} a table that no other engine reads."]
+                 f"path and keep{'s' if zero == 1 else ''} the zero-filled slots" if zero else "")
+    applied = [name for name in names if not effective[name]["inherit_type"]["colon"]]
+    lead = (f"Of the {len(names)} inheriting engines" if applied
+            else f"Of the {len(names)} engines with <code>:INHERIT_TYPE</code>")
+    parts = [f"{lead}, {declared} declare their own <code>{TORQUE}</code> and {inherited} inherit one{zero_text}."]
+    if applied:
+        via = names_list(f"{engine_ref(name)} through its colon-less <code>INHERIT_TYPE</code> "
+                         f"{engine_line_link(name, effective[name]['inherit_type']['line'])}" for name in applied)
+        basis = basis_html(effective[applied[0]]["inherit_type"]["basis"])
+        parts.append(f"{len(names) - len(applied)} of them inherit through <code>:INHERIT_TYPE</code>, and {via}, "
+                     f"applied on {basis}: nothing has been run to confirm it.")
+    parts.append(f"{plural(len(shared), 'table')} {is_are(len(shared))} read by more than one engine, "
+                 f"{len(sharing)} engines in all; the other {plural(alone, 'inheriting engine')} each "
+                 f"read{'s' if alone == 1 else ''} a table that no other engine reads.")
     roots = [record["type"] for record in engines["records"] if record["type"] not in effective]
     if roots:
         shared_roots = [group["source"] for group in shared if group["source"] in roots]
@@ -377,7 +387,7 @@ def torque_summary(engines, groups, shared):
                    "among the readers of the shared tables because inheriting engines read "
                    f"{'its table' if len(shared_roots) == 1 else 'their tables'}." if shared_roots
                    else "No inheriting engine reads a table one of them declares.")
-        parts.append(f"The {plural(len(roots), 'record')} without <code>:INHERIT_TYPE</code> "
+        parts.append(f"The {plural(len(roots), 'record')} that inherit{'s' if len(roots) == 1 else ''} nothing "
                      f"({names_list(engine_ref(name) for name in roots)}) {is_are(len(roots))} not counted above. "
                      f"{counted}")
     return f"<p>{' '.join(parts)}</p>"
@@ -404,14 +414,17 @@ def max_rpm_html(engines, origin):
 def torque_trace(engines, name, labels):
     """Return the traced example: the INHERIT_TYPE path, the declaring line, the row count, the copy and zero fill."""
     by_name = {record["type"]: record for record in engines["records"]}
-    field = engines["effective_fields"][name]["fields"][TORQUE]
+    effective = engines["effective_fields"]
+    field = effective[name]["fields"][TORQUE]
     path, source, line = field["path"], field["source"], field["source_line"]
     torque, block = ENGINE_FIELD_STORES[TORQUE], ENGINE_COPY["block"]
     copy = routine_label(labels, ENGINE_COPY_ROUTINE[0], "engine record copy", ENGINE_COPY_ROUTINE[1])
     steps = []
     for hop, parent in zip(path[:-1], path[1:], strict=True):
-        inherit = by_name[hop]["fields"]["INHERIT_TYPE"]
-        steps.append(f"<li>{engine_ref(hop)} declares no <code>{TORQUE}</code> after its <code>:INHERIT_TYPE</code> "
+        inherit = effective[hop]["inherit_type"]
+        written = ("<code>:INHERIT_TYPE</code>" if inherit["colon"] else
+                   f"colon-less <code>INHERIT_TYPE</code> line, applied on {basis_html(inherit['basis'])},")
+        steps.append(f"<li>{engine_ref(hop)} declares no <code>{TORQUE}</code> after its {written} "
                      f"on {engine_line_link(hop, inherit['line'])}, which names {engine_ref(parent)}.</li>")
     rows = by_name[source]["fields"][TORQUE]["rows"]
     shape = f"{len(rows)} rows &times; {len(rows[0])} columns" if rows else "no rows"

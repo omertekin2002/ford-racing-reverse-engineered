@@ -63,8 +63,10 @@ COMPARE_GEARBOXES = """// Gearboxes for the compare page
 # Engines for the compare page. DEFAULT_TRACK is a root that does not declare every tag. CHILD inherits it and
 # declares its own MAX_RPM after INHERIT_TYPE, so the table it inherits was parsed with DEFAULT_TRACK's MAX_RPM;
 # CAPACITY 6 and 6.0 are one number. GRANDCHILD inherits through CHILD (ASPIRATION_TYPE comes two steps away) and
-# parses its own table with CHILD's MAX_RPM. INDIGO has the demo's colon-less line, and INDIGO_CHILD inherits its
-# zero fill. LONER has a colon-less line too, a declaration before it and a table parsed before its MAX_RPM.
+# parses its own table with CHILD's MAX_RPM. INDIGO has the demo's colon-less line, padded with comment lines onto
+# line 1410, where text_database.APPLIED_UNTAGGED_INHERIT lists it, so it inherits DEFAULT_TRACK through it, and
+# INDIGO_CHILD inherits through INDIGO. LONER has a colon-less line that is not allow-listed, a declaration before it
+# and a table parsed before its MAX_RPM.
 COMPARE_ENGINES = """// Engines for the compare page
 :TYPE DEFAULT_TRACK
 :LOCATION_TYPE MID
@@ -90,7 +92,7 @@ COMPARE_ENGINES = """// Engines for the compare page
 0.0 50.0
 :TORQUE_MODIFIER 2.0
 
-:TYPE INDIGO
+{padding}:TYPE INDIGO
 INHERIT_TYPE DEFAULT_TRACK
 :ASPIRATION_TYPE TURBO
 :MAX_RPM 7000.0
@@ -109,6 +111,15 @@ INHERIT_TYPE CHILD
 :MAX_RPM 5000
 :END
 """
+# How many lines the padding moves INDIGO and the records after it.
+SHIFT = 1410 - 27
+COMPARE_ENGINES = COMPARE_ENGINES.replace("{padding}", "//\n" * SHIFT)
+BASIS = '<a href="questions.html#indigo"><span class="label">static instruction evidence</span></a>'
+
+
+def one_line_less(text):
+    """Drop one padding line, so that INDIGO's line stays on 1410 after a line is inserted above it."""
+    return text.replace("//\n", "", 1)
 ENGINE_NAMES = ["DEFAULT_TRACK", "CHILD", "GRANDCHILD", "INDIGO", "INDIGO_CHILD", "LONER"]
 # Tyres for the compare page. ROOT declares every table and no MASS, so every tyre's MASS is zero-filled. OFFROAD
 # inherits ROOT and declares its own VERTICAL_LOAD and WIDTH 0.250 (0.25 written another way). CHILD inherits OFFROAD:
@@ -494,9 +505,12 @@ class EngineMatrixTests(CompareTestCase):
         page = self.build()
         matrix = engine_matrix_of(page)
         rows = re.findall(r'<tr id="compare-engine-(\w+)"><td><a href="engines\.html#engine-(\w+)">\w+</a><br>'
-                          r"<small>(root|inherits)</small></td>", matrix)
-        self.assertEqual(rows, [(name, name, "inherits" if name in ("CHILD", "GRANDCHILD", "INDIGO_CHILD") else "root")
+                          r"<small>(root|inherits)", matrix)
+        self.assertEqual(rows, [(name, name, "root" if name in ("DEFAULT_TRACK", "LONER") else "inherits")
                                 for name in ENGINE_NAMES])
+        # INDIGO's row names the applied colon-less line and its basis.
+        self.assertIn(f'<small>inherits DEFAULT_TRACK through colon-less {line_link("INDIGO", 1410, "line 1410")}, '
+                      f"{BASIS}</small></td>", engine_row(page, "INDIGO"))
         header = matrix.split("</tr>")[0]
         columns = re.findall(r'<th><a href="engines\.html#engine-store-(\w+)"><code>(\w+)</code></a>', header)
         self.assertEqual([tag for tag, _ in columns], record_dossier.engine_tags())
@@ -548,37 +562,50 @@ class EngineMatrixTests(CompareTestCase):
                          f'{line_link("DEFAULT_TRACK", 6)}</small>')
         self.assertNotIn("100.0", engine_matrix_of(page))
 
-    def test_indigo_style_root_is_unresolved_never_zero(self):
+    def test_indigo_inherits_through_its_applied_line_with_the_basis(self):
         page = self.build()
-        unresolved = ('<a href="questions.html#indigo"><span class="label">unresolved</span></a><br><small>no value; '
-                      f'depends on {line_link("INDIGO", 27)}</small>')
+        through = f'; through {line_link("INDIGO", 1410)} (no colon), {BASIS}'
         record = next(record for record in self.engines()["records"] if record["type"] == "INDIGO")
         for tag in record_dossier.engine_tags():
             with self.subTest(tag=tag):
                 cell = engine_cell(page, "INDIGO", tag)
+                self.assertNotIn("unresolved", cell)
                 if tag in record["fields"]:
-                    self.assertIn("declared", cell)
+                    self.assertIn("<small>declared", cell)
+                    self.assertNotIn("through", cell)
                 else:
-                    self.assertEqual(cell, unresolved)
-        # An engine inheriting INDIGO's zero fill depends on the same line; what INDIGO declares stays resolved.
-        self.assertEqual(engine_cell(page, "INDIGO_CHILD", "CAPACITY"), unresolved)
+                    self.assertIn(through, cell)
+        self.assertEqual(engine_cell(page, "INDIGO", "CAPACITY"),
+                         f'<span class="num">{line_link("DEFAULT_TRACK", 4, "6.0")}</span><br><small>inherited from '
+                         f'<a href="#compare-engine-DEFAULT_TRACK">DEFAULT_TRACK</a>{through}</small>')
+        # DEFAULT_TRACK declares no FUEL_CUTOFF, so INDIGO gets its zero fill through the line.
+        self.assertEqual(engine_cell(page, "INDIGO", "FUEL_CUTOFF"),
+                         '<span class="label">zero-filled</span><br><small>no value, path INDIGO &rarr; DEFAULT_TRACK'
+                         f"{through}</small>")
+        # INDIGO_CHILD inherits through the same line what INDIGO does not declare, and INDIGO's own declarations
+        # without it.
+        self.assertEqual(engine_cell(page, "INDIGO_CHILD", "CAPACITY"),
+                         f'<span class="num">{line_link("DEFAULT_TRACK", 4, "6.0")}</span><br><small>inherited from '
+                         '<a href="#compare-engine-DEFAULT_TRACK">DEFAULT_TRACK</a>, path INDIGO_CHILD &rarr; INDIGO '
+                         f"&rarr; DEFAULT_TRACK{through}</small>")
         self.assertEqual(engine_cell(page, "INDIGO_CHILD", "ASPIRATION_TYPE"),
-                         f'<span class="num">{line_link("INDIGO", 28, "TURBO")}</span><br><small>inherited from '
+                         f'<span class="num">{line_link("INDIGO", 1411, "TURBO")}</span><br><small>inherited from '
                          '<a href="#compare-engine-INDIGO">INDIGO</a></small>')
-        self.assertIn(f'parsed with <code>MAX_RPM</code> {line_link("INDIGO", 29)}',
+        self.assertIn(f'parsed with <code>MAX_RPM</code> {line_link("INDIGO", 1412)}',
                       engine_cell(page, "INDIGO_CHILD", "TORQUE_ARRAY"))
+        self.assertNotIn("unresolved", engine_row(page, "INDIGO_CHILD"))
 
     def test_other_colon_less_root_is_unresolved_without_the_indigo_question(self):
         page = self.build()
         unresolved = ('<span class="label">unresolved</span><br><small>no value; depends on '
-                      f'{line_link("LONER", 39)}</small>')
+                      f'{line_link("LONER", 39 + SHIFT)}</small>')
         self.assertEqual(engine_cell(page, "LONER", "CAPACITY"), unresolved)
         # Declared before the line, so applying it would overwrite the declaration.
         self.assertEqual(engine_cell(page, "LONER", "FUEL_CUTOFF"), unresolved)
         # Parsed after the line and before LONER's own MAX_RPM: the row count depends on the line too.
         self.assertEqual(engine_cell(page, "LONER", "TORQUE_ARRAY"),
-                         f'{line_link("LONER", 40)}, 1 row<br><small>declared; parsed with <code>MAX_RPM</code> '
-                         f'<span class="label">unresolved</span> (depends on {line_link("LONER", 39)})</small>')
+                         f'{line_link("LONER", 40 + SHIFT)}, 1 row<br><small>declared; parsed with <code>MAX_RPM</code> '
+                         f'<span class="label">unresolved</span> (depends on {line_link("LONER", 39 + SHIFT)})</small>')
         self.assertNotIn("questions.html", engine_row(page, "LONER"))
 
     def test_root_without_a_colon_less_line_shows_its_zero_fill(self):
@@ -604,7 +631,7 @@ class EngineMatrixTests(CompareTestCase):
         self.assertEqual(sorted({fragment for fragment in fragments if fragment.startswith("engine-store-")}),
                          sorted(f"engine-store-{tag}" for tag in ENGINE_FIELD_STORES))
         self.assertEqual({fragment for fragment in fragments if fragment.endswith("-torque-array")},
-                         {"engine-CHILD-torque-array", "engine-GRANDCHILD-torque-array",
+                         {"engine-CHILD-torque-array", "engine-GRANDCHILD-torque-array", "engine-INDIGO-torque-array",
                           "engine-INDIGO_CHILD-torque-array"})
         self.assertEqual([href for href in links.hrefs if href.startswith("#") and href[1:] not in links.ids], [])
         self.assertEqual(len(links.ids), len(set(links.ids)))
@@ -622,9 +649,11 @@ class EngineDifferencesTests(CompareTestCase):
         groups = self.differences()
         self.assertEqual(list(groups), record_dossier.engine_tags())
         self.assertEqual(groups["CAPACITY"], {"groups": [{"forms": ["6.0", "6"],
-                                                          "engines": ["DEFAULT_TRACK", "CHILD", "GRANDCHILD"]}],
-                                              "zero_filled": [], "unresolved": ["INDIGO", "INDIGO_CHILD", "LONER"]})
-        self.assertEqual(groups["LOCATION_TYPE"]["groups"], [{"forms": ["MID"], "engines": ["DEFAULT_TRACK", "CHILD"]},
+                                                          "engines": ["DEFAULT_TRACK", "CHILD", "GRANDCHILD", "INDIGO",
+                                                                      "INDIGO_CHILD"]}],
+                                              "zero_filled": [], "unresolved": ["LONER"]})
+        self.assertEqual(groups["LOCATION_TYPE"]["groups"], [{"forms": ["MID"], "engines": ["DEFAULT_TRACK", "CHILD", "INDIGO",
+                                                                                     "INDIGO_CHILD"]},
                                                              {"forms": ["REAR"], "engines": ["GRANDCHILD"]}])
         self.assertEqual(groups["MAX_RPM"]["groups"],
                          [{"forms": ["5000"], "engines": ["LONER"]},
@@ -633,28 +662,29 @@ class EngineDifferencesTests(CompareTestCase):
         self.assertEqual(groups["TORQUE_ARRAY"]["groups"],
                          [{"source": "DEFAULT_TRACK", "source_line": 8, "engines": ["DEFAULT_TRACK", "CHILD"]},
                           {"source": "GRANDCHILD", "source_line": 22, "engines": ["GRANDCHILD"]},
-                          {"source": "INDIGO", "source_line": 30, "engines": ["INDIGO", "INDIGO_CHILD"]},
-                          {"source": "LONER", "source_line": 40, "engines": ["LONER"]}])
-        self.assertEqual(groups["FUEL_CUTOFF"], {"groups": [], "zero_filled": ["DEFAULT_TRACK", "CHILD", "GRANDCHILD"],
-                                                 "unresolved": ["INDIGO", "INDIGO_CHILD", "LONER"]})
+                          {"source": "INDIGO", "source_line": 30 + SHIFT, "engines": ["INDIGO", "INDIGO_CHILD"]},
+                          {"source": "LONER", "source_line": 40 + SHIFT, "engines": ["LONER"]}])
+        self.assertEqual(groups["FUEL_CUTOFF"], {"groups": [], "zero_filled": ["DEFAULT_TRACK", "CHILD", "GRANDCHILD",
+                                                                             "INDIGO", "INDIGO_CHILD"],
+                                                 "unresolved": ["LONER"]})
 
     def test_table_counts_declared_inherited_and_unresolved(self):
         page = self.build()
         table = engine_differences_of(page)
         rows = dict(re.findall(r'<tr id="differs-engine-(\w+)">(.*?)</tr>', table))
         self.assertEqual(list(rows), record_dossier.engine_tags())
-        self.assertIn("<td>1, by number</td><td><ul><li><code>6.0</code>, <code>6</code> (3): ", rows["CAPACITY"])
-        self.assertIn("<td>3 inheriting, as parsed: 1 declared, 1 inherited, 1 zero-filled<br>unresolved: 3: "
-                      '<a href="#compare-engine-INDIGO">INDIGO</a>, ', rows["CAPACITY"])
+        self.assertIn("<td>1, by number</td><td><ul><li><code>6.0</code>, <code>6</code> (5): ", rows["CAPACITY"])
+        self.assertIn("<td>4 inheriting: 1 declared, 3 inherited<br>unresolved: 1: "
+                      '<a href="#compare-engine-LONER">LONER</a></td>', rows["CAPACITY"])
         self.assertIn("<td>4, by record and line</td><td><ul><li>"
                       f'{line_link("DEFAULT_TRACK", 8)} (2): <a href="#compare-engine-DEFAULT_TRACK">', rows["TORQUE_ARRAY"])
-        self.assertIn("<td>3 inheriting, as parsed: 1 declared, 2 inherited<br>unresolved: 0</td>", rows["TORQUE_ARRAY"])
-        self.assertIn('<li><span class="label">zero-filled</span>, no value (3): ', rows["FUEL_CUTOFF"])
+        self.assertIn("<td>4 inheriting: 2 declared, 2 inherited<br>unresolved: 0</td>", rows["TORQUE_ARRAY"])
+        self.assertIn('<li><span class="label">zero-filled</span>, no value (5): ', rows["FUEL_CUTOFF"])
         self.assertIn("<td>0, by number</td>", rows["FUEL_CUTOFF"])
         # The counts per tag are the inheriting engines' effective statuses.
         counts = engine_field_counts(self.engines()["effective_fields"])
         for tag, row in rows.items():
-            shown = re.search(r"inheriting, as parsed: (.*?)<br>", row).group(1)
+            shown = re.search(r"inheriting: (.*?)<br>", row).group(1)
             self.assertEqual(shown, ", ".join(f'{counts[tag][status]} {status.replace("not declared (zero-filled)", "zero-filled")}'
                                               for status in ("declared", "inherited", "not declared (zero-filled)")
                                               if status in counts[tag]), tag)
@@ -662,8 +692,8 @@ class EngineDifferencesTests(CompareTestCase):
                       page)
 
     def test_one_value_held_by_every_engine_is_same_in_all(self):
-        # Every colon-less line gets its colon, and LONER drops the declaration the copy would overwrite.
-        text = COMPARE_ENGINES.replace(":FUEL_CUTOFF 0.5\n", "").replace("\nINHERIT_TYPE", "\n:INHERIT_TYPE")
+        # LONER's colon-less line gets its colon, and LONER drops the declaration the copy would overwrite.
+        text = COMPARE_ENGINES.replace(":FUEL_CUTOFF 0.5\n", "").replace("\nINHERIT_TYPE CHILD", "\n:INHERIT_TYPE CHILD")
         page = self.build(engines=self.engines(text))
         rows = dict(re.findall(r'<tr id="differs-engine-(\w+)">(.*?)</tr>', engine_differences_of(page)))
         self.assertIn('<td>1, by number</td><td><span class="label">same in all 6</span>: <code>6.0</code>, <code>6</code>'
@@ -715,15 +745,17 @@ class EngineRefusalTests(CompareTestCase):
 
     def test_unmapped_tag(self):
         self.reject_engines("engine 'CHILD' (line 13) declares tags with no byte-checked store: CLUTCH_SPEED",
-                            COMPARE_ENGINES.replace(":CAPACITY 6\n", ":CAPACITY 6\n:CLUTCH_SPEED 0.2\n"))
+                            one_line_less(COMPARE_ENGINES.replace(":CAPACITY 6\n", ":CAPACITY 6\n:CLUTCH_SPEED 0.2\n")))
 
     def test_overwritten_declaration(self):
         self.reject_engines("engine 'CHILD' (line 13) declares :TICKOVER_RPM (line 14) before its :INHERIT_TYPE, which "
-                            "overwrites them", COMPARE_ENGINES.replace(":TYPE CHILD\n", ":TYPE CHILD\n:TICKOVER_RPM 900\n"))
+                            "overwrites them",
+                            one_line_less(COMPARE_ENGINES.replace(":TYPE CHILD\n", ":TYPE CHILD\n:TICKOVER_RPM 900\n")))
 
     def test_stray_untagged_line(self):
         self.reject_engines("engine 'CHILD' (line 13) has untagged lines (16) other than a root's colon-less "
-                            "INHERIT_TYPE line", COMPARE_ENGINES.replace(":CAPACITY 6\n", ":CAPACITY 6\nINHERIT_TYPE INDIGO\n"))
+                            "INHERIT_TYPE line",
+                            one_line_less(COMPARE_ENGINES.replace(":CAPACITY 6\n", ":CAPACITY 6\nINHERIT_TYPE INDIGO\n")))
 
     def test_written_token_that_does_not_parse_to_the_json_value(self):
         engines = self.engines()
@@ -752,7 +784,7 @@ class EngineRefusalTests(CompareTestCase):
         engines = self.engines()
         counts = engine_field_counts(engines["effective_fields"])
         self.reject_engines("The inheriting engines' effective field counts differ from ENGINE_FIELD_COUNTS: CAPACITY "
-                            "{'declared': 1, 'inherited': 1, 'not declared (zero-filled)': 1}, not {'declared': 2}",
+                            "{'declared': 1, 'inherited': 3}, not {'declared': 2}",
                             engines=engines, engine_counts={**counts, "CAPACITY": {"declared": 2}})
         self.reject_engines("ENGINE_FIELD_COUNTS: LOCATION_TYPE", engines=engines, engine_counts=ENGINE_FIELD_COUNTS)
 

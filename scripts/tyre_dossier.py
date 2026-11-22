@@ -413,8 +413,9 @@ def render(tyres, sites, copies, pe, revision, hrefs, routines, entrance=False):
              'INHERIT_TYPE-following accessors (longitudinal, lateral, vertical load, camber thrust and sound '
              'information) and, for each inheriting tyre, which declaration ends up in each scalar field with a '
              'byte-checked store. Scalar values are shown as declared: their units and physical meaning are not '
-             'interpreted, and the grip scale global\'s runtime value is not applied. Engine inheritance and the '
-             'colon-less <code>INDIGO</code> line in <code>ENGDATA.DAT</code> are unresolved. Two tyres that share a '
+             'interpreted, and the grip scale global\'s runtime value is not applied. Engine inheritance, including '
+             'the colon-less <code>INDIGO</code> line in <code>ENGDATA.DAT</code> (applied there on static '
+             'instruction evidence only), is covered on the engine page, not here. Two tyres that share a '
              'table source do not necessarily handle identically: their scalar fields can differ.</p>']
     counts = table_sources(tyres["resolved_tables"])
     parts.append('<h2>Table sources</h2><table><tr><th>Table</th><th>Accessor</th><th>Records per source</th></tr>')
