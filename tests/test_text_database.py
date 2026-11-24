@@ -2355,8 +2355,11 @@ class ResolveCarReferenceTests(unittest.TestCase):
         bases = car_reference_bases(evidence)
         self.assertEqual(bases, {**BASES, "CAR_BACK_TYRE_TYPE": DECLARED})
         self.assertEqual(self.resolve(bases=bases)["MODEL_T"]["CAR_BACK_TYRE_TYPE"]["basis"], DECLARED)
-        # A shared site (a lookup the tyre references use, or the record) leaves every reference declared by name.
+        # A shared site (a lookup the tyre references use, the string compare, or the record) leaves every reference
+        # declared by name.
         evidence = [site for site in load_field_evidence() if site["va"] != 0x005240f9]
+        self.assertEqual(set(car_reference_bases(evidence).values()), {DECLARED})
+        evidence = [site for site in load_field_evidence() if site["va"] != 0x00534987]
         self.assertEqual(set(car_reference_bases(evidence).values()), {DECLARED})
 
     def test_target_counts(self):
@@ -2549,6 +2552,8 @@ class CarEvidenceTests(unittest.TestCase):
             0x00522821: "engines database created: no byte-checked engine loader site at 0x00522821",
             0x005238e7: "tyres name destination: no byte-checked tyre loader site at 0x005238e7",
             0x0052340f: "gearboxes name destination: no byte-checked gearbox loader site at 0x0052340f",
+            0x00534987: "string compare + 0x07: no byte-checked string compare site at 0x00534987",
+            0x005349b5: "string compare + 0x35: no byte-checked string compare site at 0x005349b5",
         }
         for va, fragment in removals.items():
             with self.subTest(va=f"0x{va:08x}"):
@@ -2567,6 +2572,8 @@ class CarEvidenceTests(unittest.TestCase):
         problems = self.problems(lookups=lookups)
         self.assertReports("engines lookup + 0x06: site 0x00522d76 (a118745900) is not a174745900", problems)
         self.assertReports("engines database created: site 0x00522821 (a318745900) is not a374745900", problems)
+        self.assertReports("string compare + 0x0f: site 0x0053498f (0410) is not 0420",
+                           self.problems(self.replaced(0x0053498f, bytes="0410")))
 
     def test_unmapped_car_record_store_is_reported(self):
         evidence = self.evidence + [{"va": 0x00520d52, "bytes": "898660010000", "claim": "SPEECH_TYPE store"}]

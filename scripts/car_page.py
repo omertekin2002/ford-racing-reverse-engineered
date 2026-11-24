@@ -56,9 +56,9 @@ from record_compare import GAME_MANIFEST, game_file, is_demo
 from record_dossier import DATABASES as RECORD_PAGES, check_records
 import routine_index
 from text_database import (CAR_LOADER_SPAN, CAR_LOOKUPS, CAR_PERFORMANCE_ENTRIES, CAR_RECORD,
-                           CAR_RECORD_TAG, CAR_REFERENCE_STORES, CAR_REFERENCE_TARGETS, LOOKUP_SHAPE, NAME, REPO_ROOT,
-                           car_reference_bases, car_reference_targets, lines_of, load_tag_ids, require,
-                           resolve_car_references, value)
+                           CAR_RECORD_TAG, CAR_REFERENCE_STORES, CAR_REFERENCE_TARGETS, LOOKUP_SHAPE, REPO_ROOT,
+                           car_reference_bases, car_reference_targets, lines_of, load_known_tags, load_tag_ids,
+                           parse_cars, require, resolve_car_references)
 import tyre_dossier
 
 PAGE = CARS_PAGE
@@ -98,43 +98,33 @@ SCOPE = ("Scope: every value is shown exactly as written in <code>CARDATA.DAT</c
          "declared: no units, menu meaning or physics are claimed for any of them, and their stores are not mapped.")
 
 
-def check_cars(database, data):
+def exact_equal(left, right):
+    """Compare parsed JSON values strictly, distinguishing int, float and bool."""
+    if type(left) is not type(right):
+        return False
+    if isinstance(left, list):
+        return len(left) == len(right) and all(exact_equal(a, b) for a, b in zip(left, right, strict=True))
+    if isinstance(left, dict):
+        return left.keys() == right.keys() and all(exact_equal(left[key], right[key]) for key in left)
+    return left == right
+
+
+def check_cars(database, data, known_tags=None):
     """Check cars.json against CARDATA.DAT's bytes; return {car: [(line, tag, written tokens)]} in line order."""
     check_records(database, "cars.json")
     check_fields(database, {"references": dict}, "cars.json")
     require(hashlib.sha256(data).hexdigest() == database["sha256"],
             f"{database['source']} does not match cars.json's SHA-256 (rerun scripts/text_database.py)")
+    parsed = parse_cars(data, load_known_tags(TAGS) if known_tags is None else known_tags)
+    require(exact_equal(database["records"], parsed),
+            f"cars.json records differ from parsing {database['source']} (rerun scripts/text_database.py)")
     lines = dict(lines_of(data))
     written = {}
-    for i, record in enumerate(database["records"]):
-        where = f"cars.json.records[{i}]"
-        check_fields(record, {"repeated": dict}, where)
-        require(not record.get("untagged"), f"{where} has untagged lines, which CARDATA.DAT may not hold")
-        items = [(field["line"], tag, field["values"]) for tag, field in record["fields"].items()]
-        require(all(not field["rows"] for field in record["fields"].values()), f"{where} has a block of rows")
+    for record in parsed:
+        items = [(field["line"], tag) for tag, field in record["fields"].items()]
         for tag, fields in record["repeated"].items():
-            require(isinstance(fields, list), f"{where}.repeated.{tag} must be a list")
-            for j, field in enumerate(fields):
-                check_fields(field, {"line": int, "values": list}, f"{where}.repeated.{tag}[{j}]")
-                items.append((field["line"], tag, field["values"]))
-        record_line = lines.get(record["line"], [])
-        require(record_line == [f":{CAR_RECORD_TAG}", record["type"]],
-                f"{where}: line {record['line']} of {database['source']} is not ':{CAR_RECORD_TAG} {record['type']}' "
-                "(rerun scripts/text_database.py)")
-        rows = []
-        for line, tag, values in sorted(items, key=lambda item: item[0]):
-            tokens = lines.get(line, [])
-            require(tokens[:1] == [f":{tag}"] and len(tokens) == len(values) + 1,
-                    f"{where}: line {line} of {database['source']} is not ':{tag}' with {len(values)} values "
-                    "(rerun scripts/text_database.py)")
-            for token, declared in zip(tokens[1:], values, strict=True):
-                parsed = value(token, line, NAME)
-                require(type(parsed) is type(declared) and parsed == declared,
-                        f"{where}: line {line} of {database['source']} declares {token!r}, but cars.json holds "
-                        f"{declared!r} (rerun scripts/text_database.py)")
-            rows.append((line, tag, tokens[1:]))
-        require(len({line for line, _, _ in rows}) == len(rows), f"{where} lists one line twice")
-        written[record["type"]] = rows
+            items.extend((field["line"], tag) for field in fields)
+        written[record["type"]] = [(line, tag, lines[line][1:]) for line, tag in sorted(items, key=lambda item: item[0])]
     return written
 
 
@@ -344,7 +334,7 @@ def build(cars_path, engines_path, gearboxes_path, tyres_path, game_dir, pe_path
     check_pe(pe)
     for stem, target in target_databases.items():
         check_records(target, f"{stem}.json")
-    written = check_cars(database, game_file(database, "cars.json", game_dir))
+    written = check_cars(database, game_file(database, "cars.json", game_dir), known_tags=load_known_tags(tags_path))
     evidence = load_json(evidence_path, "Field evidence (analysis/selected/field-evidence.json)")
     tyre_dossier.check_evidence(evidence)
     bases = car_reference_bases(evidence, load_tag_ids(tags_path))

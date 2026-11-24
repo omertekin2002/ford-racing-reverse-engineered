@@ -999,11 +999,23 @@ def roots_table(counts):
             f"<th>Cars, {store_link(back)}</th></tr>{rows}{total}</table>")
 
 
-def sources_table(groups):
+def group_cars_cell(cars, names, tag):
+    """Count and link the cars in one root/source group for `tag`, carrying each car's reference basis."""
+    if not names:
+        return '<td class="num">0</td>'
+    by_basis = {}
+    for car in names:
+        by_basis.setdefault(cars["references"][car][tag]["basis"], []).append(car)
+    parts = [f'{", ".join(car_link(car) for car in subset)} <span class="label">{e(basis)}</span>'
+             for basis, subset in by_basis.items()]
+    return f"<td>{len(names)}: {'; '.join(parts)}</td>"
+
+
+def sources_table(cars, groups):
     front, back = dossier_common.car_tags("tyres")
     head = "".join(f"<th>{e(tyre_dossier.TABLE_LABELS[table])} from</th>" for table in ROOT_TABLES)
     rows = "".join(f"<tr><td>{tyre_link(root)}</td>" + "".join(f"<td>{tyre_link(source)}</td>" for source in sources)
-                   + f'<td class="num">{len(named[front])}</td><td class="num">{len(named[back])}</td></tr>'
+                   + group_cars_cell(cars, named[front], front) + group_cars_cell(cars, named[back], back) + "</tr>"
                    for root, sources, named in groups)
     return (f"<table><tr><th>Root</th>{head}<th>Cars, {store_link(front)}</th><th>Cars, {store_link(back)}</th></tr>"
             f"{rows}</table>")
@@ -1149,9 +1161,9 @@ def car_tyre_roots_section(cars, tyres, evidence, labels):
         f'<section id="{ROOTS_SECTION_ID}"><h2>{e(ROOTS_QUESTION)}</h2>',
         roots_summary(cars, tyres, counts, lineages),
         roots_table(counts),
-        "<p>Each car tyre's root, with the record it reads each of these tables from, front and back counted "
-        "apart:</p>",
-        sources_table(groups),
+        "<p>Each car tyre's root, with the record it reads each of these tables from, and the cars in each group, "
+        "front and back apart:</p>",
+        sources_table(cars, groups),
         below_root_html(cars, tyres, lineages),
         mixed_html(cars, lineages),
         roots_trace(cars, tyres, car, tag, lineage, labels),

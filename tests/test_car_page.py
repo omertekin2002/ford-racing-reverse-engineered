@@ -195,18 +195,36 @@ class PageTests(CarPageTestCase):
         # The tags of databases nobody parses are not linked.
         self.assertNotIn("46_CONVERTIBLE</a>", page)
 
-    def test_refuses_a_written_token_that_cars_json_does_not_hold(self):
+    def test_refuses_cars_json_that_differs_from_cardata(self):
         self.parse()
 
         def change(data):
             data["records"][0]["repeated"]["CAR_PERFORMANCE"][0]["values"][1] = 0.3
         self.edit_cars_json(change)
-        with self.assertRaisesRegex(ValueError, "line 9 of DATA/ASCII/CARS/CARDATA.DAT declares '0.20', but cars.json "
-                                                "holds 0.3"):
+        with self.assertRaisesRegex(ValueError, "cars.json records differ from parsing DATA/ASCII/CARS/CARDATA.DAT"):
             self.build(parse=False)
+
+        self.parse()
+
+        def drop_livery(data):
+            data["records"][0]["repeated"]["VALID_LIVERY"].pop()
+        self.edit_cars_json(drop_livery)
+        with self.assertRaisesRegex(ValueError, "cars.json records differ from parsing DATA/ASCII/CARS/CARDATA.DAT"):
+            self.build(parse=False)
+
+        self.parse()
         self.write_cars(CARS.replace("0.20", "0.2"))
         with self.assertRaisesRegex(ValueError, "CARDATA.DAT does not match cars.json's SHA-256"):
             self.build(parse=False)
+
+    def test_accepts_numeric_only_reference_name(self):
+        engines = (self.game / DATABASES["engines"]).read_text(encoding="ascii")
+        (self.game / DATABASES["engines"]).write_bytes(
+            engines.replace(":TYPE BASE", ":TYPE 123").replace(":INHERIT_TYPE BASE", ":INHERIT_TYPE 123").encode("ascii"))
+        self.write_cars(CARS.replace(":CAR_ENGINE_TYPE BASE", ":CAR_ENGINE_TYPE 123"))
+        page = self.build()
+        self.assertIn('href="engines.html#engine-123"', section(page, "BASE"))
+        self.assertIn("<td><code>:CAR_ENGINE_TYPE</code></td><td><code>123</code></td>", section(page, "BASE"))
 
     def test_store_table_links_each_byte_checked_site_and_the_loader(self):
         page = self.build()

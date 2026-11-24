@@ -413,6 +413,11 @@ RECORD_LINK = 0x0042EFD0
 RECORD_LINK_SPAN = (0x0042EFD0, 0x0042F005)
 CREATE_DATABASE = 0x0042ED50
 STRING_COMPARE = 0x00534980
+STRING_COMPARE_SPAN = (0x00534980, 0x005349BB)
+# The case-folding compare at 0x00534980 (compare_names_ignoring_case.asm): tests both characters against 'A'..'Z',
+# adds 0x20 to lower-case them, compares them, and returns first minus second.
+STRING_COMPARE_SHAPE = {0x07: "3c41", 0x0b: "3c5a", 0x0f: "0420", 0x11: "80fc41", 0x16: "80fc5a",
+                        0x1b: "80c420", 0x1e: "38e0", 0x35: "29c2"}
 # The car loader's database: the 0x1bc-byte payload allocation, the file it opens, where it keeps the database, and the
 # :CAR_TYPE branch, selected by `select` (see CAR_REFERENCE_STORES), that allocates a node, links it with 0x0042efd0
 # (which saves and restores ECX, so ECX still holds the node), points ESI at its payload and reads the name into
@@ -1564,6 +1569,7 @@ def car_evidence_problems(evidence, tag_ids, stores=None, record=None, lookups=N
     lookups = CAR_LOOKUPS if lookups is None else lookups
     spans = {"car loader": CAR_LOADER_SPAN, "record link": RECORD_LINK_SPAN, "engine loader": ENGINE_LOADER_SPAN,
              "gearbox loader": GEARBOX_LOADER_SPAN, "tyre loader": TYRE_LOADER_SPAN,
+             "string compare": STRING_COMPARE_SPAN,
              **{f"{name} lookup": (int(entry["routine"], 16), int(entry["routine"], 16) + LOOKUP_SIZE)
                 for name, entry in lookups.items()}}
     found = {None: []}
@@ -1672,6 +1678,10 @@ def car_evidence_problems(evidence, tag_ids, stores=None, record=None, lookups=N
                 found[None].append(f"{name}: {reads['payload']} ({advance}) and {reads['destination']} ({destination}) "
                                    "are not `add r32, 0x20` and `mov edx, r32` of the same register")
         checks.call(f"{name} name read", reads["call"], STRING_READER, entry["loader"])
+    if used:
+        for relative, expected in STRING_COMPARE_SHAPE.items():
+            va = f"0x{STRING_COMPARE + relative:08x}"
+            checks.exact(f"string compare + 0x{relative:02x}", va, expected, "string compare")
     return found
 
 

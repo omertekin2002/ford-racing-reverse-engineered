@@ -782,7 +782,10 @@ class CarTyreRootsSectionTests(unittest.TestCase):
         self.assertIn("All 6 front and back tyre references read the longitudinal and lateral tables from ROOT .", text)
         self.assertIn("Root (no :INHERIT_TYPE ) Cars, CAR_FRONT_TYRE_TYPE Cars, CAR_BACK_TYRE_TYPE ROOT 3 3 All roots "
                       "3 3", text)
-        self.assertIn("ROOT ROOT ROOT ROOT 1 0 ROOT MID ROOT ROOT 2 3", text)
+        self.assertIn("ROOT ROOT ROOT ROOT 1: GAMMA resolved by the loader&#x27;s lookup (byte-checked) 0 "
+                      "ROOT MID ROOT ROOT 2: ALPHA , BETA resolved by the loader&#x27;s lookup (byte-checked) "
+                      "3: ALPHA , BETA , GAMMA resolved by the loader&#x27;s lookup (byte-checked)", text)
+        self.assertIn('<a href="cars.html#car-GAMMA">GAMMA</a>', markup)
         self.assertIn('href="#tyre-tables"', markup)
 
     def test_trace_links_declaration_store_row_inherit_lines_and_tables(self):
@@ -813,6 +816,11 @@ class CarTyreRootsSectionTests(unittest.TestCase):
     def test_each_car_carries_its_reference_basis(self):
         bases = {**CAR_BASES, "CAR_BACK_TYRE_TYPE": DECLARED}
         markup = roots_section(bases=bases)
+        sources = markup[markup.index("and the cars in each group"):markup.index("<h3>Tables declared below the root</h3>")]
+        self.assertIn(f'<a href="cars.html#car-GAMMA">GAMMA</a> <span class="label">'
+                      f'{BYTE_CHECKED.replace(chr(39), "&#x27;")}</span>', sources)
+        self.assertIn(f'<a href="cars.html#car-ALPHA">ALPHA</a>, <a href="cars.html#car-BETA">BETA</a>, '
+                      f'<a href="cars.html#car-GAMMA">GAMMA</a> <span class="label">{DECLARED}</span>', sources)
         below = roots_block(markup, "Tables declared below the root")
         front, back = below.split("CAR_BACK_TYRE_TYPE</code></a>: ")
         self.assertEqual(front.count("byte-checked)</span>"), 2)

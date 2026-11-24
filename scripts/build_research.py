@@ -228,7 +228,8 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
                        + research_answers.engine_torque_section(load_json(work / "engines.json", "Engine database"),
                                                                 field_evidence, labels)
                        + research_answers.car_sharing_section(
-                           cars, usage, car_page.check_cars(cars, game_file(cars, "cars.json", game_dir)),
+                           cars, usage, car_page.check_cars(cars, game_file(cars, "cars.json", game_dir),
+                                                            known_tags=load_known_tags(analysis / "tags.json")),
                            field_evidence)
                        + research_answers.car_tyre_roots_section(cars, tyres, field_evidence, labels))
         counts["pcg_collections"], counts["pcg_graphics"] = pcg_catalogue.build(
