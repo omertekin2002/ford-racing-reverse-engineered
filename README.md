@@ -27,16 +27,20 @@ The new tyre analysis reconstructs its 88-byte record and table allocations.
   WebAssembly runtime. See the [browser guide](docs/browser.md).
 - **Research findings:** open
   [Explore findings](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/),
-  the engine, gearbox, tyre, PCG catalogue, routines and open questions pages built from the demo in the
+  the car, engine, gearbox, tyre, PCG catalogue, routines and open questions pages built from the demo in the
   same Pages workflow and published beside the preview under `research/`. The
   [research packet](https://omertekin2002.github.io/ford-racing-reverse-engineered/downloads/fr3-research-latest.zip)
   is an offline ZIP of those pages with a `MANIFEST.json` naming their revision,
   input build and the checks they passed; it is rebuilt on every deploy. The
   entrance page also answers
   [whether road, offroad and track tyres use different tables](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/#tyre-tables),
-  generated from the tyre table provenance with one traced example, and
+  generated from the tyre table provenance with one traced example,
   [which engines share a torque table and what they declare differently](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/#engine-torque-tables),
-  generated from the engines' effective fields.
+  generated from the engines' effective fields,
+  [which cars share an engine, gearbox or tyre record](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/#car-shared-records),
+  generated from the cars' byte-checked references, and
+  [which cars run road, offroad or track tyres](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/#car-tyre-roots),
+  generated from each car tyre's inheritance root and resolved table sources.
 
 Read [the verified findings and limitations](docs/analysis.md). This is an
 analysis package, not restored original source or a runnable replacement game.
@@ -84,7 +88,7 @@ python3 scripts/package_analysis.py
 The bundle holds one folder, `fr3-analysis-<short revision>/`, in layers: the
 source (`README.md`, `ruff.toml`, `scripts/`, `tests/`, `recovered/`, `docs/`
 and `analysis/`, read from Git at the producer revision), the parsed engine,
-gearbox and tyre databases in `text-databases/`, the checked research pages in
+gearbox, tyre and car databases in `text-databases/`, the checked research pages in
 `research/` and, only when they match the committed verification record, the
 Ghidra outputs in `artifacts/`. Its `MANIFEST.json` names the input build, the
 producer revision, the tool versions and each verification level: `read`,
@@ -146,14 +150,15 @@ headless script errors can be reported without a failing process exit code.
 | `analysis/selected/` | Instruction evidence and explicitly bounded disassembly |
 | `recovered/fr3_database_layouts.h` | Engine, gearbox and tyre in-memory layouts |
 | `artifacts/text-databases/` | Parsed engine, gearbox and tyre records from `scripts/text_database.py`, with source hashes |
-| `artifacts/research/` | Self-contained research directory from `scripts/build_research.py`: the "Explore findings" entrance page `index.html`, the seven pages below, and the `analysis/` files they link to under `evidence/`; every page carries the rights-holder notice |
+| `artifacts/research/` | Self-contained research directory from `scripts/build_research.py`: the "Explore findings" entrance page `index.html`, the eight pages below, and the `analysis/` files they link to under `evidence/`; every page carries the rights-holder notice |
 | `artifacts/fr3-research-<revision>.zip` | Citable research packet from `scripts/package_research.py`: the verified research directory in one folder, with a `MANIFEST.json` naming the input build, producer revision, Python version, the checks actually run and each file's SHA-256, plus `SHA256SUMS` |
-| `artifacts/dossier/tyres.html` | Offline tyre dossier from `scripts/tyre_dossier.py`: each tyre's declarations beside its five table sources and their byte-checked evidence, each inheriting tyre's effective scalar fields with their source record and line, and each site, accessor, the loader and the scalar copy linked to its section on `routines.html` |
-| `artifacts/dossier/engines.html`, `artifacts/dossier/gearboxes.html` | Offline engine and gearbox dossiers from `scripts/record_dossier.py`: each record's declarations as written, each inheriting engine's effective fields with their source record and line and store sites, each engine and gearbox field's offset, width, compare and store sites, untagged lines (and gearbox inheritance) labelled unresolved, and the database's load and copy routines linked to `routines.html` |
-| `artifacts/dossier/compare.html` | Offline "Compare records" page from `scripts/record_compare.py`: the 14 demo gearboxes, and the 56 demo engines' effective values, field by field, each value as written in `GEARDATA.DAT` or `ENGDATA.DAT` linked to its declaration row on `gearboxes.html` or `engines.html` (inherited engine values marked with their source record) and each field to its store row there, and, per field, how many distinct values the records hold and which records hold each; fields that depend on `INDIGO`'s colon-less line are labelled unresolved |
+| `artifacts/dossier/cars.html` | Offline "Cars" page from `scripts/car_page.py`: each of the 55 demo cars' engine, gearbox and front and back tyre, linked to that record's section on `engines.html`, `gearboxes.html` or `tyres.html` and labelled with the basis `cars.json` gives it (resolved by the loader's lookup, byte-checked, or declared by name), the car loader's byte-checked dispatch, name read, lookup and store sites for each reference linked to `routines.html`, and every car declaration as written, repeated `CAR_PERFORMANCE` lines in file order, with no units or menu meaning claimed |
+| `artifacts/dossier/tyres.html` | Offline tyre dossier from `scripts/tyre_dossier.py`: each tyre's declarations beside its five table sources and their byte-checked evidence, each inheriting tyre's effective scalar fields with their source record and line, a "Where each field is stored" table of each scalar tag's offsets and store, scale and copy sites, and each site, accessor, the loader and the scalar copy linked to its section on `routines.html` |
+| `artifacts/dossier/engines.html`, `artifacts/dossier/gearboxes.html` | Offline engine and gearbox dossiers from `scripts/record_dossier.py`: each record's declarations as written, each inheriting engine's effective fields with their source record and line and store sites, each engine and gearbox field's offset, width, compare and store sites, `INDIGO`'s colon-less line applied on static instruction evidence and labelled with that basis, other untagged lines (and gearbox inheritance) labelled unresolved, and the database's load and copy routines linked to `routines.html` |
+| `artifacts/dossier/compare.html` | Offline "Compare records" page from `scripts/record_compare.py`: the 14 demo gearboxes, and the 56 demo engines' and 109 demo tyres' effective values, field by field, each value as written in `GEARDATA.DAT`, `ENGDATA.DAT` or `TYREDATA.DAT` linked to its declaration row on `gearboxes.html`, `engines.html` or `tyres.html` (inherited values marked with their source record) and each field to its store row there, each tyre's five tables to the record they are read from, and, per field, how many distinct values the records hold and which records hold each; values that come through `INDIGO`'s colon-less line are marked with its basis, static instruction evidence |
 | `artifacts/dossier/pcg.html` | Offline PCG catalogue from `scripts/pcg_catalogue.py`: every PCG collection and graphic, its header fields, byte spans and decoding status |
 | `artifacts/dossier/routines.html` | Offline routine index from `scripts/routine_index.py`: each of the 25 analyst-labelled routines with its signature, Ghidra pseudocode, bounded disassembly and byte-checked sites |
-| `artifacts/dossier/questions.html` | Offline "Open questions" page from `scripts/open_questions.py`: for `INDIGO`'s colon-less line, the tyre sound table's first fifteen words and the PCG extra bytes, what was observed, what depends on it, the untested alternatives and what evidence would decide it |
+| `artifacts/dossier/questions.html` | Offline "Open questions" page from `scripts/open_questions.py`: for `INDIGO`'s colon-less line, the tyre sound table's first fifteen words and the PCG extra bytes, what was observed, what depends on it, the untested alternatives and what evidence would decide it; for `INDIGO`'s line also the byte-checked static instruction evidence of how the tag reader reads it, and the reading it supports, which the other pages apply on that basis |
 | `artifacts/ghidra/` | Complete baseline C, function disassembly, function list and call edges |
 | `artifacts/fr3-demo-annotated.gzf` | Portable annotated Ghidra program |
 | `artifacts/fr3-analysis-<revision>.zip` | Deterministic reproduction bundle from `scripts/package_analysis.py`: committed source, parsed databases, checked research pages and, when they match the committed verification record, the Ghidra outputs, with a `MANIFEST.json` naming the input build, producer revision, tool versions and the verification levels performed or unavailable, plus `SHA256SUMS` |
@@ -185,12 +190,18 @@ without a byte-checked store unmapped, with no value
 ([details](docs/analysis.md#tyre-scalar-inheritance)). Each engine tag's dispatch
 compare, payload stores and the `INHERIT_TYPE` copy are byte-checked and mapped
 to the C layout ([details](docs/analysis.md#new-finding-engine-stores-and-copy)).
-`engines.json` gives each of the 51 inheriting engines its effective fields the
+`engines.json` gives each of the 52 inheriting engines its effective fields the
 same way, with the `MAX_RPM` each torque table was parsed with and the derived
-`+0x2c` and `+0xa4` named but not computed; it lists what depends on `INDIGO`'s
-colon-less line under both readings without choosing one
-([details](docs/analysis.md#engine-inheritance)). The meaning of the sound
-table's first fifteen words is unknown:
+`+0x2c` and `+0xa4` named but not computed. `INDIGO`'s colon-less
+`INHERIT_TYPE DEFAULT_TRACK` line is among them: it is applied on static
+instruction evidence only, through a narrow allow-list, and marked with that
+basis ([details](docs/analysis.md#engine-inheritance)). The meaning of the sound
+table's first fifteen words is unknown.
+`cars.json` lists the 55 cars, keeping each repeated `:CAR_PERFORMANCE` and
+`:VALID_LIVERY` line. Under `references` it gives the engine, gearbox, front
+tyre and back tyre record each car names. The car loader resolves all four
+through lookups whose dispatch, name compare and stores are byte-checked
+([details](docs/analysis.md#new-finding-car-references)):
 
 ```sh
 python3 scripts/acquire_demo.py inputs
@@ -199,7 +210,7 @@ python3 scripts/text_database.py inputs/extracted/Program_Executable_Files --out
 
 `scripts/build_research.py` builds every research page in one step, after
 `acquire_demo.py`. It parses the text databases into a temporary directory,
-writes the tyre, engine, gearbox, compare records, PCG, routines and open questions pages described below plus an "Explore
+writes the car, tyre, engine, gearbox, compare records, PCG, routines and open questions pages described below plus an "Explore
 findings" entrance page, `index.html`, into `artifacts/research/`, and copies the
 committed `analysis/` files the pages link to into `artifacts/research/evidence/`,
 so the directory is self-contained. Every page carries the browser preview's
@@ -224,15 +235,46 @@ records only the checks it ran (see
 python3 scripts/package_research.py
 ```
 
+In the research directory the engine, gearbox and tyre pages also list, in each
+record's "Used by cars" block, the cars whose `CARDATA.DAT` reference names that
+record directly (front and back tyre apart), each linked to `cars.html` with
+the car loader's row for the tag and the reference's basis; a parent that only
+other records inherit from says it is not named by any car. The Compare
+records page adds a "Used by cars" count column to its three matrices, linked
+to those blocks (see
+[the analysis notes](docs/analysis.md#research-directory)).
+
 The per-page commands below still work on their own and write to
-`artifacts/dossier/`, without the entrance page or a nav link to it.
+`artifacts/dossier/`, without the entrance page, a nav link to it, or the
+"Used by cars" blocks and column.
+
+`scripts/car_page.py`, run after `text_database.py`, builds
+`artifacts/dossier/cars.html`, the "Cars" page. It gives each car a section,
+`#car-<name>`, with the engine, gearbox and front and back tyre it references,
+each linked to that record's section on the engine, gearbox or tyre page and
+labelled with its basis from `cars.json`, and every declaration as written in
+`CARDATA.DAT`, the repeated `CAR_PERFORMANCE` lines in file order. A table,
+`#car-store-<TAG>` per row, shows how the car loader resolves each reference:
+the tag ID, the compares that select its handler, the name read, the lookup and
+the payload offset it stores at, each byte-checked site linked to
+`routines.html`. No units or menu meaning are claimed for any value. It exits
+non-zero when `cars.json` no longer matches `CARDATA.DAT` or what
+`text_database.py` resolves, a reference dangles, or, for the demo's file, the
+55 cars and their referenced record counts change (see
+[the analysis notes](docs/analysis.md#cars-page)):
+
+```sh
+python3 scripts/car_page.py
+```
 
 `scripts/tyre_dossier.py` turns `tyres.json`, `field-evidence.json` and
 `pe-metadata.json` into one static page, `artifacts/dossier/tyres.html`, with no
 JavaScript or external resources. Each "Why?" trail links its accessor and
 byte-checked sites, and the page links the tyre loader and scalar copy, to
 their sections on `routines.html`, with the labels read from
-`analysis/annotated/status.json`. It needs only the standard library and
+`analysis/annotated/status.json`. A "Where each field is stored" table gives each
+mapped scalar tag's offsets and its byte-checked store, scale and copy sites
+(`tyre-store-<TAG>` rows, which `compare.html` links). It needs only the standard library and
 refuses to write the page when the inputs disagree or a linked routine is
 missing or renamed in `status.json`; see
 [the analysis notes](docs/analysis.md#tyre-dossier). The page holds game data,
@@ -248,8 +290,9 @@ page. They show each record's declarations as written, each inheriting engine's
 effective fields traced to the record and line they come from with their
 byte-checked store sites, where the gearbox loader stores each of the nine
 gearbox fields with its compare and store sites, and link the database's load and copy routines to
-`routines.html`; the colon-less `INDIGO` line, gearbox inheritance and the units
-of the values stay unresolved (see
+`routines.html`; the colon-less `INDIGO` line is applied on static instruction
+evidence and labelled so, and gearbox inheritance and the units of the values
+stay unresolved (see
 [the analysis notes](docs/analysis.md#engine-and-gearbox-dossier)):
 
 ```sh
@@ -265,8 +308,12 @@ page's "Where each field is stored" table. A second table gives, per tag, the
 distinct values and the gearboxes that declare each, floats grouped by number
 and enum words by the exact word. It claims no units or meanings, and refuses
 to write the page when a gearbox lacks a mapped tag, declares an unmapped tag,
-`:INHERIT_TYPE` or an untagged line, or declares anything but one inline value
-(see [the analysis notes](docs/analysis.md#compare-records)):
+`:INHERIT_TYPE` or an untagged line, or declares anything but one inline value.
+Engine and tyre sections follow, with each record's effective values: a tyre
+row holds its nine scalar fields, then the record each of its five tables is
+read from, linked to its rows on `tyres.html`; for the demo's `TYREDATA.DAT` the
+counts must equal `TYRE_SCALAR_COUNTS` and `TYRE_TABLE_SOURCES` (see
+[the analysis notes](docs/analysis.md#compare-records)):
 
 ```sh
 python3 scripts/record_compare.py
@@ -297,14 +344,19 @@ python3 scripts/routine_index.py
 
 `scripts/open_questions.py`, run after `text_database.py`, builds
 `artifacts/dossier/questions.html`, the "Open questions" page. It gives three
-findings the other pages label unresolved their own section: the colon-less
+findings no run has settled their own section: the colon-less
 `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` (`#indigo`), the tyre sound
 table's leading words (`#sound-words`) and the extra bytes after `_loadbar` and
 `_loadbr2` (`#pcg-extra-bytes`). Each section shows what was observed, read
 from the parsed databases and committed `analysis/` files at build time, where
 the other pages depend on it, the alternatives the observations leave open
-(each labelled untested) and what evidence would decide it. It resolves
-nothing, and it exits non-zero when its inputs no longer show the question
+(each labelled untested) and what evidence would decide it. For `INDIGO`'s line
+it also lists the byte-checked instruction evidence of how the engine loader's
+tag reader reads it, each site linked to `routines.html`, and states the
+reading it supports, labelled static instruction evidence, which the engine data
+and the other pages apply on that basis; nothing has been run. It exits non-zero
+when its inputs no longer show the question, or when that evidence no longer
+supports the line `engines.json` applies
 (see [the analysis notes](docs/analysis.md#open-questions)):
 
 ```sh
@@ -325,7 +377,7 @@ python3 scripts/verify_findings.py . --level instructions
 | Level | Needs | Proves |
 | --- | --- | --- |
 | `data` | `inputs/` from `acquire_demo.py` | The archive's SHA-256 and the mirror's MD5, the `fr3.exe` identity, every file in `analysis/game-file-manifest.json`, the tag registry in `analysis/tags.json`, every compressed resource in `analysis/unpacked-manifest.json`, every PCG index and its two trailing-byte exceptions, the engine, gearbox and tyre text-database checks and the tyre table dimensions |
-| `instructions` | `inputs/fr3.exe` | The PE build metadata and import counts, all 274 `field-evidence.json` sites byte-checked against `fr3.exe`, and `analysis/selected/` matching, byte for byte, a fresh `extract_selected.py` export written to a temporary directory |
+| `instructions` | `inputs/fr3.exe` | The PE build metadata and import counts, all 541 `field-evidence.json` sites (533 instructions, 8 data) byte-checked against `fr3.exe`, and `analysis/selected/` matching, byte for byte, a fresh `extract_selected.py` export written to a temporary directory |
 | `full` (default) | both of the above, plus the Ghidra outputs from `scripts/run_analysis.py` and `gcc` | Everything above, plus the Ghidra baseline and C export counts, the 25 annotated exports, the fresh snapshot import and the C layout assertions; only this level rewrites `analysis/verification.json` |
 
 `data` and `instructions` never write to the checkout. A level whose inputs are
@@ -361,7 +413,9 @@ store table agreeing with `field-evidence.json`, and the independent derivation 
 Engine inheritance gets the same synthetic cases plus a depth-3 chain overriding one field, a child's own
 `TORQUE_ARRAY` replacing the parent's whole table, torque tables parsed with an inherited or zero-filled
 `MAX_RPM`, the derived `+0x2c` and `+0xa4` origins, both readings of a colon-less `INHERIT_TYPE` line, and the
-checker refusing a tampered entry. The engine and gearbox store maps are checked against the committed evidence,
+checker refusing a tampered entry. The allow-list tests check that `INDIGO`'s line 1410 is applied with
+`colon: false` and its basis while a line that is not allow-listed is not, and that a listed line with another
+line number or tokens, a record that also has `:INHERIT_TYPE`, or a missing evidence site refuses the build. The engine and gearbox store maps are checked against the committed evidence,
 the C header and an emulation of each loader's compare tree, and the gearbox checks catch a wrong tag ID, a
 missing site, a gearbox tag with no mapping, a copied offset nothing stores or a stored offset the copy misses,
 and an offset or width that disagrees with the header. They
@@ -369,7 +423,7 @@ check the tyre dossier's anchors and links, its address-matched evidence trails,
 escaping and each input disagreement it refuses, and the engine and gearbox
 dossiers' anchors, effective-field and derived rows, unresolved labels, escaping and the malformed inputs they
 refuse, including effective fields that disagree with the records and linked sites missing from
-`field-evidence.json`. The PCG catalogue tests run the script on the committed `analysis/` files and check every input disagreement it refuses. The routine index tests check its sections, escaping and site placement on synthetic routines, run it on the committed files, and check each refusal: `selected.c` and `status.json` disagreeing, a malformed `.asm` span header, and a site that would be dropped or shown twice. The open questions tests check the page's three anchored sections and their four parts, that observed values follow synthetic inputs, that every reading is labelled untested, escaping, the engine, tyre and PCG pages' links to each question, and each refusal: `INDIGO` missing or without exactly one `INHERIT_TYPE DEFAULT_TRACK` line, the sound table's allocation or `+0x54` store missing from `field-evidence.json`, the tyre loader's table stores changed, and extra bytes on any graphics but `_loadbar` and `_loadbr2` at 1,024 bytes each. The compare records tests build the page from a synthetic `GEARDATA.DAT` and check the matrix's row order, its columns in payload offset order with their offset, width and read kind, each cell's written value and declaration link, that every `gearboxes.html` link names an id on a gearbox page built from the same file, the "What differs" grouping (`0.2` and `0.20`, `1` and `1.0` as one number, `TORSON` and `torson` as two words), and each refusal: a missing or unmapped tag, `:INHERIT_TYPE`, an untagged line, rows or several values, a float tag that is not a number, and a `GEARDATA.DAT` that does not match `gearboxes.json`. The research-directory tests build it from fixture game files, check its pages, notice, links and copied evidence, that every tyre, engine and gearbox link into `routines.html` names a section or site row there and that a renamed linked routine refuses the build, and check that the verifier rejects a missing page or notice, a broken local link (including a record page's link to a missing `routines.html` fragment), an external resource, a `<script>` and a file the build does not write. The research-packet tests package a fixture research directory, check its folder, `MANIFEST.json` and `SHA256SUMS` (with `sha256sum -c` where installed) and that two runs give byte-identical ZIPs, and check that a missing directory, a page without the notice, an extra file, changed evidence, evidence copied from an uncommitted `analysis/` edit and a directory or symlink destination are refused with nothing written. The site-verifier packet tests lay a fixture packet beside a published `research/` and check that a missing linked packet, one absent from the site's `SHA256SUMS`, one built at another revision, one whose page differs from `research/`, and one with an extra or missing file are each refused with a specific message, and that a site with neither a packet nor a link to one still passes. The release-tag tests check that a tag must be exactly `v` + `VERSION` (a mismatch, a missing `v` and a branch or pull-request ref are refused, naming both values), that every `builds.json` entry must name the tagged commit from a clean checkout, the draft's title, pre-release flag, notes and exact four assets from a synthetic `builds.json`, that a tag which already has a release is refused before anything is created, that `--dry-run` runs nothing, and that only `releases.yml`'s draft job can write and nothing in it publishes or pushes. The verification-level tests check that `full` runs exactly the `data` and `instructions` checks plus the Ghidra checks, in order, that each level runs only its own checks and that the demo levels write nothing under `analysis/`, that a missing demo, Ghidra output or `gcc` makes the level unavailable with a message naming `acquire_demo.py`, `run_analysis.py` or `gcc` and exit code 3 before any check runs, that a failing check stops the level and is named, the `--report` contents, and the `analysis/selected/` comparison on synthetic directories (a match, a changed line, changed evidence bytes, a truncated, missing or extra file). For demo acquisition they cover, without network access, the
+`field-evidence.json`. The PCG catalogue tests run the script on the committed `analysis/` files and check every input disagreement it refuses. The routine index tests check its sections, escaping and site placement on synthetic routines, run it on the committed files, and check each refusal: `selected.c` and `status.json` disagreeing, a malformed `.asm` span header, and a site that would be dropped or shown twice. The open questions tests check the page's three anchored sections and their four parts, that observed values follow synthetic inputs, that every reading is labelled untested, escaping, the engine, tyre and PCG pages' links to each question, and each refusal: `INDIGO` missing or without exactly one `INHERIT_TYPE DEFAULT_TRACK` line, the sound table's allocation or `+0x54` store missing from `field-evidence.json`, the tyre loader's table stores changed, and extra bytes on any graphics but `_loadbar` and `_loadbr2` at 1,024 bytes each. They also check that the `#indigo` instruction evidence links every site of every gap to `routines.html` and states the static reading on the committed evidence, and that the page is refused, naming the open gap, when any one site is missing, the tag path calls the colon search, the loader no longer reaches the ASCII tag reader, the dispatch ID or registry entry disagrees with the lookup over `tags.json`, or `tags.json` lacks `INHERIT_TYPE`; and that the lookup finds each searched registry entry at its own ID, ignoring case, and never a name with a colon. The compare records tests build the page from a synthetic `GEARDATA.DAT` and check the matrix's row order, its columns in payload offset order with their offset, width and read kind, each cell's written value and declaration link, that every `gearboxes.html` link names an id on a gearbox page built from the same file, the "What differs" grouping (`0.2` and `0.20`, `1` and `1.0` as one number, `TORSON` and `torson` as two words), and each refusal: a missing or unmapped tag, `:INHERIT_TYPE`, an untagged line, rows or several values, a float tag that is not a number, and a `GEARDATA.DAT` that does not match `gearboxes.json`. Its tyre tests check the tyre matrix's rows and its scalar then table columns, written values and their declaration links, multi-step paths, a zero-filled cell, unmapped and overwritten declarations listed without a column, written-form grouping in "What differs", that every `tyres.html` and `routines.html` link names an id on a tyre page built from the same file, the counts check being skipped for a non-demo `TYREDATA.DAT`, and each tyre refusal; the tyre dossier tests check its "Where each field is stored" rows against `TYRE_SCALAR_STORES` and the byte-checked sites. The reverse-index tests check `car_usage()` against the forward references (cars in file order, front and back apart, one link per car per tag, no parent counted through its children, each reference's basis) and that `check_car_usage()` refuses a dropped, duplicated, moved or relabelled entry; that the engine, gearbox and tyre pages' "Used by cars" blocks and the Compare records page's count columns follow a synthetic index, with `0` and "Not named by any car" for unnamed records and *declared by name* when the loader evidence does not check; that each generator writes the same page as before without car data; and that an index naming an unknown record is refused. The research-directory tests build it from fixture game files, check its pages, notice, links and copied evidence, that every tyre, engine and gearbox link into `routines.html` names a section or site row there and that a renamed linked routine refuses the build, check each record's "Used by cars" block and the compare page's counts on the fixture cars, *declared by name* on the record pages when the back tyre's loader store is missing from `field-evidence.json`, and check that the verifier rejects a missing page or notice, a broken local link (including a record page's link to a missing `routines.html` or `cars.html` fragment), an external resource, a `<script>` and a file the build does not write. The research-packet tests package a fixture research directory, check its folder, `MANIFEST.json` and `SHA256SUMS` (with `sha256sum -c` where installed) and that two runs give byte-identical ZIPs, and check that a missing directory, a page without the notice, an extra file, changed evidence, evidence copied from an uncommitted `analysis/` edit and a directory or symlink destination are refused with nothing written. The site-verifier packet tests lay a fixture packet beside a published `research/` and check that a missing linked packet, one absent from the site's `SHA256SUMS`, one built at another revision, one whose page differs from `research/`, and one with an extra or missing file are each refused with a specific message, and that a site with neither a packet nor a link to one still passes. The release-tag tests check that a tag must be exactly `v` + `VERSION` (a mismatch, a missing `v` and a branch or pull-request ref are refused, naming both values), that every `builds.json` entry must name the tagged commit from a clean checkout, the draft's title, pre-release flag, notes and exact four assets from a synthetic `builds.json`, that a tag which already has a release is refused before anything is created, that `--dry-run` runs nothing, and that only `releases.yml`'s draft job can write and nothing in it publishes or pushes. The verification-level tests check that `full` runs exactly the `data` and `instructions` checks plus the Ghidra checks, in order, that each level runs only its own checks and that the demo levels write nothing under `analysis/`, that a missing demo, Ghidra output or `gcc` makes the level unavailable with a message naming `acquire_demo.py`, `run_analysis.py` or `gcc` and exit code 3 before any check runs, that a failing check stops the level and is named, the `--report` contents, and the `analysis/selected/` comparison on synthetic directories (a match, a changed line, changed evidence bytes, a truncated, missing or extra file). For demo acquisition they cover, without network access, the
 download-link filter, HTTPS-only fetches and redirects, the 12-URL cap, identity-checked
 archive writes and ZIP extraction safety (unsafe paths, symlinks, size limit, existing
 files). The separate verification command checks the actual demo,

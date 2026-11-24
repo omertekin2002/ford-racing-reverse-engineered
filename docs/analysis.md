@@ -84,8 +84,11 @@ and every rejected construct; tags must exist in the executable's registry.
 
 One `ENGDATA.DAT` line, `INHERIT_TYPE DEFAULT_TRACK` in record `INDIGO`, lacks
 the leading colon. The parser keeps such a line in the record's `untagged` list
-rather than treating it as inheritance. Whether the game honours it is not
-established. Other non-tag lines outside a value block are rejected.
+rather than treating it as inheritance. Static instruction evidence, described in
+[The ASCII tag reader and INDIGO's line](#the-ascii-tag-reader-and-indigos-line),
+supports reading it as inheritance, and the engine data applies it on that
+evidence alone (see [Engine inheritance](#engine-inheritance)); nothing has been
+run. Other non-tag lines outside a value block are rejected.
 
 `TYREDATA.DAT` yields 109 tyre records, 108 with `:INHERIT_TYPE`. It has one
 9×11 longitudinal and one 10×21 lateral combined table, and three 10×2 blocks
@@ -107,8 +110,9 @@ resolves each inheriting engine's effective fields from them, as described in
 [Engine inheritance](#engine-inheritance). It maps every gearbox tag to its
 byte-checked payload offset the same way, as described in
 [New finding: gearbox stores and copy](#new-finding-gearbox-stores-and-copy). It
-does not decide the colon-less `INDIGO` line, resolve gearbox inheritance (no demo
-gearbox inherits), or handle the other text files. The meaning of the
+applies the colon-less `INDIGO` line on static instruction evidence only, and
+does not resolve gearbox inheritance (no demo gearbox inherits) or handle the
+other text files. The meaning of the
 sound table's first fifteen words, described below, is still unknown.
 
 The engine loader at `0x005227f0` allocates a `0xb0`-byte payload, and the gearbox
@@ -275,8 +279,10 @@ Three cases differ from tyres:
 Neither derived value is computed.
 
 `effective_engine_fields()` replays this and `text_database.py` writes it to
-`engines.json` as `effective_fields`. For each of the 51 engines with
-`:INHERIT_TYPE` it gives the `INHERIT_TYPE` line and parent and, for each of the
+`engines.json` as `effective_fields`. For each of the 52 inheriting engines, the
+51 with `:INHERIT_TYPE` and `INDIGO` through its applied colon-less line, it
+gives the `INHERIT_TYPE` line and parent, `colon` (`false` for `INDIGO`, with the
+`basis` below) and, for each of the
 20 mapped tags, the payload `offsets` and a `status` (`declared`, `inherited` or
 `not declared (zero-filled)`, as for tyres). Declared and inherited fields give
 the declared text `values` (and the `rows` of a torque array), the `source`
@@ -290,41 +296,122 @@ mapped store. No units, physics or row positions are computed.
 first by recursion over earlier records, and `verify_text_databases()` checks on
 the real demo that:
 
-- the effective record set is exactly the 51 inheriting engines;
+- the effective record set is exactly the 52 inheriting engines: the 51 with
+  `:INHERIT_TYPE` and `INDIGO`, whose colon-less line is applied from line 1410
+  to `DEFAULT_TRACK` without overwriting anything;
 - the two derivations agree;
 - nothing is overwritten and no tag is unmapped;
 - every torque table was parsed with its own record's `MAX_RPM`;
 - the per-tag status counts equal `ENGINE_FIELD_COUNTS`.
 
-In the demo no field is zero-filled, because the five roots declare all 20
-tags. 38 inheriting engines declare their own `TORQUE_ARRAY`, each after its own
-`MAX_RPM`; the other 13 inherit the table. Of the 1,020 fields, 270 are declared
-by the engine itself, 510 come from its direct parent, 137 from two levels up and
-103 from three:
+In the demo no field is zero-filled, because the four roots declare all 20
+tags. 39 inheriting engines declare their own `TORQUE_ARRAY`, each after its own
+`MAX_RPM`; the other 13 inherit the table. Of the 1,040 fields, 274 are declared
+by the engine itself, 526 come from its direct parent, 137 from two levels up and
+103 from three. `INDIGO` adds one declared field for each of the four tags it
+declares and one inherited field for each of the other 16:
 
 | Tag | Declared | Inherited |
 |---|---|---|
-| `TORQUE_MODIFIER` | 51 | 0 |
-| `TORQUE_ARRAY`, `MAX_RPM` | 38 each | 13 each |
-| `ASPIRATION_TYPE` | 18 | 33 |
-| `ROUGHNESS` | 16 | 35 |
-| `CAPACITY`, `MAX_TURBO_PRESSURE`, `NUMBER_OF_TURBOS`, `TURBO_MASS` | 14 each | 37 each |
-| `FUEL_CUTOFF`, `NUMBER_OF_CYLINDERS` | 8 each | 43 each |
-| `FLYWHEEL_MASS` | 7 | 44 |
-| `LOCATION_TYPE`, `TICKOVER_RPM` | 6 each | 45 each |
-| `FLYWHEEL_RADIUS`, `MAX_FUELFLOW` | 4 each | 47 each |
-| `ACCELERATOR_SPEED`, `MAX_AIRFLOW`, `MAX_DELTA_FUELFLOW` | 3 each | 48 each |
-| `ENGINE_BRAKING` | 1 | 50 |
+| `TORQUE_MODIFIER` | 52 | 0 |
+| `TORQUE_ARRAY`, `MAX_RPM` | 39 each | 13 each |
+| `ASPIRATION_TYPE` | 19 | 33 |
+| `ROUGHNESS` | 16 | 36 |
+| `CAPACITY`, `MAX_TURBO_PRESSURE`, `NUMBER_OF_TURBOS`, `TURBO_MASS` | 14 each | 38 each |
+| `FUEL_CUTOFF`, `NUMBER_OF_CYLINDERS` | 8 each | 44 each |
+| `FLYWHEEL_MASS` | 7 | 45 |
+| `LOCATION_TYPE`, `TICKOVER_RPM` | 6 each | 46 each |
+| `FLYWHEEL_RADIUS`, `MAX_FUELFLOW` | 4 each | 48 each |
+| `ACCELERATOR_SPEED`, `MAX_AIRFLOW`, `MAX_DELTA_FUELFLOW` | 3 each | 49 each |
+| `ENGINE_BRAKING` | 1 | 51 |
 
 A shared parent does not make two engines behave identically: each engine's
 own declarations replace the parent's.
 
-`INDIGO` stays a root as parsed and gets no `effective_fields` entry.
-`untagged_inherit_consequences()` writes, as `untagged_inherit_consequences`,
-what depends on its colon-less line: for each of the 16 mapped tags `INDIGO`
-does not declare, `if_ignored` (zero-filled) and `if_applied` (the entry it
-would get with `DEFAULT_TRACK` as its parent). It does not choose between them;
-see the [Open questions page](#open-questions).
+`INDIGO`'s colon-less line is applied through a narrow, committed allow-list,
+`APPLIED_UNTAGGED_INHERIT`: record `INDIGO`, line 1410, tokens `INHERIT_TYPE
+DEFAULT_TRACK`, basis *static instruction evidence*, pointing at
+`questions.html#indigo` and the `INDIGO_GAPS` sites (now in
+`scripts/indigo_evidence.py`, shared with the Open questions page).
+`with_applied_inherits()` adds the line as `INDIGO`'s `INHERIT_TYPE` for both
+derivations; the parsed record keeps it verbatim in `untagged`. The build fails
+rather than apply it when the line is not exactly as listed (line and tokens),
+when `INDIGO` also has a `:INHERIT_TYPE`, or when any `INDIGO_GAPS` site is
+missing from `field-evidence.json`. No other colon-less line is applied.
+`INDIGO`'s `effective_fields` entry has `inherit_type` `{"line": 1410,
+"parent": "DEFAULT_TRACK", "colon": false, "basis": {...}}`; the colon-tagged
+entries have `"colon": true`. `untagged_inherit_consequences()` still writes, as
+`untagged_inherit_consequences`, both readings for each of the 16 mapped tags
+`INDIGO` does not declare, `if_ignored` (zero-filled) and `if_applied`, now with
+`status: "applied"` and the same `basis`; any other root's colon-less line keeps
+`status: "unresolved"`. Nothing has been run, so the question stays on the
+[Open questions page](#open-questions).
+
+### The ASCII tag reader and INDIGO's line
+
+This is static instruction evidence: bytes of the pinned `fr3.exe`, checked in
+[`field-evidence.json`](../analysis/selected/field-evidence.json) and the bounded
+`.asm` files under `analysis/selected/`. Nothing was run. The routine labels are
+the analyst's. It follows how the engine loader reads a tag, to show whether a
+missing colon changes the result.
+
+- **Which reader.** The engine loader passes reader type `EBX = 0`
+  (`0x00522828`), `EAX = 0xd` and the name `cars\engdata` (data site
+  `0x00581cb4`) to the wrapper at `0x004f8fb0`, which calls the reader opening
+  at `0x0042e920` with `EBX` and `EDX` unchanged (`open_database_file.asm`).
+  That routine keeps `EBX` as the reader type (`0x0042e92f`), jumps through the
+  table at `0x0042e910` (a data site) and, for type 0, formats
+  `data\ascii\%s.dat` (`0x0054bb30`) and stores 0 as the reader's first dword
+  (`0x0042e984`; `open_database_reader.asm`). The loader then calls
+  `fr3_next_tag` at `0x0042e530` with that reader and `EDX = 2`
+  (`0x00522848`–`0x0052284f`). It reads the type dword (`0x0042e535`) and calls
+  `0x0042d0a0` for type 0 (`0x0042e547`) and `0x0042da50` for type 1
+  (`next_tag.asm`). That is why `0x0042d0a0` is labelled the ASCII tag reader
+  (`read_ascii_tag.asm`).
+- **`:` before a token.** The reader first calls `0x0042cfc0`
+  (`skip_ascii_separators.asm`). It reads again for tab, LF, CR, space, `(`,
+  `)`, `,`, `;` and `{`, and gives any other character back, `:` included. The
+  reader's loop then reads `:`. Its byte in the character table at
+  `0x00597a6d` is `0x0c` (data site `0x00597aa7`), with no `0xc0` bit
+  (`0x0042d125`). `:` is not `!` (`0x0042d212`), the byte has no `0xe0` bit
+  (`0x0042d21f`), and `:` is not `-` or `+` (`0x0042d25e`, `0x0042d262`) and none
+  of `[`, `=`, `}` or `]` (`0x0042d230`–`0x0042d24e`). So the reader keeps it
+  only as the previous character (`0x0042d256`) and reads on (`0x0042d259`). `I`
+  has the byte `0x48` (`0x00597ab6`), which has the `0x40` bit, so the token
+  starts there unless the previous character is `\` (`0x0042d132`).
+- **Where the token ends.** Each following character goes to the delimiter test
+  at `0x0042d040` (`0x0042d17f`; `is_ascii_delimiter.asm`). It returns 1 for `:`
+  (`0x0042d05e`, `0x0042d072`) and space (`0x0042d08e`) and 0 for `_`
+  (`0x0042d080`, `0x0042d083`). So `INHERIT_TYPE` is collected whole and ends at
+  the space, and a `:` after a token would end it.
+- **The name lookup.** The token and mode 2 go to `0x0042d310` (`0x0042d1e7`),
+  which calls `0x0042e890`. Only a result of `-0x12`, nothing found, leads to a
+  second call with mode 1 (`0x0042d338`). Mode 2's table is registered at
+  `0x004fa484` (`register_application_tags.asm`): the tag registry at
+  `0x00594d94` with `0x16b`. So `0x0042e890` searches entries 1 to `0x16a`
+  (`0x0042e8bb`, `0x0042e8ca`) with the binary search at `0x0042f440`. Its
+  compare at `0x00534980` adds `0x20` to `A`–`Z` in both strings first, so case
+  is ignored and the token is not changed. The same search run over
+  `analysis/tags.json` returns `0x9c` for `INHERIT_TYPE`: the registry entry at
+  `0x00595004`, which points to the string at `0x00564390`.
+- **`0x0042d2a0`.** It reads up to the next `:`, gives the `:` back and calls the
+  ASCII tag reader (`skip_to_colon_and_read_tag.asm`). Its only direct call in
+  the committed spans is at `0x0042e5ff`, in `0x0042e5a0` (`seek_tag.asm`). No
+  committed span on the tag path calls either routine, so it is not on
+  `ENGDATA.DAT`'s tag path. Only direct calls in those spans were searched.
+- **The dispatch.** `0x9c` is the ID the engine loader compares at `0x00522b1d`.
+  That branch looks up the parent (`0x00522b3c`) and calls the engine copy
+  (`0x00522b47`), as described above for `:INHERIT_TYPE`.
+
+So, as static instruction evidence, `INHERIT_TYPE DEFAULT_TRACK` gives the same
+token and tag ID as `:INHERIT_TYPE DEFAULT_TRACK` and reaches the same copy:
+`INDIGO` would inherit from `DEFAULT_TRACK`, the second reading on the
+[Open questions page](#open-questions). The reading is **applied on static
+instruction evidence**: `engines.json`, `ENGINE_FIELD_COUNTS`,
+`effective_fields`, the engine page, Compare records and the entrance answers
+give `INDIGO` `DEFAULT_TRACK`'s effective values for the 16 tags it does not
+declare, each labelled with that basis and linked to `questions.html#indigo`
+(see [Engine inheritance](#engine-inheritance)). No run confirms it.
 
 ## New finding: gearbox stores and copy
 
@@ -402,6 +489,118 @@ A unit test follows the compare tree in the committed
 through the listed compare, and each handler calls its reader and writes exactly
 the mapped site. `INHERIT_TYPE` writes nothing to the record, and every other
 registry ID reaches the default branch.
+
+## New finding: car references
+
+The demo's `DATA/ASCII/CARS/CARDATA.DAT` holds 55 `:CAR_TYPE` records. Each
+names an engine, a gearbox and a front and back tyre. `parse_cars()` in
+[the parser](../scripts/text_database.py) reads it with the same rules as the
+other databases, with these differences:
+
+- A record starts with `:CAR_TYPE`, not `:TYPE`.
+- A name must fit the loader's `0x20`-byte name read (31 characters and the NUL).
+- `:CAR_PERFORMANCE` (one word and one number) and `:VALID_LIVERY` may repeat.
+  Every occurrence is kept, in file order with its line, under the record's
+  `repeated` lists. Any other tag that repeats is refused.
+- A tag with no value and a line that does not start with a tag are refused.
+- A value that is not a number may start with a digit (`46_CONVERTIBLE`).
+
+`text_database.py` writes `cars.json` beside the other three outputs, with
+the source SHA-256. Its `references` give, for each car and reference tag, the
+name as written and its line, the record it resolves to and the line that
+declares it, the lookup and record offset below, and the basis. The engine,
+gearbox and tyre outputs are unchanged.
+
+[The car loader](../analysis/selected/load_car_database.asm) at `0x00520a60`
+opens `"cars\cardata"` (`0x00520a9c`, data at `0x00581884`). It creates its
+database with a `0x1bc`-byte payload (`0x00520a75`, `call 0x0042ed50` at
+`0x00520a8d`) and keeps it at `0x005973c8` (`0x00520aa1`). `:CAR_TYPE` (`0x4d`,
+`cmp` at `0x00520db1`, `jne` not taken at `0x00520db4`) allocates a node
+(`0x00520dc6`), keeps it in `ECX` (`0x00520dd4`) and links it with
+[`0x0042efd0`](../analysis/selected/link_database_record.asm) (`0x00520dd6`),
+which saves and restores `ECX`. The branch points `ESI` `0x20` past the node
+header, at the payload (`0x00520de1`), and reads the name into `0x20` bytes at
+payload `+0x03` (`0x00520de4`–`0x00520df0`). The link stores the database's
+first record at database `+0x10` and each node's next at node `+0x10`
+(`0x0042efe2`–`0x0042effd`).
+
+Each reference handler reads a name of up to `0x40` bytes into the stack buffer
+at `EBP - 0x64` and passes that buffer to a lookup. It stores the record the
+lookup returns at car payload (`ESI`) `+ offset`. The dispatch is a tree of
+signed range compares. `CAR_REFERENCE_STORES` records, for each tag, the path
+from a `cmp eax, <imm>` through the jumps that read its flags to the handler.
+The tag ID each path admits is derived from those bytes, not taken from a lead:
+
+| Tag | ID | Path to the handler | Name read | Lookup | Offset | Store |
+|---|---|---|---|---|---|---|
+| `CAR_ENGINE_TYPE` | `0x42` | `cmp 0x42` (`0x00520e95`), `jge` taken (`0x00520e98`), `jg` not taken (`0x00520eb5`) | `0x00520eb7`–`0x00520ec1` | `0x00522d70` (`0x00520ec9`) | `+0x1a8` | `0x00520ece` |
+| `CAR_FRONT_TYRE_TYPE` | `0x43` | the same `cmp 0x42`, `jge` and `jg` taken, then `cmp 0x44` (`0x00520f04`) and its `jge` not taken (`0x00520f07`): above `0x42` and below `0x44` | `0x00520f09`–`0x00520f13` | `0x005240e0` (`0x00520f1b`) | `+0x1b4` | `0x00520f20` |
+| `CAR_GEARBOX_TYPE` | `0x44` | `cmp 0x44` (`0x00520f04`), `jge` taken (`0x00520f07`), `jg` not taken (`0x00520f56`) | `0x00520f58`–`0x00520f62` | `0x005234b0` (`0x00520f6a`) | `+0x1ac` | `0x00520f6f` |
+| `CAR_BACK_TYRE_TYPE` | `0x3b` | `cmp 0x3b` (`0x0052102e`), `jge` taken (`0x00521031`), `jg` not taken (`0x00521093`) | `0x00521095`–`0x0052109f` | `0x005240e0` (`0x005210a7`) | `+0x1b8` | `0x005210ac` |
+
+`CAR_FRONT_TYRE_TYPE` has no compare of its own: its handler is the
+fall-through of the `jge` after `cmp eax, 0x44`, reached only from above
+`0x42`. The second call of `0x005240e0` belongs to `CAR_BACK_TYRE_TYPE` and
+stores `+0x1b8`, the record's last dword.
+
+The three lookups have the same shape:
+[`find_tyre_record.asm`](../analysis/selected/find_tyre_record.asm), and the
+same code at `0x00522d70` and `0x005234b0` inside the engine and gearbox copy
+exports. Each one:
+
+1. loads the database its family's loader created (`0x00597418`, `0x00597474`
+   and `0x0059747c`, stored at `0x00522821`, `0x00523251` and `0x00523851`);
+2. walks the record list from database `+0x10` through each node's `+0x10`;
+3. compares each payload's start with the name, using the string compare at
+   `0x00534980`, which lower-cases `A`–`Z` on both sides;
+4. returns the first payload that matches, or 0.
+
+Each family's loader reads the record name into the payload's first `0x14`
+bytes (engine `0x00522c0a`–`0x00522c16`, gearbox `0x00523405`–`0x00523411`,
+tyre `0x005238dc`–`0x005238ec`). So the lookup finds a record by its name.
+
+All four links are therefore resolved by the loader on byte-checked evidence.
+None is only declared by name. `resolve_car_references()` matches names the way
+the lookups do, equal once `A`–`Z` are lower-cased. On the demo every reference
+matches exactly. Which record comes first in a list is not established here,
+so a name that matches more than one record is refused, as is one that matches
+none. A reference that is missing, has more than one value or does not fit the
+`0x40`-byte read is also refused. `car_reference_bases()` labels a reference
+*declared by name* if any of its sites, or the shared record and lookup sites,
+fail the check.
+
+`verify_text_databases()` checks this on the real demo:
+
+- `car_evidence_problems()` checks the allocation, file name, database store,
+  `:CAR_TYPE` branch and link sites. For each tag it checks:
+  - the registry ID in `analysis/tags.json`;
+  - that the select path follows on, site by site, and admits exactly that ID;
+  - that the path ends at the handler and its last jump's claim names the tag;
+  - the name read, and that the lookup is passed the same buffer;
+  - that the call targets the lookup of the tag's database;
+  - a dword store of `EAX` at `[esi + offset]`, inside the record and past the
+    name.
+
+  Offsets must be distinct, and every byte-checked `[esi + n]` store in the
+  loader must be a mapped one. Each lookup's sites must match the shared shape,
+  its database must be the one its loader stores, and that loader must read
+  the name at the payload's start.
+- There are 55 cars, each with six `CAR_PERFORMANCE` entries. All four
+  references resolve exactly, with no dangling or ambiguous name, to 52
+  engines, 14 gearboxes, 53 front tyres and 53 back tyres
+  (`CAR_REFERENCE_TARGETS`).
+
+A unit test follows the compare tree in the committed `load_car_database.asm`
+without the demo. It checks that each reference ID reaches the handler its path
+names, through the path's compares, and that the handler calls only the string
+reader, its lookup and the error report. The handler must write the record only
+at its mapped offset, and no other registry ID may reach a reference handler.
+
+The C header has no car layout, and transcribing the rest of the `0x1bc` record
+is out of scope, so the four offsets are not added there. `CAR_PERFORMANCE`,
+`CAR_APPROXIMATE_TOP_SPEED` and the other car tags are parsed but not
+interpreted. No unit, physics or menu meaning is claimed for them, and their
+stores are not mapped. The [Cars page](#cars-page) shows each car's references.
 
 ## New finding: tyre payload and tables
 
@@ -576,9 +775,11 @@ from two levels up:
 
 Engine inheritance is resolved the same way in
 [Engine inheritance](#engine-inheritance); the colon-less
-`INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` remains unresolved.
+`INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` is applied there on static
+instruction evidence only (see
+[The ASCII tag reader and INDIGO's line](#the-ascii-tag-reader-and-indigos-line)).
 
-The tyre sites among the [274 byte-checked instruction sites](../analysis/selected/field-evidence.json)
+The tyre sites among the [541 byte-checked sites](../analysis/selected/field-evidence.json)
 and [the loader's disassembly](../analysis/selected/load_tyre_database.asm)
 preserve the concrete evidence for these new findings.
 
@@ -599,7 +800,11 @@ Zero-filled fields show the label and no value, and unmapped tags stay labelled
 `routines.html`, beside it: a "Loaded by" line links `fr3_load_tyre_database`,
 each "Why?" trail links its accessor's section and every site's
 `#site-<va>` row, and each scalar section links `0x00524090` to
-`fr3_copy_tyre_scalar_fields` and its `INHERIT_TYPE` call at `0x00523b3a`. Each label is read from
+`fr3_copy_tyre_scalar_fields` and its `INHERIT_TYPE` call at `0x00523b3a`. A "Where each field is stored" table
+has one row per tag in `TYRE_SCALAR_STORES`, in payload offset order, each with the id `tyre-store-<TAG>`: its
+offsets, its byte-checked store sites, for the two grip numbers the load of the scale global at `0x00597484` and the
+multiply, and, per offset, the scalar copy's load and store, each linked to its `#site-<va>` row; the Compare records
+page links these rows from its tyre columns. Each label is read from
 `analysis/annotated/status.json` by entry VA (`--status` changes the file). The
 script exits non-zero instead of writing a page when a
 record lacks a table, `resolved_tables` and `table_provenance` disagree, a path
@@ -611,6 +816,57 @@ same: their scalar fields can differ. The page is not committed because it holds
 game data; [`build_research.py`](#research-directory) builds it with the other
 research pages, for publishing per decision #46.
 
+### Cars page
+
+`python3 scripts/car_page.py`, run after `text_database.py`, writes
+`artifacts/dossier/cars.html` beside the engine, gearbox and tyre pages; the
+research directory includes it. It reads `cars.json` and the other three
+databases, `CARDATA.DAT` itself, `field-evidence.json`, `tags.json`, the bounded
+`.asm` files and `pe-metadata.json`, and shows:
+
+- a summary, one row per car in file order, naming its engine, gearbox, front
+  tyre and back tyre, each linked to that record's section on `engines.html`
+  (`#engine-<name>`), `gearboxes.html` (`#gearbox-<name>`) or `tyres.html`
+  (`#tyre-<name>`);
+- "How the car loader resolves each reference": per reference tag, a row
+  `#car-store-<TAG>` with its registry ID, the compares and jumps that select
+  its handler, the name read, the lookup and the car payload offset it stores
+  at (`+0x1a8`, `+0x1ac`, `+0x1b4`, `+0x1b8`), and a row `#car-lookup-<database>`
+  per lookup with its database and the bounded disassembly that holds it. The
+  `:CAR_TYPE` record sites are listed above them. Every site in
+  `field-evidence.json` links to its row on `routines.html`; a site that is not
+  there would be shown unlinked and labelled not byte-checked. None of the car
+  loader or lookups is an annotated routine, so `load_car_database.asm` is linked
+  under `evidence/` and to its section on the routines page;
+- one section per car, `#car-<name>`, so a car never shares an id with an
+  engine or body record of the same name (`MODEL_T` is both a car and an
+  engine). It lists the four references, each with its declaration line, the
+  record it resolves to and the basis `cars.json` gives it: *resolved by the
+  loader's lookup (byte-checked)* or *declared by name*. Then come all the
+  car's declarations as written in `CARDATA.DAT`, each row with the id
+  `#car-<name>-line-<n>`, the repeated `CAR_PERFORMANCE` and `VALID_LIVERY`
+  lines in file order.
+
+Values are shown exactly as written (`0.20` stays `0.20`); each written token
+must parse to the value in `cars.json`. No units, menu meaning or physics are
+claimed for `CAR_PERFORMANCE`, `CAR_APPROXIMATE_TOP_SPEED`, `CAR_MODEL_YEAR` or
+any other value. Tags that name records of databases nobody parses, such as
+`CAR_BODY_TYPE`, `CAR_BRAKE_TYPE`, `CAR_SETUP_TYPE` and `CAR_CONTROL_TYPE`, are
+shown as declared names, unlinked.
+
+The script refuses to write the page when `CARDATA.DAT` does not match
+`cars.json`'s SHA-256 or a written token, when `references` differ from what
+`resolve_car_references()` gives against the three target databases with the
+bases `car_reference_bases()` derives from the given evidence (so a dangling or
+ambiguous name is refused, and so is a reference called byte-checked whose sites
+are not), and when two ids on the page coincide. For the demo's `CARDATA.DAT`,
+by the game-file manifest, it also requires 55 cars with six `CAR_PERFORMANCE`
+lines each and the distinct referenced records in `CAR_REFERENCE_TARGETS`: 52
+engines, 14 gearboxes, 53 front and 53 back tyres. In the research directory,
+`build_research.py` parses `CARDATA.DAT` with the bases derived from the
+analysis directory it is given, and `verify_research()` checks that every
+record, site and `asm-load_car_database` fragment the page links exists.
+
 ### Engine and gearbox dossier
 
 `python3 scripts/record_dossier.py`, run after `text_database.py`, writes
@@ -621,7 +877,7 @@ and then shows every record's declarations exactly as written, in line order.
 Multi-row fields such as `TORQUE_ARRAY` appear as row tables with their
 dimensions. `:INHERIT_TYPE` links to the parent.
 
-Each of the 51 inheriting engines also gets an effective-fields table from
+Each of the 52 inheriting engines also gets an effective-fields table from
 `engines.json`'s `effective_fields` (see [Engine inheritance](#engine-inheritance)):
 for each mapped tag, its status, declared values (a torque array's shape), source
 record and line linked to that line's declaration row, path, and byte-checked
@@ -634,10 +890,14 @@ and no value. A shared parent does not make two engines behave identically, and
 units and physics are not claimed.
 
 The colon-less `INHERIT_TYPE DEFAULT_TRACK` line in `INDIGO` is shown verbatim
-as an untagged line, not as inheritance, with a note that whether the game
-honours it is not established. `INDIGO`'s section lists, labelled unresolved and
-linked to `questions.html#indigo`, the 16 tags that depend on the line, under
-both readings. The engine page has a "Where each field is stored" table with
+as an untagged line, with a note that it is applied as `:INHERIT_TYPE
+DEFAULT_TRACK` on *static instruction evidence*, linked to
+`questions.html#indigo`; the same label appears in the scope, in the summary's
+parent column and at the top of `INDIGO`'s effective-fields table, which lists
+all 20 fields with provenance. `INDIGO`'s section also names the 16 tags that
+would be zero-filled had the line been ignored. Any other root's colon-less
+line is shown verbatim, labelled unresolved, with both readings for the tags
+that depend on it. The engine page has a "Where each field is stored" table with
 one row per tag in `ENGINE_FIELD_STORES`, in payload offset order, each with
 the id `engine-store-<TAG>`: the offsets the tag's handler writes, their width
 and `Fr3EngineRecord` field, the `cmp eax, <id>` dispatch site and the store
@@ -673,7 +933,7 @@ research pages, for publishing per decision #46.
 `python3 scripts/record_compare.py`, run after `text_database.py`, writes
 `artifacts/dossier/compare.html` beside the engine and gearbox pages, the
 "Compare records" research page. Its first section compares the 14 demo
-gearboxes and its second the 56 demo engines; tyres are not compared yet. A
+gearboxes, its second the 56 demo engines and its third the 109 demo tyres. A
 jump link at the top leads to each section. The gearbox matrix has one row per
 gearbox, in `GEARDATA.DAT` order, and one column per tag in
 `GEARBOX_FIELD_STORES`, in payload offset order (`+0x14` to `+0x31`), so any
@@ -721,16 +981,19 @@ source record and line, the row count and the `MAX_RPM` declaration the table
 was parsed with, and link the engine's effective `engine-<name>-torque-array`
 row (a root has none, so its cell links only the declaration).
 
-`INDIGO`'s colon-less `INHERIT_TYPE DEFAULT_TRACK` line is not applied. Each
-of the 16 tags `INDIGO` does not declare, and any tag another engine gets
-through such a field, is shown as `unresolved` with no value, never `0`,
-linked to `questions.html#indigo`; a field a root declares before such a line
-would be unresolved too, because applying the line would overwrite it. The
-engine "What differs" table has one row per tag: the distinct effective values
-and the engines that hold each (numbers grouped by the parsed number, enum
-words by the exact word, torque tables by source record and line), the
-unresolved cells counted apart, and how the 51 inheriting engines get the field
-as parsed. When `ENGDATA.DAT` is the demo's, by the SHA-256 in
+`INDIGO`'s colon-less `INHERIT_TYPE DEFAULT_TRACK` line is applied, as
+`engines.json` applies it, on static instruction evidence: `INDIGO`'s row is
+marked as inheriting `DEFAULT_TRACK` through that line, and each cell whose
+`INHERIT_TYPE` path crosses it says so, with the basis label linked to
+`questions.html#indigo`; no `INDIGO` cell is unresolved. Any other root's
+colon-less line is not applied: each tag that root does not declare, and any tag
+another engine gets through such a field, is shown as `unresolved` with no
+value, never `0`; a field a root declares before such a line would be
+unresolved too, because applying the line would overwrite it. The engine "What
+differs" table has one row per tag: the distinct effective values and the
+engines that hold each (numbers grouped by the parsed number, enum words by the
+exact word, torque tables by source record and line), the unresolved cells
+counted apart, and how the 52 inheriting engines get the field. When `ENGDATA.DAT` is the demo's, by the SHA-256 in
 `analysis/game-file-manifest.json`, those declared and inherited counts must
 equal `ENGINE_FIELD_COUNTS`. The engine section claims no units, enum meanings
 or physics, computes no derived `+0x2c` or `+0xa4` value and does not apply
@@ -742,9 +1005,50 @@ colon-less `INHERIT_TYPE` line, or declares a mapped tag that is not one inline
 value (a `TORQUE_ARRAY` that is not a block of rows) or whose written token
 does not parse to the value `engines.json` holds, when `effective_fields` or
 `untagged_inherit_consequences` differ from what `text_database.py` derives,
-and when `ENGDATA.DAT` does not match `engines.json`. The page is not committed
-because it holds game data; [`build_research.py`](#research-directory) builds
-it with the other research pages.
+and when `ENGDATA.DAT` does not match `engines.json`.
+
+The tyre section shows each tyre's effective scalar values, what the loader
+ends up storing once each `:INHERIT_TYPE` has copied the parent's scalar fields
+(`+0x18` to `+0x40`), as `tyres.json` `effective_scalars` resolve them (see
+[Tyre scalar inheritance](#tyre-scalar-inheritance)); the root's values are its own
+declarations. Its matrix has one row per tyre, in `TYREDATA.DAT` order, one
+column per tag in `TYRE_SCALAR_STORES`, in payload offset order, and then one
+per resolved table (the four `TYRE_TABLES` and `sound_info`), 109 × 14 in the
+demo. Each scalar cell shows the effective value as written on the line that
+declares it, read from `TYREDATA.DAT` (whose SHA-256 must match `tyres.json`),
+linked to that declaration's row on `tyres.html` (`tyre-<source>-line-<n>`) and
+marked declared or inherited from its source record, with the `INHERIT_TYPE`
+path when it is longer than one step; a zero-filled cell shows
+`not declared (zero-filled)` and no value. Each table cell names the record the
+table is read from, as `table_provenance` gives it, and links the tyre's row for
+that table on `tyres.html`, which holds its "Why?" trail; no table values are
+shown. Each scalar column header shows the tag's offsets and links its
+`tyre-store-<TAG>` row; each table column header shows the record offset its
+accessor tests and links the accessor's section on `routines.html`. Unmapped
+declarations, and declarations the scalar copy overwrites (none in the demo),
+get no column and are listed under the matrix. The tyre "What differs" table
+gives, per scalar tag, the distinct effective values grouped by the parsed
+number (`1` and `1.0` are one value, both forms shown) and the tyres that hold
+each, zero-filled cells apart, and how the 108 inheriting tyres get the field;
+per table, the source records and the tyres that read each. When
+`TYREDATA.DAT` is the demo's by `analysis/game-file-manifest.json`, the
+inheriting tyres' counts must equal `TYRE_SCALAR_COUNTS` and the table source
+counts `TYRE_TABLE_SOURCES` (109 `DEFAULT_ROAD` for both combined tables;
+73/23/13 `DEFAULT_ROAD`/`DEFAULT_OFFROAD`/`DEFAULT_TRACK` for vertical load,
+camber thrust and sound); for any other file the counts are shown but not
+checked, and the page says so. Values are declarations as written, not physical
+quantities: no units, compound meanings or physics, and the two grip numbers'
+scale by the global float at `0x00597484` is not applied. The script also exits
+non-zero without writing the page when `TYREDATA.DAT` does not match
+`tyres.json`; when an inheriting tyre declares a tag with no byte-checked store
+that its `effective_scalars` entry does not list as `unmapped` (`tyres.json`
+lists none for the root, whose unmapped declarations are listed all the same);
+when `resolved_tables`, `table_provenance` or `effective_scalars` differ from
+what `text_database.py` derives; when a mapped declaration is not one inline
+number or its written token does not parse to the value `tyres.json` holds; and
+when the demo counts differ. The page is not committed because it holds game
+data; [`build_research.py`](#research-directory) builds it with the other
+research pages.
 
 ### PCG catalogue
 
@@ -788,11 +1092,14 @@ six tyre accessors share `tyre_table_accessors.asm`, so a site in a file that
 holds several routine entries is listed under the routine with the nearest entry
 VA at or below it. That is a placement rule of the page, not an established
 routine boundary. The nine reader routines (`fr3_read_integer` and the like)
-lie in no committed span. The four files that hold no routine entry
-(`allocate_database_record`, `create_database`, `fill_memory` and
-`fill_memory_body`) get their own sections, and any site in no span, or before
-every routine entry in its file, is listed apart; today there is none. Each of
-the 274 sites is shown exactly once. The page says that every label is
+lie in no committed span. The files that hold no routine entry (such as
+`allocate_database_record`, `create_database`, `fill_memory` and the ASCII tag
+reader's `read_ascii_tag`, and the car loader, tyre lookup and record link) get their own sections. The
+engine and gearbox lookups at `0x00522d70` and `0x005234b0` lie inside the copy exports, so their sites are
+listed under `fr3_copy_engine_record` and `fr3_copy_gearbox_record`. Any site in no span, or
+before every routine entry in its file, is listed apart: today the eight data
+sites (`"kind": "data"`: the character table bytes, strings, the registry entry
+and a jump table). Each of the 541 sites is shown exactly once. The page says that every label is
 analyst-assigned, not an original symbol, and that the pseudocode is Ghidra
 output with unresolved callees and inferred types. The script exits non-zero
 without writing the page when an input is missing or malformed, the routines or
@@ -806,22 +1113,41 @@ a site would be shown zero times or more than once, or the PE metadata has no
 
 `python3 scripts/open_questions.py`, run after `text_database.py`, writes
 `artifacts/dossier/questions.html` beside the other dossier pages. It gives
-three findings the other pages label unresolved their own anchored section,
+three findings no run has settled their own anchored section,
 each in four parts. **Observed** shows values read at build time from the parsed
 `engines.json` and `tyres.json` and the committed `analysis/` files, never typed
 into the script. **Why it matters** links the places on the other pages that
 stay unresolved because of it. **Possible readings** lists only the
 alternatives the observations leave open, each labelled *untested*, unranked.
-**What would decide it** names the committed routine or the comparison that
-would settle it. The page resolves nothing and assigns no meaning to the
-unknown line, words or bytes.
+**What would decide it** names the committed routine or the run that
+would settle it. `#indigo` adds a fifth part, **Instruction evidence**, between
+the readings and what would decide it. The page assigns no meaning to the
+unknown words or bytes.
 
 - `#indigo`: `INDIGO`'s record and untagged line with its line number and
   tokens, the `ENGDATA.DAT` SHA-256, `INDIGO`'s own declarations, the
   `DEFAULT_TRACK` record the line names and the records whose `:INHERIT_TYPE`
   names it, and the tags `DEFAULT_TRACK` declares that `INDIGO` does not. It
   points at the engine loader at `0x005227f0` and the call of
-  `copy_engine_record` it reads from `load_engine_database.asm`.
+  `copy_engine_record` it reads from `load_engine_database.asm`. Its
+  instruction evidence lists the six gaps of
+  [The ASCII tag reader and INDIGO's line](#the-ascii-tag-reader-and-indigos-line)
+  (`INDIGO_GAPS`), each with its sites linked to `routines.html#site-<va>`, their
+  bytes and claims, and says whether it is evidenced: every site is in
+  `field-evidence.json` and `check_indigo_evidence()` passes. That function
+  checks, on the committed `.asm` files, that the loader calls `fr3_next_tag`,
+  which calls the ASCII tag reader, that `seek_tag.asm` calls `0x0042d2a0` and
+  no span on the tag path calls it or `0x0042e5a0`; it runs the lookup over
+  `analysis/tags.json` and checks that the ID found matches the registry entry
+  and string sites and the dispatch compare at `0x00522b1d`. The page states
+  reading 2, labelled *static instruction evidence*, adding that the engine
+  data and the other pages apply it on that basis and that nothing has been run.
+  Because `engines.json` applies the line, the page and the data must agree:
+  the script refuses to write the page when any gap is not evidenced (naming
+  the open gaps and their missing sites or failed checks), when `engines.json`
+  does not apply the line, or when its `effective_fields` or
+  `untagged_inherit_consequences` differ from what `text_database.py` derives
+  with the page's `field-evidence.json`.
 - `#sound-words`: the byte-checked `0x2d0` allocation and `+0x54` store from
   `field-evidence.json`, and the tyre loader's indexed stores into the table,
   read from `load_tyre_database.asm` (at `+0x3c` and `+0x78`, each within three
@@ -847,21 +1173,23 @@ split the allocation into an unknown block, a `START_RPM` block of the same size
 and whole value rows; no tyre declares `:SOUND_INFO`; the graphics with extra
 bytes are not exactly `_loadbar` and `_loadbr2`, 1,024 bytes each, in one
 collection; the engine loader no longer calls the copy routine; an `.asm` file
-lacks its span header; or the PE metadata has no `sha256`.
+lacks its span header; the PE metadata has no `sha256`; or, as above, the
+`#indigo` instruction evidence no longer supports the line `engines.json`
+applies, or `engines.json` does not apply it.
 
 ### Research directory
 
 `python3 scripts/build_research.py`, run after `acquire_demo.py`, builds all of
 the pages above into one self-contained directory, `artifacts/research/` by
-default (`--game` and `--output` change the paths). It parses the three text
+default (`--game` and `--output` change the paths). It parses the four text
 databases with `text_database.py` into a temporary working directory, so no
-parsed JSON is published, and runs the tyre, engine and gearbox, compare records, PCG and
+parsed JSON is published, and runs the car, tyre, engine and gearbox, compare records, PCG and
 routine and open questions generators with their usual checks. The `analysis/` files the pages link
-to, all 15 bounded `.asm` files, `field-evidence.json`, `pcg-index.json`,
+to, all 32 bounded `.asm` files, `field-evidence.json`, `tags.json`, `pcg-index.json`,
 `unpacked-manifest.json` and the annotated `status.json` and `selected.c`, are copied unchanged
 to `evidence/` under their `analysis/` paths, and the pages link there instead
 of into the repository. It also writes `index.html`, the "Explore findings"
-entrance: it links the seven pages with a one-line description and the engine,
+entrance: it links the eight pages with a one-line description and the car count, the engine,
 gearbox and tyre record counts, the number of gearboxes compared, the PCG collection and graphic counts, the
 annotated routine count and the open question count, all computed from the inputs, and shows the `fr3.exe` SHA-256 and the producer
 revision. Its `#tyre-tables` section, generated by `scripts/research_answers.py`
@@ -878,7 +1206,9 @@ data, and the build fails when the data has neither. Its `#engine-torque-tables`
 section, generated by the same script from the parsed `engines.json`, answers
 "Which engines share a torque table, and what do they declare differently?"
 from `effective_fields`: how many inheriting engines declare their own
-`TORQUE_ARRAY` and how many inherit one (38 and 13 in the demo), the tables
+`TORQUE_ARRAY` and how many inherit one (39 and 13 of the 52 in the demo,
+`INDIGO` among them through its colon-less line, applied on static instruction
+evidence and labelled so), the tables
 read by more than one engine (8 in the demo, read by 21 engines), each listed by
 its declaring record and line with the engines that read it and the other
 mapped declarations each holds in effect, one engine's traced `INHERIT_TYPE`
@@ -887,21 +1217,95 @@ the torque zero fill, and where the comparison ends: each sharing engine's own
 `TORQUE_MODIFIER` at `+ 0x24`, which is not combined with the table, and the
 derived `+ 0x2c`, which gets no value. The example is chosen from the data, the
 build fails when no table is shared, and `INDIGO` links its open question.
+Its `#car-shared-records` section, generated by the same script from the cars'
+reverse index (`car_usage()`, below) and `cars.json`, answers "Which cars share
+an engine, gearbox or tyre record?": per reference tag, how many distinct
+records the cars name (52 engines, 14 gearboxes, 53 front and 53 back tyres in
+the demo, refused when they disagree with `check_car_usage()`), how many of
+those more than one car names and how many cars name them; one table per tag
+listing each shared record once with its cars in `CARDATA.DAT` order, their
+declaration lines and each reference's basis, the front and back tyre kept
+apart; how many cars name the same tyre record front and back; one traced
+example, chosen from the data (the first shared record in `CAR_REFERENCE_STORES`
+order and then in file order), linking its first two cars' declaration lines,
+the loader's `car-store-<TAG>` row, the handler's byte-checked sites and the
+record; and where the comparison ends: that pair's other references and
+`CAR_PERFORMANCE` lines as written, with the statement that naming the same
+record does not establish the same performance or handling. A record reached
+only through `INHERIT_TYPE` is not counted, the build fails when no record is
+shared or a linked site is not in `field-evidence.json`, and the brake, body,
+setup and control records are not compared, since their databases are not
+parsed.
+Its `#car-tyre-roots` section, generated by the same script from `cars.json`
+and `tyres.json`, answers "Which cars run road, offroad or track tyres?": for
+each car's front and back tyre (counted apart), the root its named record's
+`INHERIT_TYPE` chain ends at, followed with `inherit_chain()` (in the demo all
+55 front and 55 back tyres end at `DEFAULT_ROAD`, since `DEFAULT_OFFROAD` and
+`DEFAULT_TRACK` inherit from it); the record each car tyre's `resolved_tables`
+gives for the vertical load, camber thrust and sound info tables (38 cars from
+`DEFAULT_ROAD`, 11 from `DEFAULT_OFFROAD` and 6 from `DEFAULT_TRACK`, the same
+front and back), with the cars whose source differs from the root listed with
+their chains (17 per tag in the demo); the cars whose front and back tyres end
+at different roots or read those tables from different records (none in the
+demo); one traced example, chosen from the data (the first car in `CARDATA.DAT`
+order whose front or back tyre, front first, inherits), linking its declaration
+line, the loader's `car-store-<TAG>` row, each `INHERIT_TYPE` line, the tyre
+scalar copy and its byte-checked call, and the declaring line and table-source
+row of each table; and where the answer ends: the `DEFAULT_*` names are record
+names in `TYREDATA.DAT`, not an established classification, sharing a root or
+a table source does not establish that two cars handle alike, and the brake,
+body, setup and control records are not parsed. Per-root counts that do not add
+up to the cars, a car tyre reference missing from `tyres.json`, a chain
+`inherit_chain()` refuses, data where no car's tyre inherits and a linked site
+missing from `field-evidence.json` fail the build.
 Values are shown as declared, and unresolved items stay labelled unresolved.
+
+The build also turns the cars' references round. `car_usage()` in
+`text_database.py` indexes `cars.json`'s `references` by the record each one
+resolves to: `{database: {record: [(car, tag, basis)]}}`, cars in `CARDATA.DAT`
+order, the front and back tyre kept apart, and a car whose front and back tyre
+are one record listed once per tag. Only a record a car names directly counts:
+a parent such as `DEFAULT_ROAD`, which the named records inherit from, is not
+used by those cars. `check_car_usage()` refuses an index that drops, duplicates
+or moves any car's reference or changes its basis, so the distinct records per
+tag are the car page's: 52 engines, 14 gearboxes, 53 front and 53 back tyres in
+the demo, which the car page already checks against `CAR_REFERENCE_TARGETS`,
+with 55 links per tag. The engine, gearbox and tyre pages then give every record
+section a "Used by cars" block, `#<engine|gearbox|tyre>-<name>-used-by`: per tag
+(front and back apart on the tyre page), each car that names the record, linked
+to its section on `cars.html` (`#car-<name>`), the tag linked to the car
+loader's row for it (`#car-store-<TAG>`) and the reference's basis, *resolved by
+the loader's lookup (byte-checked)* or, when that path's sites are not all in
+`field-evidence.json`, *declared by name*. A record no car names says "Not
+named by any car in `CARDATA.DAT`"; in the demo that is the four `DEFAULT_*`
+engines and the three `DEFAULT_*` tyres, while every gearbox is named. The
+Compare records page adds a "Used by cars" column to its gearbox, engine and
+tyre matrices: the number of cars that name each record (front and back apart
+for tyres), `0` for none, linked to the record's block. No units, physics or
+menu meaning are claimed, and `CAR_PERFORMANCE` is not shown there. The
+generators take the index as an optional `car_usage` argument; run on their
+own, they write the same pages as before, without the blocks or the column.
 
 Every research page, the entrance included, carries the browser preview's
 rights-holder notice (the credit, the official demo link and the removal-request
-link) before its main content, and a link bar to the other seven pages. The pages
+link) before its main content, and a link bar to the other eight pages. The pages
 are built in a staging directory next to the output; `verify_research()` then
-checks that all eight exist, that each has the notice before its `<h1>` and
+checks that all nine exist, that each has the notice before its `<h1>` and
 names the same producer revision as `index.html`, that
 none has a `<script>`, CSS `url()` or `@import`, or any external link or
 resource other than the notice's two links, that every local link, fragment
 included, resolves to a file and id inside the directory (so each record page's
 `routines.html#<label>` and `routines.html#site-<va>` link must name a section
 or site row on the routines page, built from the same `status.json`, and each
-`gearboxes.html#<id>` and `engines.html#<id>` link on the compare page a declaration, store or
-effective `TORQUE_ARRAY` row), and that the directory
+`gearboxes.html#<id>`, `engines.html#<id>` and `tyres.html#<id>` link on the compare page a declaration,
+store, effective `TORQUE_ARRAY` or tyre table row, and each `routines.html#<label>` link there an accessor's
+section, and each `engines.html#engine-<name>`, `gearboxes.html#gearbox-<name>`,
+`tyres.html#tyre-<name>`, `routines.html#site-<va>` and
+`routines.html#asm-load_car_database` link on the car page a record section, site
+row or disassembly section, each `cars.html#car-<name>` and
+`cars.html#car-store-<TAG>` link on the engine, gearbox and tyre pages a car
+section or car loader row, and each `<page>#<prefix>-<name>-used-by` link on the
+compare page a "Used by cars" block), and that the directory
 holds no file other than the ones the script writes. Only then does the
 staging directory replace the output; an existing output that holds anything
 else is left alone. The directory is not committed because it holds game data.
@@ -923,7 +1327,7 @@ for comparison). Before writing anything it re-runs
 as committed at the current producer revision (read with `git show`, so evidence
 copied from an uncommitted edit is refused), and checks that `index.html` names
 that revision and the `fr3.exe` SHA-256 in its `analysis/pe-metadata.json`. It then
-rebuilds all eight pages with the current generators and extracted game databases,
+rebuilds all nine pages with the current generators and extracted game databases,
 reading every analysis input (including tags and verification metadata) from
 that Git revision into a temporary directory. Every page must match that fresh
 build byte for byte, so changing a finding or count while keeping the revision,
@@ -980,8 +1384,8 @@ it does not need Ghidra. The ZIP holds one folder,
   revision (`git ls-tree` and `git cat-file`). Any modified, staged, deleted or
   untracked file under those paths refuses the build, so the bundle never holds
   an edit its revision does not.
-- **Text databases:** `text-databases/engines.json`, `gearboxes.json` and
-  `tyres.json`, regenerated from the extracted demo with
+- **Text databases:** `text-databases/engines.json`, `gearboxes.json`,
+  `tyres.json` and `cars.json`, regenerated from the extracted demo with
   `text_database.write_databases()`.
 - **Research:** the research directory unchanged under `research/`, after
   `package_research.read_research()` has checked it as the research packet
@@ -1033,7 +1437,7 @@ holds game data and stays out of Git.
 [Verification results](../analysis/verification.json) cover the exact executable,
 all game files, all tags, all identified compressed resources, every PCG index,
 the selected instruction sites, table dimensions, export counts and C layout
-assertions. All 274 instruction sites were byte-checked against the pinned
+assertions. All 541 sites (533 instructions, 8 data) were byte-checked against the pinned
 `fr3.exe` at `field_instruction_sites_verified_utc`, with the comparison
 `verify_findings.py` makes; the other results date from `verified_utc`. Nine parser tests additionally reject malformed synthetic
 resources, and eight helper tests cover virtual-address bounds and file identity checks.

@@ -13,8 +13,11 @@ from dossier_common import NOTICE_LINKS, rights_notice
 import record_compare
 import record_dossier
 from text_database import (DATABASES, ENGINE_FIELD_COUNTS, ENGINE_FIELD_STORES, GEARBOX_FIELD_STORES, REPO_ROOT,
-                           effective_engine_fields, engine_field_counts, load_known_tags, read_database,
+                           RESOLVED_TYRE_TABLES, TYRE_SCALAR_STORES, ZERO_FILLED, effective_engine_fields,
+                           effective_scalars, engine_field_counts, load_known_tags, read_database,
+                           resolve_tyre_tables, scalar_counts, table_sources, tyre_table_provenance,
                            untagged_inherit_consequences)
+import tyre_dossier
 
 from test_record_dossier import EVIDENCE, PE, STATUS, with_engine_fields
 
@@ -60,8 +63,10 @@ COMPARE_GEARBOXES = """// Gearboxes for the compare page
 # Engines for the compare page. DEFAULT_TRACK is a root that does not declare every tag. CHILD inherits it and
 # declares its own MAX_RPM after INHERIT_TYPE, so the table it inherits was parsed with DEFAULT_TRACK's MAX_RPM;
 # CAPACITY 6 and 6.0 are one number. GRANDCHILD inherits through CHILD (ASPIRATION_TYPE comes two steps away) and
-# parses its own table with CHILD's MAX_RPM. INDIGO has the demo's colon-less line, and INDIGO_CHILD inherits its
-# zero fill. LONER has a colon-less line too, a declaration before it and a table parsed before its MAX_RPM.
+# parses its own table with CHILD's MAX_RPM. INDIGO has the demo's colon-less line, padded with comment lines onto
+# line 1410, where text_database.APPLIED_UNTAGGED_INHERIT lists it, so it inherits DEFAULT_TRACK through it, and
+# INDIGO_CHILD inherits through INDIGO. LONER has a colon-less line that is not allow-listed, a declaration before it
+# and a table parsed before its MAX_RPM.
 COMPARE_ENGINES = """// Engines for the compare page
 :TYPE DEFAULT_TRACK
 :LOCATION_TYPE MID
@@ -87,7 +92,7 @@ COMPARE_ENGINES = """// Engines for the compare page
 0.0 50.0
 :TORQUE_MODIFIER 2.0
 
-:TYPE INDIGO
+{padding}:TYPE INDIGO
 INHERIT_TYPE DEFAULT_TRACK
 :ASPIRATION_TYPE TURBO
 :MAX_RPM 7000.0
@@ -106,7 +111,56 @@ INHERIT_TYPE CHILD
 :MAX_RPM 5000
 :END
 """
+# How many lines the padding moves INDIGO and the records after it.
+SHIFT = 1410 - 27
+COMPARE_ENGINES = COMPARE_ENGINES.replace("{padding}", "//\n" * SHIFT)
+BASIS = '<a href="questions.html#indigo"><span class="label">static instruction evidence</span></a>'
+
+
+def one_line_less(text):
+    """Drop one padding line, so that INDIGO's line stays on 1410 after a line is inserted above it."""
+    return text.replace("//\n", "", 1)
 ENGINE_NAMES = ["DEFAULT_TRACK", "CHILD", "GRANDCHILD", "INDIGO", "INDIGO_CHILD", "LONER"]
+# Tyres for the compare page. ROOT declares every table and no MASS, so every tyre's MASS is zero-filled. OFFROAD
+# inherits ROOT and declares its own VERTICAL_LOAD and WIDTH 0.250 (0.25 written another way). CHILD inherits OFFROAD:
+# its TYRE_GRIP_DEPTH and its LONGITUDINAL_COMBINED_VALUES come two steps away, from ROOT; it declares
+# ROAD_MAGIC_GRIP_NUMBER 1 (ROOT's 1.0 written another way) and an unmapped LOCATION_TYPE.
+COMPARE_TYRES = """// Tyres for the compare page
+:TYPE ROOT
+:RADIUS 0.5
+:WIDTH 0.25
+:TYRE_GRIP_DEPTH 0.100
+:ROAD_MAGIC_GRIP_NUMBER 1.0
+:LONGITUDINAL_COMBINED_VALUES
+0 1.0
+:LATERAL_COMBINED_VALUES
+0 1.0
+:VERTICAL_LOAD
+0 1.0
+:CAMBER_THRUST
+0 1.0
+:SOUND_INFO
+:TYPE TYRE_SAMPLE_TYPE_SQUEAK
+:VALUE 2
+0 0.0
+1 0.5
+:START_RPM 1500
+
+:TYPE OFFROAD
+:INHERIT_TYPE ROOT
+:WIDTH 0.250
+:OFFROAD_MAGIC_GRIP_NUMBER 40
+:VERTICAL_LOAD
+0 2.0
+
+:TYPE CHILD
+:INHERIT_TYPE OFFROAD
+:RADIUS 0.50
+:ROAD_MAGIC_GRIP_NUMBER 1
+:LOCATION_TYPE REAR
+:END
+"""
+TYRE_NAMES = ["ROOT", "OFFROAD", "CHILD"]
 NAMES = ["ROAD", "TRACK", "RALLY"]
 # Each gearbox's declarations as written, in offset order, and the line each is on.
 WRITTEN = {"ROAD": ["0.2", "2000", "0.0", "0.5", "MANUAL", "TORSON", "FRONT_WHEELS", "1", "0"],
@@ -147,6 +201,19 @@ def write_engines(game, text=COMPARE_ENGINES):
     return with_engine_fields(read_database(game, DATABASES["engines"], KNOWN_TAGS))
 
 
+def with_tyre_fields(database):
+    """tyres.json with the resolved tables, provenance and effective scalars text_database.py adds."""
+    records = database["records"]
+    return {**database, "resolved_tables": resolve_tyre_tables(records),
+            "table_provenance": tyre_table_provenance(records), "effective_scalars": effective_scalars(records)}
+
+
+def write_tyres(game, text=COMPARE_TYRES):
+    """Write TYREDATA.DAT under game and return tyres.json as text_database.py writes it."""
+    write_database(game, "tyres", text)
+    return with_tyre_fields(read_database(game, DATABASES["tyres"], KNOWN_TAGS, sound_info=True))
+
+
 class CompareTestCase(unittest.TestCase):
     def setUp(self):
         directory = tempfile.TemporaryDirectory()
@@ -166,23 +233,34 @@ class CompareTestCase(unittest.TestCase):
         """Write ENGDATA.DAT under the game directory and return engines.json as text_database.py writes it."""
         return write_engines(self.game, text)
 
-    def build(self, database=None, engines=None, engine_counts=None):
+    def tyres(self, text=COMPARE_TYRES):
+        """Write TYREDATA.DAT under the game directory and return tyres.json as text_database.py writes it."""
+        return write_tyres(self.game, text)
+
+    def build(self, database=None, engines=None, engine_counts=None, tyres=None, tyre_counts=None):
         database = self.database() if database is None else database
         engines = self.engines() if engines is None else engines
+        tyres = self.tyres() if tyres is None else tyres
         path, engines_path = self.root / "gearboxes.json", self.root / "engines.json"
+        tyres_path, status = self.root / "tyres.json", self.root / "status.json"
         path.write_text(json.dumps(database), encoding="utf-8")
         engines_path.write_text(json.dumps(engines), encoding="utf-8")
-        counts = record_compare.build(path, engines_path, self.game, self.pe, self.output, revision="0123abcd",
-                                      engine_counts=engine_counts)
+        tyres_path.write_text(json.dumps(tyres), encoding="utf-8")
+        status.write_text(json.dumps(STATUS), encoding="utf-8")
+        counts = record_compare.build(path, engines_path, tyres_path, self.game, self.pe, self.output,
+                                      revision="0123abcd", engine_counts=engine_counts, tyre_counts=tyre_counts,
+                                      status_path=status)
         self.assertEqual(counts, {"compared_gearboxes": len(database["records"]),
-                                  "compared_engines": len(engines["records"])})
+                                  "compared_engines": len(engines["records"]),
+                                  "compared_tyres": len(tyres["records"])})
         return self.output.read_text(encoding="utf-8")
 
-    def reject(self, fragment, text=None, database=None, engines=None, engine_counts=None):
+    def reject(self, fragment, text=None, database=None, engines=None, engine_counts=None, tyres=None,
+               tyre_counts=None):
         if database is None:
             database = self.database(text)
         with self.assertRaises(ValueError) as caught:
-            self.build(database, engines, engine_counts)
+            self.build(database, engines, engine_counts, tyres, tyre_counts)
         self.assertIn(fragment, str(caught.exception))
         self.assertFalse(self.output.exists())
 
@@ -301,22 +379,30 @@ class PageTests(CompareTestCase):
         database = self.database()
         for text in (f'SHA-256 <code>{PE["sha256"]}</code>', f'SHA-256 <code>{database["sha256"]}</code>',
                      "<dt>Producer revision</dt><dd><code>0123abcd</code> (<code>scripts/record_compare.py</code>)",
-                     "<dt>Compared</dt><dd>3 gearboxes, 9 fields each; 6 engines, 20 fields each</dd>", "claims no units",
+                     "<dt>Compared</dt><dd>3 gearboxes, 9 fields each; 6 engines, 20 fields each; 3 tyres, 9 scalar "
+                     "fields and 5 tables each</dd>", "claims no units",
+                     "<dt>Tyre database</dt><dd><code>DATA/ASCII/CARS/TYREDATA.DAT</code> SHA-256 <code>"
+                     f'{self.tyres()["sha256"]}</code></dd>',
+                     "Gearboxes, engines and tyres are compared.</p>",
+                     '<p>Jump to: <a href="#gearboxes">Gearboxes</a> | <a href="#engines">Engines</a> | '
+                     '<a href="#tyres">Tyres</a></p>',
                      "stores that integer's low byte; this page does not compute it",
                      "No demo gearbox declares <code>:INHERIT_TYPE</code>", "nothing is inherited"):
             self.assertIn(text, page)
 
     def test_nav_bar(self):
-        self.assertIn('<nav>Research: <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | '
+        self.assertIn('<nav>Research: <a href="cars.html">Cars</a> | <a href="engines.html">Engines</a> | <a href="gearboxes.html">Gearboxes</a> | '
                       '<strong>Compare records</strong> | <a href="tyres.html">Tyres</a> | ', self.build())
 
     def test_no_scripts_or_remote_resources(self):
         page = self.build()
         self.assertNotIn("<script", page.lower())
         self.assertNotRegex(page.replace(rights_notice(), ""), r"https?://")
-        self.assertEqual({href for href in Links(page).hrefs if not href.startswith(("#", "gearboxes.html#", "engines.html#"))},
-                         {"engines.html", "gearboxes.html", "tyres.html", "pcg.html", "routines.html", "questions.html",
-                          "questions.html#indigo", *NOTICE_LINKS})
+        self.assertEqual({href for href in Links(page).hrefs
+                          if not href.startswith(("#", "gearboxes.html#", "engines.html#", "tyres.html#"))},
+                         {"cars.html", "engines.html", "gearboxes.html", "tyres.html", "pcg.html", "routines.html", "questions.html",
+                          "questions.html#indigo", *NOTICE_LINKS,
+                          *(f"routines.html#{label}" for label in TYRE_ACCESSOR_LABELS.values())})
 
 
 class RefusalTests(CompareTestCase):
@@ -419,9 +505,12 @@ class EngineMatrixTests(CompareTestCase):
         page = self.build()
         matrix = engine_matrix_of(page)
         rows = re.findall(r'<tr id="compare-engine-(\w+)"><td><a href="engines\.html#engine-(\w+)">\w+</a><br>'
-                          r"<small>(root|inherits)</small></td>", matrix)
-        self.assertEqual(rows, [(name, name, "inherits" if name in ("CHILD", "GRANDCHILD", "INDIGO_CHILD") else "root")
+                          r"<small>(root|inherits)", matrix)
+        self.assertEqual(rows, [(name, name, "root" if name in ("DEFAULT_TRACK", "LONER") else "inherits")
                                 for name in ENGINE_NAMES])
+        # INDIGO's row names the applied colon-less line and its basis.
+        self.assertIn(f'<small>inherits DEFAULT_TRACK through colon-less {line_link("INDIGO", 1410, "line 1410")}, '
+                      f"{BASIS}</small></td>", engine_row(page, "INDIGO"))
         header = matrix.split("</tr>")[0]
         columns = re.findall(r'<th><a href="engines\.html#engine-store-(\w+)"><code>(\w+)</code></a>', header)
         self.assertEqual([tag for tag, _ in columns], record_dossier.engine_tags())
@@ -473,37 +562,50 @@ class EngineMatrixTests(CompareTestCase):
                          f'{line_link("DEFAULT_TRACK", 6)}</small>')
         self.assertNotIn("100.0", engine_matrix_of(page))
 
-    def test_indigo_style_root_is_unresolved_never_zero(self):
+    def test_indigo_inherits_through_its_applied_line_with_the_basis(self):
         page = self.build()
-        unresolved = ('<a href="questions.html#indigo"><span class="label">unresolved</span></a><br><small>no value; '
-                      f'depends on {line_link("INDIGO", 27)}</small>')
+        through = f'; through {line_link("INDIGO", 1410)} (no colon), {BASIS}'
         record = next(record for record in self.engines()["records"] if record["type"] == "INDIGO")
         for tag in record_dossier.engine_tags():
             with self.subTest(tag=tag):
                 cell = engine_cell(page, "INDIGO", tag)
+                self.assertNotIn("unresolved", cell)
                 if tag in record["fields"]:
-                    self.assertIn("declared", cell)
+                    self.assertIn("<small>declared", cell)
+                    self.assertNotIn("through", cell)
                 else:
-                    self.assertEqual(cell, unresolved)
-        # An engine inheriting INDIGO's zero fill depends on the same line; what INDIGO declares stays resolved.
-        self.assertEqual(engine_cell(page, "INDIGO_CHILD", "CAPACITY"), unresolved)
+                    self.assertIn(through, cell)
+        self.assertEqual(engine_cell(page, "INDIGO", "CAPACITY"),
+                         f'<span class="num">{line_link("DEFAULT_TRACK", 4, "6.0")}</span><br><small>inherited from '
+                         f'<a href="#compare-engine-DEFAULT_TRACK">DEFAULT_TRACK</a>{through}</small>')
+        # DEFAULT_TRACK declares no FUEL_CUTOFF, so INDIGO gets its zero fill through the line.
+        self.assertEqual(engine_cell(page, "INDIGO", "FUEL_CUTOFF"),
+                         '<span class="label">zero-filled</span><br><small>no value, path INDIGO &rarr; DEFAULT_TRACK'
+                         f"{through}</small>")
+        # INDIGO_CHILD inherits through the same line what INDIGO does not declare, and INDIGO's own declarations
+        # without it.
+        self.assertEqual(engine_cell(page, "INDIGO_CHILD", "CAPACITY"),
+                         f'<span class="num">{line_link("DEFAULT_TRACK", 4, "6.0")}</span><br><small>inherited from '
+                         '<a href="#compare-engine-DEFAULT_TRACK">DEFAULT_TRACK</a>, path INDIGO_CHILD &rarr; INDIGO '
+                         f"&rarr; DEFAULT_TRACK{through}</small>")
         self.assertEqual(engine_cell(page, "INDIGO_CHILD", "ASPIRATION_TYPE"),
-                         f'<span class="num">{line_link("INDIGO", 28, "TURBO")}</span><br><small>inherited from '
+                         f'<span class="num">{line_link("INDIGO", 1411, "TURBO")}</span><br><small>inherited from '
                          '<a href="#compare-engine-INDIGO">INDIGO</a></small>')
-        self.assertIn(f'parsed with <code>MAX_RPM</code> {line_link("INDIGO", 29)}',
+        self.assertIn(f'parsed with <code>MAX_RPM</code> {line_link("INDIGO", 1412)}',
                       engine_cell(page, "INDIGO_CHILD", "TORQUE_ARRAY"))
+        self.assertNotIn("unresolved", engine_row(page, "INDIGO_CHILD"))
 
     def test_other_colon_less_root_is_unresolved_without_the_indigo_question(self):
         page = self.build()
         unresolved = ('<span class="label">unresolved</span><br><small>no value; depends on '
-                      f'{line_link("LONER", 39)}</small>')
+                      f'{line_link("LONER", 39 + SHIFT)}</small>')
         self.assertEqual(engine_cell(page, "LONER", "CAPACITY"), unresolved)
         # Declared before the line, so applying it would overwrite the declaration.
         self.assertEqual(engine_cell(page, "LONER", "FUEL_CUTOFF"), unresolved)
         # Parsed after the line and before LONER's own MAX_RPM: the row count depends on the line too.
         self.assertEqual(engine_cell(page, "LONER", "TORQUE_ARRAY"),
-                         f'{line_link("LONER", 40)}, 1 row<br><small>declared; parsed with <code>MAX_RPM</code> '
-                         f'<span class="label">unresolved</span> (depends on {line_link("LONER", 39)})</small>')
+                         f'{line_link("LONER", 40 + SHIFT)}, 1 row<br><small>declared; parsed with <code>MAX_RPM</code> '
+                         f'<span class="label">unresolved</span> (depends on {line_link("LONER", 39 + SHIFT)})</small>')
         self.assertNotIn("questions.html", engine_row(page, "LONER"))
 
     def test_root_without_a_colon_less_line_shows_its_zero_fill(self):
@@ -529,7 +631,7 @@ class EngineMatrixTests(CompareTestCase):
         self.assertEqual(sorted({fragment for fragment in fragments if fragment.startswith("engine-store-")}),
                          sorted(f"engine-store-{tag}" for tag in ENGINE_FIELD_STORES))
         self.assertEqual({fragment for fragment in fragments if fragment.endswith("-torque-array")},
-                         {"engine-CHILD-torque-array", "engine-GRANDCHILD-torque-array",
+                         {"engine-CHILD-torque-array", "engine-GRANDCHILD-torque-array", "engine-INDIGO-torque-array",
                           "engine-INDIGO_CHILD-torque-array"})
         self.assertEqual([href for href in links.hrefs if href.startswith("#") and href[1:] not in links.ids], [])
         self.assertEqual(len(links.ids), len(set(links.ids)))
@@ -547,9 +649,11 @@ class EngineDifferencesTests(CompareTestCase):
         groups = self.differences()
         self.assertEqual(list(groups), record_dossier.engine_tags())
         self.assertEqual(groups["CAPACITY"], {"groups": [{"forms": ["6.0", "6"],
-                                                          "engines": ["DEFAULT_TRACK", "CHILD", "GRANDCHILD"]}],
-                                              "zero_filled": [], "unresolved": ["INDIGO", "INDIGO_CHILD", "LONER"]})
-        self.assertEqual(groups["LOCATION_TYPE"]["groups"], [{"forms": ["MID"], "engines": ["DEFAULT_TRACK", "CHILD"]},
+                                                          "engines": ["DEFAULT_TRACK", "CHILD", "GRANDCHILD", "INDIGO",
+                                                                      "INDIGO_CHILD"]}],
+                                              "zero_filled": [], "unresolved": ["LONER"]})
+        self.assertEqual(groups["LOCATION_TYPE"]["groups"], [{"forms": ["MID"], "engines": ["DEFAULT_TRACK", "CHILD", "INDIGO",
+                                                                                     "INDIGO_CHILD"]},
                                                              {"forms": ["REAR"], "engines": ["GRANDCHILD"]}])
         self.assertEqual(groups["MAX_RPM"]["groups"],
                          [{"forms": ["5000"], "engines": ["LONER"]},
@@ -558,28 +662,29 @@ class EngineDifferencesTests(CompareTestCase):
         self.assertEqual(groups["TORQUE_ARRAY"]["groups"],
                          [{"source": "DEFAULT_TRACK", "source_line": 8, "engines": ["DEFAULT_TRACK", "CHILD"]},
                           {"source": "GRANDCHILD", "source_line": 22, "engines": ["GRANDCHILD"]},
-                          {"source": "INDIGO", "source_line": 30, "engines": ["INDIGO", "INDIGO_CHILD"]},
-                          {"source": "LONER", "source_line": 40, "engines": ["LONER"]}])
-        self.assertEqual(groups["FUEL_CUTOFF"], {"groups": [], "zero_filled": ["DEFAULT_TRACK", "CHILD", "GRANDCHILD"],
-                                                 "unresolved": ["INDIGO", "INDIGO_CHILD", "LONER"]})
+                          {"source": "INDIGO", "source_line": 30 + SHIFT, "engines": ["INDIGO", "INDIGO_CHILD"]},
+                          {"source": "LONER", "source_line": 40 + SHIFT, "engines": ["LONER"]}])
+        self.assertEqual(groups["FUEL_CUTOFF"], {"groups": [], "zero_filled": ["DEFAULT_TRACK", "CHILD", "GRANDCHILD",
+                                                                             "INDIGO", "INDIGO_CHILD"],
+                                                 "unresolved": ["LONER"]})
 
     def test_table_counts_declared_inherited_and_unresolved(self):
         page = self.build()
         table = engine_differences_of(page)
         rows = dict(re.findall(r'<tr id="differs-engine-(\w+)">(.*?)</tr>', table))
         self.assertEqual(list(rows), record_dossier.engine_tags())
-        self.assertIn("<td>1, by number</td><td><ul><li><code>6.0</code>, <code>6</code> (3): ", rows["CAPACITY"])
-        self.assertIn("<td>3 inheriting, as parsed: 1 declared, 1 inherited, 1 zero-filled<br>unresolved: 3: "
-                      '<a href="#compare-engine-INDIGO">INDIGO</a>, ', rows["CAPACITY"])
+        self.assertIn("<td>1, by number</td><td><ul><li><code>6.0</code>, <code>6</code> (5): ", rows["CAPACITY"])
+        self.assertIn("<td>4 inheriting: 1 declared, 3 inherited<br>unresolved: 1: "
+                      '<a href="#compare-engine-LONER">LONER</a></td>', rows["CAPACITY"])
         self.assertIn("<td>4, by record and line</td><td><ul><li>"
                       f'{line_link("DEFAULT_TRACK", 8)} (2): <a href="#compare-engine-DEFAULT_TRACK">', rows["TORQUE_ARRAY"])
-        self.assertIn("<td>3 inheriting, as parsed: 1 declared, 2 inherited<br>unresolved: 0</td>", rows["TORQUE_ARRAY"])
-        self.assertIn('<li><span class="label">zero-filled</span>, no value (3): ', rows["FUEL_CUTOFF"])
+        self.assertIn("<td>4 inheriting: 2 declared, 2 inherited<br>unresolved: 0</td>", rows["TORQUE_ARRAY"])
+        self.assertIn('<li><span class="label">zero-filled</span>, no value (5): ', rows["FUEL_CUTOFF"])
         self.assertIn("<td>0, by number</td>", rows["FUEL_CUTOFF"])
         # The counts per tag are the inheriting engines' effective statuses.
         counts = engine_field_counts(self.engines()["effective_fields"])
         for tag, row in rows.items():
-            shown = re.search(r"inheriting, as parsed: (.*?)<br>", row).group(1)
+            shown = re.search(r"inheriting: (.*?)<br>", row).group(1)
             self.assertEqual(shown, ", ".join(f'{counts[tag][status]} {status.replace("not declared (zero-filled)", "zero-filled")}'
                                               for status in ("declared", "inherited", "not declared (zero-filled)")
                                               if status in counts[tag]), tag)
@@ -587,8 +692,8 @@ class EngineDifferencesTests(CompareTestCase):
                       page)
 
     def test_one_value_held_by_every_engine_is_same_in_all(self):
-        # Every colon-less line gets its colon, and LONER drops the declaration the copy would overwrite.
-        text = COMPARE_ENGINES.replace(":FUEL_CUTOFF 0.5\n", "").replace("\nINHERIT_TYPE", "\n:INHERIT_TYPE")
+        # LONER's colon-less line gets its colon, and LONER drops the declaration the copy would overwrite.
+        text = COMPARE_ENGINES.replace(":FUEL_CUTOFF 0.5\n", "").replace("\nINHERIT_TYPE CHILD", "\n:INHERIT_TYPE CHILD")
         page = self.build(engines=self.engines(text))
         rows = dict(re.findall(r'<tr id="differs-engine-(\w+)">(.*?)</tr>', engine_differences_of(page)))
         self.assertIn('<td>1, by number</td><td><span class="label">same in all 6</span>: <code>6.0</code>, <code>6</code>'
@@ -640,15 +745,17 @@ class EngineRefusalTests(CompareTestCase):
 
     def test_unmapped_tag(self):
         self.reject_engines("engine 'CHILD' (line 13) declares tags with no byte-checked store: CLUTCH_SPEED",
-                            COMPARE_ENGINES.replace(":CAPACITY 6\n", ":CAPACITY 6\n:CLUTCH_SPEED 0.2\n"))
+                            one_line_less(COMPARE_ENGINES.replace(":CAPACITY 6\n", ":CAPACITY 6\n:CLUTCH_SPEED 0.2\n")))
 
     def test_overwritten_declaration(self):
         self.reject_engines("engine 'CHILD' (line 13) declares :TICKOVER_RPM (line 14) before its :INHERIT_TYPE, which "
-                            "overwrites them", COMPARE_ENGINES.replace(":TYPE CHILD\n", ":TYPE CHILD\n:TICKOVER_RPM 900\n"))
+                            "overwrites them",
+                            one_line_less(COMPARE_ENGINES.replace(":TYPE CHILD\n", ":TYPE CHILD\n:TICKOVER_RPM 900\n")))
 
     def test_stray_untagged_line(self):
         self.reject_engines("engine 'CHILD' (line 13) has untagged lines (16) other than a root's colon-less "
-                            "INHERIT_TYPE line", COMPARE_ENGINES.replace(":CAPACITY 6\n", ":CAPACITY 6\nINHERIT_TYPE INDIGO\n"))
+                            "INHERIT_TYPE line",
+                            one_line_less(COMPARE_ENGINES.replace(":CAPACITY 6\n", ":CAPACITY 6\nINHERIT_TYPE INDIGO\n")))
 
     def test_written_token_that_does_not_parse_to_the_json_value(self):
         engines = self.engines()
@@ -677,9 +784,298 @@ class EngineRefusalTests(CompareTestCase):
         engines = self.engines()
         counts = engine_field_counts(engines["effective_fields"])
         self.reject_engines("The inheriting engines' effective field counts differ from ENGINE_FIELD_COUNTS: CAPACITY "
-                            "{'declared': 1, 'inherited': 1, 'not declared (zero-filled)': 1}, not {'declared': 2}",
+                            "{'declared': 1, 'inherited': 3}, not {'declared': 2}",
                             engines=engines, engine_counts={**counts, "CAPACITY": {"declared": 2}})
         self.reject_engines("ENGINE_FIELD_COUNTS: LOCATION_TYPE", engines=engines, engine_counts=ENGINE_FIELD_COUNTS)
+
+
+# The routine each tyre table's accessor is, by its status.json label.
+TYRE_ACCESSOR_LABELS = {"LONGITUDINAL_COMBINED_VALUES": "fr3_get_tyre_longitudinal_table",
+                        "LATERAL_COMBINED_VALUES": "fr3_get_tyre_lateral_table",
+                        "VERTICAL_LOAD": "fr3_get_tyre_vertical_load", "CAMBER_THRUST": "fr3_get_tyre_camber_thrust",
+                        "sound_info": "fr3_get_tyre_sound_info"}
+
+
+def tyre_matrix_of(page):
+    start = page.index('<table class="matrix tyres">')
+    return page[start:page.index("</table>", start)]
+
+
+def tyre_cells(page, name):
+    """The matrix cells of tyre `name`: {scalar tag or table: cell HTML}."""
+    matrix = tyre_matrix_of(page)
+    start = matrix.index(f'<tr id="compare-tyre-{name}">')
+    cells = re.findall(r"<td>(.*?)</td>", matrix[start:matrix.index("</tr>", start)])[1:]
+    columns = [*tyre_dossier.tyre_tags(), *RESOLVED_TYRE_TABLES]
+    assert len(cells) == len(columns), cells
+    return dict(zip(columns, cells, strict=True))
+
+
+def tyre_differences_of(page):
+    start = page.index('<h3 id="tyre-differences">')
+    return page[start:page.index("</table>", start)]
+
+
+def tyre_line_link(name, line, text):
+    return (f'<span class="num"><a href="tyres.html#tyre-{name}-line-{line}" title="{name} line {line}">{text}</a>'
+            "</span>")
+
+
+def tyre_counts(tyres):
+    return {"scalars": scalar_counts(tyres["effective_scalars"]), "tables": table_sources(tyres["resolved_tables"])}
+
+
+class TyreMatrixTests(CompareTestCase):
+    def test_one_row_per_tyre_and_scalar_then_table_columns(self):
+        page = self.build()
+        matrix = tyre_matrix_of(page)
+        rows = re.findall(r'<tr id="compare-tyre-(\w+)"><td><a href="tyres\.html#tyre-(\w+)">\w+</a><br><small>(\w+)'
+                          "</small></td>", matrix)
+        self.assertEqual(rows, [("ROOT", "ROOT", "root"), ("OFFROAD", "OFFROAD", "inherits"),
+                                ("CHILD", "CHILD", "inherits")])
+        header = matrix.split("</tr>")[0]
+        scalars = re.findall(r'<th><a href="tyres\.html#tyre-store-(\w+)"><code>(\w+)</code></a><br><small>(.*?)<br>'
+                             r"([^<]+)</small></th>", header)
+        self.assertEqual([tag for tag, *_ in scalars], [tag for _, tag, *_ in scalars])
+        self.assertEqual([tag for tag, *_ in scalars], tyre_dossier.tyre_tags())
+        self.assertEqual(len(scalars), len(TYRE_SCALAR_STORES))
+        lowest = [min(int(offset, 16) for offset in TYRE_SCALAR_STORES[tag]["offsets"]) for tag, *_ in scalars]
+        self.assertEqual(lowest, sorted(lowest))
+        for tag, _, offsets, kind in scalars:
+            with self.subTest(tag=tag):
+                self.assertEqual(offsets, ", ".join(f"<code>+ {offset}</code>" for offset in TYRE_SCALAR_STORES[tag]["offsets"]))
+                self.assertEqual(kind, "float, scaled when stored" if "scaled_by" in TYRE_SCALAR_STORES[tag] else "float")
+        tables = re.findall(r"<th><code>(\w+)</code><br><small>record <code>\+ (0x[0-9a-f]+)</code><br>accessor "
+                            r'<a href="routines\.html#(\w+)"><code>(0x[0-9a-f]+)</code></a></small></th>', header)
+        self.assertEqual([table for table, *_ in tables], list(RESOLVED_TYRE_TABLES))
+        for table, offset, label, accessor in tables:
+            with self.subTest(table=table):
+                self.assertEqual(label, TYRE_ACCESSOR_LABELS[table])
+                self.assertEqual({"accessor": accessor, "record_offset": offset},
+                                 record_compare.TYRE_TABLE_ACCESSORS[table])
+
+    def test_scalar_cells_show_the_effective_value_as_written_and_its_source(self):
+        page = self.build()
+        root, offroad, child = (tyre_cells(page, name) for name in TYRE_NAMES)
+        self.assertEqual(root["RADIUS"], f'{tyre_line_link("ROOT", 3, "0.5")}<br><small>declared</small>')
+        self.assertEqual(offroad["WIDTH"], f'{tyre_line_link("OFFROAD", 24, "0.250")}<br><small>declared</small>')
+        self.assertEqual(child["WIDTH"], f'{tyre_line_link("OFFROAD", 24, "0.250")}<br><small>inherited from '
+                                         '<a href="#compare-tyre-OFFROAD">OFFROAD</a></small>')
+        self.assertEqual(child["ROAD_MAGIC_GRIP_NUMBER"], f'{tyre_line_link("CHILD", 32, "1")}<br><small>declared</small>')
+        self.assertEqual(offroad["ROAD_MAGIC_GRIP_NUMBER"], f'{tyre_line_link("ROOT", 6, "1.0")}<br><small>inherited '
+                                                            'from <a href="#compare-tyre-ROOT">ROOT</a></small>')
+        # Not declared by ROOT, so the root's own cell is zero-filled.
+        self.assertEqual(root["OFFROAD_MAGIC_GRIP_NUMBER"], f'<span class="label">{ZERO_FILLED}</span><br><small>no value'
+                                                            "</small>")
+
+    def test_multi_step_paths_are_shown(self):
+        child = tyre_cells(self.build(), "CHILD")
+        self.assertEqual(child["TYRE_GRIP_DEPTH"], f'{tyre_line_link("ROOT", 5, "0.100")}<br><small>inherited from '
+                                                   '<a href="#compare-tyre-ROOT">ROOT</a>, path CHILD &rarr; OFFROAD '
+                                                   "&rarr; ROOT</small>")
+        self.assertEqual(child["LONGITUDINAL_COMBINED_VALUES"],
+                         '<a href="tyres.html#tyre-CHILD-LONGITUDINAL_COMBINED_VALUES" title="CHILD Longitudinal">ROOT</a>'
+                         "<br><small>inherited, path CHILD &rarr; OFFROAD &rarr; ROOT</small>")
+        self.assertEqual(child["VERTICAL_LOAD"], '<a href="tyres.html#tyre-CHILD-VERTICAL_LOAD" title="CHILD Vertical '
+                                                 'load">OFFROAD</a><br><small>inherited</small>')
+        self.assertEqual(tyre_cells(self.build(), "ROOT")["sound_info"],
+                         '<a href="tyres.html#tyre-ROOT-sound_info" title="ROOT Sound info">ROOT</a><br><small>own table'
+                         "</small>")
+
+    def test_zero_filled_cells_have_no_value(self):
+        page = self.build()
+        for name in TYRE_NAMES:
+            with self.subTest(name=name):
+                cell = tyre_cells(page, name)["MASS"]
+                self.assertTrue(cell.startswith(f'<span class="label">{ZERO_FILLED}</span><br><small>no value'), cell)
+                self.assertNotIn("<a ", cell)
+        self.assertEqual(tyre_cells(page, "CHILD")["MASS"], f'<span class="label">{ZERO_FILLED}</span><br><small>no '
+                                                            "value, path CHILD &rarr; OFFROAD &rarr; ROOT</small>")
+
+    def test_unmapped_declaration_is_listed_without_a_column(self):
+        page = self.build()
+        self.assertNotIn("LOCATION_TYPE", tyre_matrix_of(page))
+        self.assertIn('<div class="unresolved" id="tyre-unmapped"><p><span class="label">unmapped</span>: no '
+                      'byte-checked store is known for <a href="tyres.html#tyre-CHILD-line-33" title="CHILD line 33">'
+                      "CHILD line 33</a> (<code>:LOCATION_TYPE</code>), so these get no column and no value.</p></div>",
+                      page)
+        page = self.build(tyres=self.tyres(COMPARE_TYRES.replace(":LOCATION_TYPE REAR\n", "")))
+        self.assertNotIn("unmapped", page[page.index('<h2 id="tyres">'):])
+        # tyres.json has no unmapped list for a root, which inherits nothing; its unmapped declarations are listed too.
+        page = self.build(tyres=self.tyres(COMPARE_TYRES.replace(":ROAD_MAGIC_GRIP_NUMBER 1.0\n",
+                                                                 ":ROAD_MAGIC_GRIP_NUMBER 1.0\n:LOCATION_TYPE FRONT\n")))
+        self.assertIn('known for <a href="tyres.html#tyre-ROOT-line-7" title="ROOT line 7">ROOT line 7</a> '
+                      '(<code>:LOCATION_TYPE</code>), <a href="tyres.html#tyre-CHILD-line-34"', page)
+
+    def test_overwritten_declaration_is_listed_without_a_cell(self):
+        page = self.build(tyres=self.tyres(COMPARE_TYRES.replace(":TYPE CHILD\n", ":TYPE CHILD\n:MASS 12.5\n")))
+        self.assertIn("<p>Declared before <code>INHERIT_TYPE</code> and overwritten by the scalar copy, so shown in no "
+                      'cell: <a href="tyres.html#tyre-CHILD-line-30" title="CHILD line 30">CHILD line 30</a> '
+                      "(<code>:MASS</code>).</p>", page)
+        self.assertIn(f'<span class="label">{ZERO_FILLED}</span>', tyre_cells(page, "CHILD")["MASS"])
+
+    def test_every_link_names_an_id_on_its_page(self):
+        tyres = self.tyres()
+        page = self.build(tyres=tyres)
+        tyres_page = self.root / "tyres.html"
+        evidence, status = self.root / "evidence.json", self.root / "status.json"
+        evidence.write_text(json.dumps(EVIDENCE), encoding="utf-8")
+        tyre_dossier.build(self.root / "tyres.json", evidence, self.pe, tyres_page, revision="0123abcd",
+                           status_path=status)
+        ids = set(Links(tyres_page.read_text(encoding="utf-8")).ids)
+        links = Links(page)
+        fragments = [href.removeprefix("tyres.html#") for href in links.hrefs if href.startswith("tyres.html#")]
+        self.assertTrue(fragments)
+        self.assertEqual(sorted({fragment for fragment in fragments if fragment not in ids}), [])
+        stores = {fragment for fragment in fragments if fragment.startswith("tyre-store-")}
+        self.assertEqual(stores, {f"tyre-store-{tag}" for tag in TYRE_SCALAR_STORES})
+        for name in TYRE_NAMES:
+            for table in RESOLVED_TYRE_TABLES:
+                self.assertIn(f"tyre-{name}-{table}", fragments)
+        labels = {item["label"] for item in STATUS}
+        routines = [href.removeprefix("routines.html#") for href in links.hrefs if href.startswith("routines.html#")]
+        self.assertEqual(sorted(set(routines)), sorted(TYRE_ACCESSOR_LABELS.values()))
+        self.assertTrue(set(routines) <= labels)
+        self.assertEqual([href for href in links.hrefs if href.startswith("#") and href[1:] not in links.ids], [])
+        self.assertEqual(len(links.ids), len(set(links.ids)))
+
+    def test_scope_states_the_grip_scale_and_no_physics(self):
+        page = self.build()
+        section = page[page.index('<h2 id="tyres">'):]
+        self.assertIn("Values are declarations as written, not physical quantities: this page claims no units, no "
+                      "meaning for the compounds and no physics.", section)
+        self.assertIn("by the global float at <code>0x00597484</code> when it stores them; that scale is not applied "
+                      "here.", section)
+
+
+class TyreDifferencesTests(CompareTestCase):
+    def differences(self, text=COMPARE_TYRES):
+        tyres = self.tyres(text)
+        checked = record_compare.check_tyres(tyres, (self.game / DATABASES["tyres"]).read_bytes())
+        return record_compare.tyre_differences(checked["tyres"])
+
+    def test_written_forms_group_by_number(self):
+        found = self.differences()
+        scalars = found["scalars"]
+        self.assertEqual(list(scalars), tyre_dossier.tyre_tags())
+        self.assertEqual(scalars["WIDTH"], {"groups": [{"forms": ["0.25", "0.250"], "tyres": TYRE_NAMES}],
+                                            "zero_filled": []})
+        self.assertEqual(scalars["RADIUS"], {"groups": [{"forms": ["0.5", "0.50"], "tyres": TYRE_NAMES}],
+                                             "zero_filled": []})
+        self.assertEqual(scalars["ROAD_MAGIC_GRIP_NUMBER"]["groups"], [{"forms": ["1.0", "1"], "tyres": TYRE_NAMES}])
+        self.assertEqual(scalars["OFFROAD_MAGIC_GRIP_NUMBER"], {"groups": [{"forms": ["40"], "tyres": ["OFFROAD", "CHILD"]}],
+                                                                "zero_filled": ["ROOT"]})
+        self.assertEqual(scalars["MASS"], {"groups": [], "zero_filled": TYRE_NAMES})
+        self.assertEqual(found["tables"]["VERTICAL_LOAD"],
+                         [{"source": "ROOT", "source_line": 11, "tyres": ["ROOT"]},
+                          {"source": "OFFROAD", "source_line": 26, "tyres": ["OFFROAD", "CHILD"]}])
+        self.assertEqual(found["tables"]["LONGITUDINAL_COMBINED_VALUES"],
+                         [{"source": "ROOT", "source_line": 7, "tyres": TYRE_NAMES}])
+
+    def test_table_rows_counts_and_same_in_all(self):
+        page = self.build()
+        # Long record names may break anywhere in this table, so that it fits a phone's width.
+        self.assertIn('<table class="tyre-differences">', tyre_differences_of(page))
+        self.assertIn("table.tyre-differences td { overflow-wrap: anywhere; }", page)
+        rows = dict(re.findall(r'<tr id="differs-tyre-(\w+)">(.*?)</tr>', tyre_differences_of(page)))
+        self.assertEqual(list(rows), [*tyre_dossier.tyre_tags(), *RESOLVED_TYRE_TABLES])
+        self.assertIn('<td>1, by number</td><td><span class="label">same in all 3</span>: <code>0.25</code>, '
+                      "<code>0.250</code></td><td>2 inheriting: 1 declared, 1 inherited</td>", rows["WIDTH"])
+        self.assertIn('<td>0, by number</td><td><ul><li><span class="label">not declared (zero-filled)</span>, no value '
+                      '(3): <a href="#compare-tyre-ROOT">ROOT</a>', rows["MASS"])
+        self.assertIn("<td>2 inheriting: 2 zero-filled</td>", rows["MASS"])
+        self.assertIn('<td>1, by source record</td><td><span class="label">same in all 3</span>: <a href="tyres.html#'
+                      'tyre-ROOT-LATERAL_COMBINED_VALUES" title="ROOT line 9">ROOT</a> line 9</td><td>all 3: 3 ROOT</td>',
+                      rows["LATERAL_COMBINED_VALUES"])
+        self.assertIn('<td>2, by source record</td><td><ul><li><a href="tyres.html#tyre-ROOT-VERTICAL_LOAD" title="ROOT '
+                      'line 11">ROOT</a> line 11 (1): <a href="#compare-tyre-ROOT">ROOT</a></li><li>', rows["VERTICAL_LOAD"])
+        self.assertIn("<td>all 3: 1 ROOT, 2 OFFROAD</td>", rows["VERTICAL_LOAD"])
+        counts = scalar_counts(self.tyres()["effective_scalars"])
+        for tag in tyre_dossier.tyre_tags():
+            shown = re.search(r"<td>2 inheriting: (.*?)</td>", rows[tag]).group(1)
+            self.assertEqual(shown, ", ".join(f'{counts[tag][status]} {status.replace(ZERO_FILLED, "zero-filled")}'
+                                              for status in ("declared", "inherited", ZERO_FILLED)
+                                              if status in counts[tag]), tag)
+
+    def test_counts_checked_only_for_the_demo_tyredata(self):
+        page = self.build()
+        self.assertIn("This <code>TYREDATA.DAT</code> is not the demo's, so these counts are not checked against "
+                      "<code>TYRE_SCALAR_COUNTS</code> or <code>TYRE_TABLE_SOURCES</code>.", page)
+        tyres = self.tyres()
+        page = self.build(tyres=tyres, tyre_counts=tyre_counts(tyres))
+        self.assertIn("the table source counts the ones in <code>TYRE_TABLE_SOURCES</code>; the page is not written "
+                      "when they differ.", page)
+        manifest = json.loads((REPO_ROOT / "analysis/game-file-manifest.json").read_text())
+        demo = next(item["sha256"] for item in manifest if item["path"] == DATABASES["tyres"])
+        self.assertIs(record_compare.demo_tyre_counts({"source": DATABASES["tyres"], "sha256": demo}),
+                      record_compare.TYRE_COUNTS)
+        self.assertIsNone(record_compare.demo_tyre_counts({"source": DATABASES["tyres"], "sha256": "0" * 64}))
+        self.assertIsNone(record_compare.demo_tyre_counts({"source": DATABASES["engines"], "sha256": demo}))
+
+
+class TyreRefusalTests(CompareTestCase):
+    def reject_tyres(self, fragment, text=COMPARE_TYRES, tyres=None, tyre_counts=None):
+        self.reject(fragment, database=self.database(), engines=self.engines(),
+                    tyres=self.tyres(text) if tyres is None else tyres, tyre_counts=tyre_counts)
+
+    def test_tyredata_that_does_not_match_tyres_json(self):
+        tyres = self.tyres()
+        write_database(self.game, "tyres", COMPARE_TYRES.replace("0.250", "0.25"))
+        self.reject_tyres("DATA/ASCII/CARS/TYREDATA.DAT does not match tyres.json's SHA-256", tyres=tyres)
+
+    def test_missing_tyredata(self):
+        tyres = self.tyres()
+        (self.game / DATABASES["tyres"]).unlink()
+        with self.assertRaisesRegex(ValueError, "TYREDATA.DAT not found under"):
+            self.build(self.database(), self.engines(), tyres=tyres)
+        self.assertFalse(self.output.exists())
+
+    def test_unmapped_declaration_tyres_json_does_not_list(self):
+        tyres = self.tyres()
+        tyres["effective_scalars"]["CHILD"]["unmapped"] = []
+        self.reject_tyres("tyre 'CHILD' (line 29) declares :LOCATION_TYPE on line 33, which has no byte-checked store, "
+                          "and tyres.json does not list it as unmapped", tyres=tyres)
+
+    def test_derived_fields_that_differ_from_text_database(self):
+        tyres = self.tyres()
+        tyres["effective_scalars"]["CHILD"]["fields"]["WIDTH"]["source_line"] = 4
+        self.reject_tyres("tyres.json effective_scalars disagrees with the record declarations", tyres=tyres)
+        tyres = self.tyres()
+        tyres["table_provenance"]["CHILD"]["VERTICAL_LOAD"]["source_line"] = 27
+        self.reject_tyres("tyres.json table_provenance disagrees with what scripts/text_database.py derives", tyres=tyres)
+        tyres = self.tyres()
+        tyres["resolved_tables"]["CHILD"]["VERTICAL_LOAD"] = "ROOT"
+        tyres["table_provenance"]["CHILD"]["VERTICAL_LOAD"]["source"] = "ROOT"
+        self.reject_tyres("tyres.json resolved_tables disagrees with INHERIT_TYPE resolved", tyres=tyres)
+
+    def test_written_token_that_does_not_parse_to_the_json_value(self):
+        tyres = self.tyres()
+        tyres["records"][1]["fields"]["WIDTH"]["values"] = [0.3]
+        self.reject_tyres("tyre 'OFFROAD' (line 22): line 24 of DATA/ASCII/CARS/TYREDATA.DAT declares '0.250', but "
+                          "tyres.json holds 0.3", tyres=tyres)
+        tyres = self.tyres()
+        tyres["records"][2]["fields"]["ROAD_MAGIC_GRIP_NUMBER"]["values"] = [1.0]
+        self.reject_tyres("declares '1', but tyres.json holds 1.0", tyres=tyres)
+        tyres = self.tyres()
+        tyres["records"][2]["fields"]["RADIUS"]["line"] = 32
+        self.reject_tyres("line 32 of DATA/ASCII/CARS/TYREDATA.DAT is not ':RADIUS <value>'", tyres=tyres)
+
+    def test_values_that_are_not_one_inline_number(self):
+        self.reject_tyres("tyre 'CHILD' (line 29): :RADIUS on line 31 is not a single inline value",
+                          COMPARE_TYRES.replace(":RADIUS 0.50\n", ":RADIUS 0.5 0.6\n"))
+        self.reject_tyres("tyre 'CHILD' (line 29): :RADIUS on line 31 is stored as a float, but 'BIG' is not a number",
+                          COMPARE_TYRES.replace(":RADIUS 0.50\n", ":RADIUS BIG\n"))
+
+    def test_counts_that_differ_from_the_demo_record(self):
+        tyres = self.tyres()
+        counts = tyre_counts(tyres)
+        self.reject_tyres("The inheriting tyres' effective scalar counts differ from TYRE_SCALAR_COUNTS: WIDTH "
+                          "{'declared': 1, 'inherited': 1}, not {'declared': 2}", tyres=tyres,
+                          tyre_counts={**counts, "scalars": {**counts["scalars"], "WIDTH": {"declared": 2}}})
+        self.reject_tyres("The tyres' table source counts differ from TYRE_TABLE_SOURCES: VERTICAL_LOAD "
+                          "{'ROOT': 1, 'OFFROAD': 2}, not {'ROOT': 3}", tyres=tyres,
+                          tyre_counts={**counts, "tables": {**counts["tables"], "VERTICAL_LOAD": {"ROOT": 3}}})
+        self.reject_tyres("TYRE_SCALAR_COUNTS: ROAD_MAGIC_GRIP_NUMBER", tyres=tyres, tyre_counts=record_compare.TYRE_COUNTS)
 
 
 class ScriptTests(unittest.TestCase):
@@ -696,8 +1092,11 @@ class ScriptTests(unittest.TestCase):
             gearboxes.write_text(json.dumps(read_database(game, DATABASES["gearboxes"], KNOWN_TAGS)), encoding="utf-8")
             engines = root / "engines.json"
             engines.write_text(json.dumps(write_engines(game)), encoding="utf-8")
+            tyres = root / "tyres.json"
+            tyres.write_text(json.dumps(write_tyres(game)), encoding="utf-8")
             output = root / "compare.html"
-            inputs = ("--gearboxes", str(gearboxes), "--engines", str(engines), "--game", str(game))
+            inputs = ("--gearboxes", str(gearboxes), "--engines", str(engines), "--tyres", str(tyres), "--game",
+                      str(game))
             result = self.run_script(*inputs, "--output", str(output))
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("record_compare.py: gearbox 'TRACK' (line 13) does not declare DIFF_TYPE", result.stderr)
@@ -707,7 +1106,7 @@ class ScriptTests(unittest.TestCase):
             gearboxes.write_text(json.dumps(read_database(game, DATABASES["gearboxes"], KNOWN_TAGS)), encoding="utf-8")
             result = self.run_script(*inputs, "--output", str(output))
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn("Compared 3 gearboxes and 6 engines field by field", result.stdout)
+            self.assertIn("Compared 3 gearboxes, 6 engines and 3 tyres field by field", result.stdout)
             self.assertTrue(output.is_file())
             output.unlink()
             # An engine refusal exits the same way.
@@ -719,6 +1118,16 @@ class ScriptTests(unittest.TestCase):
                           result.stderr)
             self.assertNotIn("Traceback", result.stderr)
             self.assertFalse(output.exists())
+            # And a tyre refusal.
+            engines.write_text(json.dumps(write_engines(game)), encoding="utf-8")
+            tyres.write_text(json.dumps(write_tyres(game, COMPARE_TYRES.replace(":RADIUS 0.50\n", ":RADIUS 0.5 0.6\n"))),
+                             encoding="utf-8")
+            result = self.run_script(*inputs, "--output", str(output))
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("record_compare.py: tyre 'CHILD' (line 29): :RADIUS on line 31 is not a single inline value",
+                          result.stderr)
+            self.assertNotIn("Traceback", result.stderr)
+            self.assertFalse(output.exists())
 
     def test_help_documents_flags_and_defaults(self):
         result = self.run_script("--help")
@@ -726,6 +1135,8 @@ class ScriptTests(unittest.TestCase):
         text = " ".join(result.stdout.split())
         self.assertRegex(text, r"--game .*default: [^)]*inputs/extracted/Program_Executable_Files\)")
         self.assertRegex(text, r"--engines .*default: [^)]*engines\.json\)")
+        self.assertRegex(text, r"--tyres .*default: [^)]*tyres\.json\)")
+        self.assertRegex(text, r"--status .*default: [^)]*analysis/annotated/status\.json\)")
         self.assertRegex(text, r"--output .*default: [^)]*artifacts/dossier/compare\.html\)")
 
 

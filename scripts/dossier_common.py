@@ -1,13 +1,13 @@
 """HTML and input helpers shared by the offline dossier generators.
 
-scripts/tyre_dossier.py, scripts/record_dossier.py, scripts/record_compare.py, scripts/pcg_catalogue.py,
-scripts/routine_index.py and scripts/open_questions.py write static pages
+scripts/car_page.py, scripts/tyre_dossier.py, scripts/record_dossier.py, scripts/record_compare.py,
+scripts/pcg_catalogue.py, scripts/routine_index.py and scripts/open_questions.py write static pages
 with inline CSS, no JavaScript and no external resources other than the two links in
 the rights-holder notice. Every piece of input text goes through e() before it reaches
 the page. scripts/build_research.py writes all of them, plus the entrance page, into
 one directory.
 
-The tyre, engine and gearbox pages link the routines and byte-checked sites they cite
+The car, tyre, engine and gearbox pages link the routines and byte-checked sites they cite
 to their sections on the sibling routines page with routine_link() and site_link().
 They look each routine's label up in analysis/annotated/status.json by entry VA with
 routine_labels() and routine_label(), which refuse a routine that is missing or
@@ -21,7 +21,7 @@ import re
 import subprocess
 
 from fr3_common import DEMO_PAGE
-from text_database import REPO_ROOT, require
+from text_database import CAR_REFERENCE_STORES, REPO_ROOT, require
 from verify_web import ISSUES_PAGE, RIGHTS_CREDIT
 
 STYLE = """
@@ -43,7 +43,7 @@ summary { cursor: pointer; }
 # The research pages, as written next to each other in one directory, in navigation order. index.html is the
 # "Explore findings" entrance that scripts/build_research.py writes.
 INDEX_PAGE = "index.html"
-PAGES = ((INDEX_PAGE, "Explore findings"), ("engines.html", "Engines"), ("gearboxes.html", "Gearboxes"),
+PAGES = ((INDEX_PAGE, "Explore findings"), ("cars.html", "Cars"), ("engines.html", "Engines"), ("gearboxes.html", "Gearboxes"),
          ("compare.html", "Compare records"), ("tyres.html", "Tyres"), ("pcg.html", "PCG catalogue"), ("routines.html", "Routines"),
          ("questions.html", "Open questions"))
 # The open questions that scripts/open_questions.py writes up, and what each one is about. The engine, tyre and PCG
@@ -55,6 +55,10 @@ INDIGO_RECORD = "INDIGO"
 INDIGO_TOKENS = ("INHERIT_TYPE", "DEFAULT_TRACK")
 PCG_QUESTION_ENTRIES = ("_loadbar", "_loadbr2")
 PCG_QUESTION_EXTRA = 1024
+# The cars page (scripts/car_page.py). The engine, gearbox and tyre pages and the Compare records page link the cars
+# that name each record to their sections there (car-<name>) and to the car loader's row for the tag (car-store-<TAG>).
+CARS_PAGE = "cars.html"
+USED_BY = "used-by"
 # The routines page (scripts/routine_index.py), the analyst-labelled routines it indexes, and the checks on them.
 ROUTINES_PAGE = "routines.html"
 ROUTINE_STATUS = REPO_ROOT / "analysis/annotated/status.json"
@@ -194,6 +198,11 @@ def is_indigo_line(record, item):
     return record["type"] == INDIGO_RECORD and tuple(item["tokens"]) == INDIGO_TOKENS
 
 
+def basis_html(basis):
+    """The label of an applied colon-less line's basis (`static instruction evidence`), linked to its question."""
+    return f'<a href="{e(basis["question"])}"><span class="label">{e(basis["label"])}</span></a>'
+
+
 def is_pcg_question(entry):
     """True for a PCG graphic whose extra bytes the Open questions page writes up."""
     return entry["name"] in PCG_QUESTION_ENTRIES and entry["extra_bytes"] == PCG_QUESTION_EXTRA
@@ -257,3 +266,74 @@ def declarations(record, prefix, inherit_note="", untagged_note=UNTAGGED_NOTE, r
     body = "".join(f"<tr{row(line)}><td>{e(line)}</td><td><code>{e(tag)}</code></td><td>{shown}</td></tr>"
                    for line, tag, shown in sorted(items, key=lambda item: item[0]))
     return f"<table><tr><th>Line</th><th>Tag</th><th>Values</th></tr>{body}</table>"
+
+
+def car_anchor(name):
+    """The id of car `name`'s section on the cars page."""
+    return anchor("car", name)
+
+
+def car_store_anchor(tag):
+    """The id of the cars page's row for how the car loader resolves reference tag `tag`."""
+    return anchor("car", "store", tag)
+
+
+def car_tags(database):
+    """The car reference tags that name a record of `database` (engines, gearboxes, tyres), in CAR_REFERENCE_STORES
+    order: CAR_FRONT_TYRE_TYPE before CAR_BACK_TYRE_TYPE."""
+    return tuple(tag for tag, entry in CAR_REFERENCE_STORES.items() if entry["database"] == database)
+
+
+def used_by_anchor(prefix, name):
+    """The id of the "Used by cars" block in record `name`'s section."""
+    return anchor(prefix, name, USED_BY)
+
+
+def check_car_users(usage, database, records):
+    """Return usage[database], the cars naming each record (text_database.car_usage()), after checking it fits.
+
+    Refuse a usage without `database` and one naming a record `records` lacks. The block's id cannot be another
+    record's section id: record names hold no "-" (text_database.parse()).
+    """
+    require(isinstance(usage, dict) and isinstance(usage.get(database), dict),
+            f"The cars' reverse index has no {database} entry")
+    names = {record["type"] for record in records}
+    unknown = sorted(set(usage[database]) - names)
+    require(not unknown, f"The cars name {database} records that are not in the database: " + ", ".join(unknown))
+    return usage[database]
+
+
+def used_by_scope(database, noun):
+    """The paragraph saying what a record page's "Used by cars" blocks list, and what they do not."""
+    tags = " or ".join(f"<code>{e(tag)}</code>" for tag in car_tags(database))
+    return (f'<p class="scope">Used by cars: each {e(noun)} section lists the cars in <code>CARDATA.DAT</code> whose '
+            f"{tags} names it, in file order, each linked to its section on the "
+            f'<a href="{CARS_PAGE}">cars page</a>, with the row of the cars page\'s table of how the car loader resolves '
+            "that tag and the reference's basis: <em>resolved by the loader's lookup (byte-checked)</em> only when "
+            "every site of that path is byte-checked, otherwise <em>declared by name</em>. Only a car that names a "
+            "record directly is listed: a car is never listed under the record its record inherits from through "
+            "<code>:INHERIT_TYPE</code>, so a parent no car names says it is not named by any car. No units, physics "
+            "or menu meaning are claimed.</p>")
+
+
+def used_by_section(prefix, name, users, database):
+    """The "Used by cars" block of record `name`, with the id used_by_anchor(prefix, name).
+
+    users is the record's [(car, tag, basis)] from text_database.car_usage(), or empty. Each of the database's tags
+    gets a table of the cars it names, or a line saying no car's tag names it.
+    """
+    heading = f'<h3 id="{e(used_by_anchor(prefix, name))}">Used by cars</h3>'
+    if not users:
+        return heading + "<p>Not named by any car in <code>CARDATA.DAT</code>.</p>"
+    parts = [heading]
+    for tag in car_tags(database):
+        found = [(car, basis) for car, user_tag, basis in users if user_tag == tag]
+        store = f'<a href="{CARS_PAGE}#{e(car_store_anchor(tag))}"><code>{e(tag)}</code></a>'
+        if not found:
+            parts.append(f"<p>{store}: not named by any car in <code>CARDATA.DAT</code>.</p>")
+            continue
+        rows = "".join(f'<tr><td><a href="{CARS_PAGE}#{e(car_anchor(car))}">{e(car)}</a></td><td>{store}</td>'
+                       f'<td><span class="label">{e(basis)}</span></td></tr>' for car, basis in found)
+        parts.append(f"<p>{store}: {len(found)} car{'' if len(found) == 1 else 's'}.</p>"
+                     f"<table><tr><th>Car</th><th>How the car loader resolves it</th><th>Basis</th></tr>{rows}</table>")
+    return "".join(parts)

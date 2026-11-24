@@ -26,19 +26,20 @@ from test_tyre_dossier import tyres_json
 SCRIPT = REPO_ROOT / "scripts/open_questions.py"
 PE = json.loads((REPO_ROOT / "analysis/pe-metadata.json").read_text())
 EVIDENCE = json.loads((REPO_ROOT / "analysis/selected/field-evidence.json").read_text())
-# ENGINES plus a DEFAULT_TRACK parent, a child that names it with :INHERIT_TYPE and INDIGO's colon-less line.
-QUESTION_ENGINES = ENGINES.removesuffix(":END\n") + """:TYPE DEFAULT_TRACK
+TAGS = json.loads((REPO_ROOT / "analysis/tags.json").read_text())
+# ENGINES plus a DEFAULT_TRACK parent, a child that names it with :INHERIT_TYPE and INDIGO's colon-less line, padded
+# with comment lines onto line 1410, where text_database.APPLIED_UNTAGGED_INHERIT lists it, so that it is applied.
+QUESTION_HEAD = ENGINES.removesuffix(":END\n") + """:TYPE DEFAULT_TRACK
 :CAPACITY 3.5
 :MAX_RPM 7000
 :LOCATION_TYPE REAR
 :TYPE TRACK_CHILD
 :INHERIT_TYPE DEFAULT_TRACK
-:TYPE INDIGO
-INHERIT_TYPE DEFAULT_TRACK
-:MAX_RPM 8000
-:END
 """
+QUESTION_ENGINES = (QUESTION_HEAD + "//\n" * (1408 - QUESTION_HEAD.count("\n"))
+                    + ":TYPE INDIGO\nINHERIT_TYPE DEFAULT_TRACK\n:MAX_RPM 8000\n:END\n")
 INDIGO_LINE = QUESTION_ENGINES.splitlines().index("INHERIT_TYPE DEFAULT_TRACK") + 1
+assert INDIGO_LINE == 1410
 SECTIONS = ("indigo", "sound-words", "pcg-extra-bytes")
 PARTS = ("observed", "matters", "readings", "decide")
 
@@ -119,15 +120,16 @@ class QuestionsTestCase(unittest.TestCase):
         path.write_text(data if isinstance(data, str) else json.dumps(data, ensure_ascii=False), encoding="utf-8")
         return path
 
-    def paths(self, engines=None, tyres=None, evidence=None, index=None, pe=PE):
+    def paths(self, engines=None, tyres=None, evidence=None, index=None, pe=PE, tags=None):
         return (self.write("engines.json", engines_json() if engines is None else engines),
                 self.write("tyres.json", tyres_json() if tyres is None else tyres),
                 self.write("field-evidence.json", EVIDENCE if evidence is None else evidence),
                 self.write("pcg-index.json", question_pcg_index() if index is None else index),
-                self.write("pe.json", pe))
+                self.write("pe.json", pe), self.write("tags.json", TAGS if tags is None else tags))
 
     def build(self, **inputs):
-        count = open_questions.build(*self.paths(**inputs), self.output, revision="0123abcd", selected=self.selected)
+        *paths, tags = self.paths(**inputs)
+        count = open_questions.build(*paths, self.output, revision="0123abcd", selected=self.selected, tags_path=tags)
         self.assertEqual(count, 3)
         return self.output.read_text(encoding="utf-8")
 
@@ -181,12 +183,22 @@ class QuestionsPageTests(QuestionsTestCase):
         self.assertIn("DEFAULT_TRACK declares 2 tags that INDIGO does not: <code>CAPACITY</code>, "
                       "<code>LOCATION_TYPE</code>", matters)
 
-    def test_indigo_line_number_follows_the_input(self):
+    def test_a_moved_indigo_line_is_not_applied(self):
+        # text_database.py refuses to apply the allow-listed line anywhere but line 1410, so no engines.json exists.
         moved = QUESTION_ENGINES.replace(":TYPE INDIGO\n", ":TYPE INDIGO\n:CAPACITY 9.5\n")
-        engines = engines_json(moved)
-        observed = part(self.build(engines=engines), "indigo", "observed")
-        self.assertIn(f"line {INDIGO_LINE + 1}: <code>INHERIT_TYPE DEFAULT_TRACK</code>", observed)
-        self.assertIn(f'<code>{engines["sha256"]}</code>', observed)
+        with self.assertRaisesRegex(ValueError, "the file has line 1411: INHERIT_TYPE DEFAULT_TRACK"):
+            engines_json(moved)
+        # An engines.json that does not apply the line is refused.
+        engines = engines_json()
+        del engines["effective_fields"]["INDIGO"]
+        self.reject("engines.json does not apply INDIGO's colon-less line 1410 as inheritance from DEFAULT_TRACK",
+                    engines=engines)
+
+    def test_engines_json_must_match_its_records(self):
+        engines = engines_json()
+        engines["untagged_inherit_consequences"]["INDIGO"]["status"] = "unresolved"
+        self.reject("engines.json untagged_inherit_consequences disagrees with the record declarations",
+                    engines=engines)
 
     def test_sound_observations_come_from_evidence_and_disassembly(self):
         observed = part(self.build(), "sound-words", "observed")
@@ -275,28 +287,182 @@ class QuestionsPageTests(QuestionsTestCase):
                          (0x2D0, 0x3C, 0x78, 15, 10))
 
 
+def without(vas, evidence=EVIDENCE):
+    """The field evidence without the sites at `vas`."""
+    return [site for site in evidence if site["va"] not in set(vas)]
+
+
+class IndigoInstructionEvidenceTests(QuestionsTestCase):
+    """The #indigo instruction evidence: byte-checked sites per gap, and a reading only when every gap is evidenced."""
+
+    def test_every_gap_is_evidenced_and_the_static_reading_is_stated(self):
+        page = self.build()
+        instructions = part(page, "indigo", "instructions")
+        for gap in open_questions.INDIGO_GAPS:
+            with self.subTest(gap=gap["id"]):
+                self.assertIn(f'<h4 id="indigo-gap-{gap["id"]}">', instructions)
+                heading = instructions[instructions.index(f'id="indigo-gap-{gap["id"]}"'):]
+                self.assertIn('(<span class="label">evidenced</span>)</h4>', heading[:heading.index("</h4>") + 5])
+                for va in gap["sites"]:
+                    self.assertIn(f'<a href="routines.html#site-{va:08x}"><code>0x{va:08x}</code></a>', instructions)
+        reading = instructions[instructions.index('<p class="reading" id="indigo-static-reading">'):]
+        reading = reading[:reading.index("</p>")]
+        self.assertIn('<span class="label">static instruction evidence</span>', reading)
+        self.assertIn(f"line {INDIGO_LINE}, <code>INHERIT_TYPE DEFAULT_TRACK</code>", reading)
+        self.assertIn("(ID <code>0x9c</code>)", reading)
+        self.assertIn("applied as inheritance from DEFAULT_TRACK", reading)
+        self.assertIn("Nothing has been run", reading)
+        self.assertIn("The edition now applies it on this evidence", reading)
+        self.assertIn('<a href="compare.html#compare-engine-INDIGO">Compare records</a>', reading)
+        self.assertNotIn("still treat INDIGO as a root", page)
+        self.assertIn("The search over <code>tags.json</code> returns <code>0x9c</code>", instructions)
+        self.assertIn('href="#indigo-static-reading">static instruction evidence</a> below supports the second',
+                      part(page, "indigo", "readings"))
+        decide = part(page, "indigo", "decide")
+        self.assertIn("A run of the demo", decide)
+        self.assertNotIn("separate, later change", decide)
+        matters = part(page, "indigo", "matters")
+        self.assertIn("applies it as inheritance on the static instruction evidence below", matters)
+        self.assertIn("The edition shows the second for the 19 mapped tags INDIGO does not declare", matters)
+
+    def test_every_site_link_is_a_byte_checked_site(self):
+        instructions = part(self.build(), "indigo", "instructions")
+        linked = {int(va, 16) for va in re.findall(r'href="routines\.html#site-([0-9a-f]{8})"', instructions)}
+        self.assertEqual(linked, {va for gap in open_questions.INDIGO_GAPS for va in gap["sites"]})
+        self.assertLessEqual(linked, {site["va"] for site in EVIDENCE})
+        # Both character table bytes are data sites.
+        data = {site["va"] for site in EVIDENCE if site.get("kind") == "data"}
+        self.assertLessEqual({0x00597AA7, 0x00597AB6}, linked & data)
+
+    def assert_no_reading(self, gap_id, *fragments, also=(), **inputs):
+        """The page is refused: engines.json applies INDIGO's line, but the evidence for gap `gap_id` (and the gaps
+        in `also`, no others) fails."""
+        with self.assertRaises(ValueError) as caught:
+            self.build(**inputs)
+        message = str(caught.exception)
+        self.assertIn("engines.json applies INDIGO's colon-less line, but its static instruction evidence no longer "
+                      "supports it: ", message)
+        for gap in open_questions.INDIGO_GAPS:
+            (self.assertIn if gap["id"] in (gap_id, *also) else self.assertNotIn)(gap["title"] + ": ", message)
+        for fragment in fragments:
+            self.assertIn(fragment, message)
+        self.assertFalse(self.output.exists())
+
+    def test_a_missing_required_site_refuses_the_page(self):
+        for gap in open_questions.INDIGO_GAPS:
+            for va in (gap["sites"][0], gap["sites"][-1]):
+                with self.subTest(gap=gap["id"], va=f"0x{va:08x}"):
+                    self.assert_no_reading(gap["id"], f"missing 0x{va:08x}", evidence=without([va]))
+
+    def test_the_character_table_bytes_are_required(self):
+        for va in (0x00597AA7, 0x00597AB6):
+            with self.subTest(va=f"0x{va:08x}"):
+                self.assert_no_reading("colon-before", evidence=without([va]))
+
+    def test_a_call_of_the_colon_search_on_the_tag_path_refuses_the_page(self):
+        self.edit_asm("next_tag.asm", "call 0x42da50", "call 0x42d2a0")
+        self.assert_no_reading("colon-search", "the tag path calls the colon search: next_tag.asm at 0x0042e584")
+
+    def test_the_colon_search_must_still_be_called_from_seek_tag(self):
+        self.edit_asm("seek_tag.asm", "call 0x42d2a0", "call 0x42d2a4")
+        self.assert_no_reading("colon-search", "seek_tag.asm has no call of 0x0042d2a0")
+
+    def test_the_loader_must_reach_the_ascii_tag_reader(self):
+        self.edit_asm("next_tag.asm", "call 0x42d0a0", "call 0x42d0a4")
+        self.assert_no_reading("reader", "next_tag.asm has no call of the ASCII tag reader at 0x0042d0a0")
+
+    def test_a_dispatch_id_that_differs_from_the_lookup_refuses_the_page(self):
+        evidence = copy.deepcopy(EVIDENCE)
+        next(site for site in evidence if site["va"] == 0x00522B1D)["bytes"] = "3d9d000000"
+        self.assert_no_reading("dispatch", "does not compare the tag ID with the lookup's result for INHERIT_TYPE (0x9c)",
+                               evidence=evidence)
+
+    def test_a_registry_without_inherit_type_refuses_the_page(self):
+        tags = copy.deepcopy(TAGS)
+        tags[0x9C]["name"] = "INHERIT_TYPF"
+        # The dispatch's ID can no longer be matched with a lookup result either.
+        self.assert_no_reading("lookup", "the lookup over tags.json does not find INHERIT_TYPE", also=("dispatch",),
+                               tags=tags)
+
+    def test_a_registry_entry_that_disagrees_with_tags_json_refuses_the_page(self):
+        tags = copy.deepcopy(TAGS)
+        tags[0x9C]["pointer_va"] += 4
+        self.assert_no_reading("lookup", "do not match tags.json's entry 0x9c for INHERIT_TYPE", tags=tags)
+
+    def test_malformed_tags_json_is_refused(self):
+        self.reject("tags.json must list the registry's entries in ID order", tags=TAGS[1:])
+        self.reject("tags.json has 3 entries", tags=TAGS[:3])
+
+
+class TagLookupTests(unittest.TestCase):
+    """The name lookup the #indigo evidence describes, run over the committed registry."""
+    names = open_questions.check_tags(TAGS)
+
+    def test_inherit_type_is_found_at_its_registry_id(self):
+        self.assertEqual(open_questions.lookup_tag(self.names, "INHERIT_TYPE"), 0x9C)
+        self.assertEqual(TAGS[0x9C]["name"], "INHERIT_TYPE")
+
+    def test_the_compare_ignores_case_and_a_colon_is_not_part_of_any_name(self):
+        self.assertEqual(open_questions.lookup_tag(self.names, "inherit_type"), 0x9C)
+        self.assertEqual(open_questions.lookup_tag(self.names, "Inherit_Type"), 0x9C)
+        self.assertEqual(open_questions.lookup_tag(self.names, ":INHERIT_TYPE"), -1)
+        self.assertEqual(open_questions.lookup_tag(self.names, "INHERIT_TYPE:"), -1)
+
+    def test_every_searched_entry_is_found_at_its_own_id(self):
+        for index in range(open_questions.LOOKUP_FIRST, open_questions.LOOKUP_LAST + 1):
+            self.assertEqual(open_questions.lookup_tag(self.names, self.names[index]), index, self.names[index])
+        self.assertEqual(open_questions.LOOKUP_LAST, len(TAGS) - 1)
+
+    def test_entry_zero_is_outside_the_search(self):
+        self.assertEqual(open_questions.lookup_tag(self.names, TAGS[0]["name"]), -1)
+
+    def test_compare_names_matches_the_routine(self):
+        self.assertEqual(open_questions.compare_names("ABC", "abc"), 0)
+        self.assertLess(open_questions.compare_names("AB", "ABC"), 0)
+        self.assertGreater(open_questions.compare_names("ABD", "abc"), 0)
+        # '_' (0x5f) is not folded: it sorts below lower-case letters, as the routine compares it.
+        self.assertEqual(open_questions.compare_names("A_", "Aa"), 0x5F - 0x61)
+
+    def test_registry_constant_matches_extract_tag_registry(self):
+        try:
+            from extract_tag_registry import COUNT, TABLE_VA
+        except ImportError:
+            self.skipTest("needs pefile from scripts/requirements.txt")
+        self.assertEqual(open_questions.REGISTRY, TABLE_VA)
+        self.assertEqual(open_questions.LOOKUP_LAST, COUNT - 1)
+        self.assertEqual(open_questions.REGISTRY_ENTRY, TABLE_VA + 4 * TAGS.index(
+            next(tag for tag in TAGS if tag["name"] == "INHERIT_TYPE")))
+
+
 class RefusalTests(QuestionsTestCase):
     def test_no_indigo_record(self):
         self.reject("engines.json has no INDIGO record", engines=engines_json(ENGINES))
 
+    # text_database.py refuses to apply INDIGO's line unless it is exactly as listed, so these engines.json files are
+    # edited after the fact: the page still checks the case itself.
+    def indigo_edited(self, edit):
+        engines = engines_json()
+        edit(next(record for record in engines["records"] if record["type"] == "INDIGO"), engines)
+        return engines
+
     def test_indigo_without_its_untagged_line(self):
         self.reject("INDIGO has no untagged line",
-                    engines=engines_json(QUESTION_ENGINES.replace("INHERIT_TYPE DEFAULT_TRACK\n:MAX_RPM", ":MAX_RPM")))
+                    engines=self.indigo_edited(lambda record, _: record.update(untagged=[])))
 
     def test_indigo_tokens_differ(self):
         self.reject("is not 'INHERIT_TYPE DEFAULT_TRACK'",
-                    engines=engines_json(QUESTION_ENGINES.replace("INHERIT_TYPE DEFAULT_TRACK\n:MAX_RPM",
-                                                                  "INHERIT_TYPE BASE\n:MAX_RPM")))
+                    engines=self.indigo_edited(lambda record, _: record["untagged"][0].update(
+                        tokens=["INHERIT_TYPE", "BASE"])))
 
     def test_indigo_with_two_untagged_lines(self):
-        self.reject("INDIGO has 2 untagged lines", engines=engines_json(
-            QUESTION_ENGINES.replace("INHERIT_TYPE DEFAULT_TRACK\n:MAX_RPM",
-                                     "INHERIT_TYPE DEFAULT_TRACK\nINHERIT_TYPE BASE\n:MAX_RPM")))
+        self.reject("INDIGO has 2 untagged lines", engines=self.indigo_edited(
+            lambda record, _: record["untagged"].append({"line": 1411, "tokens": ["INHERIT_TYPE", "BASE"]})))
 
     def test_named_parent_is_not_a_record(self):
-        text = QUESTION_ENGINES.replace(":TYPE TRACK_CHILD\n:INHERIT_TYPE DEFAULT_TRACK\n", "")
-        text = text.replace(":TYPE DEFAULT_TRACK\n", ":TYPE OTHER_TRACK\n")
-        self.reject("names 'DEFAULT_TRACK', which is not an engine record", engines=engines_json(text))
+        def rename(_, engines):
+            engines["records"] = [record for record in engines["records"] if record["type"] != "TRACK_CHILD"]
+            next(record for record in engines["records"] if record["type"] == "DEFAULT_TRACK")["type"] = "OTHER_TRACK"
+        self.reject("names 'DEFAULT_TRACK', which is not an engine record", engines=self.indigo_edited(rename))
 
     def test_allocation_site_missing(self):
         evidence = [site for site in EVIDENCE if site["va"] != 0x00523A67]
@@ -360,10 +526,10 @@ class RefusalTests(QuestionsTestCase):
         self.reject("PE metadata has no sha256", pe={"file": "fr3.exe"})
 
     def test_cli_exits_non_zero_with_a_message(self):
-        engines, tyres, evidence, index, pe = self.paths(engines=engines_json(ENGINES))
+        engines, tyres, evidence, index, pe, tags = self.paths(engines=engines_json(ENGINES))
         result = subprocess.run([sys.executable, str(SCRIPT), "--engines", str(engines), "--tyres", str(tyres),
                                  "--evidence", str(evidence), "--index", str(index), "--pe", str(pe),
-                                 "--output", str(self.output)],
+                                 "--tags", str(tags), "--output", str(self.output)],
                                 capture_output=True, text=True, check=False, cwd=REPO_ROOT,
                                 env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
         self.assertNotEqual(result.returncode, 0)
@@ -391,10 +557,14 @@ class BackLinkTests(unittest.TestCase):
                                                                    "DATA/ASCII/CARS/GEARDATA.DAT")),
                              self.write("pe.json", PE), self.root, revision="0123abcd")
         page = (self.root / "engines.html").read_text(encoding="utf-8")
-        # Once in INDIGO's list of fields that depend on the line, once on the line itself.
-        self.assertEqual(page.count('href="questions.html#indigo"'), 2)
+        # The applied line's basis label: in the scope, the summary, INDIGO's effective fields and on the line itself.
+        basis = '<a href="questions.html#indigo"><span class="label">static instruction evidence</span></a>'
+        self.assertEqual(page.count('href="questions.html#indigo"'), 4)
+        self.assertEqual(page.count(basis), 4)
         indigo = page[page.index('id="engine-INDIGO"'):]
-        self.assertIn('(<a href="questions.html#indigo">open question</a>)', indigo[:indigo.index("</section>")])
+        indigo = indigo[:indigo.index("</section>")]
+        self.assertEqual(indigo.count(basis), 2)
+        self.assertNotIn('<span class="label">unresolved</span>', indigo)
         loner = page[page.index('id="engine-LONER"'):]
         self.assertNotIn("questions.html", loner[:loner.index("</section>")])
         self.assertIn('<a href="questions.html">Open questions</a>', page)

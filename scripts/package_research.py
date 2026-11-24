@@ -56,12 +56,12 @@ FILE_MODE = 0o100644
 # What this script checks, in the order it checks it; MANIFEST.json lists exactly these.
 VERIFICATION = (
     "research directory holds only files build_research.py writes, checked by check_output()",
-    "research pages verified by verify_research(): all seven present, each with the rights-holder notice before "
+    f"research pages verified by verify_research(): all {len(build_research.RESEARCH_PAGES)} present, each with the rights-holder notice before "
     "its content, no <script>, no external resource, every local link resolving inside the directory",
     "evidence files byte-identical to the committed analysis/ files at the producer revision",
     "entrance page names this manifest's producer revision and the fr3.exe SHA-256 in analysis/pe-metadata.json "
     "at that revision",
-    "all seven pages byte-identical to a fresh build with the current generators, extracted game databases "
+    f"all {len(build_research.RESEARCH_PAGES)} pages byte-identical to a fresh build with the current generators, extracted game databases "
     "and analysis inputs committed at the producer revision",
     "every packaged file re-hashed from the written ZIP against MANIFEST.json and SHA256SUMS",
     "fr3.exe and the demo archive not re-hashed: their hashes are copied from analysis/pe-metadata.json and "

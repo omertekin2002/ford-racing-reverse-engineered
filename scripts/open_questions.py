@@ -17,9 +17,11 @@ Inputs, all produced elsewhere and only read here:
 
 The output is one static HTML file, artifacts/dossier/questions.html by default, with inline CSS, no JavaScript and
 no external resources. Each section has four parts: what was observed (every value read from the inputs above at
-build time), why it matters (the places on the other research pages that stay unresolved because of it), possible
-readings (only the alternatives the observations leave open, each labelled untested and none ranked) and what would
-decide it. The page resolves nothing and assigns no meaning to the unknown line, words or bytes.
+build time), why it matters (the places on the other research pages that depend on it), possible readings (only the
+alternatives the observations leave open, each labelled untested and none ranked) and what would decide it. The page
+assigns no meaning to the unknown words or bytes. For INDIGO's line it also gives the static instruction evidence,
+gap by gap (INDIGO_GAPS in scripts/indigo_evidence.py), and the reading it supports, which engines.json and the other
+pages apply on that basis; the question stays here because nothing has been run to confirm it.
 
 The script refuses to write the page, and exits non-zero, when an input is missing or malformed or no longer shows
 the question: INDIGO is missing, has no untagged line, more than one, or one whose tokens are not
@@ -27,7 +29,10 @@ the question: INDIGO is missing, has no untagged line, more than one, or one who
 size or its +0x54 store; the tyre loader's indexed stores into the sound table are not at exactly two offsets that
 split the allocation into an unknown block, a START_RPM block of the same size and whole value rows; no tyre declares
 :SOUND_INFO; the graphics with extra bytes are not exactly `_loadbar` and `_loadbr2`, 1,024 bytes each, in one
-collection; an .asm file lacks its span header; or the PE metadata has no sha256.
+collection; an .asm file lacks its span header; or the PE metadata has no sha256. It also refuses when engines.json
+disagrees with what scripts/text_database.py derives from its records and this page's field-evidence.json, when it
+does not apply INDIGO's line, and when the static instruction evidence no longer supports that reading (a missing
+site, or a failed check on the disassembly or tags.json): the page and the data must agree.
 """
 import argparse
 from pathlib import Path
@@ -35,9 +40,11 @@ import re
 
 from dossier_common import (INDIGO_ANCHOR, INDIGO_RECORD, INDIGO_TOKENS, PCG_ANCHOR, PCG_QUESTION_ENTRIES,
                             PCG_QUESTION_EXTRA, QUESTIONS_PAGE, SOUND_ANCHOR, SOUND_NOTE_ID, STYLE, anchor, check_pe, e,
-                            load_json, page_start, producer_revision, relative_href)
+                            load_json, page_start, producer_revision, relative_href, site_link)
+from indigo_evidence import (COLON_SEARCH, INDIGO_GAPS, INHERIT_DISPATCH, LOOKUP_FIRST, LOOKUP_LAST, NEXT_TAG,
+                             REGISTRY, REGISTRY_ENTRY, REGISTRY_STRING, SEEK_TAG, TAG_READER)
 import pcg_catalogue
-from record_dossier import DATABASES, check_records
+from record_dossier import DATABASES, check_engine_fields, check_records
 from routine_index import ASM_HEADER
 from text_database import REPO_ROOT, TYRE_TABLE_ACCESSORS, require, table_sources
 import tyre_dossier
@@ -48,11 +55,21 @@ SELECTED = ANALYSIS / "selected"
 FIELD_EVIDENCE = SELECTED / "field-evidence.json"
 PCG_INDEX = ANALYSIS / "pcg-index.json"
 PE_METADATA = ANALYSIS / "pe-metadata.json"
-# The committed disassembly each section reads or links, by the hrefs key the page uses.
+TAGS = ANALYSIS / "tags.json"
+# The committed disassembly each section reads or links, by the hrefs key the page uses. The tag path files are
+# the spans the #indigo instruction evidence walks through, from the engine loader to the name compare.
+TAG_PATH_ASM = {"separator_skip": "skip_ascii_separators.asm", "delimiter": "is_ascii_delimiter.asm",
+                "tag_reader": "read_ascii_tag.asm", "name_lookup": "lookup_tag_name.asm",
+                "next_tag": "next_tag.asm", "table_lookup": "find_tag_in_table.asm", "search": "binary_search.asm",
+                "name_compare": "compare_names_ignoring_case.asm", "reader_open": "open_database_reader.asm",
+                "file_open": "open_database_file.asm", "table_setup": "register_tag_tables.asm",
+                "application_tags": "register_application_tags.asm"}
 ASM = {"tyre_loader": "load_tyre_database.asm", "engine_loader": "load_engine_database.asm",
-       "engine_copy": "copy_engine_record.asm", "pcg_view": "build_pcg_view.asm"}
+       "engine_copy": "copy_engine_record.asm", "pcg_view": "build_pcg_view.asm",
+       "colon_search": "skip_to_colon_and_read_tag.asm", "seek_tag": "seek_tag.asm", **TAG_PATH_ASM}
 # The page's links to its inputs, by key, as paths under analysis/; scripts/build_research.py copies them to evidence/.
 EVIDENCE = {"evidence": FIELD_EVIDENCE.relative_to(ANALYSIS), "pcg_index": PCG_INDEX.relative_to(ANALYSIS),
+            "tags": TAGS.relative_to(ANALYSIS),
             **{key: (SELECTED / name).relative_to(ANALYSIS) for key, name in ASM.items()}}
 SOUND = "sound_info"
 SOUND_OFFSET = int(TYRE_TABLE_ACCESSORS[SOUND]["record_offset"], 16)
@@ -66,8 +83,10 @@ LOAD_WINDOW = 3
 SECTIONS = ((INDIGO_ANCHOR, "Engine INDIGO's colon-less INHERIT_TYPE line"),
             (SOUND_ANCHOR, "The tyre sound table's leading words"),
             (PCG_ANCHOR, "The extra bytes after _loadbar and _loadbr2"))
+INHERIT_TYPE = INDIGO_TOKENS[0]
 EXTRA_STYLE = """section.question { border-top: 2px solid #888; margin-top: 2em; }
 td.differs { background: #fde8e8; font-weight: bold; }
+p.reading { border-left: 4px solid #888; padding: 0.2em 0.8em; }
 table.words td { border-color: #e2e2e2; padding: 0 0.4em; white-space: nowrap; }
 """
 
@@ -105,7 +124,115 @@ def check_indigo(engines):
     require(parent in by_name, f"{INDIGO_RECORD}'s untagged line names {parent!r}, which is not an engine record")
     children = [(item["type"], item["fields"]["INHERIT_TYPE"]["line"]) for item in engines["records"]
                 if item["fields"].get("INHERIT_TYPE", {}).get("values") == [parent]]
-    return {"record": record, "line": untagged[0], "parent": by_name[parent], "children": children}
+    applied = engines.get("effective_fields", {}).get(INDIGO_RECORD, {}).get("inherit_type")
+    require(applied and not applied["colon"] and applied["line"] == untagged[0]["line"] and applied["parent"] == parent,
+            f"engines.json does not apply {INDIGO_RECORD}'s colon-less line {untagged[0]['line']} as inheritance from "
+            f"{parent} (rerun scripts/text_database.py)")
+    return {"record": record, "line": untagged[0], "parent": by_name[parent], "children": children,
+            "applied": applied, "effective": engines["effective_fields"][INDIGO_RECORD]}
+
+
+def require_reading(evidence_case):
+    """Refuse when the static instruction evidence that engines.json's application of INDIGO's line rests on fails."""
+    open_gaps = "; ".join(
+        f'{gap["title"]}: ' + ", ".join([*(f"missing 0x{va:08x}" for va in gap["missing"]), *gap["problems"]])
+        for gap in evidence_case["gaps"] if not gap["evidenced"])
+    require(evidence_case["reading"], f"engines.json applies {INDIGO_RECORD}'s colon-less line, but its static "
+                                      f"instruction evidence no longer supports it: {open_gaps}")
+
+
+def compare_names(key, name):
+    """The name compare at 0x00534980: bytes after adding 0x20 to 'A'..'Z' in both, up to the first difference."""
+    a, b = key.encode("ascii") + b"\0", name.encode("ascii") + b"\0"
+    i = 0
+    while True:
+        x, y = (byte + 0x20 if 0x41 <= byte <= 0x5A else byte for byte in (a[i], b[i]))
+        if x != y or y == 0:
+            return x - y
+        i += 1
+
+
+def lookup_tag(names, token, first=LOOKUP_FIRST, last=LOOKUP_LAST):
+    """The binary search at 0x0042f440 over registry `names` with compare_names(); return the index or -1."""
+    while first <= last:
+        middle = (first + last) // 2
+        result = compare_names(token, names[middle])
+        if result < 0:
+            last = middle - 1
+        elif result > 0:
+            first = middle + 1
+        else:
+            return middle
+    return -1
+
+
+def check_tags(tags):
+    """Return the registry names by ID from analysis/tags.json; refuse a malformed or short registry."""
+    require(isinstance(tags, list) and all(isinstance(tag, dict) and isinstance(tag.get("name"), str)
+                                           and isinstance(tag.get("pointer_va"), int) for tag in tags)
+            and [tag.get("id") for tag in tags] == list(range(len(tags))),
+            "tags.json must list the registry's entries in ID order, each with a name and pointer_va")
+    require(len(tags) > LOOKUP_LAST, f"tags.json has {len(tags)} entries; the lookup searches up to 0x{LOOKUP_LAST:x}")
+    require(all(tag["name"].isascii() for tag in tags), "tags.json has a name that is not ASCII")
+    return [tag["name"] for tag in tags]
+
+
+def calls(instructions, target):
+    """Return the VAs of the direct calls and jumps to `target` among (va, bytes, text) instructions."""
+    return [va for va, _, text in instructions if re.fullmatch(rf"(?:call|jmp) 0x{target:x}", text)]
+
+
+def check_indigo_evidence(evidence, inputs, tags):
+    """Return the #indigo instruction evidence: each gap with its sites, what is missing, and whether a reading holds.
+
+    A gap is evidenced when every site it lists is in field-evidence.json and the checks below hold; the reading is
+    stated only when every gap is. The checks read the committed disassembly (`inputs`, by ASM key) and the
+    registry names from analysis/tags.json (`tags`).
+    """
+    by_va = {site["va"]: site for site in evidence}
+    names = check_tags(tags)
+    tag_id = lookup_tag(names, INHERIT_TYPE)
+    problems = {gap["id"]: [] for gap in INDIGO_GAPS}
+    asm = {key: inputs[key] for key in ("engine_loader", "colon_search", "seek_tag", *TAG_PATH_ASM)}
+
+    def need(gap, condition, message):
+        if not condition:
+            problems[gap].append(message)
+
+    need("reader", calls(asm["engine_loader"][3], NEXT_TAG),
+         f"{asm['engine_loader'][0]}.asm has no call of the next-tag dispatcher at 0x{NEXT_TAG:08x}")
+    need("reader", calls(asm["next_tag"][3], TAG_READER),
+         f"{asm['next_tag'][0]}.asm has no call of the ASCII tag reader at 0x{TAG_READER:08x}")
+    need("lookup", tag_id > 0, f"the lookup over tags.json does not find {INHERIT_TYPE}")
+    entry, string = by_va.get(REGISTRY_ENTRY), by_va.get(REGISTRY_STRING)
+    if tag_id > 0 and entry and string:
+        pointer = int.from_bytes(bytes.fromhex(entry["bytes"]), "little")
+        need("lookup", REGISTRY_ENTRY == REGISTRY + 4 * tag_id and pointer == tags[tag_id]["pointer_va"] == string["va"]
+             and bytes.fromhex(string["bytes"]) == INHERIT_TYPE.encode("ascii") + b"\0",
+             f"the byte-checked registry entry at 0x{REGISTRY_ENTRY:08x} and string at 0x{REGISTRY_STRING:08x} do "
+             f"not match tags.json's entry {tag_id:#x} for {INHERIT_TYPE}")
+    dispatch = by_va.get(INHERIT_DISPATCH)
+    raw = bytes.fromhex(dispatch["bytes"]) if dispatch else b""
+    dispatch_id = int.from_bytes(raw[1:5], "little") if len(raw) == 5 and raw[0] == 0x3D else None
+    need("dispatch", dispatch_id is not None and dispatch_id == tag_id,
+         f"the INHERIT_TYPE dispatch at 0x{INHERIT_DISPATCH:08x} does not compare the tag ID with the lookup's "
+         f"result for {INHERIT_TYPE} ({tag_id:#x})")
+    need("colon-search", asm["colon_search"][1] == COLON_SEARCH and asm["seek_tag"][1] == SEEK_TAG,
+         f"the committed spans no longer start at 0x{COLON_SEARCH:08x} and 0x{SEEK_TAG:08x}")
+    need("colon-search", calls(asm["seek_tag"][3], COLON_SEARCH),
+         f"{asm['seek_tag'][0]}.asm has no call of 0x{COLON_SEARCH:08x}")
+    path_calls = [(item[0], va) for key, item in asm.items() if key not in ("colon_search", "seek_tag")
+                  for target in (COLON_SEARCH, SEEK_TAG) for va in calls(item[3], target)]
+    need("colon-search", not path_calls, "the tag path calls the colon search: "
+         + ", ".join(f"{label}.asm at 0x{va:08x}" for label, va in path_calls))
+    gaps = []
+    for gap in INDIGO_GAPS:
+        missing = [va for va in gap["sites"] if va not in by_va]
+        gaps.append({**gap, "present": [by_va[va] for va in gap["sites"] if va in by_va], "missing": missing,
+                     "problems": problems[gap["id"]], "evidenced": not missing and not problems[gap["id"]]})
+    return {"gaps": gaps, "tag_id": tag_id, "path": [item for key, item in asm.items()
+                                                    if key not in ("colon_search", "seek_tag")],
+            "reading": all(gap["evidenced"] for gap in gaps)}
 
 
 def immediate(site):
@@ -201,20 +328,78 @@ def untested(items):
     return "<ul>" + "".join(f'<li><span class="label">untested</span>: {item}</li>' for item in items) + "</ul>"
 
 
-def section(anchor_id, title, observed, matters, readings, decide):
+READINGS_NOTE = "<p>Only the alternatives the observations leave open. None is tested, ranked or preferred here.</p>"
+
+
+def section(anchor_id, title, observed, matters, readings, decide, readings_note=READINGS_NOTE, instructions=""):
+    """Return one question; `instructions`, when given, is its instruction evidence part, after the readings."""
+    extra = (f'<h3 id="{e(anchor_id)}-instructions">Instruction evidence</h3>{instructions}' if instructions else "")
     return (f'<section class="question" id="{e(anchor_id)}"><h2>{e(title)}</h2>'
             f'<h3 id="{e(anchor_id)}-observed">Observed</h3>{observed}'
             f'<h3 id="{e(anchor_id)}-matters">Why it matters</h3>{matters}'
-            f'<h3 id="{e(anchor_id)}-readings">Possible readings</h3>'
-            "<p>Only the alternatives the observations leave open. None is tested, ranked or preferred here.</p>"
-            f'{untested(readings)}<h3 id="{e(anchor_id)}-decide">What would decide it</h3>{decide}</section>')
+            f'<h3 id="{e(anchor_id)}-readings">Possible readings</h3>{readings_note}'
+            f'{untested(readings)}{extra}<h3 id="{e(anchor_id)}-decide">What would decide it</h3>{decide}</section>')
 
 
 def engine_link(name, text=None):
     return f'<a href="{e(DATABASES["engines"]["page"])}#{e(anchor("engine", name))}">{e(text or name)}</a>'
 
 
-def indigo_section(case, engines, hrefs, calls, engine_loader, engine_copy):
+def gap_anchor(gap):
+    return f"{INDIGO_ANCHOR}-gap-{gap['id']}"
+
+
+def evidence_rows(sites):
+    """One row per site: its VA linked to its anchor on the routines page, its bytes and its claim."""
+    return "".join(f'<tr><td>{site_link(site["va"])}</td><td><code>{e(site["bytes"])}</code></td>'
+                   f'<td>{e(site["claim"])}</td></tr>' for site in sites)
+
+
+def instruction_part(evidence_case, line, parent_name, hrefs, exe_sha256):
+    """Return the #indigo instruction evidence: each gap's sites and status, then the static reading or what is open."""
+    files = ", ".join(asm_link(hrefs, key) for key in ("engine_loader", *TAG_PATH_ASM, "colon_search", "seek_tag"))
+    parts = [f"<p>Byte-checked against <code>fr3.exe</code> SHA-256 <code>{e(exe_sha256)}</code> "
+             f'(<a href="{e(hrefs["evidence"])}">{e(Path(hrefs["evidence"]).name)}</a>); each VA links to its row '
+             "on the routines page. This is static evidence, read from the executable's bytes: nothing has been run. "
+             "Routine names such as \"ASCII tag reader\" are the analyst's, not original symbols. Bounded "
+             f"disassembly: {files}. Tag registry: "
+             f'<a href="{e(hrefs["tags"])}">{e(Path(hrefs["tags"]).name)}</a>.</p>']
+    for gap in evidence_case["gaps"]:
+        status = "evidenced" if gap["evidenced"] else "open"
+        parts.append(f'<h4 id="{e(gap_anchor(gap))}">{e(gap["title"])} '
+                     f'(<span class="label">{status}</span>)</h4>')
+        if gap["evidenced"]:
+            parts.append(f"<p>{gap['shows']}</p>")
+        else:
+            missing = ", ".join(f"<code>0x{va:08x}</code>" for va in gap["missing"])
+            parts.append("<p>Not evidenced, so no reading is stated from it."
+                         + (f" Missing from field-evidence.json: {missing}." if missing else "")
+                         + "".join(f" {e(problem[0].upper() + problem[1:])}." for problem in gap["problems"])
+                         + "</p>")
+        if gap["id"] == "lookup" and evidence_case["tag_id"] > 0:
+            parts.append(f"<p>The search over <code>tags.json</code> returns <code>{evidence_case['tag_id']:#x}"
+                         f"</code> for <code>{e(INHERIT_TYPE)}</code>.</p>")
+        if gap["id"] == "colon-search":
+            searched = ", ".join(f"<code>{e(label)}</code>" for label, *_ in evidence_case["path"])
+            parts.append(f"<p>Spans searched for calls of <code>0x{COLON_SEARCH:08x}</code> and "
+                         f"<code>0x{SEEK_TAG:08x}</code>: {searched}.</p>")
+        if gap["present"]:
+            parts.append("<table><tr><th>VA</th><th>Bytes</th><th>Claim</th></tr>"
+                         f"{evidence_rows(gap['present'])}</table>")
+    parts.append(f'<p class="reading" id="{e(INDIGO_ANCHOR)}-static-reading"><span class="label">static '
+                 "instruction evidence</span>: the tag reader treats <code>:</code> as a separator before a "
+                 f"token, so line {e(line['line'])}, <code>{e(' '.join(line['tokens']))}</code>, gives the same "
+                 f"tag token, <code>{e(INHERIT_TYPE)}</code> (ID <code>{evidence_case['tag_id']:#x}</code>), as "
+                 f"<code>:{e(INHERIT_TYPE)}</code> and reaches the same dispatch and engine copy. That is the "
+                 f"second reading above: the line is applied as inheritance from {e(parent_name)}. The edition now "
+                 f"applies it on this evidence: the engine data, {engine_link(INDIGO_RECORD, 'the engine page')}, "
+                 f'<a href="compare.html#{e(anchor("compare-engine", INDIGO_RECORD))}">Compare records</a> and the '
+                 "entrance answers give it the fields it inherits, each labelled with this basis. Nothing has been "
+                 "run to check it, so the question stays open here.</p>")
+    return "".join(parts)
+
+
+def indigo_section(case, engines, hrefs, calls, engine_loader, engine_copy, evidence_case, exe_sha256):
     record, line, parent = case["record"], case["line"], case["parent"]
     name, parent_name = record["type"], parent["type"]
     own = list(record["fields"])
@@ -235,23 +420,32 @@ def indigo_section(case, engines, hrefs, calls, engine_loader, engine_copy):
                 f'{e(parent["line"])} with {len(parent["fields"])} tags</dd>'
                 f'<dt>Records whose <code>:INHERIT_TYPE</code> names {e(parent_name)}</dt><dd>{children}</dd></dl>')
     missing_tags = ", ".join(f"<code>{e(tag)}</code>" for tag in missing) or "none"
-    matters = (f'<ul><li>{engine_link(name, "The engine page")} keeps line {e(line["line"])} verbatim, labelled '
-               "unresolved, and does not apply it: it shows only the record's own declarations.</li>"
+    inherited = [tag for tag, field in case["effective"]["fields"].items() if field["status"] != "declared"]
+    matters = (f'<ul><li>{engine_link(name, "The engine page")} keeps line {e(line["line"])} verbatim and applies it '
+               "as inheritance on the static instruction evidence below, as do the engine data, Compare records and "
+               "the entrance answers. Each labels what comes through the line with that basis.</li>"
                f"<li>{e(parent_name)} declares {len(missing)} tags that {e(name)} does not: {missing_tags}. Which values "
                f"{e(name)} ends up with for them depends on the answer: zero-filled if the line is ignored, or "
-               f"{e(parent_name)}'s effective values if it is applied. {engine_link(name, 'The engine page')} lists "
-               "both readings for each tag.</li></ul>")
+               f"{e(parent_name)}'s effective values if it is applied. The edition shows the second for the "
+               f"{len(inherited)} mapped tags {e(name)} does not declare; {engine_link(name, 'the engine page')} also "
+               "names what ignoring the line would zero-fill.</li></ul>")
     readings = (f"The engine loader skips or ignores the line, so {e(name)} keeps only its own declarations.",
                 f"The engine loader applies the line as inheritance, giving {e(name)} {e(parent_name)} as its parent.")
+    note = ("<p>Only the alternatives the observations leave open. Neither has been tested by running the game. "
+            f'The <a href="#{e(INDIGO_ANCHOR)}-static-reading">static instruction evidence</a> below supports the '
+            "second, and the other pages apply it on that basis; it is not a run.</p>")
     call_text = ", ".join(f"<code>0x{va:08x}</code>" for va, _ in calls)
-    decide = (f"<ul><li>How the engine loader, {e(engine_loader[0])} at <code>0x{engine_loader[1]:08x}</code> "
-              f"({asm_link(hrefs, 'engine_loader')}), and the tag reader it calls treat a line whose first token has "
-              "no colon: whether such a token reaches the branch that handles <code>:INHERIT_TYPE</code> or is "
-              f"skipped. The loader calls {e(engine_copy[0])} (<code>0x{engine_copy[1]:08x}</code>, "
-              f"{asm_link(hrefs, 'engine_copy')}) at {call_text}.</li>"
-              f"<li>A comparison of {e(name)}'s loaded engine record with {e(parent_name)}'s, for the tags "
-              f"{e(name)} does not declare.</li></ul>")
-    return section(INDIGO_ANCHOR, SECTIONS[0][1], observed, matters, readings, decide)
+    copy = (f"The loader calls {e(engine_copy[0])} (<code>0x{engine_copy[1]:08x}</code>, "
+            f"{asm_link(hrefs, 'engine_copy')}) at {call_text}.")
+    loader = (f"{e(engine_loader[0])} at <code>0x{engine_loader[1]:08x}</code> "
+              f"({asm_link(hrefs, 'engine_loader')})")
+    decide = (f'<ul><li>The <a href="#{e(INDIGO_ANCHOR)}-static-reading">static instruction evidence</a> above '
+              f"follows the engine loader, {loader}, and the tag reader it calls to the branch that handles "
+              f"<code>:INHERIT_TYPE</code>. {copy} What it does not include is a run.</li>"
+              f"<li>A run of the demo that compares {e(name)}'s loaded engine record with {e(parent_name)}'s, for "
+              f"the tags {e(name)} does not declare, would test it.</li></ul>")
+    return section(INDIGO_ANCHOR, SECTIONS[0][1], observed, matters, readings, decide, note,
+                   instruction_part(evidence_case, line, parent_name, hrefs, exe_sha256))
 
 
 def site_rows(sites):
@@ -374,14 +568,17 @@ def render(cases, inputs, pe, revision, hrefs, entrance=False):
              f'PE timestamp {e(pe.get("timestamp_header_utc", "unknown"))}</dd>',
              f'<dt>Producer revision</dt><dd><code>{e(revision)}</code> (<code>scripts/open_questions.py</code>)</dd>',
              f"<dt>Questions</dt><dd>{len(SECTIONS)}</dd></dl>",
-             '<p class="scope">Scope: three findings the other pages label unresolved. For each, this page shows what '
+             '<p class="scope">Scope: three findings no run has settled. The other pages label two of them unresolved '
+             "and apply the third, INDIGO's line, on static instruction evidence. For each, this page shows what "
              "was observed, read from the parsed game files and the committed <code>analysis/</code> files when the "
              "page was built; where the other pages depend on it; the alternatives the observations leave open, each "
-             "untested; and what evidence would decide it. It resolves none of them and assigns no meaning to the "
-             "unknown line, words or bytes.</p>",
+             "untested; and what evidence would decide it. For INDIGO's line it also lists byte-checked instruction "
+             "evidence and the reading it supports, labelled static instruction evidence, which the engine data and "
+             "the other pages apply on that basis: nothing has been run, so the question stays open here. The page "
+             "assigns no meaning to the unknown words or bytes.</p>",
              f"<h2>Questions</h2><ol>{contents}</ol>",
              indigo_section(cases["indigo"], inputs["engines"], hrefs, cases["engine_calls"], inputs["engine_loader"],
-                            inputs["engine_copy"]),
+                            inputs["engine_copy"], cases["indigo_evidence"], pe["sha256"]),
              sound_section(cases["sound"], inputs["tyres"], hrefs, pe["sha256"]),
              pcg_section(cases["pcg"], hrefs, inputs["pcg_view"]),
              "</body></html>\n"]
@@ -389,26 +586,32 @@ def render(cases, inputs, pe, revision, hrefs, entrance=False):
 
 
 def build(engines_path, tyres_path, evidence_path, index_path, pe_path, output, revision=None, hrefs=None,
-          entrance=False, selected=SELECTED):
+          entrance=False, selected=SELECTED, tags_path=TAGS):
     """Read and check every input, then write the page; return the number of questions.
 
     hrefs maps the keys of EVIDENCE to the links the page uses for its inputs; by default they are relative links
-    from `output` to the files read. `selected` is the directory holding the .asm files. entrance=True adds the
-    entrance page to the nav bar, for scripts/build_research.py.
+    from `output` to the files read. `selected` is the directory holding the .asm files and `tags_path` the tag
+    registry (analysis/tags.json). entrance=True adds the entrance page to the nav bar, for
+    scripts/build_research.py.
     """
     selected = Path(selected)
     inputs = {"engines": load_json(engines_path, "Engine database (run scripts/text_database.py first)"),
               "tyres": load_json(tyres_path, "Tyre database (run scripts/text_database.py first)"),
               **{key: disassembly(selected / name) for key, name in ASM.items()}}
     evidence = load_json(evidence_path, "Field evidence")
+    tyre_dossier.check_evidence(evidence)
+    tags = load_json(tags_path, "Tag registry (analysis/tags.json)")
     collections = load_json(index_path, "PCG index")
     pe = load_json(pe_path, "PE metadata")
     check_pe(pe)
     cases = {"indigo": check_indigo(inputs["engines"]),
              "engine_calls": check_engine_call(inputs["engine_loader"], inputs["engine_copy"]),
+             "indigo_evidence": check_indigo_evidence(evidence, inputs, tags),
              "sound": check_sound(inputs["tyres"], evidence, inputs["tyre_loader"]),
              "pcg": check_pcg(collections)}
-    files = {"evidence": Path(evidence_path), "pcg_index": Path(index_path),
+    require_reading(cases["indigo_evidence"])
+    check_engine_fields(inputs["engines"], evidence)
+    files = {"evidence": Path(evidence_path), "pcg_index": Path(index_path), "tags": Path(tags_path),
              **{key: selected / name for key, name in ASM.items()}}
     hrefs = hrefs or {key: relative_href(path.resolve(), output) for key, path in files.items()}
     page = render(cases, inputs, pe, revision or producer_revision(), hrefs, entrance)
@@ -428,12 +631,13 @@ def main():
     parser.add_argument("--index", type=Path, default=PCG_INDEX,
                         help="PCG index written by scripts/index_pcg.py (default: %(default)s)")
     parser.add_argument("--pe", type=Path, default=PE_METADATA, help="fr3.exe identity (default: %(default)s)")
+    parser.add_argument("--tags", type=Path, default=TAGS, help="Tag registry (default: %(default)s)")
     parser.add_argument("--output", type=Path, default=REPO_ROOT / "artifacts/dossier" / PAGE,
                         help="HTML file to write, next to the other dossier pages; keep it out of Git, it holds game "
                              "data (default: %(default)s)")
     args = parser.parse_args()
     try:
-        count = build(args.engines, args.tyres, args.evidence, args.index, args.pe, args.output)
+        count = build(args.engines, args.tyres, args.evidence, args.index, args.pe, args.output, tags_path=args.tags)
     except (ValueError, KeyError, TypeError, AttributeError, OSError) as error:
         raise SystemExit(f"open_questions.py: {error}") from None
     print(f"Wrote {count} open questions to {args.output}")

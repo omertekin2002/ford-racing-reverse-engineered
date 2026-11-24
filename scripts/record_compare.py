@@ -1,13 +1,18 @@
 """Generate the offline "Compare records" research page, compare.html.
 
-It compares the demo's gearboxes, then its engines, field by field. Inputs, all produced elsewhere and only read here:
-  * gearboxes.json and engines.json from scripts/text_database.py: `records`, plus the GEARDATA.DAT or ENGDATA.DAT
-    path and SHA-256, and, for engines, `effective_fields` and `untagged_inherit_consequences`.
-  * GEARDATA.DAT and ENGDATA.DAT themselves, under the extracted game directory, whose SHA-256s must match the JSON.
+It compares the demo's gearboxes, then its engines, then its tyres, field by field. Inputs, all produced elsewhere and
+only read here:
+  * gearboxes.json, engines.json and tyres.json from scripts/text_database.py: `records`, plus the GEARDATA.DAT,
+    ENGDATA.DAT or TYREDATA.DAT path and SHA-256; for engines, `effective_fields` and `untagged_inherit_consequences`;
+    for tyres, `resolved_tables`, `table_provenance` and `effective_scalars`.
+  * GEARDATA.DAT, ENGDATA.DAT and TYREDATA.DAT themselves, under the extracted game directory, whose SHA-256s must
+    match the JSON.
     The page shows each value exactly as written there (0.2 and 0.20 stay distinct), which the parsed numbers in the
     JSON no longer record; each written token must parse to the value the JSON holds.
   * analysis/pe-metadata.json: the executable's identity.
-  * analysis/game-file-manifest.json, whose ENGDATA.DAT SHA-256 says whether ENGDATA.DAT is the demo's.
+  * analysis/game-file-manifest.json, whose ENGDATA.DAT and TYREDATA.DAT SHA-256s say whether those are the demo's.
+  * analysis/annotated/status.json: the labels of the tyre table accessors, which the tyre columns link on
+    routines.html.
 
 The gearbox section has two tables:
   * The matrix: one row per gearbox in GEARDATA.DAT order, one column per tag in GEARBOX_FIELD_STORES in payload
@@ -44,10 +49,12 @@ declarations). It has two tables:
     listed apart. It counts how the inheriting engines get each field (declared, inherited or zero-filled, as
     engines.json resolves it); when ENGDATA.DAT is the demo's by the game-file manifest, those counts must equal
     ENGINE_FIELD_COUNTS.
-A root's colon-less `INHERIT_TYPE <record>` line (the demo's INDIGO) is not applied. Every cell whose value depends on
-it, because the root does not declare the tag or declares it before the line, and every engine whose effective
-origin for a tag runs through such a cell, is labelled unresolved with no value, never zero; for INDIGO's line it
-links questions.html#indigo. Such cells are counted apart in What differs. Engine values are not interpreted either:
+INDIGO's colon-less `INHERIT_TYPE DEFAULT_TRACK` line is applied, as engines.json applies it, on static instruction
+evidence: INDIGO's row is marked as inheriting through that line, and every cell whose INHERIT_TYPE path crosses it
+says so, with the basis label linked to questions.html#indigo. Any other root's colon-less `INHERIT_TYPE <record>`
+line, which engines.json lists as `unresolved`, is not applied. Every cell whose value depends on it, because the
+root does not declare the tag or declares it before the line, and every engine whose effective origin for a tag runs
+through such a cell, is labelled unresolved with no value, never zero. Such cells are counted apart in What differs. Engine values are not interpreted either:
 no units, enum meanings or physics, no value for the derived +0x2c and +0xa4, and TORQUE_MODIFIER is not applied to
 the table. The script refuses to write the page when ENGDATA.DAT does not match engines.json, when an engine
   * declares a tag with no byte-checked store,
@@ -58,24 +65,64 @@ the table. The script refuses to write the page when ENGDATA.DAT does not match 
 when effective_fields or untagged_inherit_consequences differ from what text_database.py derives, and when the
 inheriting engines' counts differ from ENGINE_FIELD_COUNTS as above.
 
+The tyre section shows each tyre's effective scalar values, the declarations the loader ends up storing once
+:INHERIT_TYPE has copied the parent's scalar fields (+0x18 to +0x40), as tyres.json's `effective_scalars` resolve them
+(the root's are its own declarations), and the record each of its five resolved tables is read from, as
+`table_provenance` gives it. It has two tables:
+  * The matrix: one row per tyre in TYREDATA.DAT order; one column per tag in TYRE_SCALAR_STORES in payload offset
+    order, then one per table in RESOLVED_TYRE_TABLES. A scalar cell shows the effective value as written on its source
+    line, linked to that declaration's row on tyres.html (tyre-<source>-line-<n>), marked declared or inherited from
+    <source>, with the INHERIT_TYPE path when it is longer than one step; a zero-filled cell has no value. A table cell
+    names the source record and links the tyre's row for that table on tyres.html (tyre-<name>-<table>), which holds
+    its Why? trail; no table values are shown. Each scalar header shows the tag's offsets and links its row in the
+    tyre page's "Where each field is stored" table (tyre-store-<TAG>); each table header shows the record offset its
+    accessor tests and links the accessor's section on routines.html. Unmapped declarations, and any the scalar copy
+    overwrites, get no column and are listed under the matrix.
+  * What differs: per scalar tag, the distinct effective values grouped by the parsed number, each written form shown,
+    and the tyres that hold each, with zero-filled cells apart; per table, the source records and the tyres that read
+    each. It counts how the inheriting tyres get each scalar (declared, inherited or zero-filled) and how many tyres
+    read each table from each source; when TYREDATA.DAT is the demo's by the game-file manifest, those counts must
+    equal TYRE_SCALAR_COUNTS and TYRE_TABLE_SOURCES.
+Tyre values are declarations as written, not physical quantities: no units, compound meanings or physics, and the
+grip scale the loader applies to the two grip numbers is not applied. The script refuses to write the page when
+TYREDATA.DAT does not match tyres.json, when an inheriting tyre declares a scalar tag with no byte-checked store that
+its effective_scalars entry does not list as unmapped (tyres.json lists none for a root, whose unmapped declarations
+are listed under the matrix all the same), when resolved_tables, table_provenance or effective_scalars differ from what
+text_database.py derives, when a mapped declaration is not one inline number or its written token does not parse to
+the value tyres.json holds, and when the demo counts differ as above.
+
+Given the cars' reverse index (text_database.car_usage(), as scripts/build_research.py passes it), each of the three
+matrices gets a "Used by cars" column after the record name: how many cars name the record directly, front and back
+apart for tyres, 0 for none, each count linked to the record's "Used by cars" block on its page
+(<prefix>-<name>-used-by). Without it, as from the command line, the page has no such column.
+
 It also refuses when an input is missing or malformed as record_dossier.py checks it. The page has inline CSS, no
 JavaScript and no external resources other than the rights-holder notice's two links. It links gearboxes.html,
-engines.html and questions.html, so it belongs beside them.
+engines.html, tyres.html, routines.html and questions.html, so it belongs beside them.
 """
 import argparse
 import hashlib
 from pathlib import Path
 
-from dossier_common import (INDIGO_ANCHOR, QUESTIONS_PAGE, STYLE, anchor, check_fields, check_pe, e, is_indigo_line,
-                            line_anchor, load_json, page_start, producer_revision)
+from dossier_common import (CARS_PAGE, INDIGO_ANCHOR, QUESTIONS_PAGE, ROUTINE_STATUS, STYLE, anchor, basis_html,
+                            car_tags, check_car_users, check_fields, check_pe, e, is_indigo_line, line_anchor,
+                            load_json, page_start, producer_revision, routine_label, routine_labels, routine_link,
+                            used_by_anchor)
 from record_dossier import (DATABASES, TORQUE, check_engine_fields, check_records, engine_store_anchor, engine_tags,
                             gearbox_tags, store_anchor)
-from text_database import (ENGINE_FIELD_COUNTS, ENGINE_FIELD_STORES, GEARBOX_FIELD_STORES, REPO_ROOT, ZERO_FILLED,
-                           described, engine_field_counts, lines_of, own_origin, require, value, zero_origin)
+from text_database import (ENGINE_FIELD_COUNTS, ENGINE_FIELD_STORES, GEARBOX_FIELD_STORES, REPO_ROOT,
+                           RESOLVED_TYRE_TABLES, TYRE_SCALAR_COUNTS, TYRE_SCALAR_STORES, TYRE_TABLE_ACCESSORS,
+                           TYRE_TABLE_SOURCES, ZERO_FILLED, check_effective_scalars, described, effective_scalars,
+                           engine_field_counts, lines_of, own_origin, require, resolve_tyre_tables, scalar_counts,
+                           scalar_tags, table_sources, tyre_table_provenance, value, zero_origin)
+import tyre_dossier
 
 PAGE = "compare.html"
 GEARBOX_PAGE = DATABASES["gearboxes"]["page"]
 ENGINE_PAGE = DATABASES["engines"]["page"]
+TYRE_PAGE = tyre_dossier.PAGE
+# The demo's counts the tyre section checks: the inheriting tyres' scalar statuses and every tyre's table sources.
+TYRE_COUNTS = {"scalars": TYRE_SCALAR_COUNTS, "tables": TYRE_TABLE_SOURCES}
 # The committed list of the demo's game files and their SHA-256s; it identifies the demo's ENGDATA.DAT, whose
 # effective field counts ENGINE_FIELD_COUNTS records.
 GAME_MANIFEST = REPO_ROOT / "analysis/game-file-manifest.json"
@@ -85,11 +132,13 @@ FLOAT_KINDS = frozenset({"float", "float_to_byte"})
 READ_TEXT = {"float": "float", "enum": "enum word", "float_to_byte": "float stored as an integer's low byte"}
 # Only the matrices scroll sideways, inside .wide: elsewhere long words (the SHA-256s, record names in lists) may break,
 # and narrow screens get tighter padding, so that the page fits a phone's width. The engine matrix's cells wrap their
-# provenance notes.
+# provenance notes, and so do the tyre matrix's.
 EXTRA_STYLE = (".wide { overflow-x: auto; }\ntable.matrix td { white-space: nowrap; }\n"
                "table.matrix th small { font-weight: normal; }\n"
                "dd code, table:not(.matrix) li { overflow-wrap: anywhere; }\n"
                "table.matrix.engines td { white-space: normal; min-width: 9em; }\n"
+               "table.matrix.tyres td { white-space: normal; min-width: 9em; }\n"
+               "table.tyre-differences td { overflow-wrap: anywhere; }\n"
                "@media (max-width: 40em) { body { padding: 0 0.5em; } th, td { padding: 0.2em 0.3em; } "
                "td ul { padding-left: 1.2em; } }\n")
 SCOPE = ('Scope: values are shown exactly as declared in <code>GEARDATA.DAT</code>, and linked to their declaration '
@@ -104,9 +153,54 @@ ENGINE_SCOPE = ("Scope: each engine's values are its effective ones, the declara
                 "<code>ENGDATA.DAT</code> on the line that declares it, and linked to that line's row on the engine "
                 "page. This page claims no units, no meaning for the enum words and no physics. It computes no value "
                 "for the derived <code>+ 0x2c</code> and <code>+ 0xa4</code>, and does not apply "
-                "<code>TORQUE_MODIFIER</code> to the torque table. A root's colon-less <code>INHERIT_TYPE</code> line, "
-                "such as <code>INDIGO</code>'s, is not applied: every field that depends on whether the game honours "
-                "it is labelled unresolved and given no value, never zero.")
+                "<code>TORQUE_MODIFIER</code> to the torque table. <code>INDIGO</code>'s colon-less "
+                "<code>INHERIT_TYPE DEFAULT_TRACK</code> line is applied as inheritance on static instruction evidence "
+                f'(<a href="{QUESTIONS_PAGE}#{INDIGO_ANCHOR}">open question</a>): the tag reader gives it the same tag '
+                "as <code>:INHERIT_TYPE</code>. Nothing has been run to confirm it, so every value that comes through "
+                "that line is marked with its basis. Any other root's colon-less <code>INHERIT_TYPE</code> line is "
+                "not applied: every field that depends on whether the game honours it is labelled unresolved and "
+                "given no value, never zero.")
+TYRE_SCOPE = ("Scope: each tyre's scalar values are its effective ones, the declarations the loader ends up storing "
+              "once each <code>:INHERIT_TYPE</code> has copied the parent's scalar fields over the record, as "
+              "<code>scripts/text_database.py</code> resolves them. Each is shown exactly as written in "
+              "<code>TYREDATA.DAT</code> on the line that declares it, and linked to that line's row on the tyre page. "
+              "Values are declarations as written, not physical quantities: this page claims no units, no meaning for "
+              "the compounds and no physics. The loader multiplies the two grip numbers "
+              "(<code>ROAD_MAGIC_GRIP_NUMBER</code> and <code>OFFROAD_MAGIC_GRIP_NUMBER</code>) by the global float at "
+              "<code>0x00597484</code> when it stores them; that scale is not applied here. Each table cell names only "
+              "the record whose table the game reads; the table's contents are on the tyre page.")
+
+
+# The word each tyre reference tag's count is labelled with in the tyre matrix's "Used by cars" column.
+TYRE_ROLES = {"CAR_FRONT_TYRE_TYPE": "front", "CAR_BACK_TYRE_TYPE": "back"}
+
+
+def used_by_header(database):
+    """The "Used by cars" column header: the tag it counts, or front and back for the tyres."""
+    tags = car_tags(database)
+    detail = ", ".join(TYRE_ROLES[tag] for tag in tags) if len(tags) > 1 else f"<code>{e(tags[0])}</code>"
+    return f"<th>Used by cars<br><small>{detail}</small></th>"
+
+
+def used_by_cell(page, prefix, name, users, database):
+    """How many cars name record `name`, per tag, each count linked to the record's "Used by cars" block on `page`;
+    0 for a record no car names."""
+    href = f'{e(page)}#{e(used_by_anchor(prefix, name))}'
+    counts = [(tag, sum(user_tag == tag for _, user_tag, _ in users.get(name, []))) for tag in car_tags(database)]
+    if len(counts) == 1:
+        return f'<td class="num"><a href="{href}">{counts[0][1]}</a></td>'
+    return "<td>" + "<br>".join(f'{TYRE_ROLES[tag]} <a href="{href}">{count}</a>' for tag, count in counts) + "</td>"
+
+
+def used_by_note(database, noun, page):
+    """The sentence under a section's matrix intro that says what its "Used by cars" column counts."""
+    tags = " and ".join(f"<code>{e(tag)}</code>" for tag in car_tags(database))
+    split = ", front and back counted apart" if len(car_tags(database)) > 1 else ""
+    return (f'<p>The "Used by cars" column counts the cars in <code>CARDATA.DAT</code> whose {tags} names the {noun} '
+            f"directly{split}, and links to the list of them in the {noun}'s section on "
+            f'<a href="{e(page)}">the {noun} page</a>, each car linked to the <a href="{CARS_PAGE}">cars page</a>. A '
+            f"{noun} no car names counts 0, even when other records inherit from it: inheritance is not counted as "
+            "use.</p>")
 
 
 def is_float(tag):
@@ -191,8 +285,9 @@ def column_header(tag):
             "</small></th>")
 
 
-def matrix(gearboxes):
-    header = "<tr><th>Gearbox</th>" + "".join(column_header(tag) for tag in gearbox_tags()) + "</tr>"
+def matrix(gearboxes, users=None):
+    header = ("<tr><th>Gearbox</th>" + ("" if users is None else used_by_header("gearboxes"))
+              + "".join(column_header(tag) for tag in gearbox_tags()) + "</tr>")
     rows = []
     for gearbox in gearboxes:
         name = gearbox["name"]
@@ -200,8 +295,9 @@ def matrix(gearboxes):
             f'<td class="num"><a href="{e(GEARBOX_PAGE)}#{e(line_anchor("gearbox", name, cell["line"]))}" '
             f'title="{e(name)} line {e(cell["line"])}">{e(cell["written"])}</a></td>'
             for cell in (gearbox["cells"][tag] for tag in gearbox_tags()))
+        used = "" if users is None else used_by_cell(GEARBOX_PAGE, "gearbox", name, users, "gearboxes")
         rows.append(f'<tr id="{e(row_anchor(name))}"><td><a href="{e(GEARBOX_PAGE)}#{e(anchor("gearbox", name))}">'
-                    f"{e(name)}</a></td>{cells}</tr>")
+                    f"{e(name)}</a></td>{used}{cells}</tr>")
     return f'<div class="wide"><table class="matrix">{header}{"".join(rows)}</table></div>'
 
 
@@ -233,10 +329,7 @@ def is_enum(tag):
 def demo_engine_counts(database, manifest_path=GAME_MANIFEST):
     """ENGINE_FIELD_COUNTS when engines.json was parsed from the demo's ENGDATA.DAT, by the SHA-256 the committed
     game-file manifest records for its path; None for any other file, whose counts nothing records."""
-    manifest = load_json(manifest_path, "Game file manifest (analysis/game-file-manifest.json)")
-    require(isinstance(manifest, list), "game-file-manifest.json must be a list")
-    recorded = {item.get("path"): item.get("sha256") for item in manifest if isinstance(item, dict)}
-    return ENGINE_FIELD_COUNTS if recorded.get(database["source"]) == database["sha256"] else None
+    return ENGINE_FIELD_COUNTS if is_demo(database, manifest_path) else None
 
 
 def written_value(database, where, tag, field, lines):
@@ -294,7 +387,7 @@ def unresolved_root(origin, tag, consequences):
     """
     root = origin["path"][-1]
     consequence = consequences.get(root)
-    if consequence is None:
+    if consequence is None or consequence["status"] == "applied":
         return None
     overwritten = {item["tag"] for item in consequence["overwritten_if_applied"]}
     return root if origin["status"] == ZERO_FILLED or tag in overwritten else None
@@ -306,12 +399,25 @@ def unresolved_cell(root, consequences):
             "question": is_indigo_line({"type": root}, consequence)}
 
 
-def engine_cell(tag, field, written, consequences):
-    """One matrix cell from an effective (or root) field: its status, provenance and value as written."""
+def applied_hops(path, applied):
+    """The applied colon-less INHERIT_TYPE lines an origin's path crosses, as their records' `inherit_type` entries.
+
+    Every record in the path but the last copied the value from the next one through its INHERIT_TYPE.
+    """
+    return [{"record": hop, **applied[hop]} for hop in path[:-1] if hop in applied]
+
+
+def engine_cell(tag, field, written, consequences, applied=None):
+    """One matrix cell from an effective (or root) field: its status, provenance and value as written.
+
+    `applied` maps each record whose INHERIT_TYPE is an applied colon-less line to its `inherit_type` entry; a cell
+    whose path crosses one lists it under `applied`.
+    """
     root = unresolved_root(field, tag, consequences)
     if root is not None:
         return {**unresolved_cell(root, consequences), "effective_status": field["status"]}
-    cell = {"status": field["status"], "effective_status": field["status"], "path": field["path"]}
+    cell = {"status": field["status"], "effective_status": field["status"], "path": field["path"],
+            "applied": applied_hops(field["path"], applied or {})}
     if field["status"] == ZERO_FILLED:
         return cell
     cell.update(source=field["source"], source_line=field["source_line"])
@@ -368,12 +474,15 @@ def check_engines(database, data, expected_counts=None):
         differ += [f"{tag} {counts[tag]}, not recorded" for tag in counts if tag not in expected_counts]
         require(not differ, "The inheriting engines' effective field counts differ from ENGINE_FIELD_COUNTS: "
                 + "; ".join(differ))
+    applied = {name: entry["inherit_type"] for name, entry in effective.items() if not entry["inherit_type"]["colon"]}
     engines = []
     for record in records:
         name = record["type"]
         fields = effective[name]["fields"] if name in effective else root_fields(record)
         engines.append({"name": name, "line": record["line"], "root": name not in effective,
-                        "cells": {tag: engine_cell(tag, fields[tag], written, consequences) for tag in engine_tags()}})
+                        "applied": applied.get(name),
+                        "cells": {tag: engine_cell(tag, fields[tag], written, consequences, applied)
+                                  for tag in engine_tags()}})
     return engines
 
 
@@ -426,14 +535,21 @@ def unresolved_html(cell):
     return f'{label}<br><small>no value; depends on {engine_line_link(cell["root"], cell["root_line"])}</small>'
 
 
+def applied_html(hops):
+    """The applied colon-less lines a value came through, each with its basis label linked to its question."""
+    return "".join(f'; through {engine_line_link(hop["record"], hop["line"], f"{hop["record"]} line {hop["line"]}")} '
+                   f'(no colon), {basis_html(hop["basis"])}' for hop in hops)
+
+
 def provenance_html(cell):
-    """Declared, or inherited from the source record, with the INHERIT_TYPE path when it has more than one step."""
+    """Declared, or inherited from the source record, with the INHERIT_TYPE path when it has more than one step and
+    each applied colon-less line it crosses."""
     if cell["status"] == "declared":
         return "declared"
     text = f'inherited from <a href="#{e(engine_row_anchor(cell["source"]))}">{e(cell["source"])}</a>'
     if len(cell["path"]) > 2:
         text += ", path " + " &rarr; ".join(e(hop) for hop in cell["path"])
-    return text
+    return text + applied_html(cell.get("applied", []))
 
 
 def max_rpm_html(rpm):
@@ -455,7 +571,8 @@ def engine_cell_html(engine, tag, cell):
         return f"<td>{unresolved_html(cell)}</td>"
     if cell["status"] == ZERO_FILLED:
         path = (", path " + " &rarr; ".join(e(hop) for hop in cell["path"])) if len(cell["path"]) > 1 else ""
-        return f'<td><span class="label">zero-filled</span><br><small>no value{path}</small></td>'
+        return (f'<td><span class="label">zero-filled</span><br><small>no value{path}'
+                f'{applied_html(cell.get("applied", []))}</small></td>')
     if tag == TORQUE:
         rows = f'{cell["rows"]} row{"" if cell["rows"] == 1 else "s"}'
         if not engine["root"]:
@@ -476,15 +593,21 @@ def engine_column_header(tag):
             f"<small>{where}<br>{kind}</small></th>")
 
 
-def engine_matrix(engines):
-    header = "<tr><th>Engine</th>" + "".join(engine_column_header(tag) for tag in engine_tags()) + "</tr>"
+def engine_matrix(engines, users=None):
+    header = ("<tr><th>Engine</th>" + ("" if users is None else used_by_header("engines"))
+              + "".join(engine_column_header(tag) for tag in engine_tags()) + "</tr>")
     rows = []
     for engine in engines:
         name = engine["name"]
         cells = "".join(engine_cell_html(engine, tag, engine["cells"][tag]) for tag in engine_tags())
         kind = "root" if engine["root"] else "inherits"
+        if engine.get("applied"):
+            hop = engine["applied"]
+            kind += (f' {e(hop["parent"])} through colon-less '
+                     f'{engine_line_link(name, hop["line"], f"line {hop["line"]}")}, {basis_html(hop["basis"])}')
+        used = "" if users is None else used_by_cell(ENGINE_PAGE, "engine", name, users, "engines")
         rows.append(f'<tr id="{e(engine_row_anchor(name))}"><td><a href="{e(ENGINE_PAGE)}#{e(anchor("engine", name))}">'
-                    f"{e(name)}</a><br><small>{kind}</small></td>{cells}</tr>")
+                    f"{e(name)}</a><br><small>{kind}</small></td>{used}{cells}</tr>")
     return f'<div class="wide"><table class="matrix engines">{header}{"".join(rows)}</table></div>'
 
 
@@ -524,13 +647,13 @@ def engine_differences_table(engines):
                       else "0")
         # A long tag may break after an underscore, so that the table fits a phone's width.
         rows.append(f'<tr id="{e(anchor("differs-engine", tag))}"><td><code>{e(tag).replace("_", "_<wbr>")}</code></td>'
-                    f"<td>{len(groups)}, {kind}</td><td>{values}</td><td>{len(inheriting)} inheriting, as parsed: {counts}"
+                    f"<td>{len(groups)}, {kind}</td><td>{values}</td><td>{len(inheriting)} inheriting: {counts}"
                     f"<br>unresolved: {unresolved}</td></tr>")
     return ("<table><tr><th>Tag</th><th>Distinct values</th><th>Values as written (engine count): engines</th>"
             f'<th>Counts</th></tr>{"".join(rows)}</table>')
 
 
-def engines_section(engines, counts_checked):
+def engines_section(engines, counts_checked, users=None):
     total = len(engines)
     inheriting = sum(not engine["root"] for engine in engines)
     if counts_checked:
@@ -552,21 +675,350 @@ def engines_section(engines, counts_checked):
         "record and line that declare the table, its row count and the <code>MAX_RPM</code> declaration it was parsed "
         "with, and links the engine's effective <code>TORQUE_ARRAY</code> row. Each column header links to that "
         "field's row in the engine page's \"Where each field is stored\" table, with the byte-checked compare and "
-        "store sites.</p>",
-        engine_matrix(engines),
+        "store sites.</p>" + ("" if users is None else used_by_note("engines", "engine", ENGINE_PAGE)),
+        engine_matrix(engines, users),
         f'<h3 id="engine-differences">What differs</h3><p>For each field, how many distinct effective values the {total} '
         "engines hold, and which engines hold each. Numbers are grouped by the number, so two spellings of one number "
         "are one value, with each spelling shown; enum words are grouped exactly as written, and torque tables by the "
         "record and line that declare them. Unresolved cells have no value and are counted apart, not as zero. The "
-        f"last column counts how the {inheriting} inheriting engines get each field as parsed, with the colon-less "
-        "lines not applied, and then the unresolved cells. "
+        f"last column counts how the {inheriting} inheriting engines get each field, <code>INDIGO</code>'s "
+        "colon-less line applied on static instruction evidence and any other colon-less line not applied, and then "
+        "the unresolved cells. "
         f"{check}</p>",
         engine_differences_table(engines)])
 
 
-def render(database, gearboxes, pe, revision, entrance=False, engine_database=None, engines=(), counts_checked=False):
-    """Return the page. check_gearboxes() must have accepted the inputs and returned `gearboxes`, and check_engines()
-    `engine_database` and `engines`; counts_checked says whether it checked them against ENGINE_FIELD_COUNTS."""
+def is_demo(database, manifest_path=GAME_MANIFEST):
+    """True when `database` was parsed from the demo's file, by the SHA-256 the committed game-file manifest records
+    for its path."""
+    manifest = load_json(manifest_path, "Game file manifest (analysis/game-file-manifest.json)")
+    require(isinstance(manifest, list), "game-file-manifest.json must be a list")
+    recorded = {item.get("path"): item.get("sha256") for item in manifest if isinstance(item, dict)}
+    return recorded.get(database["source"]) == database["sha256"]
+
+
+def demo_tyre_counts(database, manifest_path=GAME_MANIFEST):
+    """TYRE_COUNTS when tyres.json was parsed from the demo's TYREDATA.DAT, else None: nothing records another
+    file's counts."""
+    return TYRE_COUNTS if is_demo(database, manifest_path) else None
+
+
+def tyre_written(database, where, tag, field, lines):
+    """Check one mapped tyre scalar declaration against its line in TYREDATA.DAT; return its token as written."""
+    line = field["line"]
+    require(not field["rows"] and len(field["values"]) == 1, f"{where}: :{tag} on line {line} is not a single inline value")
+    declared = field["values"][0]
+    require(isinstance(declared, (int, float)) and not isinstance(declared, bool),
+            f"{where}: :{tag} on line {line} is stored as a float, but {declared!r} is not a number")
+    tokens = lines.get(line, [])
+    require(len(tokens) == 2 and tokens[0] == f":{tag}",
+            f"{where}: line {line} of {database['source']} is not ':{tag} <value>' (rerun scripts/text_database.py)")
+    parsed = value(tokens[1], line)
+    require(type(parsed) is type(declared) and parsed == declared,
+            f"{where}: line {line} of {database['source']} declares {tokens[1]!r}, but tyres.json holds "
+            f"{declared!r} (rerun scripts/text_database.py)")
+    return tokens[1]
+
+
+def root_scalars(record):
+    """A root tyre's mapped scalar fields, shaped like tyres.json's effective_scalars entries: its own declaration,
+    or the zero fill."""
+    name, fields = record["type"], record["fields"]
+    result = {}
+    for tag in TYRE_SCALAR_STORES:
+        field = fields.get(tag)
+        result[tag] = ({"status": "declared", "values": field["values"], "source": name, "source_line": field["line"],
+                        "path": [name]} if field is not None else {"status": ZERO_FILLED, "path": [name]})
+    return result
+
+
+def count_problems(label, counts, expected):
+    differ = [f"{key} {counts.get(key, {})}, not {want}" for key, want in expected.items() if counts.get(key) != want]
+    differ += [f"{key} {counts[key]}, not recorded" for key in counts if key not in expected]
+    require(not differ, f"{label}: " + "; ".join(differ))
+
+
+def check_tyres(database, data, expected_counts=None):
+    """Check tyres.json against TYREDATA.DAT's bytes; return {"tyres", "unmapped", "overwritten"} for the page.
+
+    Each tyre is {"name", "line", "root", "scalars": {tag: cell}, "tables": {table: provenance entry}}, in file order,
+    with a cell for every mapped scalar tag and every resolved table. `unmapped` and `overwritten` list the
+    declarations that get no column: {"name", "tag", "line"}. expected_counts, when given, is {"scalars", "tables"}:
+    the inheriting tyres' scalar status counts and every tyre's table source counts must equal them.
+    """
+    tyre_dossier.check_input_shapes(database)
+    records = database["records"]
+    names = [record["type"] for record in records]
+    require(names, "tyres.json has no records")
+    require(len(set(names)) == len(names), "tyres.json has duplicate record names")
+    require(hashlib.sha256(data).hexdigest() == database["sha256"],
+            f"{database['source']} does not match tyres.json's SHA-256 (rerun scripts/text_database.py)")
+    effective = database["effective_scalars"]
+    lines = dict(lines_of(data))
+    written, unmapped, overwritten = {}, [], []
+    for record in records:
+        name = record["type"]
+        where = f"tyre {name!r} (line {record['line']})"
+        entry = effective.get(name)
+        listed = {(item["tag"], item["line"]) for item in entry["unmapped"]} if entry else set()
+        for tag, field in scalar_tags(record):
+            if tag in TYRE_SCALAR_STORES:
+                written[name, tag] = tyre_written(database, where, tag, field, lines)
+                continue
+            # tyres.json lists unmapped declarations only for inheriting tyres; a root's are its own, uncopied.
+            require(entry is None or (tag, field["line"]) in listed,
+                    f"{where} declares :{tag} on line {field['line']}, which has no byte-checked store, and tyres.json "
+                    "does not list it as unmapped (rerun scripts/text_database.py)")
+            unmapped.append({"name": name, "tag": tag, "line": field["line"]})
+        if entry:
+            overwritten += [{"name": name, "tag": item["tag"], "line": item["line"]} for item in entry["overwritten"]]
+    require(database["resolved_tables"] == resolve_tyre_tables(records),
+            "tyres.json resolved_tables disagrees with INHERIT_TYPE resolved by scripts/text_database.py (rerun it)")
+    require(database["table_provenance"] == tyre_table_provenance(records),
+            "tyres.json table_provenance disagrees with what scripts/text_database.py derives (rerun it)")
+    require(effective == effective_scalars(records),
+            "tyres.json effective_scalars disagrees with the record declarations (rerun scripts/text_database.py)")
+    check_effective_scalars(records, effective)
+    if expected_counts is not None:
+        count_problems("The inheriting tyres' effective scalar counts differ from TYRE_SCALAR_COUNTS",
+                       scalar_counts(effective), expected_counts["scalars"])
+        count_problems("The tyres' table source counts differ from TYRE_TABLE_SOURCES",
+                       table_sources(database["resolved_tables"]), expected_counts["tables"])
+    tyres = []
+    for record in records:
+        name = record["type"]
+        fields = effective[name]["fields"] if name in effective else root_scalars(record)
+        scalars = {}
+        for tag in tyre_dossier.tyre_tags():
+            field = fields[tag]
+            cell = {"status": field["status"], "path": field["path"]}
+            if field["status"] != ZERO_FILLED:
+                cell.update(source=field["source"], source_line=field["source_line"],
+                            written=written[field["source"], tag], value=field["values"][0])
+            scalars[tag] = cell
+        tyres.append({"name": name, "line": record["line"], "root": name not in effective, "scalars": scalars,
+                      "tables": database["table_provenance"][name]})
+    return {"tyres": tyres, "unmapped": unmapped, "overwritten": overwritten}
+
+
+def tyre_differences(tyres):
+    """{"scalars": {tag: {"groups", "zero_filled"}}, "tables": {table: [{"source", "source_line", "tyres"}]}}.
+
+    Scalar groups are {"forms", "tyres"}, grouped by the parsed number and in number order, each written form once in
+    file order; zero-filled cells have no value and are listed apart. Table groups are by source record, in file order
+    of the source. Tyre lists are in file order.
+    """
+    order = {tyre["name"]: i for i, tyre in enumerate(tyres)}
+    scalars = {}
+    for tag in tyre_dossier.tyre_tags():
+        groups, zero = {}, []
+        for tyre in tyres:
+            cell = tyre["scalars"][tag]
+            if cell["status"] == ZERO_FILLED:
+                zero.append(tyre["name"])
+                continue
+            group = groups.setdefault(float(cell["value"]), {"forms": [], "tyres": []})
+            if cell["written"] not in group["forms"]:
+                group["forms"].append(cell["written"])
+            group["tyres"].append(tyre["name"])
+        scalars[tag] = {"groups": [groups[key] for key in sorted(groups)], "zero_filled": zero}
+    tables = {}
+    for table in RESOLVED_TYRE_TABLES:
+        groups = {}
+        for tyre in tyres:
+            entry = tyre["tables"][table]
+            group = groups.setdefault(entry["source"], {"source": entry["source"], "source_line": entry["source_line"],
+                                                        "tyres": []})
+            group["tyres"].append(tyre["name"])
+        tables[table] = [groups[source] for source in sorted(groups, key=order.__getitem__)]
+    return {"scalars": scalars, "tables": tables}
+
+
+def tyre_row_anchor(name):
+    return anchor("compare-tyre", name)
+
+
+def tyre_links(names):
+    return ", ".join(f'<a href="#{e(tyre_row_anchor(name))}">{e(name)}</a>' for name in names)
+
+
+def tyre_line_link(name, line, text=None):
+    return (f'<a href="{e(TYRE_PAGE)}#{e(line_anchor("tyre", name, line))}" title="{e(name)} line {e(line)}">'
+            f'{e(text if text is not None else f"{name} line {line}")}</a>')
+
+
+def tyre_source_link(table, group):
+    """A table's source record, linked to the source's own row for the table on the tyre page, with the line that
+    declares it."""
+    source = group["source"]
+    return (f'<a href="{e(TYRE_PAGE)}#{e(tyre_dossier.anchor(source, table))}" title="{e(source)} line '
+            f'{e(group["source_line"])}">{e(source)}</a> line {e(group["source_line"])}')
+
+
+def tyre_path_html(path):
+    """The INHERIT_TYPE path, when it has more than one step."""
+    return (", path " + " &rarr; ".join(e(hop) for hop in path)) if len(path) > 2 else ""
+
+
+def tyre_scalar_html(cell):
+    if cell["status"] == ZERO_FILLED:
+        path = (", path " + " &rarr; ".join(e(hop) for hop in cell["path"])) if len(cell["path"]) > 1 else ""
+        return f'<td><span class="label">{e(ZERO_FILLED)}</span><br><small>no value{path}</small></td>'
+    if cell["status"] == "declared":
+        note = "declared"
+    else:
+        note = (f'inherited from <a href="#{e(tyre_row_anchor(cell["source"]))}">{e(cell["source"])}</a>'
+                + tyre_path_html(cell["path"]))
+    return (f'<td><span class="num">{tyre_line_link(cell["source"], cell["source_line"], cell["written"])}</span>'
+            f"<br><small>{note}</small></td>")
+
+
+def tyre_table_html(name, table, entry):
+    """A table cell: the source record, linked to this tyre's row for the table on the tyre page (its Why? trail)."""
+    note = "own table" if entry["source"] == name else "inherited" + tyre_path_html(entry["path"])
+    return (f'<td><a href="{e(TYRE_PAGE)}#{e(tyre_dossier.anchor(name, table))}" title="{e(name)} '
+            f'{e(tyre_dossier.TABLE_LABELS[table])}">{e(entry["source"])}</a><br><small>{note}</small></td>')
+
+
+def tyre_scalar_header(tag):
+    entry = TYRE_SCALAR_STORES[tag]
+    offsets = ", ".join(f"<code>+ {e(offset)}</code>" for offset in entry["offsets"])
+    kind = "float, scaled when stored" if "scaled_by" in entry else "float"
+    return (f'<th><a href="{e(TYRE_PAGE)}#{e(tyre_dossier.store_anchor(tag))}"><code>{e(tag)}</code></a><br>'
+            f"<small>{offsets}<br>{kind}</small></th>")
+
+
+def tyre_table_header(table, accessors):
+    entry = TYRE_TABLE_ACCESSORS[table]
+    return (f"<th><code>{e(table)}</code><br><small>record <code>+ {e(entry['record_offset'])}</code><br>accessor "
+            f"{routine_link(accessors[table], entry['accessor'])}</small></th>")
+
+
+def tyre_matrix(tyres, accessors, users=None):
+    header = ("<tr><th>Tyre</th>" + ("" if users is None else used_by_header("tyres"))
+              + "".join(tyre_scalar_header(tag) for tag in tyre_dossier.tyre_tags())
+              + "".join(tyre_table_header(table, accessors) for table in RESOLVED_TYRE_TABLES) + "</tr>")
+    rows = []
+    for tyre in tyres:
+        name = tyre["name"]
+        cells = ("".join(tyre_scalar_html(tyre["scalars"][tag]) for tag in tyre_dossier.tyre_tags())
+                 + "".join(tyre_table_html(name, table, tyre["tables"][table]) for table in RESOLVED_TYRE_TABLES))
+        kind = "root" if tyre["root"] else "inherits"
+        used = "" if users is None else used_by_cell(TYRE_PAGE, "tyre", name, users, "tyres")
+        rows.append(f'<tr id="{e(tyre_row_anchor(name))}"><td><a href="{e(TYRE_PAGE)}#{e(tyre_dossier.anchor(name))}">'
+                    f"{e(name)}</a><br><small>{kind}</small></td>{used}{cells}</tr>")
+    return f'<div class="wide"><table class="matrix tyres">{header}{"".join(rows)}</table></div>'
+
+
+def no_column_html(checked):
+    """The declarations that get no column: unmapped tags, and declarations the INHERIT_TYPE copy overwrites."""
+    parts = []
+    if checked["unmapped"]:
+        items = ", ".join(f'{tyre_line_link(item["name"], item["line"])} (<code>:{e(item["tag"])}</code>)'
+                          for item in checked["unmapped"])
+        parts.append(f'<div class="unresolved" id="tyre-unmapped"><p><span class="label">unmapped</span>: no '
+                     f"byte-checked store is known for {items}, so these get no column and no value.</p></div>")
+    if checked["overwritten"]:
+        items = ", ".join(f'{tyre_line_link(item["name"], item["line"])} (<code>:{e(item["tag"])}</code>)'
+                          for item in checked["overwritten"])
+        parts.append(f"<p>Declared before <code>INHERIT_TYPE</code> and overwritten by the scalar copy, so shown in no "
+                     f"cell: {items}.</p>")
+    return "".join(parts)
+
+
+def tyre_differences_table(tyres):
+    total = len(tyres)
+    inheriting = [tyre for tyre in tyres if not tyre["root"]]
+    found = tyre_differences(tyres)
+    rows = []
+    for tag, entry in found["scalars"].items():
+        groups = entry["groups"]
+        shown = [", ".join(f"<code>{e(form)}</code>" for form in group["forms"])
+                 + f' ({len(group["tyres"])}): {tyre_links(group["tyres"])}' for group in groups]
+        if entry["zero_filled"]:
+            shown.append(f'<span class="label">{e(ZERO_FILLED)}</span>, no value ({len(entry["zero_filled"])}): '
+                         f'{tyre_links(entry["zero_filled"])}')
+        if len(groups) == 1 and not entry["zero_filled"]:
+            values = (f'<span class="label">same in all {total}</span>: '
+                      + ", ".join(f"<code>{e(form)}</code>" for form in groups[0]["forms"]))
+        else:
+            values = "<ul>" + "".join(f"<li>{item}</li>" for item in shown) + "</ul>"
+        statuses = {}
+        for tyre in inheriting:
+            status = tyre["scalars"][tag]["status"]
+            statuses[status] = statuses.get(status, 0) + 1
+        counts = ", ".join(f"{statuses[status]} {'zero-filled' if status == ZERO_FILLED else status}"
+                           for status in ("declared", "inherited", ZERO_FILLED) if status in statuses)
+        rows.append(f'<tr id="{e(anchor("differs-tyre", tag))}"><td><code>{e(tag).replace("_", "_<wbr>")}</code></td>'
+                    f"<td>{len(groups)}, by number</td><td>{values}</td><td>{len(inheriting)} inheriting: {counts}"
+                    "</td></tr>")
+    for table, groups in found["tables"].items():
+        sources = [tyre_source_link(table, group) for group in groups]
+        shown = [f'{source} ({len(group["tyres"])}): {tyre_links(group["tyres"])}'
+                 for source, group in zip(sources, groups, strict=True)]
+        if len(groups) == 1:
+            values = f'<span class="label">same in all {total}</span>: {sources[0]}'
+        else:
+            values = "<ul>" + "".join(f"<li>{item}</li>" for item in shown) + "</ul>"
+        counts = ", ".join(f'{len(group["tyres"])} {e(group["source"])}' for group in groups)
+        rows.append(f'<tr id="{e(anchor("differs-tyre", table))}"><td><code>{e(table).replace("_", "_<wbr>")}</code>'
+                    f"</td><td>{len(groups)}, by source record</td><td>{values}</td><td>all {total}: {counts}</td></tr>")
+    return ('<table class="tyre-differences"><tr><th>Field or table</th><th>Distinct values</th><th>Values as written '
+            "(tyre count): tyres</th>"
+            f'<th>Counts</th></tr>{"".join(rows)}</table>')
+
+
+def tyres_section(checked, accessors, counts_checked, users=None):
+    tyres = checked["tyres"]
+    total = len(tyres)
+    inheriting = sum(not tyre["root"] for tyre in tyres)
+    if counts_checked:
+        check = ("For the demo's <code>TYREDATA.DAT</code> the inheriting tyres' declared and inherited counts are the "
+                 "ones <code>scripts/text_database.py</code> records in <code>TYRE_SCALAR_COUNTS</code>, and the table "
+                 "source counts the ones in <code>TYRE_TABLE_SOURCES</code>; the page is not written when they differ.")
+    else:
+        check = ("This <code>TYREDATA.DAT</code> is not the demo's, so these counts are not checked against "
+                 "<code>TYRE_SCALAR_COUNTS</code> or <code>TYRE_TABLE_SOURCES</code>.")
+    return "\n".join(part for part in [
+        '<h2 id="tyres">Tyres</h2>',
+        f'<p class="scope">{TYRE_SCOPE}</p>',
+        f'<h3 id="tyre-matrix">Every tyre, field by field</h3><p>One row per tyre, in <code>TYREDATA.DAT</code> order: '
+        f"{total - inheriting} root{'' if total - inheriting == 1 else 's'}, which declare{'s' if total - inheriting == 1 else ''} "
+        f"{'its' if total - inheriting == 1 else 'their'} own values, and {inheriting} tyres that inherit. One column per "
+        "scalar field the loader stores, in payload offset order, then one per table the game reads through an "
+        "<code>INHERIT_TYPE</code>-following accessor. Each scalar value is the effective one, as written on the line "
+        f'that declares it and linked to that line\'s row on <a href="{e(TYRE_PAGE)}">the tyre page</a>; it is marked '
+        "declared (the tyre's own line) or inherited from the record that declares it, with the "
+        "<code>INHERIT_TYPE</code> path when that is more than one step. Each table cell names the record whose table "
+        "the game reads and links this tyre's row for that table on the tyre page, with its Why? trail. Each scalar "
+        "column header links to that field's row in the tyre page's \"Where each field is stored\" table; each table "
+        "column header gives the record offset its accessor tests and links the accessor on the routines page.</p>"
+        + ("" if users is None else used_by_note("tyres", "tyre", TYRE_PAGE)),
+        tyre_matrix(tyres, accessors, users),
+        no_column_html(checked),
+        f'<h3 id="tyre-differences">What differs</h3><p>For each scalar field, how many distinct effective values the '
+        f"{total} tyres hold, and which tyres hold each, grouped by the number, so two spellings of one number (such as "
+        "<code>1</code> and <code>1.0</code>) are one value, with each spelling shown; zero-filled cells have no value "
+        "and are listed apart. For each table, which record the tyres read it from. The last column counts how the "
+        f"{inheriting} inheriting tyres get each scalar field, and how many tyres read each table from each source. "
+        f"{check}</p>",
+        tyre_differences_table(tyres)] if part)
+
+
+def tyre_accessor_labels(labels):
+    """{table: the status.json label of its accessor}, which the table column headers link on the routines page."""
+    return {table: routine_label(labels, int(entry["accessor"], 16), f"{table} accessor {entry['accessor']}")
+            for table, entry in TYRE_TABLE_ACCESSORS.items()}
+
+
+def render(database, gearboxes, pe, revision, entrance=False, engine_database=None, engines=(), counts_checked=False,
+           tyre_database=None, tyres=None, accessors=None, tyre_counts_checked=False, users=None):
+    """Return the page. check_gearboxes() must have accepted the inputs and returned `gearboxes`, check_engines()
+    `engine_database` and `engines`, and check_tyres() `tyre_database` and `tyres`; counts_checked and
+    tyre_counts_checked say whether they checked the counts against the demo's. accessors is
+    tyre_accessor_labels(). users, when given, maps gearboxes, engines and tyres to check_car_users()'s
+    {record: [(car, tag, basis)]}: each matrix then has a "Used by cars" column."""
+    users = users or {}
     total = len(gearboxes)
     fields = len(GEARBOX_FIELD_STORES)
     return "\n".join([
@@ -578,32 +1030,38 @@ def render(database, gearboxes, pe, revision, entrance=False, engine_database=No
         "</code></dd>",
         f'<dt>Engine database</dt><dd><code>{e(engine_database["source"])}</code> SHA-256 '
         f'<code>{e(engine_database["sha256"])}</code></dd>',
+        f'<dt>Tyre database</dt><dd><code>{e(tyre_database["source"])}</code> SHA-256 '
+        f'<code>{e(tyre_database["sha256"])}</code></dd>',
         f"<dt>Producer revision</dt><dd><code>{e(revision)}</code> (<code>scripts/record_compare.py</code>)</dd>",
         f"<dt>Compared</dt><dd>{total} gearboxes, {fields} fields each; {len(engines)} engines, "
-        f"{len(ENGINE_FIELD_STORES)} fields each</dd></dl>",
+        f"{len(ENGINE_FIELD_STORES)} fields each; {len(tyres['tyres'])} tyres, {len(TYRE_SCALAR_STORES)} scalar fields "
+        f"and {len(RESOLVED_TYRE_TABLES)} tables each</dd></dl>",
         "<p>This page lines up records of one kind field by field, each value linked to the line that declares it "
-        "and each field to where the loader stores it. Gearboxes and engines are compared; tyres are not compared "
-        "yet.</p>",
-        '<p>Jump to: <a href="#gearboxes">Gearboxes</a> | <a href="#engines">Engines</a></p>',
+        "and each field to where the loader stores it. Gearboxes, engines and tyres are compared.</p>",
+        '<p>Jump to: <a href="#gearboxes">Gearboxes</a> | <a href="#engines">Engines</a> | <a href="#tyres">Tyres</a>'
+        "</p>",
         f'<p class="scope">{SCOPE}</p>',
         '<h2 id="gearboxes">Gearboxes</h2>',
         f'<h3 id="gearbox-matrix">Every gearbox, field by field</h3><p>One row per gearbox, in '
         f"<code>GEARDATA.DAT</code> order, and one column per field, in payload offset order. Read any two rows to "
         f'compare two gearboxes. Each value links to its declaration row on <a href="{e(GEARBOX_PAGE)}">the gearbox '
         "page</a>; each column header links to that field's row in its \"Where each field is stored\" table, with "
-        "the byte-checked compare and store sites.</p>",
-        matrix(gearboxes),
+        "the byte-checked compare and store sites.</p>"
+        + ("" if users.get("gearboxes") is None else used_by_note("gearboxes", "gearbox", GEARBOX_PAGE)),
+        matrix(gearboxes, users.get("gearboxes")),
         f'<h3 id="gearbox-differences">What differs</h3><p>For each field, how many distinct values the {total} '
         "gearboxes declare, and which gearboxes declare each. Fields read as a float are grouped by the number, so "
         "two spellings of one number (such as <code>0.2</code> and <code>0.20</code>) are one value, with each "
         "spelling shown; enum words are grouped exactly as written.</p>",
         differences_table(gearboxes),
-        engines_section(engines, counts_checked),
+        engines_section(engines, counts_checked, users.get("engines")),
+        tyres_section(tyres, accessors, tyre_counts_checked, users.get("tyres")),
         "</body></html>\n"])
 
 
 def game_file(database, label, game_dir):
-    """The bytes of the database file `database` (gearboxes.json or engines.json) was parsed from, under game_dir."""
+    """The bytes of the database file `database` (gearboxes.json, engines.json or tyres.json) was parsed from, under
+    game_dir."""
     require(isinstance(database, dict) and isinstance(database.get("source"), str),
             f"{label} must be an object with a 'source'")
     source = Path(game_dir) / database["source"]
@@ -611,17 +1069,24 @@ def game_file(database, label, game_dir):
     return source.read_bytes()
 
 
-def build(gearboxes_path, engines_path, game_dir, pe_path, output, revision=None, entrance=False, engine_counts=None,
-          manifest_path=GAME_MANIFEST):
-    """Read and check the inputs, then write the page to `output`; return the gearbox and engine counts compared.
+def build(gearboxes_path, engines_path, tyres_path, game_dir, pe_path, output, revision=None, entrance=False,
+          engine_counts=None, manifest_path=GAME_MANIFEST, tyre_counts=None, status_path=ROUTINE_STATUS,
+          car_usage=None):
+    """Read and check the inputs, then write the page to `output`; return the gearbox, engine and tyre counts compared.
 
-    game_dir is the extracted Program_Executable_Files directory holding the GEARDATA.DAT and ENGDATA.DAT the JSON
-    files were parsed from. The inheriting engines' effective field counts must equal engine_counts when it is given,
-    else ENGINE_FIELD_COUNTS when ENGDATA.DAT is the demo's by manifest_path's SHA-256. entrance=True adds the
-    entrance page to the nav bar, for scripts/build_research.py.
+    game_dir is the extracted Program_Executable_Files directory holding the GEARDATA.DAT, ENGDATA.DAT and
+    TYREDATA.DAT the JSON files were parsed from. The inheriting engines' effective field counts must equal
+    engine_counts when it is given, else ENGINE_FIELD_COUNTS when ENGDATA.DAT is the demo's by manifest_path's SHA-256;
+    likewise the tyres' counts must equal tyre_counts ({"scalars", "tables"}) when given, else TYRE_COUNTS when
+    TYREDATA.DAT is the demo's. status_path is the status.json whose labels the routines page beside `output` uses;
+    the tyre table columns link their accessors there. entrance=True adds the entrance page to the nav bar, for
+    scripts/build_research.py. car_usage, when given, is text_database.car_usage() of the cars' references: each
+    matrix then has a "Used by cars" column linked to the record pages' "Used by cars" blocks, which those pages must
+    have been built with.
     """
     database = load_json(gearboxes_path, "Gearbox database (run scripts/text_database.py first)")
     engine_database = load_json(engines_path, "Engine database (run scripts/text_database.py first)")
+    tyre_database = load_json(tyres_path, "Tyre database (run scripts/text_database.py first)")
     pe = load_json(pe_path, "PE metadata")
     check_pe(pe)
     gearboxes = check_gearboxes(database, game_file(database, "gearboxes.json", game_dir))
@@ -629,11 +1094,20 @@ def build(gearboxes_path, engines_path, game_dir, pe_path, output, revision=None
     check_fields(engine_database, {"sha256": str}, "engines.json")
     expected = engine_counts if engine_counts is not None else demo_engine_counts(engine_database, manifest_path)
     engines = check_engines(engine_database, engine_data, expected)
+    tyre_data = game_file(tyre_database, "tyres.json", game_dir)
+    check_fields(tyre_database, {"sha256": str}, "tyres.json")
+    tyre_expected = tyre_counts if tyre_counts is not None else demo_tyre_counts(tyre_database, manifest_path)
+    tyres = check_tyres(tyre_database, tyre_data, tyre_expected)
+    accessors = tyre_accessor_labels(routine_labels(status_path))
+    users = None if car_usage is None else {
+        kind: check_car_users(car_usage, kind, source["records"])
+        for kind, source in (("gearboxes", database), ("engines", engine_database), ("tyres", tyre_database))}
     page = render(database, gearboxes, pe, revision or producer_revision(), entrance, engine_database, engines,
-                  expected is not None)
+                  expected is not None, tyre_database, tyres, accessors, tyre_expected is not None, users)
     Path(output).parent.mkdir(parents=True, exist_ok=True)
     Path(output).write_text(page, encoding="utf-8")
-    return {"compared_gearboxes": len(gearboxes), "compared_engines": len(engines)}
+    return {"compared_gearboxes": len(gearboxes), "compared_engines": len(engines),
+            "compared_tyres": len(tyres["tyres"])}
 
 
 def main():
@@ -642,21 +1116,26 @@ def main():
                         help="gearboxes.json written by scripts/text_database.py (default: %(default)s)")
     parser.add_argument("--engines", type=Path, default=DATABASES["engines"]["input"],
                         help="engines.json written by scripts/text_database.py (default: %(default)s)")
+    parser.add_argument("--tyres", type=Path, default=REPO_ROOT / "artifacts/text-databases/tyres.json",
+                        help="tyres.json written by scripts/text_database.py (default: %(default)s)")
     parser.add_argument("--game", type=Path, default=DEFAULT_GAME,
-                        help="Extracted Program_Executable_Files directory gearboxes.json and engines.json were "
-                             "parsed from (default: %(default)s)")
+                        help="Extracted Program_Executable_Files directory gearboxes.json, engines.json and tyres.json "
+                             "were parsed from (default: %(default)s)")
+    parser.add_argument("--status", type=Path, default=ROUTINE_STATUS,
+                        help="Routine labels the tyre table columns link to on routines.html (default: %(default)s)")
     parser.add_argument("--pe", type=Path, default=REPO_ROOT / "analysis/pe-metadata.json",
                         help="fr3.exe identity (default: %(default)s)")
     parser.add_argument("--output", type=Path, default=REPO_ROOT / "artifacts/dossier" / PAGE,
-                        help="HTML file to write, beside gearboxes.html and engines.html; keep it out of Git, it holds "
-                             "game data (default: %(default)s)")
+                        help="HTML file to write, beside gearboxes.html, engines.html and tyres.html; keep it out of Git, "
+                             "it holds game data (default: %(default)s)")
     args = parser.parse_args()
     try:
-        counts = build(args.gearboxes, args.engines, args.game, args.pe, args.output)
+        counts = build(args.gearboxes, args.engines, args.tyres, args.game, args.pe, args.output,
+                       status_path=args.status)
     except (ValueError, KeyError, TypeError, AttributeError, OSError) as error:
         raise SystemExit(f"record_compare.py: {error}") from None
-    print(f"Compared {counts['compared_gearboxes']} gearboxes and {counts['compared_engines']} engines field by field "
-          f"in {args.output}")
+    print(f"Compared {counts['compared_gearboxes']} gearboxes, {counts['compared_engines']} engines and "
+          f"{counts['compared_tyres']} tyres field by field in {args.output}")
 
 
 if __name__ == "__main__":
