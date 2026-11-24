@@ -7,15 +7,21 @@
   // Direct3D leaves backbuffer alpha at 0. In single-threaded mode SDL/EGL
   // requests an alpha WebGL2 canvas, which macOS Chrome's Metal compositor
   // displays as pure black. Force an opaque canvas like Boxedwine's direct
-  // WebGL path (sdlgl.cpp).
-  if (typeof HTMLCanvasElement !== "undefined") {
-    const originalGetContext = HTMLCanvasElement.prototype.getContext;
-    HTMLCanvasElement.prototype.getContext = function(type, attributes) {
+  // WebGL path (sdlgl.cpp), wrapping both the prototype and any canvas that
+  // boxedwine-shell.js already gave an own-property getContext wrapper.
+  const wrapGetContext = target => {
+    if (!target || typeof target.getContext !== "function") return;
+    const originalGetContext = target.getContext;
+    target.getContext = function(type, attributes) {
       if (type === "webgl2" || type === "webgl" || type === "experimental-webgl") {
         return originalGetContext.call(this, type, {...attributes, alpha: false, premultipliedAlpha: false});
       }
       return originalGetContext.apply(this, arguments);
     };
+  };
+  if (typeof HTMLCanvasElement !== "undefined") wrapGetContext(HTMLCanvasElement.prototype);
+  for (const canvas of new Set([...document.querySelectorAll("canvas"), Module.canvas].filter(Boolean))) {
+    if (Object.prototype.hasOwnProperty.call(canvas, "getContext")) wrapGetContext(canvas);
   }
   const send = data => parent.postMessage({type:"fr3-runtime", ...data}, location.origin);
   Config.urlParams = "root=wine11&app=fr3&resolution=640x480&sound=" + enabled +

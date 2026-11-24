@@ -185,7 +185,7 @@ export const streamResponse = (chunks, status = 200) => ({
  *   files         {url: response} returned by fetch for asset downloads
  */
 export function loadBridge(options = {}) {
-  const {mode = "play", sound = true, manifest = {assets: {}}, files = {}} = options;
+  const {mode = "play", sound = true, manifest = {assets: {}}, files = {}, canvases = []} = options;
   const messages = [];
   const fetches = [];
   const calls = {originalParams: 0, originalBuild: 0, originalLoadFile: 0, print: [], status: [], intervals: [], cleared: [], getContext: []};
@@ -232,7 +232,7 @@ export function loadBridge(options = {}) {
     document: {
       getElementById: id => elements[id] ?? null,
       createElement: () => ({getContext: () => null}),
-      querySelectorAll: () => [],
+      querySelectorAll: selector => selector === "canvas" ? canvases : [],
     },
     addEventListener: () => {},
     setInterval: callback => { calls.intervals.push(callback); return calls.intervals.length; },

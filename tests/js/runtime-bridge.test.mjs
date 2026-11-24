@@ -58,6 +58,26 @@ test("forces opaque WebGL contexts without touching 2D or mutating caller attrib
   assert.equal(bridge.calls.getContext.length, 4);
 });
 
+test("wraps an existing canvas own-property getContext installed by boxedwine-shell.js", () => {
+  const nativeCalls = [];
+  const shellCanvas = {
+    addEventListener() {},
+    getContext(type, attributes) {
+      if (type === "webgl" || type === "webgl2" || type === "experimental-webgl") {
+        attributes = Object.assign({}, attributes || {}, {preserveDrawingBuffer: true});
+      }
+      nativeCalls.push({type, attributes});
+      return {type, attributes};
+    },
+  };
+  loadBridge({canvases: [shellCanvas]});
+  const gl2 = shellCanvas.getContext("webgl2", {alpha: true, depth: true, premultipliedAlpha: true});
+  assert.deepEqual(gl2.attributes, {alpha: false, depth: true, premultipliedAlpha: false, preserveDrawingBuffer: true});
+  const ctx2d = shellCanvas.getContext("2d", {willReadFrequently: true});
+  assert.deepEqual(ctx2d.attributes, {willReadFrequently: true});
+  assert.equal(nativeCalls.length, 2);
+});
+
 // Two assets whose download progress adds up across both files.
 const fixture = async (overrides = {}) => {
   const game = new Uint8Array(600).map((_, i) => i * 7);
