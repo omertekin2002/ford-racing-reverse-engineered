@@ -4,4 +4,7 @@ artifacts/
 __pycache__/
 *.pyc
 .web-tools/
+engine/node_modules/
+engine/dist/
+
 
