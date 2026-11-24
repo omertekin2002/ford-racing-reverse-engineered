@@ -4,6 +4,19 @@
   const query = new URLSearchParams(location.search);
   const settings = query.get("mode") === "configure";
   const enabled = query.get("sound") === "true";
+  // Direct3D leaves backbuffer alpha at 0. In single-threaded mode SDL/EGL
+  // requests an alpha WebGL2 canvas, which macOS Chrome's Metal compositor
+  // displays as pure black. Force an opaque canvas like Boxedwine's direct
+  // WebGL path (sdlgl.cpp).
+  if (typeof HTMLCanvasElement !== "undefined") {
+    const originalGetContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function(type, attributes) {
+      if (type === "webgl2" || type === "webgl" || type === "experimental-webgl") {
+        return originalGetContext.call(this, type, {...attributes, alpha: false, premultipliedAlpha: false});
+      }
+      return originalGetContext.apply(this, arguments);
+    };
+  }
   const send = data => parent.postMessage({type:"fr3-runtime", ...data}, location.origin);
   Config.urlParams = "root=wine11&app=fr3&resolution=640x480&sound=" + enabled +
     (settings ? "&p=syscfg.exe&w=" + encodeURIComponent("/home/username/.wine/dosdevices/c:/files/CONFIG") : "&p=fr3.exe&args=" + encodeURIComponent("640 nomusic nostream" + (enabled ? "" : " nosound")));

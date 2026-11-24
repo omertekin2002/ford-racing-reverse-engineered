@@ -38,6 +38,26 @@ test("skips the upstream JIT cache", () => {
   assert.equal(called, 1);
 });
 
+test("forces opaque WebGL contexts without touching 2D or mutating caller attributes", () => {
+  const bridge = loadBridge();
+  const canvas = new bridge.context.HTMLCanvasElement();
+  const webgl2Attrs = {alpha: true, depth: true, stencil: true, premultipliedAlpha: true};
+  const gl2 = canvas.getContext("webgl2", webgl2Attrs);
+  assert.deepEqual({...gl2.attributes}, {alpha: false, depth: true, stencil: true, premultipliedAlpha: false});
+  assert.deepEqual(webgl2Attrs, {alpha: true, depth: true, stencil: true, premultipliedAlpha: true});
+
+  const gl1 = canvas.getContext("webgl");
+  assert.deepEqual({...gl1.attributes}, {alpha: false, premultipliedAlpha: false});
+
+  const glExp = canvas.getContext("experimental-webgl", null);
+  assert.deepEqual({...glExp.attributes}, {alpha: false, premultipliedAlpha: false});
+
+  const ctx2dAttrs = {willReadFrequently: true};
+  const ctx2d = canvas.getContext("2d", ctx2dAttrs);
+  assert.equal(ctx2d.attributes, ctx2dAttrs);
+  assert.equal(bridge.calls.getContext.length, 4);
+});
+
 // Two assets whose download progress adds up across both files.
 const fixture = async (overrides = {}) => {
   const game = new Uint8Array(600).map((_, i) => i * 7);

@@ -188,11 +188,17 @@ export function loadBridge(options = {}) {
   const {mode = "play", sound = true, manifest = {assets: {}}, files = {}} = options;
   const messages = [];
   const fetches = [];
-  const calls = {originalParams: 0, originalBuild: 0, originalLoadFile: 0, print: [], status: [], intervals: [], cleared: []};
+  const calls = {originalParams: 0, originalBuild: 0, originalLoadFile: 0, print: [], status: [], intervals: [], cleared: [], getContext: []};
   const written = [];
   const directories = [];
   const elements = {output: {value: ""}, loading: {style: {}}};
+  class HTMLCanvasElement {}
+  HTMLCanvasElement.prototype.getContext = function(type, attributes) {
+    calls.getContext.push({canvas: this, type, attributes});
+    return {type, attributes};
+  };
   const context = {
+    HTMLCanvasElement,
     location: {origin: ORIGIN, search: `?mode=${mode}&sound=${sound}`},
     parent: {postMessage: (data, targetOrigin) => messages.push({data, targetOrigin})},
     URLSearchParams,
