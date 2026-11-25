@@ -287,6 +287,18 @@ export class AudioEngine {
     else this.effects.delete(effect);
   }
 
+  /** Decode a RIFF/WAVE byte buffer using the active AudioContext (returns null if locked/unavailable). */
+  async decodeWave(bytes: Uint8Array): Promise<AudioBuffer | null> {
+    if (!this.context || this.disposed) return null;
+    try {
+      const copy = new Uint8Array(bytes.byteLength);
+      copy.set(bytes);
+      return await this.context.decodeAudioData(copy.buffer);
+    } catch {
+      return null;
+    }
+  }
+
   /** Update continuous voices. An omitted field keeps its previous value. Zero RPM is off. */
   update(state: Partial<DrivingAudioState>): void {
     const driving = this.driving;

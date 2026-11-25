@@ -1,4 +1,4 @@
-import { FordRacing3App, type InspectorSnapshot } from "./app.js";
+import { FordRacing3App, type EngineSnapshot } from "./app.js";
 import { DemoAssets } from "./demoAssets.js";
 import type { VirtualFileSystem } from "./vfs/types.js";
 import { ZipVfs } from "./vfs/zipVfs.js";
@@ -15,13 +15,21 @@ export interface NativeEngineController {
   dispose(): void;
   restart(): void;
   setMuted(muted: boolean): void;
-  getSnapshot(): InspectorSnapshot;
+  getSnapshot(): EngineSnapshot;
+  continueFromStart(): void;
+  launchQuickRace(): void;
+  launchCarRace(carId?: string): void;
+  togglePause(): void;
+  cycleCamera(): void;
 }
 
 export interface NativeEngineDiagnostics {
-  getSnapshot(): InspectorSnapshot;
-  inspectCar(carIndex: number, liveryIndex?: number): Promise<void>;
-  inspectTrack(): Promise<void>;
+  getSnapshot(): EngineSnapshot;
+  continueFromStart(): void;
+  launchQuickRace(): void;
+  launchCarRace(carId?: string): void;
+  togglePause(): void;
+  cycleCamera(): void;
 }
 
 declare global {
@@ -81,7 +89,6 @@ function observeCanvasSize(canvas: HTMLCanvasElement, view: Window): () => void 
     const height = Math.max(1, Math.round(cssHeight * dpr));
     if (width !== canvas.width) canvas.width = width;
     if (height !== canvas.height) canvas.height = height;
-    // If layout uses the intrinsic canvas dimensions, keep the CSS size stable as DPR changes.
     if (canvas.clientWidth !== cssWidth) {
       canvas.style.width = `${cssWidth}px`;
       pinnedWidth = true;
@@ -108,7 +115,7 @@ function observeCanvasSize(canvas: HTMLCanvasElement, view: Window): () => void 
   };
 }
 
-/** Mount a WebGL2 asset inspector from an archive URL or an already mounted VFS. */
+/** Mount the playable WebGL2 Ford Racing 3 engine from an asset ZIP URL or mounted VFS. */
 export async function mountNativeEngine(options: NativeEngineOptions): Promise<NativeEngineController> {
   const { canvas, onProgress, onStatus, onError } = options;
   const progress = (fraction: number, status: string) => {
@@ -127,31 +134,35 @@ export async function mountNativeEngine(options: NativeEngineOptions): Promise<N
     } else {
       vfs = options.vfs;
     }
-    progress(0.8, "Reading asset catalog");
+    progress(0.82, "Parsing demo databases & UI scripts");
     const assets = await DemoAssets.load(vfs);
-    progress(0.93, "Preparing WebGL2 inspector");
+    progress(0.94, "Initializing WebGL2 engine");
     cleanupSize = observeCanvasSize(canvas, view);
-    const inspector = new FordRacing3App(canvas, assets, options);
-    app = inspector;
-    await inspector.prepare();
-    inspector.start();
-    onProgress?.(1, inspector.getSnapshot().status);
+    const engine = new FordRacing3App(canvas, assets, options);
+    app = engine;
+    await engine.prepare();
+    engine.start();
+    onProgress?.(1, engine.getSnapshot().status);
+
     const diagnostics: NativeEngineDiagnostics = {
-      getSnapshot: () => inspector.getSnapshot(),
-      inspectCar: (carIndex, liveryIndex) => inspector.inspectCar(carIndex, liveryIndex),
-      inspectTrack: () => inspector.inspectTrack(),
+      getSnapshot: () => engine.getSnapshot(),
+      continueFromStart: () => engine.continueFromStart(),
+      launchQuickRace: () => engine.launchQuickRace(),
+      launchCarRace: (carId?: string) => engine.launchCarRace(carId),
+      togglePause: () => engine.togglePause(),
+      cycleCamera: () => engine.cycleCamera(),
     };
     view.__fr3 = diagnostics;
     return {
       dispose() {
-        inspector.dispose();
+        engine.dispose();
         cleanupSize?.();
         cleanupSize = undefined;
         if (view.__fr3 === diagnostics) delete view.__fr3;
       },
-      restart: () => inspector.restart(),
-      setMuted: muted => inspector.setMuted(muted),
-      getSnapshot: diagnostics.getSnapshot,
+      restart: () => engine.restart(),
+      setMuted: muted => engine.setMuted(muted),
+      ...diagnostics,
     };
   } catch (cause) {
     app?.dispose();

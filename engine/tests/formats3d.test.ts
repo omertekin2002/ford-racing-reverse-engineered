@@ -213,8 +213,8 @@ test("XBX reads both descriptor groups before indices and unpacks parallel verte
   const mesh = Buffer.concat([words(2), Buffer.alloc(88), slot, descriptors, shorts(3, 0, 1, 2)]);
   const vertices = Buffer.concat([
     floats(1, 2, 3, 4, 5, 6, 7, 8, 9), Buffer.alloc(12, 1), Buffer.alloc(48, 2),
-    words(0xff0003fc, 0x3f008000, 0), shorts(255, -510, 0, 0, 0, 0),
-    shorts(-255, 255, 0, 0, 0, 0), shorts(510, 255, 0, 0, 0, 0),
+    words(0xff0003fc, 0x3f008000, 0), shorts(2048, -4096, 0, 0, 0, 0),
+    shorts(-2048, 2048, 0, 0, 0, 0), shorts(4096, 2048, 0, 0, 0, 0),
     floats(10, 11, 12), words(0x01020304),
   ]);
   const model = parseXbx(mesh, vertices);
@@ -230,7 +230,7 @@ test("XBX reads both descriptor groups before indices and unpacks parallel verte
   assert.ok(Math.abs(first.normals[0]! + 0.8) < 1e-6);
   assert.ok(Math.abs(first.normals[1]! - 0.6) < 1e-6);
   assert.deepEqual([...first.normals.slice(3)], [0, -1, 0, 0, 0, 0]);
-  assert.deepEqual([...first.colors.slice(0, 4)], [0, 3, 252, 255]);
+  assert.deepEqual([...first.colors.slice(0, 4)], [252, 3, 0, 255]);
   assert.deepEqual([...first.uv0!.slice(0, 2)], [1, -2]);
   assert.deepEqual([...first.uv1!.slice(0, 2)], [-1, 1]);
   assert.deepEqual([...first.uv2!.slice(0, 2)], [2, 1]);

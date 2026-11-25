@@ -37,17 +37,60 @@ def game_zip(game, destination):
     return len(manifest)
 
 
+def copy_native_bundle(output, native_bundle):
+    bundle = native_bundle.resolve()
+    if not bundle.is_file():
+        raise ValueError(f"Native WebGL2 bundle missing: {bundle} (run 'npm --prefix engine run build')")
+    native_dir = output / "native"
+    native_dir.mkdir(parents=True, exist_ok=True)
+    destination = native_dir / "fr3-engine.js"
+    shutil.copyfile(bundle, destination)
+    return destination
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tools", type=Path, default=web_tools_root(),
                         help="Browser tool root from setup_web_tools.py (env FR3_WEB_TOOLS, else <FR3_TOOLS>/web; default: %(default)s)")
     parser.add_argument("--game", type=Path, default=ROOT / "inputs/extracted/Program_Executable_Files")
     parser.add_argument("--output", type=Path, default=ROOT / "artifacts/web")
+    parser.add_argument("--native-bundle", type=Path, default=ROOT / "engine/dist/fr3-engine.js",
+                        help="Built native TypeScript + WebGL2 bundle (default: %(default)s)")
+    parser.add_argument("--native-only", action="store_true",
+                        help="Package only the native WebGL2 engine + fr3.zip without Boxedwine/Wine")
     parser.add_argument("--skip-compile", action="store_true", help="Reuse this pinned source's existing JIT build")
     parser.add_argument("--jobs", type=int, default=4)
     parser.add_argument("--runtime", choices=("jit", "multiThreadedJit"), default="jit")
     args = parser.parse_args()
-    tools, output = args.tools.resolve(), args.output.resolve()
+    output = args.output.resolve()
+    output.mkdir(parents=True, exist_ok=True)
+    runtime = output / "runtime"
+    runtime.mkdir(exist_ok=True)
+    native_dest = copy_native_bundle(output, args.native_bundle)
+    files = game_zip(args.game.resolve(), runtime / "fr3.zip")
+
+    if args.native_only:
+        for path in (ROOT / "web").iterdir():
+            if path.is_file():
+                shutil.copyfile(path, output / path.name)
+        assets = {
+            "fr3.zip": {"bytes": (runtime / "fr3.zip").stat().st_size, "sha256": digest(runtime / "fr3.zip")},
+            "fr3-engine.js": {"bytes": native_dest.stat().st_size, "sha256": digest(native_dest)},
+        }
+        record = {
+            "version": "0.3.0-native-webgl2",
+            "runtime": "Native TypeScript + WebGL2",
+            "original_game_files": files,
+            "assets": assets,
+        }
+        (output / "build.json").write_text(json.dumps(record, indent=2) + "\n")
+        (output / ".nojekyll").touch()
+        (output / "SHA256SUMS").write_text("".join(f"{digest(p)}  {p.relative_to(output).as_posix()}\n"
+                                                  for p in sorted(output.rglob("*")) if p.is_file() and p.name != "SHA256SUMS"))
+        print(f"Static native WebGL2 package: {output}; {files} original game files verified")
+        return
+
+    tools = args.tools.resolve()
     source = tools / "Boxedwine"
     revision = subprocess.check_output(["git", "-C", str(source), "rev-parse", "HEAD"], text=True).strip()
     if revision != BOXEDWINE_REVISION:
@@ -60,9 +103,6 @@ def main():
         script += "make " + args.runtime + " cpus=" + str(max(2, args.jobs + 1)) + " WEBGL_COUNTER_JIT_EXPORTS=,FS,addRunDependency,removeRunDependency,ccall\n"
         subprocess.run(["bash", "-e", "-c", script], cwd=source / "project/emscripten", check=True)
     build = source / "project/emscripten/Build" / ("Jit" if args.runtime == "jit" else "MultiThreadedJit")
-    output.mkdir(parents=True, exist_ok=True)
-    runtime = output / "runtime"
-    runtime.mkdir(exist_ok=True)
     for name in ("boxedwine.js", "boxedwine.wasm", "boxedwine-shell.js", "boxedwine.css"):
         shutil.copyfile(build / name, runtime / name)
     cache = tools / "cache"
@@ -72,7 +112,6 @@ def main():
                     "--config", str(source / "tools/buildWine/webgl_filesystems_v14.json"),
                     "--profile", "web-v14", "--filesystem", str(filesystem)], check=True)
     shutil.copyfile(filesystem, runtime / "wine11.zip")
-    files = game_zip(args.game.resolve(), runtime / "fr3.zip")
     html = (build / "boxedwine.html").read_text()
     html = html.replace("<!doctypehtml>", "<!doctype html>")
     html = html.replace("<title>BoxedWine</title>", "<title>Ford Racing 3 — game</title>")

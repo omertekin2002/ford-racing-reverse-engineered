@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ford Racing 3 — Native WebGL2</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #070d14;
+      color: #e8f2f8;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    #stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    #fr3-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      outline: none;
+      cursor: pointer;
+    }
+    #overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: rgba(7, 13, 20, 0.92);
+      transition: opacity 220ms ease;
+      pointer-events: none;
+    }
+    #overlay.hidden {
+      opacity: 0;
+    }
+    #overlay h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #fcdb52;
+    }
+    #overlay p {
+      margin: 0;
+      font-size: 14px;
+      color: #a9c1d2;
+    }
+    #bar-wrap {
+      width: min(360px, 78vw);
+      height: 8px;
+      background: #172736;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    #bar {
+      width: 0%;
+      height: 100%;
+      background: #3ddbd1;
+      transition: width 120ms linear;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <canvas id="fr3-canvas" aria-label="Ford Racing 3 Native WebGL2 canvas"></canvas>
+    <div id="overlay" role="status" aria-live="polite">
+      <h1>Ford Racing 3 · WebGL2</h1>
+      <div id="bar-wrap"><div id="bar"></div></div>
+      <p id="msg">Loading native engine…</p>
+    </div>
+  </div>
+  <script type="module">
+    import { mountNativeEngine } from "./native/fr3-engine.js";
+
+    const params = new URLSearchParams(location.search);
+    const sound = params.get("sound") !== "false";
+    const zipUrl = params.get("zip") || "runtime/fr3.zip";
+    const canvas = document.getElementById("fr3-canvas");
+    const overlay = document.getElementById("overlay");
+    const bar = document.getElementById("bar");
+    const msg = document.getElementById("msg");
+
+    function notify(payload) {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: "fr3-runtime", ...payload }, location.origin);
+      }
+    }
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && document.fullscreenElement) {
+        notify({ action: "exit-fullscreen" });
+      }
+    });
+
+    notify({ status: "Loading native WebGL2 engine…", log: "[native] mounting WebGL2 engine" });
+
+    mountNativeEngine({
+      canvas,
+      zipUrl,
+      sound,
+      onProgress(fraction, status) {
+        const pct = Math.max(0, Math.min(100, Math.round(fraction * 100)));
+        bar.style.width = `${pct}%`;
+        msg.textContent = status;
+        notify({ progress: pct, status, log: `[native] ${pct}% ${status}` });
+      },
+      onStatus(status) {
+        msg.textContent = status;
+        notify({ status, log: `[native] ${status}` });
+      },
+      onError(error) {
+        const text = String(error?.message || error);
+        overlay.classList.remove("hidden");
+        msg.textContent = text;
+        notify({ state: "error", status: text, log: `[native] ERROR: ${text}` });
+      },
+    }).then(() => {
+      overlay.classList.add("hidden");
+      canvas.focus();
+      notify({ state: "running", status: "Running Native WebGL2 (60 FPS). Press Enter or click to start.", log: "[native] ready" });
+    }).catch(() => {});
+  </script>
+</body>
+</html>

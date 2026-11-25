@@ -26,11 +26,12 @@
     </section>
     <section class="player" aria-label="Game player">
       <div class="toolbar">
-        <button id="play" class="primary">Play demo</button>
+        <button id="play-native" class="primary">Play WebGL2 (60 FPS)</button>
+        <button id="play">Play Boxedwine (Legacy)</button>
         <button id="configure">Game settings</button>
         <button id="restart" disabled>Restart</button>
         <button id="fullscreen" disabled>Fullscreen</button>
-        <label class="sound"><input id="sound" type="checkbox"> Sound effects (experimental)</label>
+        <label class="sound"><input id="sound" type="checkbox" checked> Sound effects</label>
       </div>
       <p id="status" role="status" aria-live="polite">Ready when you are. The first download is about 133 MB.</p>
       <progress id="progress" max="100" value="0" hidden aria-label="Game loading progress"></progress>

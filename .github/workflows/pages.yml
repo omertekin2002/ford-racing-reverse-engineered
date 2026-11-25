@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - web/**
+      - engine/**
       - scripts/**
       - analysis/**
       - .github/workflows/pages.yml
@@ -34,6 +35,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build native TypeScript + WebGL2 engine
+        run: |
+          npm --prefix engine ci
+          npm --prefix engine run typecheck
+          npm --prefix engine run build
       - name: Restore verified tools and demo downloads
         uses: actions/cache@v4
         with:

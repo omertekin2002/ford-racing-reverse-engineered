@@ -36,7 +36,7 @@ class Reader {
 
   uv(count: number): Float32Array {
     const start = this.advance(count * 4);
-    return Float32Array.from({ length: count * 2 }, (_, i) => this.view.getInt16(start + i * 2, true) / 255);
+    return Float32Array.from({ length: count * 2 }, (_, i) => this.view.getInt16(start + i * 2, true) / 2048);
   }
 
   records(count: number, stride: number): Uint8Array[] {
@@ -210,9 +210,9 @@ function readVertices(reader: Reader, part: MeshPart, offsetX: number, offsetZ: 
       normals[i * 3 + 1] = y / length;
       normals[i * 3 + 2] = z / length;
     }
-    colors[i * 4] = (packed >>> 16) & 255;
+    colors[i * 4] = packed & 255;
     colors[i * 4 + 1] = (packed >>> 8) & 255;
-    colors[i * 4 + 2] = packed & 255;
+    colors[i * 4 + 2] = (packed >>> 16) & 255;
     colors[i * 4 + 3] = packed >>> 24;
   }
 

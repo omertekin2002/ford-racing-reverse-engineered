@@ -31,3 +31,9 @@ jobs:
           node-version: '22'
       - name: Run browser launcher tests
         run: node --test "tests/js/*.test.mjs"
+      - name: Build and test native TypeScript + WebGL2 engine
+        run: |
+          npm --prefix engine ci
+          npm --prefix engine run typecheck
+          npm --prefix engine run build
+          npm --prefix engine test

@@ -175,6 +175,10 @@ export class MenuController {
     return this.scene?.screen;
   }
 
+  rebuildScene(): void {
+    this.open(this.state);
+  }
+
   getView(): MenuView {
     const car = this.options.cars[this.carIndex];
     return {

@@ -119,7 +119,13 @@ export class DemoAssets {
 
   get fonts() { return this.interfaceAssets.fonts; }
   get quickRaces() { return this.tables.quickRaces; }
-  get languages(): readonly string[] { return [...this.interfaceAssets.translations.keys()]; }
+  get languages(): readonly string[] {
+    const keys = [...this.interfaceAssets.translations.keys()];
+    return keys.sort((a, b) => {
+      const rank = (code: string) => (code === "EN" ? 0 : code === "US" ? 1 : 2);
+      return rank(a) - rank(b) || a.localeCompare(b);
+    });
+  }
   get language(): string { return this.languageCode; }
   get translation() { return this.interfaceAssets.translations.get(this.languageCode)!; }
   get uiScripts(): ReadonlyMap<string, string> { return this.interfaceAssets.scripts; }

@@ -2,6 +2,7 @@
 const screen = document.getElementById("screen");
 const status = document.getElementById("status");
 const progress = document.getElementById("progress");
+const playNative = document.getElementById("play-native");
 const play = document.getElementById("play");
 const configure = document.getElementById("configure");
 const restart = document.getElementById("restart");
@@ -34,6 +35,26 @@ async function prepareIsolation() {
 prepareIsolation();
 
 function launch(nextMode = "play") {
+  if (nextMode === "native") {
+    mode = "native";
+    logs = [];
+    frame?.remove();
+    frame = document.createElement("iframe");
+    frame.title = "Ford Racing 3 native WebGL2";
+    frame.allow = "autoplay; fullscreen; gamepad";
+    frame.src = `native.html?sound=${sound.checked}`;
+    screen.replaceChildren(frame);
+    status.textContent = "Loading native WebGL2 engine (~26 MB)…";
+    progress.hidden = false;
+    progress.removeAttribute("value");
+    if (playNative) playNative.disabled = true;
+    play.disabled = true;
+    configure.disabled = true;
+    restart.disabled = false;
+    fullscreen.disabled = false;
+    frame.addEventListener("load", () => frame.contentWindow.focus());
+    return;
+  }
   if (!isolationReady || !window.WebAssembly) {
     status.textContent = "This browser cannot run the game. Try a recent desktop Chrome, Edge or Firefox.";
     return;
@@ -49,6 +70,7 @@ function launch(nextMode = "play") {
   status.textContent = "Loading the game. The first launch can take several minutes…";
   progress.hidden = false;
   progress.removeAttribute("value");
+  if (playNative) playNative.disabled = true;
   play.disabled = true;
   configure.disabled = true;
   restart.disabled = false;
@@ -56,6 +78,7 @@ function launch(nextMode = "play") {
   // A long first launch should remain recoverable through Restart.
   frame.addEventListener("load", () => frame.contentWindow.focus());
 }
+playNative?.addEventListener("click", () => launch("native"));
 play.addEventListener("click", () => launch());
 configure.addEventListener("click", () => launch("configure"));
 restart.addEventListener("click", () => launch(mode));
@@ -81,6 +104,7 @@ window.addEventListener("message", event => {
   if (data.state === "starting") progress.removeAttribute("value");
   if (data.state === "running" || data.state === "error" || data.state === "exited") {
     progress.hidden = true;
+    if (playNative) playNative.disabled = false;
     play.disabled = false;
     configure.disabled = false;
   }

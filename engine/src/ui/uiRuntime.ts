@@ -316,7 +316,7 @@ export class UiScreenInstance {
       if (!this.isVisible(node)) continue;
       const source = node.source;
       const textureRef = this.texture(node);
-      const key = source.text;
+      const key = source.text === "TXT_SYSTEM_INVALID" ? null : source.text;
       const text = node.rawText ?? (key && this.translation ? lookupTranslation(this.translation, key) ?? key : key);
       const buttonId = this.canFocus(node) && !this.exiting ? source.objectId : null;
       if (!textureRef && text === null && !buttonId) continue;

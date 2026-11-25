@@ -487,22 +487,36 @@ export class VehiclePhysics implements CollisionBody {
     return (this.gears.get(gear) ?? (gear === 1 ? 1 : 0)) * this.finalDrive / (this.state.boostActive ? 1.4 : 1);
   }
 
+  private drivenRpm(): number {
+    const wheels = this.state.wheels;
+    const frontRpm = (wheels[0].angularVel + wheels[1].angularVel) / (2 * rpmToRadians);
+    const rearRpm = (wheels[2].angularVel + wheels[3].angularVel) / (2 * rpmToRadians);
+    const ratio = this.ratio();
+    return !this.drivenAxles[0] ? rearRpm
+      : !this.drivenAxles[1] ? frontRpm
+        : ratio < 0 ? Math.min(frontRpm, rearRpm) : Math.max(frontRpm, rearRpm);
+  }
+
   private autoShift(): void {
-    const { gear, rpm, maxRpm, throttle } = this.state;
+    const { gear, maxRpm, throttle } = this.state;
     if (gear === 0) {
       this.shift(1);
       return;
     }
     if (gear < 0 || (this.clutch < 0.99 && !this.state.handbrake)) return;
-    const score = (value: number) => engineTorqueAtRpm(this.config.engine, value) * value * 0.00019040366;
-    const current = score(rpm);
     const ratio = this.ratio();
-    const previousRpm = rpm * this.ratio(gear - 1) / ratio;
-    const nextRpm = rpm * this.ratio(gear + 1) / ratio;
-    if (gear > 1 && previousRpm < this.derivedRpm && (score(previousRpm) > 1.05 * current || rpm < this.idleRpm * 1.15)) {
+    if (ratio <= 0) return;
+    // Use road-coupled RPM (with wheel speed floor) so clutch launch slip never triggers premature 1->2->1 hunting.
+    const coupledRpm = Math.max(0, this.drivenRpm() * ratio);
+    const shiftRpm = Math.min(this.state.rpm, Math.max(coupledRpm, this.idleRpm));
+    const score = (value: number) => engineTorqueAtRpm(this.config.engine, value) * value * 0.00019040366;
+    const current = score(shiftRpm);
+    const previousRpm = shiftRpm * this.ratio(gear - 1) / ratio;
+    const nextRpm = shiftRpm * this.ratio(gear + 1) / ratio;
+    if (gear > 1 && previousRpm < this.derivedRpm * 0.92 && (score(previousRpm) > 1.08 * current || shiftRpm < this.idleRpm * 1.15)) {
       this.shift(gear - 1);
     } else if (gear < this.gearCount && throttle > 0.1 &&
-      (rpm > 0.95 * maxRpm || (rpm >= this.derivedRpm && score(nextRpm) > 1.05 * current))) {
+      (shiftRpm > 0.93 * maxRpm || (shiftRpm >= this.derivedRpm && score(nextRpm) > 1.05 * current))) {
       this.shift(gear + 1);
     }
   }
@@ -548,21 +562,16 @@ export class VehiclePhysics implements CollisionBody {
 
     const shiftOpen = this.shiftRemaining > 0;
     const free = this.fuelOutput * maxRpm * (ratio === 0 || shiftOpen ? 2 : 1);
-    const wheels = state.wheels;
-    const frontRpm = (wheels[0].angularVel + wheels[1].angularVel) / (2 * rpmToRadians);
-    const rearRpm = (wheels[2].angularVel + wheels[3].angularVel) / (2 * rpmToRadians);
-    const drivenRpm = !this.drivenAxles[0] ? rearRpm
-      : !this.drivenAxles[1] ? frontRpm
-        : ratio < 0 ? Math.min(frontRpm, rearRpm) : Math.max(frontRpm, rearRpm);
+    const drivenRpm = this.drivenRpm();
     const coupled = Math.max(0, drivenRpm * ratio);
     let engagement = ratio === 0 || shiftOpen ? 0 : this.clutch;
     if (Math.abs(state.gear) === 1 && coupled < this.derivedRpm && this.derivedRpm < free) {
-      engagement = Math.min(engagement, Math.max(0.25, (this.derivedRpm - free) / (coupled - free)));
+      engagement = Math.min(engagement, Math.max(0.55, (this.derivedRpm - free) / (coupled - free)));
     }
     const correction = shiftOpen ? 2 * (free - rpm)
       : clamp(10 * (1 + engagement) * (lerp(free, coupled, engagement) - rpm), -6000, 6000);
     const predicted = rpm + dt * (correction + 60 * torque * (1 - engagement)) / this.flywheel;
-    state.rpm = clamp(lerp(predicted, coupled, engagement * dt / this.shiftDelay), this.idleRpm, 20000);
+    state.rpm = clamp(lerp(predicted, coupled, engagement * dt / this.shiftDelay), this.idleRpm, maxRpm * 1.05);
     const transfer = Math.min(4 * engagement, 1) * Math.min(torque, gearbox.CLUTCH_MAX_POWER ?? Infinity);
     this.engineLoad = Math.max(0, transfer);
     return transfer * ratio;

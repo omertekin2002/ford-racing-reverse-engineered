@@ -749,7 +749,24 @@ export function resolveCarConfig(db: VehicleDatabases, carId: string): ResolvedC
     if (!record) throw new Error(`${carName} :${tag} references unknown record "${reference}"`);
     return record;
   }
-  const body = resolve(db.bodies, "CAR_BODY_TYPE");
+  const rawBody = resolve(db.bodies, "CAR_BODY_TYPE");
+  let masses = rawBody.masses;
+  let collisionSpheres = rawBody.collisionSpheres;
+  let cursor: BodyRecord | undefined = rawBody;
+  const seenBodies = new Set<string>();
+  while ((masses.length === 0 || collisionSpheres.length === 0) && cursor?.parentId) {
+    const parentKey = cursor.parentId.toLowerCase();
+    if (seenBodies.has(parentKey)) break;
+    seenBodies.add(parentKey);
+    const parent = db.bodies.get(parentKey);
+    if (!parent) break;
+    if (masses.length === 0 && parent.masses.length > 0) masses = parent.masses;
+    if (collisionSpheres.length === 0 && parent.collisionSpheres.length > 0) collisionSpheres = parent.collisionSpheres;
+    cursor = parent;
+  }
+  const body: BodyRecord = masses === rawBody.masses && collisionSpheres === rawBody.collisionSpheres
+    ? rawBody
+    : { ...rawBody, masses, collisionSpheres };
   const stem = body.fields.OBJECT_3D_SHAPE;
   if (!stem || stem === "." || stem === "..") throw new Error(`Body "${body.id}" requires a model directory stem`);
   return {

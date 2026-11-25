@@ -237,7 +237,10 @@ export function compileModelGeometry(
       if (!target) continue;
       // Cut-up sector vertices already include the XBX slot's X/Z origin.
       const local = name.endsWith("_CUT_UP") ? identity()
-        : pose(Float32Array.from({ length: 6 }, (_, i) => view.getFloat32(8 + i * 4, true)));
+        : pose(Float32Array.from([
+          view.getFloat32(8, true), view.getFloat32(12, true), view.getFloat32(16, true),
+          -view.getFloat32(20, true), -view.getFloat32(24, true), -view.getFloat32(28, true),
+        ]));
       visitRoot(target, node, local, chain);
     }
   }
@@ -304,7 +307,10 @@ void main() {
   }
   if (prelit) base *= vertexColor;
   if (base.a <= cutoff) discard;
-  if (hasDetail) base.rgb *= texture(detailTexture, detailUV).rgb;
+  if (hasDetail) {
+    vec4 detail = texture(detailTexture, detailUV);
+    base.rgb = mix(base.rgb, detail.rgb, detail.a);
+  }
   vec3 n = length(worldNormal) > 0.001 ? normalize(worldNormal) : vec3(0.0, 1.0, 0.0);
   float diffuse = max(0.0, dot(n, sun));
   vec3 hemi = mix(vec3(0.28, 0.25, 0.21), vec3(0.62, 0.68, 0.78), n.y * 0.5 + 0.5);
