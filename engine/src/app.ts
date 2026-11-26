@@ -124,7 +124,18 @@ export function aiControlToDrivingInput(
       isAnalogSteer: true,
     };
   }
-  const holdStopped = state.gear >= 0 && state.speedMps < 1.5 && control.brake > 0.1 && control.throttle === 0;
+  if (state.gear < 0 && control.throttle === 0 && control.brake > 0) {
+    return {
+      ...EMPTY_DRIVING,
+      throttle: 0.25,
+      brake: 0,
+      steer: control.steer,
+      handbrake: true,
+      boost: false,
+      isAnalogSteer: true,
+    };
+  }
+  const holdStopped = state.gear >= 0 && state.speedMps < 2.2 && control.brake > 0.1 && control.throttle === 0;
   return {
     ...EMPTY_DRIVING,
     throttle: control.throttle,

@@ -174,38 +174,72 @@ export class AiDriver {
     const clearance = Math.max(0, difficulty.DIFFICULTY_OVERTAKE_CLEARANCE);
     const laneLimit = Math.max(0, look.halfWidth - halfWidth - 0.25);
     const preferredLane = clamp(look.offset + packSlot * difficulty.DIFFICULTY_LINE_VARIATION, -laneLimit, laneLimit);
-    const obstacles = (frame.obstacles ?? []).map(obstacle => ({
-      ...obstacle,
-      distance: trackProgressDelta(track.u, obstacle.u) * this.line.length,
-      clearance: halfWidth + (obstacle.halfWidth ?? 1) + clearance,
-      length: halfLength + (obstacle.halfLength ?? 2.2),
-    }));
+    const obstacles = (frame.obstacles ?? []).map(obstacle => {
+      const combinedHalfWidth = halfWidth + (obstacle.halfWidth ?? 1);
+      return {
+        ...obstacle,
+        distance: trackProgressDelta(track.u, obstacle.u) * this.line.length,
+        clearance: combinedHalfWidth + clearance,
+        minClearance: combinedHalfWidth + 0.4,
+        length: halfLength + (obstacle.halfLength ?? 2.2),
+      };
+    });
     let targetLane = preferredLane;
+    let passingLeader = false;
     const leader = obstacles
-      .filter(other => other.distance >= -other.length - 1 && other.distance - other.length <= horizon
+      .filter(other => other.distance > -other.length * 0.5 && other.distance - other.length <= horizon
         && Math.abs(other.lateralOffset - preferredLane) < other.clearance)
       .sort((a, b) => a.distance - a.length - (b.distance - b.length))[0];
     if (leader) {
-      const passLanes = [leader.lateralOffset - leader.clearance, leader.lateralOffset + leader.clearance]
-        .sort((a, b) => Math.abs(a - track.lateralOffset) - Math.abs(b - track.lateralOffset));
-      const pass = passLanes.find(lane => Math.abs(lane) <= laneLimit && obstacles.every(other =>
-        other.distance < -other.length - speed * 0.4 || other.distance > horizon + other.length
-        || Math.abs(lane - other.lateralOffset) >= other.clearance));
-      targetLane = pass ?? preferredLane;
+      const passHorizon = Math.max(leader.distance + leader.length + 12, lookahead);
+      const isClear = (lane: number, useMin: boolean) => obstacles.every(other =>
+        other.distance < -other.length - speed * 0.4 || other.distance > passHorizon + other.length
+        || Math.abs(lane - other.lateralOffset) >= (useMin ? other.minClearance : other.clearance));
+      const sortByNearest = (lanes: number[]) =>
+        lanes.sort((a, b) => Math.abs(a - track.lateralOffset) - Math.abs(b - track.lateralOffset));
+      const preferredPass = sortByNearest([leader.lateralOffset - leader.clearance, leader.lateralOffset + leader.clearance])
+        .find(lane => Math.abs(lane) <= laneLimit && isClear(lane, false));
+      const tightPass = preferredPass ?? sortByNearest([
+        clamp(leader.lateralOffset - leader.clearance, -laneLimit, laneLimit),
+        clamp(leader.lateralOffset + leader.clearance, -laneLimit, laneLimit),
+      ]).find(lane => Math.abs(lane) <= laneLimit && isClear(lane, true));
+      if (tightPass !== undefined) {
+        targetLane = tightPass;
+        passingLeader = true;
+      }
     }
 
     // Brake for traffic in the lane we occupy or cross while changing lanes.
+    let pinnedBehindStopped = false;
     for (const other of obstacles) {
-      if (other.distance < -other.length || other.distance > horizon + other.length) continue;
-      const laneMin = Math.min(track.lateralOffset, targetLane);
-      const laneMax = Math.max(track.lateralOffset, targetLane);
-      if (Math.abs(clamp(other.lateralOffset, laneMin, laneMax) - other.lateralOffset) >= other.clearance) continue;
-      const safeDistance = Math.max(0, other.distance - other.length - 3 - speed * 0.3);
-      targetSpeed = Math.min(targetSpeed, Math.sqrt(Math.max(0, other.speed ?? 0) ** 2 + 2 * deceleration * safeDistance));
+      if (other.distance <= other.length * 0.4 || other.distance > horizon + other.length) continue;
+      const passingCleanly = Math.abs(targetLane - other.lateralOffset) >= other.minClearance;
+      if (passingCleanly) {
+        if (Math.abs(track.lateralOffset - other.lateralOffset) >= other.minClearance) continue;
+        const safeDistance = Math.max(0, other.distance - other.length - 1.5 - speed * 0.2);
+        const braked = Math.sqrt(Math.max(0, other.speed ?? 0) ** 2 + 2 * deceleration * safeDistance);
+        // Keep enough maneuvering speed to steer out of the blocked lane instead of deadlocking at 0 m/s.
+        const floor = other.distance > other.length + 0.5 ? Math.min(targetSpeed, 5) : 0;
+        targetSpeed = Math.min(targetSpeed, Math.max(braked, floor));
+      } else {
+        const laneMin = Math.min(track.lateralOffset, targetLane);
+        const laneMax = Math.max(track.lateralOffset, targetLane);
+        if (Math.abs(clamp(other.lateralOffset, laneMin, laneMax) - other.lateralOffset) >= other.clearance) continue;
+        const safeDistance = Math.max(0, other.distance - other.length - 3 - speed * 0.3);
+        targetSpeed = Math.min(targetSpeed, Math.sqrt(Math.max(0, other.speed ?? 0) ** 2 + 2 * deceleration * safeDistance));
+      }
+      if (other.distance < other.length + 2.5 && Math.abs(track.lateralOffset - other.lateralOffset) < other.minClearance
+        && (other.speed ?? 0) < 1.5) {
+        pinnedBehindStopped = true;
+      }
     }
 
-    this.laneOffset = clamp(lerp(this.laneOffset, targetLane, -Math.expm1(-4 * elapsed)), -laneLimit, laneLimit);
-    const target = sampleRacingLine(this.line, targetU, this.laneOffset, false).position;
+    const laneRate = leader ? 8 : 4;
+    this.laneOffset = clamp(lerp(this.laneOffset, targetLane, -Math.expm1(-laneRate * elapsed)), -laneLimit, laneLimit);
+    const steerLookahead = passingLeader && leader && leader.distance > 0
+      ? Math.min(lookahead, Math.max(6, leader.distance * 0.75))
+      : lookahead;
+    const target = sampleRacingLine(this.line, track.u + steerLookahead / this.line.length, this.laneOffset, false).position;
     const dx = target[0] - car.position[0];
     const dz = target[2] - car.position[2];
     const heading = Math.atan2(car.forward[0], car.forward[2]);
@@ -219,7 +253,7 @@ export class AiDriver {
       this.reverseTime = Math.max(0, this.reverseTime - elapsed);
       if (this.reverseTime > 0) return this.reverseControl(powerMultiplier);
     } else {
-      this.blockedTime = car.blocked && speed < 1.5 ? this.blockedTime + elapsed : 0;
+      this.blockedTime = (car.blocked || pinnedBehindStopped) && speed < 1.5 ? this.blockedTime + elapsed : 0;
       if (this.blockedTime > 2) {
         this.blockedTime = 0;
         this.reverseTime = 1.1;

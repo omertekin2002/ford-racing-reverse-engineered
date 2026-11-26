@@ -276,10 +276,17 @@ test("track difficulty offsets resolve to positive AI scales and AI driveDirecti
 
   const forwardBrake = aiControlToDrivingInput({
     throttle: 0, brake: 0.8, steer: 0.2, handbrake: false, boost: false, powerMultiplier: 1, driveDirection: 1,
-  }, { gear: 1, speedMps: 0.4 });
+  }, { gear: 1, speedMps: 1.9 });
   assert.equal(forwardBrake.throttle, 0);
   assert.equal(forwardBrake.brake, 0.8);
   assert.equal(forwardBrake.handbrake, true);
+
+  const exitReverse = aiControlToDrivingInput({
+    throttle: 0, brake: 0.8, steer: 0, handbrake: false, boost: false, powerMultiplier: 1, driveDirection: 1,
+  }, { gear: -1, speedMps: 1.5 });
+  assert.equal(exitReverse.throttle, 0.25);
+  assert.equal(exitReverse.brake, 0);
+  assert.equal(exitReverse.handbrake, true);
 
   const backingOut = aiControlToDrivingInput({
     throttle: 0.65, brake: 0, steer: -0.65, handbrake: false, boost: false, powerMultiplier: 1, driveDirection: -1,

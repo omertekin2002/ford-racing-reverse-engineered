@@ -88,6 +88,21 @@ test("AI picks a free passing lane and brakes when clearance is unavailable", ()
     track: { u: 0.998, lateralOffset: 0 }, obstacles: [{ ...leader, u: 0.004 }],
   });
   assert.ok(seam.brake > 0.7);
+
+  // On a narrower road where preferred clearance exceeds laneLimit, AI still finds a safe passing lane
+  // and keeps accelerating past a stopped car instead of deadlocking at 0 m/s.
+  const narrow = circuit(100, 100, 9); // halfWidth = 4.5, laneLimit = 3.25
+  const stoppedAhead = { u: 10 / narrow.length, lateralOffset: 0, speed: 0 };
+  const narrowDriver = new AiDriver(narrow, {
+    difficulty: { ...difficulty, DIFFICULTY_OVERTAKE_CLEARANCE: 1.5 }, // preferred clearance = 3.5 > 3.25
+  });
+  const passing = narrowDriver.update(0.3, {
+    car: { ...baseCar, speed: 2 },
+    track: baseTrack,
+    obstacles: [stoppedAhead],
+  });
+  assert.ok(passing.throttle > 0.1 && passing.brake === 0, `expected passing throttle, got ${JSON.stringify(passing)}`);
+  assert.ok(Math.abs(passing.steer) > 0.05, `expected steering around stopped car, got ${passing.steer}`);
 });
 
 test("catchup power saturates behind and fades out ahead", () => {
