@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { aiControlToDrivingInput, resolveTrackDifficultyScales } from "../src/app.js";
 import { DemoAssets, demoTrackDirectory } from "../src/demoAssets.js";
 import { AiDriver, trackProgressDelta } from "../src/game/aiDriver.js";
 import { CameraController } from "../src/game/cameraController.js";
@@ -151,7 +152,10 @@ test("six independently configured cars exercise spatial, AI, race, collision, c
       });
     });
     let cars = createCars();
-    const drivers = configs.slice(1).map(() => new AiDriver(racingLine, { difficulty: game.difficulty.MEDIUM }));
+    const drivers = configs.slice(1).map(() => new AiDriver(racingLine, {
+      difficulty: game.difficulty.MEDIUM,
+      trackScales: resolveTrackDifficultyScales(tracks.get("engaf")?.difficulty.MEDIUM),
+    }));
     const camera = new CameraController({ ground });
     const input = new InputManager();
     const menu = new MenuController({
@@ -197,7 +201,7 @@ test("six independently configured cars exercise spatial, AI, race, collision, c
             referenceGap: trackProgressDelta(player.track.u, current.track.u) * racingLine.length,
           });
           if (ai) assert.ok(Number.isFinite(ai.powerMultiplier));
-          car.step(dt, ai ? { ...idle, ...ai } : {
+          car.step(dt, ai ? aiControlToDrivingInput(ai, car.state) : {
             ...idle, throttle: 1, steer: 0.08 * Math.sin(movingFrames * dt), boost,
           });
         });
@@ -221,6 +225,10 @@ test("six independently configured cars exercise spatial, AI, race, collision, c
     for (let frame = 0; frame < 610; frame++) tick();
     assert.deepEqual([...phases], ["INTRO", "COUNTDOWN", "RACING"]);
     assert.ok(movingFrames >= 300 && peakSpeed > 5, `Peak player speed ${peakSpeed} m/s`);
+    for (const opponent of cars.slice(1)) {
+      assert.ok(opponent.state.gear >= 1, `${opponent.config.car.id} shifted into reverse (gear ${opponent.state.gear})`);
+      assert.ok(opponent.state.speedMps > 5, `${opponent.config.car.id} stalled at ${opponent.state.speedMps} m/s`);
+    }
     const player = race.standings.find(standing => standing.isPlayer)!;
     assert.equal(player.boostCharges, 0);
     assert.equal(cars[0]!.state.boostCharges, 1);
@@ -260,3 +268,23 @@ test("six independently configured cars exercise spatial, AI, race, collision, c
     assert.equal(race.phase, "INTRO");
     assert.equal(cars[0]!.state.speedMps, 0);
   });
+
+test("track difficulty offsets resolve to positive AI scales and AI driveDirection maps cleanly to pedals", () => {
+  assert.deepEqual(resolveTrackDifficultyScales(), [1, 1, 1]);
+  assert.deepEqual(resolveTrackDifficultyScales([0, -0.04, -0.15]), [1, 0.96, 0.85]);
+  assert.deepEqual(resolveTrackDifficultyScales([-2, 2, -0.39]), [0.5, 1.5, 0.61]);
+
+  const forwardBrake = aiControlToDrivingInput({
+    throttle: 0, brake: 0.8, steer: 0.2, handbrake: false, boost: false, powerMultiplier: 1, driveDirection: 1,
+  }, { gear: 1, speedMps: 0.4 });
+  assert.equal(forwardBrake.throttle, 0);
+  assert.equal(forwardBrake.brake, 0.8);
+  assert.equal(forwardBrake.handbrake, true);
+
+  const backingOut = aiControlToDrivingInput({
+    throttle: 0.65, brake: 0, steer: -0.65, handbrake: false, boost: false, powerMultiplier: 1, driveDirection: -1,
+  }, { gear: 1, speedMps: 0.1 });
+  assert.equal(backingOut.throttle, 0);
+  assert.equal(backingOut.brake, 0.65);
+  assert.equal(backingOut.handbrake, false);
+});

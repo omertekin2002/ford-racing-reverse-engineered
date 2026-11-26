@@ -96,6 +96,46 @@ const EMPTY_DRIVING: DrivingInput = {
   lookBack: false, pausePressed: false, resetPressed: false, isAnalogSteer: false,
 };
 
+/** TRACKS.DAT stores signed difficulty offsets around 0 (e.g. [0, -0.04, -0.15]); convert to positive AI multipliers. */
+export function resolveTrackDifficultyScales(
+  offsets?: readonly [number, number, number],
+): [number, number, number] {
+  if (!offsets) return [1, 1, 1];
+  return [
+    clamp(1 + offsets[0], 0.5, 1.5),
+    clamp(1 + offsets[1], 0.5, 1.5),
+    clamp(1 + offsets[2], 0.5, 1.5),
+  ];
+}
+
+/** Translate AI driving output into VehiclePhysics inputs, honoring driveDirection without tripping auto-reverse when braking. */
+export function aiControlToDrivingInput(
+  control: CarControlOutput,
+  state: { readonly gear: number; readonly speedMps: number },
+): DrivingInput {
+  if (control.driveDirection < 0) {
+    return {
+      ...EMPTY_DRIVING,
+      throttle: 0,
+      brake: control.throttle,
+      steer: control.steer,
+      handbrake: false,
+      boost: false,
+      isAnalogSteer: true,
+    };
+  }
+  const holdStopped = state.gear >= 0 && state.speedMps < 1.5 && control.brake > 0.1 && control.throttle === 0;
+  return {
+    ...EMPTY_DRIVING,
+    throttle: control.throttle,
+    brake: control.brake,
+    steer: control.steer,
+    handbrake: control.handbrake || holdStopped,
+    boost: control.boost,
+    isAnalogSteer: true,
+  };
+}
+
 function asError(cause: unknown): Error {
   return cause instanceof Error ? cause : new Error(String(cause));
 }
@@ -696,7 +736,7 @@ export class FordRacing3App {
       });
 
       const difficulty = this.assets.tables.game.difficulty[setup.difficulty];
-      const trackDiff = this.assets.tables.tracks.get("engaf")?.difficulty[setup.difficulty];
+      const trackScales = resolveTrackDifficultyScales(this.assets.tables.tracks.get("engaf")?.difficulty[setup.difficulty]);
       const automatic = setup.transmission === "AUTO";
 
       const racers: RacerSlot[] = lineupCfgs.map((cfg, index) => {
@@ -717,7 +757,7 @@ export class FordRacing3App {
           physics,
           ai: index === 0 ? undefined : new AiDriver(racingLine, {
             difficulty,
-            trackScales: trackDiff,
+            trackScales,
             packSlot,
             mode: setup.mode,
           }),
@@ -868,9 +908,16 @@ export class FordRacing3App {
     const playerStand = active.race.standings.find(s => s.isPlayer);
     const playerProgressTotal = playerStand?.progress ?? 0;
 
+    const lineLateralOffset = (p: ReturnType<TrackSpatial["queryProgress"]>): number => {
+      const pt = racingLine.points[p.segmentIndex];
+      if (!pt) return p.lateralOffset;
+      const align = pt.lateral[0] * p.right[0] + pt.lateral[2] * p.right[2];
+      return align < 0 ? -p.lateralOffset : p.lateralOffset;
+    };
+
     const tracks = active.racers.map(r => {
       const p = active.spatial.queryProgress(r.physics.state.position[0], r.physics.state.position[2]);
-      return { u: p.interpolant, lateralOffset: p.lateralOffset, speed: r.physics.state.speedMps };
+      return { u: p.interpolant, lateralOffset: lineLateralOffset(p), speed: r.physics.state.speedMps };
     });
 
     const observations: RaceObservation[] = [];
@@ -894,6 +941,7 @@ export class FordRacing3App {
       } else {
         const ai = r.ai ?? (r.ai = new AiDriver(racingLine, {
           difficulty: this.assets.tables.game.difficulty[active.setup.difficulty],
+          trackScales: resolveTrackDifficultyScales(this.assets.tables.tracks.get("engaf")?.difficulty[active.setup.difficulty]),
           mode: active.setup.mode,
         }));
         const obstacles: AiObstacle[] = tracks
@@ -926,15 +974,7 @@ export class FordRacing3App {
             driveDirection: 1,
           }, aiOut);
         }
-        ctrl = {
-          ...EMPTY_DRIVING,
-          throttle: finalOut.throttle,
-          brake: finalOut.brake,
-          steer: finalOut.steer,
-          handbrake: finalOut.handbrake,
-          boost: finalOut.boost,
-          isAnalogSteer: true,
-        };
+        ctrl = aiControlToDrivingInput(finalOut, st);
       }
 
       r.physics.step(dt, ctrl);
@@ -952,7 +992,7 @@ export class FordRacing3App {
       observations.push({
         id: r.id,
         car: { position: after.position, forward: after.forward, rotation: after.orientation, speed: after.speedMps },
-        track: { u: prog.interpolant, lateralOffset: prog.lateralOffset },
+        track: { u: prog.interpolant, lateralOffset: lineLateralOffset(prog) },
       });
     }
 

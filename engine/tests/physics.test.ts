@@ -257,17 +257,33 @@ test("racing line projection provides a smooth fallback, progress and inward cor
   assert.ok(Math.min(Math.abs(before - after), 1 - Math.abs(before - after)) < 0.001);
 });
 
-test("parsed planar boundary groups ignore internal triangle edges and bounce uses limited sliding friction", () => {
+test("planar boundary groups do not create invisible walls and directed wall bounces use limited sliding friction", () => {
   const planarGroup = [
     { points: Float32Array.of(0, 0, 0, 20, 20, 20), lastWord: 0 },
     { points: Float32Array.of(0, 0, 20, 20, 20, 0), lastWord: 0 },
   ];
-  const scene: SceneDatabase = {
+  const zoneOnly: SceneDatabase = {
     version: 18, header: new Uint32Array(), roots: [], animationGroups: [],
     boundaryGroups: [planarGroup], namedRecords: [],
   };
-  const track = new TrackSpatial([], scene, openLine);
-  assert.deepEqual(track.queryBarrierContacts([{ center: [10, 0, 10], radius: 1 }]), []);
+  const zoneTrack = new TrackSpatial([], zoneOnly, openLine);
+  assert.deepEqual(zoneTrack.queryBarrierContacts([{ center: [10, 0, 10], radius: 1 }]), []);
+  assert.deepEqual(zoneTrack.queryBarrierContacts([{ center: [0, 0, 10], radius: 1 }]), []);
+
+  const wall = Buffer.alloc(28);
+  wall.writeFloatLE(0, 4);
+  wall.writeFloatLE(0, 8);
+  wall.writeFloatLE(1, 16);
+  wall.writeFloatLE(20, 20);
+  const wallRoot: SceneRoot = {
+    shapeId: 1, meshSlotId: 0, mode: 0, transforms: [], boundaries: [wall], modeBoundaries: [],
+    points: new Float32Array(), references: [], secondaryRecords: [], cameras: [], modePairs: [],
+    lodValues: new Float32Array(), declaredInlineChildren: 0, declaredChildPairs: 0, preMeshWords: new Uint32Array(),
+    controlWords: [0, 0], meshPairs: [], children: { kind: "inline", nodes: [] },
+  };
+  const track = new TrackSpatial([], {
+    version: 18, header: new Uint32Array(), roots: [wallRoot], animationGroups: [], boundaryGroups: [planarGroup], namedRecords: [],
+  }, openLine);
   const car = new VehiclePhysics(baseConfig, track, { position: [-0.4, 1, 10] });
   car.state.linearVelocity = [6, 0, 15];
   const [contact] = track.queryBarrierContacts(car.getWorldSpheres());
@@ -279,7 +295,7 @@ test("parsed planar boundary groups ignore internal triangle edges and bounce us
   assert.equal(track.queryBarrierContacts(car.getWorldSpheres()).length, 0);
 });
 
-test("directed scene walls use XZ start, direction and length and are deduplicated across sectors", () => {
+test("directed scene walls use XZ start, direction and length, handle endpoint corners, and supersede corridor fallback", () => {
   const raw = Buffer.alloc(28);
   raw.writeFloatLE(-3, 4);
   raw.writeFloatLE(-5, 8);
@@ -291,15 +307,24 @@ test("directed scene walls use XZ start, direction and length and are deduplicat
     lodValues: new Float32Array(), declaredInlineChildren: 0, declaredChildPairs: 0, preMeshWords: new Uint32Array(),
     controlWords: [0, 0], meshPairs: [], children: { kind: "inline", nodes: [] },
   };
+  const route = line([[0, 0, -20], [0, 0, 0], [0, 0, 20], [20, 0, 20], [20, 0, -20]], 4, 80);
   const track = new TrackSpatial([], {
     version: 18, header: new Uint32Array(), roots: [root], animationGroups: [], boundaryGroups: [], namedRecords: [],
-  }, openLine, { cellSize: 4 });
+  }, route, { cellSize: 4 });
   const contacts = track.queryBarrierContacts([{ center: [-3.25, 2, 9], radius: 0.5 }]);
   assert.equal(contacts.length, 1);
   near(contacts[0]!.penetration, 0.25);
   assert.deepEqual(contacts[0]!.point, [-3, 2, 9]);
   assert.deepEqual(contacts[0]!.normal, [-1, 0, 0]);
+  // Beyond segment end past radius: no contact.
   assert.deepEqual(track.queryBarrierContacts([{ center: [-3.25, 2, 11], radius: 0.5 }]), []);
+  // On the permitted side near an endpoint corner: endpoint contact prevents seam tunneling.
+  const [corner] = track.queryBarrierContacts([{ center: [-3.3, 2, 10.3], radius: 0.5 }]);
+  assert.ok(corner);
+  near(corner.penetration, 0.5 - Math.hypot(0.3, 0.3));
+  assert.deepEqual(corner.point, [-3, 2, 10]);
+  // Outside the narrower racing-line halfWidth (2m) but not touching any scene wall: no invisible corridor wall.
+  assert.deepEqual(track.queryBarrierContacts([{ center: [3, 2, 0], radius: 0.5 }]), []);
 });
 
 test("car sphere impacts saturate the impulse and conserve linear momentum", () => {
@@ -335,6 +360,16 @@ test("local parsed track and car stay finite during a ten-second multi-maneuver 
   const defaultSurfaceName = parseTrackDatabase(ascii("TRACKS.DAT")).get("engaf")!.DEFAULT_TRACK_SURFACE;
   const track = new TrackSpatial(parseXbx(meshes, vertices), parse3dObjDb(sceneData, parseBinInfo(binInfo)), route,
     { surfaces, defaultSurfaceName });
+  for (let i = 0; i < route.points.length; i++) {
+    const a = route.points[i]!.position;
+    const b = route.points[(i + 1) % route.points.length]!.position;
+    for (let k = 0; k < 4; k++) {
+      const t = k / 4;
+      const sample: Vec3 = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+      assert.deepEqual(track.queryBarrierContacts([{ center: sample, radius: 1 }]), [],
+        `unexpected barrier across ENGAF racing line at segment ${i}+${t}`);
+    }
+  }
   const [x, y, z] = route.points[0]!.position;
   const ground = track.queryGround(x, y, z);
   assert.ok(ground.hit && ground.surface);

@@ -115,6 +115,7 @@ export class TrackSpatial {
   private readonly defaultSurface: SurfaceRecord | undefined;
   private readonly corridorMargin: number;
   private readonly cellSize: number;
+  private hasSceneBarriers = false;
 
   constructor(
     model: XbxModel,
@@ -308,46 +309,29 @@ export class TrackSpatial {
   private addSceneBarriers(scene: SceneDatabase): void {
     const seen = new Set<string>();
     const keyFor = (x: number, z: number, endX: number, endZ: number) =>
-      [`${Math.round(x * 100)},${Math.round(z * 100)}`, `${Math.round(endX * 100)},${Math.round(endZ * 100)}`].sort().join(":");
-    const add = (x: number, z: number, endX: number, endZ: number, orientToTrack: boolean) => {
+      `${Math.round(x * 100)},${Math.round(z * 100)}:${Math.round(endX * 100)},${Math.round(endZ * 100)}`;
+    const add = (x: number, z: number, endX: number, endZ: number) => {
       const length = Math.hypot(endX - x, endZ - z);
       if (!Number.isFinite(length) || length < 1e-5) return;
       const key = keyFor(x, z, endX, endZ);
       if (seen.has(key)) return;
       seen.add(key);
       const dx = (endX - x) / length, dz = (endZ - z) / length;
-      let nx = -dz, nz = dx;
-      if (orientToTrack && this.positions.length) {
-        const midX = (x + endX) / 2, midZ = (z + endZ) / 2;
-        const { point } = this.queryProgress(midX, midZ);
-        if ((point[0] - midX) * nx + (point[2] - midZ) * nz < 0) {
-          nx = -nx;
-          nz = -nz;
-        }
-      }
+      const nx = -dz, nz = dx;
       this.barriers.insert(Math.min(x, endX), Math.min(z, endZ), Math.max(x, endX), Math.max(z, endZ),
         { x, z, dx, dz, length, nx, nz });
+      this.hasSceneBarriers = true;
     };
+    // Only the 28-byte directed wall segments on scene roots are collision
+    // barriers. scene.boundaryGroups holds planar sector/zone polygons tiling
+    // the course whose outer edges cut straight across the road.
     for (const root of scene.roots) {
       for (const raw of [...root.boundaries, ...root.modeBoundaries]) {
         const data = new DataView(raw.buffer, raw.byteOffset, raw.byteLength);
         const x = data.getFloat32(4, true), z = data.getFloat32(8, true);
         const length = data.getFloat32(20, true);
-        add(x, z, x + data.getFloat32(12, true) * length, z + data.getFloat32(16, true) * length, false);
+        add(x, z, x + data.getFloat32(12, true) * length, z + data.getFloat32(16, true) * length);
       }
-    }
-
-    for (const group of scene.boundaryGroups) {
-      // The parser exposes groups as planar triangles. Shared edges are group
-      // interiors and must never become walls.
-      const edges = new Map<string, [number, number, number, number] | null>();
-      for (const { points: [ax, az, bx, bz, cx, cz] } of group) {
-        for (const edge of [[ax!, az!, bx!, bz!], [bx!, bz!, cx!, cz!], [cx!, cz!, ax!, az!]] as const) {
-          const key = keyFor(...edge);
-          edges.set(key, edges.has(key) ? null : [...edge]);
-        }
-      }
-      for (const edge of edges.values()) if (edge) add(...edge, true);
     }
   }
 
@@ -359,15 +343,31 @@ export class TrackSpatial {
         const deltaX = x - s.x, deltaZ = z - s.z;
         const along = deltaX * s.dx + deltaZ * s.dz;
         const signed = deltaX * s.nx + deltaZ * s.nz;
-        if (along >= -1e-5 && along <= s.length + 1e-5 && signed > -radius && signed < radius) {
-          contacts.push({
-            sphereIndex, point: [x - signed * s.nx, y, z - signed * s.nz],
-            penetration: radius - signed, normal: [s.nx, 0, s.nz],
-          });
+        if (along >= -1e-5 && along <= s.length + 1e-5) {
+          if (signed > -radius && signed < radius) {
+            contacts.push({
+              sphereIndex, point: [x - signed * s.nx, y, z - signed * s.nz],
+              penetration: radius - signed, normal: [s.nx, 0, s.nz],
+            });
+          }
+        } else if (signed >= 0 && signed < radius) {
+          const clamped = clamp(along, 0, s.length);
+          const px = s.x + s.dx * clamped, pz = s.z + s.dz * clamped;
+          const rx = x - px, rz = z - pz;
+          const distSq = rx * rx + rz * rz;
+          if (distSq < radius * radius) {
+            const dist = Math.sqrt(distSq);
+            const nx = dist > 1e-9 ? rx / dist : s.nx;
+            const nz = dist > 1e-9 ? rz / dist : s.nz;
+            contacts.push({
+              sphereIndex, point: [px, y, pz],
+              penetration: radius - dist, normal: [nx, 0, nz],
+            });
+          }
         }
       }
 
-      if (!this.positions.length) continue;
+      if (this.hasSceneBarriers || !this.positions.length) continue;
       const progress = this.queryProgress(x, z);
       const { point, right, lateralOffset } = progress;
       const halfWidth = this.corridorHalfWidth(progress);
