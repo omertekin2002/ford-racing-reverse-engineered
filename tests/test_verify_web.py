@@ -21,6 +21,7 @@ from verify_web import (ISSUES_PAGE, PACKET, RIGHTS_CREDIT, WASM_HEADER, links_t
                         verify_research_site, verify_script_order, verify_sums)
 
 import build_research
+import build_web
 import package_research
 from test_build_research import write_analysis, write_game
 
@@ -621,6 +622,51 @@ class PacketSiteTests(ResearchSiteTestCase):
                                (f'<a href="https://example.com/{PACKET}">x</a>', False)):
             with self.subTest(html=html):
                 self.assertEqual(links_to_packet(html), expected)
+
+
+class CacheBustingTests(unittest.TestCase):
+    def test_copy_web_assets_stamps_native_bundle_chain(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            out1, out2 = root / "out1", root / "out2"
+            out1.mkdir()
+            out2.mkdir()
+            bundle1 = root / "bundle1.js"
+            bundle2 = root / "bundle2.js"
+            bundle1.write_text("export const version = 1;\n", encoding="utf-8")
+            bundle2.write_text("export const version = 2;\n", encoding="utf-8")
+
+            dest1 = build_web.copy_native_bundle(out1, bundle1)
+            build_web.copy_web_assets(out1, dest1)
+            dest2 = build_web.copy_native_bundle(out2, bundle2)
+            build_web.copy_web_assets(out2, dest2)
+
+            hash1 = build_web.digest(dest1)[:12]
+            hash2 = build_web.digest(dest2)[:12]
+            self.assertNotEqual(hash1, hash2)
+
+            native1 = (out1 / "native.html").read_text(encoding="utf-8")
+            native2 = (out2 / "native.html").read_text(encoding="utf-8")
+            self.assertIn(f"./native/fr3-engine.js?v={hash1}", native1)
+            self.assertIn(f"./native/fr3-engine.js?v={hash2}", native2)
+
+            native_hash1 = build_web.digest(out1 / "native.html")[:12]
+            site_js1 = (out1 / "site.js").read_text(encoding="utf-8")
+            self.assertIn(f"native.html?v={native_hash1}&sound=", site_js1)
+
+            site_hash1 = build_web.digest(out1 / "site.js")[:12]
+            css_hash1 = build_web.digest(out1 / "site.css")[:12]
+            index1 = (out1 / "index.html").read_text(encoding="utf-8")
+            self.assertIn(f'src="site.js?v={site_hash1}"', index1)
+            self.assertIn(f'href="site.css?v={css_hash1}"', index1)
+
+            # Stamped index.html still passes verify_notice and verify_relative_urls (for existing targets).
+            verify_notice(index1)
+            (out1 / "research").mkdir()
+            (out1 / "downloads").mkdir()
+            (out1 / "downloads/fr3-research-latest.zip").write_bytes(b"")
+            (out1 / "build.json").write_text("{}", encoding="utf-8")
+            verify_relative_urls(out1, out1 / "index.html")
 
 
 if __name__ == "__main__":

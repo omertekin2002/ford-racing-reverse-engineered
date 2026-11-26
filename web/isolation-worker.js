@@ -5,7 +5,10 @@ self.addEventListener("activate", event => event.waitUntil(self.clients.claim())
 self.addEventListener("fetch", event => {
   if (new URL(event.request.url).origin !== self.location.origin) return;
   if (event.request.cache === "only-if-cached" && event.request.mode !== "same-origin") return;
-  event.respondWith(fetch(event.request).then(response => {
+  const upstream = event.request.mode === "navigate"
+    ? fetch(event.request.url, {cache: "no-cache", credentials: "same-origin"})
+    : fetch(event.request);
+  event.respondWith(upstream.then(response => {
     if (response.type === "opaque" || response.status === 0) return response;
     const headers = new Headers(response.headers);
     headers.set("Cross-Origin-Opener-Policy", "same-origin");

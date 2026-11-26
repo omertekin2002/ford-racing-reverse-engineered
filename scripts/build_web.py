@@ -48,6 +48,36 @@ def copy_native_bundle(output, native_bundle):
     return destination
 
 
+def _stamp_once(path, old, new):
+    text = path.read_text(encoding="utf-8")
+    if old not in text:
+        raise ValueError(f"Expected {old!r} in {path.name} for cache busting")
+    path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+
+def copy_web_assets(output, native_bundle, web_dir=ROOT / "web"):
+    """Copy static web/ files and stamp content-hash query parameters onto the native WebGL2 chain."""
+    for path in web_dir.iterdir():
+        if path.is_file():
+            shutil.copyfile(path, output / path.name)
+    engine_hash = digest(native_bundle)[:12]
+    native_html = output / "native.html"
+    if native_html.is_file():
+        _stamp_once(native_html, "./native/fr3-engine.js", f"./native/fr3-engine.js?v={engine_hash}")
+        native_html_hash = digest(native_html)[:12]
+        site_js = output / "site.js"
+        if site_js.is_file():
+            _stamp_once(site_js, "native.html?sound=", f"native.html?v={native_html_hash}&sound=")
+    index_html = output / "index.html"
+    if index_html.is_file():
+        site_js = output / "site.js"
+        if site_js.is_file():
+            _stamp_once(index_html, 'src="site.js"', f'src="site.js?v={digest(site_js)[:12]}"')
+        site_css = output / "site.css"
+        if site_css.is_file():
+            _stamp_once(index_html, 'href="site.css"', f'href="site.css?v={digest(site_css)[:12]}"')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tools", type=Path, default=web_tools_root(),
@@ -70,9 +100,7 @@ def main():
     files = game_zip(args.game.resolve(), runtime / "fr3.zip")
 
     if args.native_only:
-        for path in (ROOT / "web").iterdir():
-            if path.is_file():
-                shutil.copyfile(path, output / path.name)
+        copy_web_assets(output, native_dest)
         assets = {
             "fr3.zip": {"bytes": (runtime / "fr3.zip").stat().st_size, "sha256": digest(runtime / "fr3.zip")},
             "fr3-engine.js": {"bytes": native_dest.stat().st_size, "sha256": digest(native_dest)},
@@ -123,9 +151,7 @@ def main():
         where = html.rfind(needle)
         html = html[:where] + '<script src="../runtime-bridge.js"></script>' + html[where:]
     (runtime / "game.html").write_text(html)
-    for path in (ROOT / "web").iterdir():
-        if path.is_file():
-            shutil.copyfile(path, output / path.name)
+    copy_web_assets(output, native_dest)
     licenses = output / "licenses"
     licenses.mkdir(exist_ok=True)
     shutil.copyfile(source / "license.txt", licenses / "Boxedwine-GPL-2.0.txt")
