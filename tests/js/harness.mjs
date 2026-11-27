@@ -64,8 +64,9 @@ const jsonResponse = (body, status = 200) => ({
 const launcherElements = () => {
   const elements = {
     screen: new FakeElement("div", "screen"),
-    status: new FakeElement("p", "status", {textContent: "Ready when you are. The first download is about 133 MB."}),
+    status: new FakeElement("p", "status", {textContent: "The first download is about 133 MB."}),
     progress: new FakeElement("progress", "progress", {hidden: true}),
+    "play-native": new FakeElement("button", "play-native"),
     play: new FakeElement("button", "play"),
     configure: new FakeElement("button", "configure"),
     restart: new FakeElement("button", "restart", {disabled: true}),
@@ -145,6 +146,7 @@ export function loadSite(options = {}) {
   vm.runInContext(code, context, {filename});
   const site = {
     ...elements,
+    playNative: elements["play-native"],
     context,
     document,
     created,

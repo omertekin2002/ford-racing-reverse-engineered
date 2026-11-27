@@ -22,9 +22,10 @@ The new tyre analysis reconstructs its 88-byte record and table allocations.
   `v<VERSION>` tag also drafts a release from them for the owner to
   [review and publish](docs/releases.md#making-a-release).
 - **Browser:** open the
-  [browser preview](https://omertekin2002.github.io/ford-racing-reverse-engineered/),
-  an experimental build that runs the same demo through Boxedwine's
-  WebAssembly runtime. See the [browser guide](docs/browser.md).
+  [browser preview](https://omertekin2002.github.io/ford-racing-reverse-engineered/).
+  Its **Play** button starts the separate [native engine](#native-engine-engine),
+  which reads the demo's files; **Play (Boxedwine)** runs the same unchanged demo
+  through Boxedwine's WebAssembly runtime. See the [browser guide](docs/browser.md).
 - **Research findings:** open
   [Explore findings](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/),
   the car, engine, gearbox, tyre, PCG catalogue, routines and open questions pages built from the demo in the
@@ -55,6 +56,27 @@ directory and packages them as `downloads/fr3-research-latest.zip`. Pushes to
 `main` build, verify and deploy the site; manual runs of the workflow deploy
 only with **deploy** checked. Build and browser validation are
 described in the browser guide.
+
+## Native engine (`engine/`)
+
+`engine/` holds an independent TypeScript + WebGL2 reimplementation that the
+owner maintains. It builds one ES module, `engine/dist/fr3-engine.js`, which
+`scripts/build_web.py` copies to the site's `native/` directory; `web/native.html`
+loads it, and the preview's **Play** button opens that page. Build and test it
+with Node 22:
+
+```sh
+npm --prefix engine ci
+npm --prefix engine run typecheck
+npm --prefix engine run build
+npm --prefix engine test
+```
+
+At runtime it downloads and reads the demo's `runtime/fr3.zip`, the same
+archive of unchanged game files the Boxedwine runtime uses, so the site
+redistributes nothing new. It is not research evidence: nothing in `research/`
+or `analysis/` cites it, and the findings above come from the original demo's
+files and executable.
 
 ## Reproduce
 

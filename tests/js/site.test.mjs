@@ -11,7 +11,7 @@ test("reports the download size from build.json once ready", async () => {
   await settle();
   assert.deepEqual(site.fetches, ["build.json"]);
   // 98 MB + 34.200001 MB rounds up.
-  assert.equal(site.status.textContent, "Ready when you are. The first download is about 133 MB.");
+  assert.equal(site.status.textContent, "The first download is about 133 MB.");
   assert.equal(site.play.disabled, false);
   assert.equal(site.configure.disabled, false);
 });
@@ -51,7 +51,7 @@ test("without isolation, the first attempt registers the worker and reloads once
   assert.equal(site.storage.get("fr3-isolation-reload"), "1");
   assert.equal(site.reloads, 1);
   // Not isolated yet, so the ready message is withheld.
-  assert.equal(site.status.textContent, "Ready when you are. The first download is about 133 MB.");
+  assert.equal(site.status.textContent, "The first download is about 133 MB.");
   assert.equal(site.play.disabled, true);
   await site.play.click();
   assert.equal(site.status.textContent, BROWSER_MESSAGE);
@@ -112,9 +112,10 @@ const assertLaunched = (site, src) => {
   assert.equal(site.frame.src, src);
   assert.equal(site.frame.allow, "autoplay; fullscreen; cross-origin-isolated");
   assert.deepEqual(site.screen.children, [site.frame]);
-  assert.equal(site.status.textContent, "Loading the game. The first launch can take several minutes…");
+  assert.equal(site.status.textContent, "Loading. The first launch can take several minutes…");
   assert.equal(site.progress.hidden, false);
   assert.equal(site.progress.hasAttribute("value"), false, "progress should be indeterminate");
+  assert.equal(site.playNative.disabled, true);
   assert.equal(site.play.disabled, true);
   assert.equal(site.configure.disabled, true);
   assert.equal(site.restart.disabled, false);
@@ -135,6 +136,86 @@ for (const [button, mode, title] of [["play", "play", "Ford Racing 3 demo"], ["c
     });
   }
 }
+
+const assertNativeLaunched = (site, sound) => {
+  assert.equal(site.frame.src, `native.html?sound=${sound}`);
+  assert.equal(site.frame.title, "Ford Racing 3 native WebGL2");
+  assert.equal(site.frame.allow, "autoplay; fullscreen; gamepad");
+  assert.deepEqual(site.screen.children, [site.frame]);
+  assert.equal(site.status.textContent, "Loading (about 26 MB)…");
+  assert.equal(site.progress.hidden, false);
+  assert.equal(site.progress.hasAttribute("value"), false, "progress should be indeterminate");
+  assert.equal(site.playNative.disabled, true);
+  assert.equal(site.play.disabled, true);
+  assert.equal(site.configure.disabled, true);
+  assert.equal(site.restart.disabled, false);
+  assert.equal(site.fullscreen.disabled, false);
+};
+
+for (const checked of [true, false]) {
+  test(`Play launches the native WebGL2 engine with sound=${checked}`, async () => {
+    const site = loadSite();
+    await settle();
+    site.sound.checked = checked;
+    await site.playNative.click();
+    assertNativeLaunched(site, checked);
+    await site.frame.dispatch("load");
+    assert.equal(site.frame.contentWindow.focused, 1);
+  });
+}
+
+test("Play launches the native engine without browser isolation or WebAssembly", async () => {
+  // The native engine needs neither, so it launches where Play (Boxedwine) refuses.
+  const site = loadSite({isolated: false, reloadFlag: "1"});
+  await settle();
+  site.context.WebAssembly = undefined;
+  await site.play.click();
+  assert.equal(site.frame, undefined);
+  await site.playNative.click();
+  assertNativeLaunched(site, false);
+});
+
+test("the native engine's running state re-enables every launcher", async () => {
+  const site = loadSite();
+  await settle();
+  await site.playNative.click();
+  await site.runtime({progress: 60, status: "Loading track…"});
+  assert.equal(site.progress.value, 60);
+  assert.equal(site.status.textContent, "Loading track…");
+  await site.runtime({state: "running", status: "Running. Click the game, then press Enter."});
+  assert.equal(site.progress.hidden, true);
+  assert.equal(site.playNative.disabled, false);
+  assert.equal(site.play.disabled, false);
+  assert.equal(site.configure.disabled, false);
+  assert.equal(site.status.textContent, "Running. Click the game, then press Enter.");
+});
+
+test("Restart after Play relaunches the native engine in a fresh frame", async () => {
+  const site = loadSite();
+  await settle();
+  site.sound.checked = true;
+  await site.playNative.click();
+  const first = site.frame;
+  await site.runtime({log: "old line"});
+  await site.runtime({state: "running"});
+  site.sound.checked = false;
+  await site.sound.dispatch("change");
+  assert.equal(site.status.textContent, "Press Restart to apply the sound setting.");
+  await site.restart.click();
+  assert.notEqual(site.frame, first);
+  assert.equal(first.removed, true);
+  assertNativeLaunched(site, false);
+  // Restart starts a fresh log.
+  await site.log.click();
+  assert.equal(site.blobs.at(-1).parts.join(""), "");
+  // Play (Boxedwine) switches the mode Restart reuses, and Play switches it back.
+  await site.play.click();
+  await site.restart.click();
+  assert.equal(site.frame.src, "runtime/game.html?mode=play&sound=false");
+  await site.playNative.click();
+  await site.restart.click();
+  assert.equal(site.frame.src, "native.html?sound=false");
+});
 
 test("Restart reuses the last mode and replaces the frame", async () => {
   const site = loadSite();
@@ -161,7 +242,7 @@ test("ignores messages before any frame exists", async () => {
   const site = loadSite();
   await settle();
   await site.message({type: "fr3-runtime", status: "spoofed"}, {source: {}});
-  assert.equal(site.status.textContent, "Ready when you are. The first download is about 133 MB.");
+  assert.equal(site.status.textContent, "The first download is about 133 MB.");
 });
 
 for (const [name, data, options] of [
@@ -175,7 +256,7 @@ for (const [name, data, options] of [
     await settle();
     await site.play.click();
     await site.message(data, options);
-    assert.equal(site.status.textContent, "Loading the game. The first launch can take several minutes…");
+    assert.equal(site.status.textContent, "Loading. The first launch can take several minutes…");
     assert.equal(site.play.disabled, true);
     assert.equal(site.configure.disabled, true);
     assert.equal(site.progress.hidden, false);
@@ -206,6 +287,7 @@ for (const state of ["running", "error", "exited"]) {
     await site.runtime({progress: 80});
     await site.runtime({state, status: `now ${state}`});
     assert.equal(site.progress.hidden, true);
+    assert.equal(site.playNative.disabled, false);
     assert.equal(site.play.disabled, false);
     assert.equal(site.configure.disabled, false);
     assert.equal(site.restart.disabled, false);
@@ -240,11 +322,11 @@ test("changing sound with a running frame asks for Restart", async () => {
   const site = loadSite();
   await settle();
   await site.sound.dispatch("change");
-  assert.equal(site.status.textContent, "Ready when you are. The first download is about 133 MB.");
+  assert.equal(site.status.textContent, "The first download is about 133 MB.");
   await site.play.click();
   site.sound.checked = true;
   await site.sound.dispatch("change");
-  assert.equal(site.status.textContent, "Sound effects setting changed. Press Restart to apply it.");
+  assert.equal(site.status.textContent, "Press Restart to apply the sound setting.");
 });
 
 test("exit-fullscreen leaves fullscreen only when the player is fullscreen", async () => {
