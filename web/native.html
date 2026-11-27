@@ -11,8 +11,8 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #070d14;
-      color: #e8f2f8;
+      background: #000;
+      color: #ddd;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
     #stage {
@@ -35,7 +35,7 @@
       align-items: center;
       justify-content: center;
       gap: 12px;
-      background: rgba(7, 13, 20, 0.92);
+      background: #000;
       transition: opacity 220ms ease;
       pointer-events: none;
     }
@@ -44,27 +44,25 @@
     }
     #overlay h1 {
       margin: 0;
-      font-size: 20px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: #fcdb52;
+      font-size: 16px;
+      font-weight: 600;
+      color: #ddd;
     }
     #overlay p {
       margin: 0;
       font-size: 14px;
-      color: #a9c1d2;
+      color: #999;
     }
     #bar-wrap {
       width: min(360px, 78vw);
-      height: 8px;
-      background: #172736;
-      border-radius: 4px;
+      height: 3px;
+      background: #333;
       overflow: hidden;
     }
     #bar {
       width: 0%;
       height: 100%;
-      background: #3ddbd1;
+      background: #ddd;
       transition: width 120ms linear;
     }
   </style>
@@ -73,7 +71,7 @@
   <div id="stage">
     <canvas id="fr3-canvas" aria-label="Ford Racing 3 Native WebGL2 canvas"></canvas>
     <div id="overlay" role="status" aria-live="polite">
-      <h1>Ford Racing 3 · WebGL2</h1>
+      <h1>Ford Racing 3</h1>
       <div id="bar-wrap"><div id="bar"></div></div>
       <p id="msg">Loading native engine…</p>
     </div>
@@ -126,7 +124,7 @@
     }).then(() => {
       overlay.classList.add("hidden");
       canvas.focus();
-      notify({ state: "running", status: "Running Native WebGL2 (60 FPS). Press Enter or click to start.", log: "[native] ready" });
+      notify({ state: "running", status: "Running. Click the game, then press Enter.", log: "[native] ready" });
     }).catch(() => {});
   </script>
 </body>
