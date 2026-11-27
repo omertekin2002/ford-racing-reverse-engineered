@@ -17,8 +17,8 @@ from fr3_common import DEMO_PAGE
 from setup_web_tools import BOXEDWINE_REVISION, WINE_WEB_SHA256
 import verify_web
 from verify_web import (ISSUES_PAGE, PACKET, RIGHTS_CREDIT, WASM_HEADER, links_to_packet, links_to_research, verify,
-                        verify_archive, verify_build_record, verify_notice, verify_packet, verify_relative_urls,
-                        verify_research_site, verify_script_order, verify_sums)
+                        verify_archive, verify_build_record, verify_native_notice, verify_notice, verify_packet,
+                        verify_relative_urls, verify_research_site, verify_script_order, verify_sums)
 
 import build_research
 import build_web
@@ -31,6 +31,12 @@ NOTICE = f"""<aside id="rights-notice" aria-label="Rights notice"><p>Unofficial 
   {RIGHTS_CREDIT}</p><p><a href="{DEMO_PAGE}" rel="noopener">Official demo</a>
   <a href="{ISSUES_PAGE}" rel="noopener">Request removal</a></p></aside>"""
 PLAYER = '<section class="player" aria-label="Game player"><div id="screen"></div></section>'
+NATIVE_STAGE = ('<div id="stage"><canvas id="fr3-canvas"></canvas>'
+                '<div id="overlay" role="status"><h1>Ford Racing 3</h1><p id="msg">Loading…</p></div></div>')
+
+
+def native_page(*parts):
+    return "<!doctype html><html><body>" + "".join(parts) + "</body></html>"
 
 
 def page(*parts):
@@ -88,6 +94,44 @@ class VerifyNoticeTests(unittest.TestCase):
         verify_notice(page(notice, PLAYER))
 
 
+class VerifyNativeNoticeTests(unittest.TestCase):
+    def test_accept_notice_beside_stage(self):
+        verify_native_notice(native_page(NATIVE_STAGE, NOTICE))
+
+    def test_accept_repository_page(self):
+        verify_native_notice((ROOT / "web/native.html").read_text(encoding="utf-8"))
+
+    def test_repository_page_says_it_is_a_reimplementation(self):
+        html = (ROOT / "web/native.html").read_text(encoding="utf-8")
+        notice = html[html.index('id="rights-notice"'):html.index("</aside>")]
+        self.assertIn("independent reimplementation", notice)
+        self.assertIn("not the original executable", notice)
+        self.assertIn("approximations", notice)
+
+    def test_reject_missing_notice(self):
+        with self.assertRaisesRegex(ValueError, r"^native.html lacks the rights-holder notice \(#rights-notice\)$"):
+            verify_native_notice(native_page(NATIVE_STAGE))
+
+    def test_reject_missing_credit(self):
+        with self.assertRaisesRegex(ValueError, f"^The rights-holder notice in native.html lacks the credit: {RIGHTS_CREDIT}$"):
+            verify_native_notice(native_page(NATIVE_STAGE, NOTICE.replace(RIGHTS_CREDIT, "Ford Racing 3 demo")))
+
+    def test_reject_missing_links(self):
+        for url in (DEMO_PAGE, ISSUES_PAGE):
+            with self.subTest(url=url), self.assertRaisesRegex(
+                    ValueError, f"^The rights-holder notice in native.html lacks a link to {url}$"):
+                verify_native_notice(native_page(NATIVE_STAGE, NOTICE.replace(url, "https://example.com/")))
+
+    def test_reject_notice_inside_loading_overlay(self):
+        stage = NATIVE_STAGE.replace('<p id="msg">', NOTICE + '<p id="msg">')
+        with self.assertRaisesRegex(ValueError, "must not be inside the loading overlay"):
+            verify_native_notice(native_page(stage))
+
+    def test_accept_notice_after_nested_overlay_closes(self):
+        stage = NATIVE_STAGE.replace("<h1>", "<div><div>nested</div></div><h1>")
+        verify_native_notice(native_page(stage, NOTICE))
+
+
 FILES = {"DATA/one.txt": b"first synthetic game file", "DATA/SUB/two.bin": bytes(range(64))}
 GAME_HTML = ('<!doctype html><html><head><link rel="stylesheet" href="../emulator.css"></head><body>'
              '<script src="../runtime-bridge.js"></script><script async src="boxedwine.js"></script></body></html>')
@@ -123,6 +167,7 @@ def build_site(root):
     for name in ("site.css", "emulator.css", "runtime-bridge.js"):
         (root / name).write_text(f"/* {name} */\n")
     (runtime / "game.html").write_text(GAME_HTML, encoding="utf-8")
+    (root / "native.html").write_text(native_page(NATIVE_STAGE, NOTICE), encoding="utf-8")
     (runtime / "boxedwine.js").write_text("// synthetic emulator\n")
     (runtime / "boxedwine.wasm").write_bytes(WASM_HEADER + b"synthetic module")
     (runtime / "wine11.zip").write_bytes(b"synthetic wine filesystem")
@@ -355,6 +400,21 @@ class VerifySiteTests(SiteTestCase):
     def test_reject_site_with_unlisted_game_file(self):
         with self.assertRaisesRegex(ValueError, "lacks manifest files"):
             verify(self.root, [*self.manifest, {"path": "DATA/three.txt", "size": 1, "sha256": digest(b"3")}])
+
+    def test_reject_site_without_native_page(self):
+        (self.root / "native.html").unlink()
+        write_sums(self.root)
+        with self.assertRaisesRegex(ValueError, "lacks native.html"):
+            verify(self.root, self.manifest)
+
+    def test_reject_native_page_without_notice_parts(self):
+        for missing in (RIGHTS_CREDIT, DEMO_PAGE, ISSUES_PAGE):
+            with self.subTest(missing=missing):
+                (self.root / "native.html").write_text(native_page(NATIVE_STAGE, NOTICE.replace(missing, "x")),
+                                                      encoding="utf-8")
+                write_sums(self.root)
+                with self.assertRaisesRegex(ValueError, "rights-holder notice in native.html lacks"):
+                    verify(self.root, self.manifest)
 
     def test_bad_site_still_fails_under_optimize(self):
         # A file changed after hashing used to pass under -O, which stripped the bare asserts.
