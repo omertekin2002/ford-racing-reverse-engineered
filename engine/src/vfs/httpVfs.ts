@@ -51,10 +51,14 @@ export class HttpVfs implements VirtualFileSystem {
   ) {}
 
   static async open(manifestUrl: string, options: HttpVfsOptions = {}): Promise<HttpVfs> {
-    const fetchImpl = options.fetch ?? globalThis.fetch;
-    if (typeof fetchImpl !== "function") {
+    const rawFetch = options.fetch ?? globalThis.fetch;
+    if (typeof rawFetch !== "function") {
       throw new Error("HTTP asset loading requires fetch()");
     }
+    // Browsers reject window.fetch when invoked with an HttpVfs instance as `this` (Illegal invocation).
+    const fetchImpl: typeof globalThis.fetch = rawFetch === globalThis.fetch
+      ? (input, init) => rawFetch.call(globalThis, input, init)
+      : (input, init) => rawFetch(input, init);
     options.onProgress?.(0.05, "Loading game file manifest");
     const response = await fetchImpl(manifestUrl);
     if (!response.ok) {
@@ -93,8 +97,9 @@ export class HttpVfs implements VirtualFileSystem {
     let pending = this.cache.get(key);
     if (!pending) {
       const url = `${this.baseUrl}${encodeRelativePath(relative)}`;
+      const fetchImpl = this.fetchImpl;
       pending = (async () => {
-        const response = await this.fetchImpl(url);
+        const response = await fetchImpl(url);
         if (!response.ok) throw new Error(`Could not fetch ${relative} (HTTP ${response.status})`);
         return new Uint8Array(await response.arrayBuffer());
       })().catch(error => {

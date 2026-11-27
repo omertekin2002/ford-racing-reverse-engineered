@@ -95,6 +95,32 @@ test("HttpVfs indexes a manifest, resolves relative URLs, caches fetches and ret
   assert.equal(requests.length, 3);
 });
 
+test("HttpVfs binds globalThis.fetch so browser Window.fetch does not throw Illegal invocation", async () => {
+  const originalFetch = globalThis.fetch;
+  const strictWindowFetch: typeof globalThis.fetch = async function (this: unknown, input) {
+    if (this !== globalThis) {
+      throw new TypeError("Failed to execute 'fetch' on 'Window': Illegal invocation");
+    }
+    const url = String(input);
+    if (url === "https://example.test/runtime/game-manifest.json") {
+      return new Response(JSON.stringify({ version: 1, baseUrl: "game", files: ["DATA/ASCII/TRACKS.DAT"] }), { status: 200 });
+    }
+    if (url === "https://example.test/runtime/game/DATA/ASCII/TRACKS.DAT") {
+      return new Response("tracks-ok", { status: 200 });
+    }
+    return new Response("not found", { status: 404 });
+  };
+  globalThis.fetch = strictWindowFetch;
+  try {
+    const vfs = await HttpVfs.open("https://example.test/runtime/game-manifest.json");
+    assert.equal(await vfs.readText("DATA/ASCII/TRACKS.DAT"), "tracks-ok");
+    const explicit = await HttpVfs.open("https://example.test/runtime/game-manifest.json", { fetch: strictWindowFetch });
+    assert.equal(await explicit.readText("DATA/ASCII/TRACKS.DAT"), "tracks-ok");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("MenuController cycles installed tracks and launches the selected track", () => {
   const menu = new MenuController({
     cars: [{ id: "FORD_GT", name: "Ford GT", liveries: ["DEFAULT"] }],
