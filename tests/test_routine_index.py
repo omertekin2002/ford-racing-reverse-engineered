@@ -330,7 +330,7 @@ class CommittedFilesTests(unittest.TestCase):
     def test_builds_from_the_committed_analysis_files(self):
         result = self.run_script("--output", str(self.output))
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("Wrote 25 routines, 32 disassembly files and 541 byte-checked sites", result.stdout)
+        self.assertIn("Wrote 25 routines, 35 disassembly files and 638 byte-checked sites", result.stdout)
         page = self.output.read_text(encoding="utf-8")
         committed = json.loads(routine_index.STATUS.read_text(encoding="utf-8"))
         self.assertEqual(page.count('<section class="routine"'), 25)
@@ -340,7 +340,7 @@ class CommittedFilesTests(unittest.TestCase):
         self.assertEqual(sorted(site_vas(page)), sorted(f"{site['va']:08x}" for site in sites))
         asm = {Path(href).name for href in re.findall(r'href="([^"]+\.asm)"', page)}
         self.assertEqual(asm, set(routine_index.ASM_FILES))
-        self.assertEqual(len(routine_index.ASM_FILES), 32)
+        self.assertEqual(len(routine_index.ASM_FILES), 35)
         found = sections(page)
         self.assertEqual(site_vas(found["fr3_get_tyre_sound_info"]), ["00523f10", "00523f1c", "00523f27"])
         # 30 tyre loader sites, plus where it keeps its database and reads a record's name (the car references).
@@ -359,6 +359,9 @@ class CommittedFilesTests(unittest.TestCase):
         # The car loader, the tyre lookup and the record link hold no routine entry and get their own sections.
         self.assertEqual([len(site_vas(found[f"asm-{name}"]))
                           for name in ("load_car_database", "find_tyre_record", "link_database_record")], [51, 13, 7])
+        # So do the brake loader, its copy and its lookup.
+        self.assertEqual([len(site_vas(found[f"asm-{name}"]))
+                          for name in ("load_brake_database", "copy_brake_record", "find_brake_record")], [46, 36, 13])
         for name in ("fill_memory", "allocate_database_record", "create_database", "fill_memory_body"):
             self.assertIn(f"asm-{name}", found)
         # The ASCII tag path: the next-tag dispatcher is an annotated routine; the files around it hold no routine
@@ -372,7 +375,7 @@ class CommittedFilesTests(unittest.TestCase):
         unplaced = page[page.index('id="unplaced-sites"'):]
         data = sorted(f"{site['va']:08x}" for site in sites if site.get("kind") == "data")
         self.assertEqual(site_vas(unplaced), data)
-        self.assertEqual(len(data), 8)
+        self.assertEqual(len(data), 10)
 
     def test_asm_files_names_exactly_the_committed_disassembly(self):
         committed = sorted(path.name for path in routine_index.SELECTED.glob("*.asm"))
@@ -393,7 +396,7 @@ class CommittedFilesTests(unittest.TestCase):
         script = copy_root / "scripts/routine_index.py"
         result = self.run_script("--output", str(self.output), script=script)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("32 disassembly files", result.stdout)
+        self.assertIn("35 disassembly files", result.stdout)
         self.output.unlink()
         (copy_root / "analysis/selected/fill_memory_body.asm").unlink()
         for args in ((), ("--selected", str(copy_root / "analysis/selected"))):

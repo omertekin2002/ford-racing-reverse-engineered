@@ -110,7 +110,7 @@ python3 scripts/package_analysis.py
 The bundle holds one folder, `fr3-analysis-<short revision>/`, in layers: the
 source (`README.md`, `ruff.toml`, `scripts/`, `tests/`, `recovered/`, `docs/`
 and `analysis/`, read from Git at the producer revision), the parsed engine,
-gearbox, tyre and car databases in `text-databases/`, the checked research pages in
+gearbox, tyre, car and brake databases in `text-databases/`, the checked research pages in
 `research/` and, only when they match the committed verification record, the
 Ghidra outputs in `artifacts/`. Its `MANIFEST.json` names the input build, the
 producer revision, the tool versions and each verification level: `read`,
@@ -171,7 +171,7 @@ headless script errors can be reported without a failing process exit code.
 | `analysis/annotated/selected.c` | 25 selected, labelled decompilations |
 | `analysis/selected/` | Instruction evidence and explicitly bounded disassembly |
 | `recovered/fr3_database_layouts.h` | Engine, gearbox and tyre in-memory layouts |
-| `artifacts/text-databases/` | Parsed engine, gearbox and tyre records from `scripts/text_database.py`, with source hashes |
+| `artifacts/text-databases/` | Parsed engine, gearbox, tyre, car and brake records from `scripts/text_database.py`, with source hashes |
 | `artifacts/research/` | Self-contained research directory from `scripts/build_research.py`: the "Explore findings" entrance page `index.html`, the eight pages below, and the `analysis/` files they link to under `evidence/`; every page carries the rights-holder notice |
 | `artifacts/fr3-research-<revision>.zip` | Citable research packet from `scripts/package_research.py`: the verified research directory in one folder, with a `MANIFEST.json` naming the input build, producer revision, Python version, the checks actually run and each file's SHA-256, plus `SHA256SUMS` |
 | `artifacts/dossier/cars.html` | Offline "Cars" page from `scripts/car_page.py`: each of the 55 demo cars' engine, gearbox and front and back tyre, linked to that record's section on `engines.html`, `gearboxes.html` or `tyres.html` and labelled with the basis `cars.json` gives it (resolved by the loader's lookup, byte-checked, or declared by name), the car loader's byte-checked dispatch, name read, lookup and store sites for each reference linked to `routines.html`, and every car declaration as written, repeated `CAR_PERFORMANCE` lines in file order, with no units or menu meaning claimed |
@@ -223,7 +223,13 @@ table's first fifteen words is unknown.
 `:VALID_LIVERY` line. Under `references` it gives the engine, gearbox, front
 tyre and back tyre record each car names. The car loader resolves all four
 through lookups whose dispatch, name compare and stores are byte-checked
-([details](docs/analysis.md#new-finding-car-references)):
+([details](docs/analysis.md#new-finding-car-references)).
+`brakes.json` lists the 12 brakes with each declaration as written. Each brake
+tag's dispatch compare, float reads and stores, and the `INHERIT_TYPE` copy at
+`0x005209d0`, are byte-checked and mapped to `Fr3BrakeRecord`; the parser
+refuses a tag the loader does not store or a value count it does not read. No
+units or meaning are claimed for brake values
+([details](docs/analysis.md#new-finding-brake-stores)):
 
 ```sh
 python3 scripts/acquire_demo.py inputs
@@ -398,8 +404,8 @@ python3 scripts/verify_findings.py . --level instructions
 
 | Level | Needs | Proves |
 | --- | --- | --- |
-| `data` | `inputs/` from `acquire_demo.py` | The archive's SHA-256 and the mirror's MD5, the `fr3.exe` identity, every file in `analysis/game-file-manifest.json`, the tag registry in `analysis/tags.json`, every compressed resource in `analysis/unpacked-manifest.json`, every PCG index and its two trailing-byte exceptions, the engine, gearbox and tyre text-database checks and the tyre table dimensions |
-| `instructions` | `inputs/fr3.exe` | The PE build metadata and import counts, all 541 `field-evidence.json` sites (533 instructions, 8 data) byte-checked against `fr3.exe`, and `analysis/selected/` matching, byte for byte, a fresh `extract_selected.py` export written to a temporary directory |
+| `data` | `inputs/` from `acquire_demo.py` | The archive's SHA-256 and the mirror's MD5, the `fr3.exe` identity, every file in `analysis/game-file-manifest.json`, the tag registry in `analysis/tags.json`, every compressed resource in `analysis/unpacked-manifest.json`, every PCG index and its two trailing-byte exceptions, the engine, gearbox, tyre, car and brake text-database checks and the tyre table dimensions |
+| `instructions` | `inputs/fr3.exe` | The PE build metadata and import counts, all 638 `field-evidence.json` sites (628 instructions, 10 data) byte-checked against `fr3.exe`, and `analysis/selected/` matching, byte for byte, a fresh `extract_selected.py` export written to a temporary directory |
 | `full` (default) | both of the above, plus the Ghidra outputs from `scripts/run_analysis.py` and `gcc` | Everything above, plus the Ghidra baseline and C export counts, the 25 annotated exports, the fresh snapshot import and the C layout assertions; only this level rewrites `analysis/verification.json` |
 
 `data` and `instructions` never write to the checkout. A level whose inputs are
