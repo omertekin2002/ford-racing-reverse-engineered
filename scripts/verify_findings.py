@@ -26,7 +26,7 @@ from fr3_common import ARCHIVE_SHA256, ARCHIVE_SIZE, EXE_SHA256, verified_bytes,
 from extract_selected import export_selected
 from extract_tag_registry import COUNT, TABLE_VA, read_va
 from index_pcg import index_pcg
-from text_database import verify_text_databases
+from text_database import load_brake_loader_lines, verify_text_databases
 from unpack_resources import decode, has_wrapper
 
 EXIT_FAILED = 1
@@ -175,7 +175,8 @@ def check_field_instruction_sites(ctx):
 def check_text_databases(ctx):
     summary = verify_text_databases(ctx.game, {tag["name"] for tag in ctx.tags}, ctx.field_evidence,
                                     {tag["name"]: tag["id"] for tag in ctx.tags},
-                                    (ctx.root / "recovered/fr3_database_layouts.h").read_text())
+                                    (ctx.root / "recovered/fr3_database_layouts.h").read_text(),
+                                    load_brake_loader_lines(ctx.root / "analysis/selected/load_brake_database.asm"))
     ctx.verified["text_databases"] = summary
     return {key: summary[key] for key in ("engine_records", "gearbox_records", "tyre_records", "torque_arrays",
                                           "engine_mapped_tags", "engine_effective_field_records", "gearbox_mapped_tags",
