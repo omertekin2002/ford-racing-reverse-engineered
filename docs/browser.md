@@ -1,9 +1,21 @@
 # Browser preview and GitHub Pages
 
-This static site runs the original Windows **demo** through a WebAssembly build
-of Boxedwine and the Wine 11 WebGL filesystem. It does not replace the original
-engine with newly recovered source. It uses the current pinned development
-runtime because Boxedwine's published 26R1 web runtime cannot render Direct3D.
+This static site offers two runtimes. **Play (Boxedwine)** runs the original
+Windows **demo** through a WebAssembly build of Boxedwine and the Wine 11 WebGL
+filesystem. It does not replace the original engine with newly recovered source.
+It uses the current pinned development runtime because Boxedwine's published
+26R1 web runtime cannot render Direct3D.
+
+**Play** opens `native.html`, which runs the separate, owner-maintained native
+engine from `engine/`: an independent TypeScript + WebGL2 reimplementation, not
+the original executable. `build_web.py` copies its bundle,
+`engine/dist/fr3-engine.js`, to the site's `native/` directory. It reads the
+same `runtime/fr3.zip` of unchanged demo files at runtime, so the site
+redistributes nothing new, and it is not research evidence: nothing under
+`research/` cites it. Build and test it with `npm --prefix engine ci`, then
+`npm --prefix engine run typecheck`, `run build` and `test`; see the
+[README](../README.md#native-engine-engine). The rest of this guide describes
+the Boxedwine runtime unless it says otherwise.
 
 ## Enable Pages when ready
 
@@ -40,7 +52,13 @@ Ford Racing 3 demo © 2004 Empire Interactive Europe Ltd., links the
 and tells rights holders to request removal through the
 [repository's issues](https://github.com/omertekin2002/ford-racing-reverse-engineered/issues).
 The preview is taken down if a rights holder objects.
-`verify_web.py` fails the build when `index.html` lacks this notice.
+`native.html`, which can be opened directly, shows the same credit and both
+links in a strip below the game canvas, outside the loading overlay, with a line
+saying it is an independent reimplementation reading the demo's files, not the
+original executable, whose physics and AI are approximations.
+`verify_web.py` fails the build when `index.html` or `native.html` lacks this
+notice, its credit or either link, or when `native.html` puts it inside the
+loading overlay.
 
 ## Research findings
 
@@ -129,7 +147,7 @@ node --test "tests/js/*.test.mjs"
 ```
 
 They load the real files with stand-in browser and Boxedwine globals and cover
-the launcher's readiness, isolation, launch, Restart, message and log handling,
+the launcher's readiness, isolation, launch of both runtimes, Restart, message and log handling,
 and the bridge's runtime arguments, download size and SHA-256 checks and its
 messages to the launcher. They do not run Boxedwine, Wine or the game.
 

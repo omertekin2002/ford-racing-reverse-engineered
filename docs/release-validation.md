@@ -2,7 +2,9 @@
 
 The 0.1.0 preview packages contain the public Windows demo and bundled Wine,
 not a native reconstruction of the engine. The installer was not executed;
-the extracted original demo files remain unchanged.
+the extracted original demo files remain unchanged. The browser preview's
+separate native engine (`engine/`) is not in these packages and is not
+validated here; see the [README](../README.md#native-engine-engine).
 
 ## Archive checks
 

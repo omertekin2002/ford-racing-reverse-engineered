@@ -3,7 +3,9 @@
 These packages run the original **public Windows demo** through bundled Wine.
 They contain its unchanged 773 game files and original manuals. They are
 compatibility releases; the recovered decompiler output is not yet a native
-Linux or macOS game engine. The retail game is not included.
+Linux or macOS game engine. The retail game is not included. The browser
+preview's separate native engine (`engine/`) is not part of these packages; see
+the [README](../README.md#native-engine-engine).
 
 **Download:** the packages and their `SHA256SUMS` are attached to the
 [v0.1.0-preview release](https://github.com/omertekin2002/ford-racing-reverse-engineered/releases/tag/v0.1.0-preview)
