@@ -44,7 +44,7 @@ function launch(nextMode = "play") {
     frame.allow = "autoplay; fullscreen; gamepad";
     frame.src = `native.html?sound=${sound.checked}`;
     screen.replaceChildren(frame);
-    status.textContent = "Loading native WebGL2 engine (~26 MB)…";
+    status.textContent = "Loading (about 26 MB)…";
     progress.hidden = false;
     progress.removeAttribute("value");
     if (playNative) playNative.disabled = true;
@@ -67,7 +67,7 @@ function launch(nextMode = "play") {
   frame.allow = "autoplay; fullscreen; cross-origin-isolated";
   frame.src = `runtime/game.html?mode=${mode}&sound=${sound.checked}`;
   screen.replaceChildren(frame);
-  status.textContent = "Loading the game. The first launch can take several minutes…";
+  status.textContent = "Loading. The first launch can take several minutes…";
   progress.hidden = false;
   progress.removeAttribute("value");
   if (playNative) playNative.disabled = true;
@@ -87,7 +87,7 @@ fullscreen.addEventListener("click", async () => {
   catch { status.textContent = "Fullscreen is unavailable. You can still play in the window."; }
 });
 sound.addEventListener("change", () => {
-  if (frame) status.textContent = "Sound effects setting changed. Press Restart to apply it.";
+  if (frame) status.textContent = "Press Restart to apply the sound setting.";
 });
 window.addEventListener("message", event => {
   if (!frame || event.origin !== location.origin || event.source !== frame.contentWindow) return;
@@ -121,5 +121,5 @@ fetch("build.json").then(response => {
   return response.json();
 }).then(build => {
   const mb = Object.values(build.assets).reduce((n, asset) => n + asset.bytes, 0) / 1e6;
-  if (!frame && isolationReady) status.textContent = `Ready when you are. The first download is about ${Math.ceil(mb)} MB.`;
+  if (!frame && isolationReady) status.textContent = `The first download is about ${Math.ceil(mb)} MB.`;
 }).catch(() => { status.textContent = "Game assets are missing. Build the site before serving it."; play.disabled = configure.disabled = true; });

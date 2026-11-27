@@ -4,48 +4,51 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Play the original Ford Racing 3 demo in your browser.">
-  <title>Ford Racing 3 · Browser demo</title>
+  <title>Ford Racing 3 demo</title>
   <link rel="stylesheet" href="site.css">
   <script src="site.js" defer></script>
 </head>
 <body>
-  <header><a href="./" class="wordmark">FORD RACING <b>3</b></a><span class="badge">BROWSER PREVIEW</span></header>
   <main>
     <section class="intro">
-      <p class="eyebrow">THE ORIGINAL 2004 DEMO</p>
-      <h1>Take the wheel.</h1>
-      <p class="lede">Classic Ford racing, right in your browser. No installation required.</p>
-      <p class="note">Experimental browser compatibility. A desktop keyboard and a recent Chrome, Edge or Firefox are recommended. The first load may take several minutes.</p>
-      <p class="explore"><a href="research/">Explore findings</a>: the engine, gearbox and tyre records and the graphics catalogue recovered from the demo’s files, with their evidence.</p>
-      <p class="explore"><a href="downloads/fr3-research-latest.zip">Download the research packet</a> (ZIP): an offline copy of the research pages with a manifest of its revision and the checks it passed.</p>
-      <aside id="rights-notice" class="rights" aria-labelledby="rights-title">
-        <h2 id="rights-title">Unofficial preservation preview</h2>
-        <p>This fan project is not affiliated with or endorsed by the rights holders. Ford Racing 3 demo © 2004 Empire Interactive Europe Ltd.</p>
-        <p><a href="https://www.moddb.com/games/ford-racing/downloads/ford-racing-3-demo" rel="noopener">Get the official demo download</a> · Rights holders can <a href="https://github.com/omertekin2002/ford-racing-reverse-engineered/issues" rel="noopener">request removal through the project’s issues</a>.</p>
+      <h1>Ford Racing 3 demo</h1>
+      <p>The 2004 PC demo, running in the browser. Works best in desktop Chrome, Edge or Firefox with a keyboard.</p>
+      <p class="links"><a href="research/">Explore findings</a> · <a href="downloads/fr3-research-latest.zip">Download the research packet</a> (ZIP)</p>
+      <aside id="rights-notice" class="rights" aria-label="Rights notice">
+        <p>Unofficial fan project, not affiliated with the rights holders. Ford Racing 3 demo © 2004 Empire Interactive Europe Ltd.
+        <a href="https://www.moddb.com/games/ford-racing/downloads/ford-racing-3-demo" rel="noopener">Official demo</a> ·
+        <a href="https://github.com/omertekin2002/ford-racing-reverse-engineered/issues" rel="noopener">Request removal</a></p>
       </aside>
     </section>
     <section class="player" aria-label="Game player">
       <div class="toolbar">
-        <button id="play-native" class="primary">Play WebGL2 (60 FPS)</button>
-        <button id="play">Play Boxedwine (Legacy)</button>
-        <button id="configure">Game settings</button>
+        <button id="play-native" class="primary">Play</button>
+        <button id="play">Play (Boxedwine)</button>
+        <button id="configure">Settings</button>
         <button id="restart" disabled>Restart</button>
         <button id="fullscreen" disabled>Fullscreen</button>
-        <label class="sound"><input id="sound" type="checkbox" checked> Sound effects</label>
+        <label class="sound"><input id="sound" type="checkbox" checked> Sound</label>
       </div>
-      <p id="status" role="status" aria-live="polite">Ready when you are. The first download is about 133 MB.</p>
+      <div id="screen"></div>
+      <div class="statusbar">
+        <p id="status" role="status" aria-live="polite">The first download is about 133 MB.</p>
+        <button id="log" class="link">Download log</button>
+      </div>
       <progress id="progress" max="100" value="0" hidden aria-label="Game loading progress"></progress>
-      <div id="screen">
-        <div id="placeholder"><span class="track">03</span><p>PRESS PLAY TO START</p></div>
-      </div>
-      <div class="player-footer"><span>Click the game to focus the keyboard. Press Esc to leave fullscreen.</span><button id="log">Download log</button></div>
     </section>
-    <section class="details">
-      <div><h2>Get on the grid</h2><p>Press Enter to continue past the introduction. Use the arrow keys to select menu items, Enter to confirm and Esc to go back. Select Quick Race to drive the demo’s car and track.</p></div>
-      <div><h2>Take control</h2><p>Arrow keys accelerate, brake and steer. Space is the handbrake, Right Ctrl gives a boost, Enter changes the camera and P pauses. Game settings adjusts detail and language. Save with OK, then press Play demo.</p></div>
-      <div><h2>Keep your settings</h2><p>Game saves and settings stay in this browser on this device. Private browsing or clearing site data may remove them. Music and video streaming are disabled in this preview.</p></div>
+    <section class="help">
+      <h2>Controls</h2>
+      <dl>
+        <dt>Arrow keys</dt><dd>Drive and steer, move through menus</dd>
+        <dt>Enter</dt><dd>Confirm, change camera</dd>
+        <dt>Esc</dt><dd>Back, leave fullscreen</dd>
+        <dt>Space</dt><dd>Handbrake</dd>
+        <dt>Right Ctrl</dt><dd>Boost</dd>
+        <dt>P</dt><dd>Pause</dd>
+      </dl>
+      <p>Click the game first so it gets keyboard input, then pick Quick Race. Saves and settings stay in this browser. Music and video are disabled.</p>
     </section>
   </main>
-  <footer><span>Ford Racing 3 demo · © 2004 Empire Interactive Europe Ltd.</span><a href="research/">Explore findings</a><a href="downloads/fr3-research-latest.zip">Research packet (ZIP)</a><a href="THIRD_PARTY.md">Credits &amp; licenses</a><a href="build.json">Build details</a></footer>
+  <footer><a href="research/">Explore findings</a> · <a href="downloads/fr3-research-latest.zip">Research packet (ZIP)</a> · <a href="THIRD_PARTY.md">Credits &amp; licenses</a> · <a href="build.json">Build details</a></footer>
 </body>
 </html>
