@@ -21,6 +21,10 @@ from indigo_evidence import INDIGO_EVIDENCE_SITES, INDIGO_GAPS
 from text_database import (APPLIED_UNTAGGED_INHERIT, with_applied_inherits)
 from text_database import (GEARBOX_COPY, GEARBOX_FIELD_STORES, GEARBOX_LOADER_SPAN, GEARBOX_RECORD,
                            gearbox_evidence_problems, gearbox_layout_problems, unmapped_gearbox_tags)
+from text_database import (BRAKE_COPIED_ONLY, BRAKE_COPY, BRAKE_DISPATCH, BRAKE_FIELD_STORES, BRAKE_LOADER_SPAN,
+                           BRAKE_RECORD, BRAKE_TAGS, asm_lines, brake_dispatch_problems, brake_evidence_problems,
+                           brake_layout_problems, effective_brake_fields, follow_dispatch, load_brake_loader_lines,
+                           parse_brakes, unmapped_brake_tags)
 from text_database import (BYTE_CHECKED, CAR_LOOKUPS, CAR_RECORD, CAR_REFERENCE_STORES, CAR_REFERENCE_TARGETS,
                            DECLARED, LOOKUP_SHAPE, car_evidence_problems, car_reference_bases, car_reference_targets,
                            conditional_jump, parse_cars, resolve_car_references, selected_ids)
@@ -42,7 +46,8 @@ except ImportError:
 TAGS = {"CAPACITY", "LOCATION_TYPE", "INHERIT_TYPE", "TORQUE_ARRAY", "MAX_RPM", "ENGINE_BRAKING", *GEARBOX_TAGS,
         *ENGINE_FIELD_STORES,
         *TYRE_SCALAR_STORES, "SOUND_INFO", "START_RPM", *TYRE_TABLES,
-        "CAR_TYPE", *CAR_REFERENCE_STORES, "CAR_PERFORMANCE", "VALID_LIVERY", "CAR_MODEL_YEAR", "CAR_BODY_TYPE"}
+        "CAR_TYPE", *CAR_REFERENCE_STORES, "CAR_PERFORMANCE", "VALID_LIVERY", "CAR_MODEL_YEAR", "CAR_BODY_TYPE",
+        *BRAKE_TAGS, "BRAKE_PAD_FRICTION"}
 VALID = """//////////////////////
 // Banner comment
 //////////////////////
@@ -1835,6 +1840,18 @@ def tyre_file(sounds=SOUND_INFO_COUNTS, parents=DEMO_PARENTS, scalar_first=()):
     return "\r\n".join(lines + [":END"]) + "\r\n"
 
 
+def brake_file(count=12, tags=BRAKE_TAGS, inherit=None):
+    """Mirror the demo's brake database: `count` records, each declaring `tags` with as many values as the loader
+    reads; `inherit` maps a record index to the earlier record it inherits."""
+    lines = []
+    for i in range(count):
+        lines += [f":TYPE BRAKE{i}", "// menu_title"]
+        if inherit and i in inherit:
+            lines.append(f":INHERIT_TYPE BRAKE{inherit[i]}")
+        lines += [f":{tag} " + " ".join(["5.0"] * len(BRAKE_FIELD_STORES[tag]["offsets"])) for tag in sorted(tags)]
+    return "\r\n".join(lines + [":END"]) + "\r\n"
+
+
 def car_file(count=55):
     """Mirror the demo's car database: each car references an engine, a gearbox and two tyres of the synthetic files
     above (52, 14, 53 and 53 distinct ones, as CAR_REFERENCE_TARGETS counts), with six :CAR_PERFORMANCE lines and two
@@ -1861,6 +1878,7 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.write("gearboxes", gearbox_file())
         self.write("tyres", tyre_file())
         self.write("cars", car_file())
+        self.write("brakes", brake_file())
 
     def write(self, stem, text):
         (self.game / text_database.DATABASES[stem]).write_text(text, newline="")
@@ -1890,6 +1908,9 @@ class VerifyTextDatabaseTests(unittest.TestCase):
         self.assertEqual(summary["car_records"], 55)
         self.assertEqual(summary["car_mapped_references"], 4)
         self.assertEqual(summary["car_reference_targets"], CAR_REFERENCE_TARGETS)
+        self.assertEqual((summary["brake_records"], summary["brake_mapped_tags"], summary["brake_inheritances"]),
+                         (12, 4, 0))
+        self.assertEqual(summary["brake_tags"], sorted(BRAKE_TAGS))
 
     def test_read_database_records_sound_info(self):
         records = read_database(self.game, text_database.DATABASES["tyres"], TAGS, sound_info=True)["records"]
@@ -2617,6 +2638,465 @@ class CarEvidenceTests(unittest.TestCase):
             with self.subTest(name=name):
                 for relative in LOOKUP_SHAPE:
                     self.assertIn(routine + relative, {site["va"] for site in self.evidence})
+
+
+BRAKES = """//////////////////////
+// Classic ////////////
+:TYPE VINTAGE
+// menu_title
+
+:BRAKE_SPEED 5.0
+:BRAKE_RADIUS 0.24 0.24
+:BRAKE_MAX_FORCE\t1000.00 6000.00   // trailing comment
+:ADDITIONAL_BRAKING 0000.0
+//:BRAKE_PAD_FRICTION 1.0
+:TYPE CLASSIC
+:INHERIT_TYPE VINTAGE
+:ADDITIONAL_BRAKING 9000.0
+:END
+/////////////////////
+"""
+
+
+class ParseBrakeTests(unittest.TestCase):
+    def reject(self, text, line, fragment):
+        with self.assertRaises(TextDatabaseError) as caught:
+            parse_brakes(text, TAGS)
+        self.assertEqual(caught.exception.line, line)
+        self.assertIn(fragment, str(caught.exception))
+
+    def test_valid(self):
+        records = parse_brakes(BRAKES.replace("\n", "\r\n").encode("ascii"), TAGS)
+        self.assertEqual([(record["type"], record["line"]) for record in records], [("VINTAGE", 3), ("CLASSIC", 11)])
+        vintage = records[0]
+        self.assertEqual(list(vintage["fields"]), ["BRAKE_SPEED", "BRAKE_RADIUS", "BRAKE_MAX_FORCE", "ADDITIONAL_BRAKING"])
+        self.assertEqual(vintage["fields"]["BRAKE_RADIUS"], {"line": 7, "values": [0.24, 0.24], "rows": []})
+        self.assertEqual(vintage["fields"]["BRAKE_MAX_FORCE"]["values"], [1000.0, 6000.0])
+        self.assertEqual(vintage["fields"]["ADDITIONAL_BRAKING"]["values"], [0.0])
+        self.assertEqual(vintage["untagged"], [])
+        self.assertEqual(records[1]["fields"]["INHERIT_TYPE"], {"line": 12, "values": ["VINTAGE"], "rows": []})
+
+    def test_value_count_follows_the_loader_reads(self):
+        self.reject(BRAKES.replace(":BRAKE_RADIUS 0.24 0.24", ":BRAKE_RADIUS 0.24"), 7,
+                    ":BRAKE_RADIUS needs exactly 2 numbers, as the brake loader reads 2")
+        self.reject(BRAKES.replace(":BRAKE_RADIUS 0.24 0.24", ":BRAKE_RADIUS 0.24 0.24 0.24"), 7,
+                    ":BRAKE_RADIUS needs exactly 2 numbers")
+        self.reject(BRAKES.replace(":BRAKE_SPEED 5.0", ":BRAKE_SPEED 5.0 6.0"), 6,
+                    ":BRAKE_SPEED needs exactly 1 number, as the brake loader reads 1")
+        self.reject(BRAKES.replace("1000.00 6000.00", "1000.00 STRONG"), 8, ":BRAKE_MAX_FORCE needs exactly 2 numbers")
+
+    def test_tag_the_brake_loader_does_not_store(self):
+        self.reject(BRAKES.replace("//:BRAKE_PAD_FRICTION", ":BRAKE_PAD_FRICTION"), 10,
+                    ":BRAKE_PAD_FRICTION is not a tag the brake loader stores")
+        self.reject(BRAKES.replace(":ADDITIONAL_BRAKING 9000.0", ":NOT_A_TAG 9000.0"), 13, "unknown tag 'NOT_A_TAG'")
+
+    def test_malformed_or_truncated_files(self):
+        self.reject(BRAKES.replace(":ADDITIONAL_BRAKING 9000.0", ":ADDITIONAL_BRAKING"), 13,
+                    ":ADDITIONAL_BRAKING has no value")
+        self.reject(BRAKES.replace(":BRAKE_SPEED 5.0", "BRAKE_SPEED 5.0"), 6, "line does not start with a :TAG")
+        self.reject(BRAKES.replace(":BRAKE_SPEED 5.0", ":BRAKE_SPEED 5.0\n:BRAKE_SPEED 4.0"), 7,
+                    "duplicate tag 'BRAKE_SPEED' in record 'VINTAGE'")
+        self.reject(BRAKES.replace(":TYPE CLASSIC", ":TYPE VINTAGE"), 11, "duplicate record name 'VINTAGE'")
+        self.reject(BRAKES.replace(":INHERIT_TYPE VINTAGE", ":INHERIT_TYPE LATER"), 12, "which is not an earlier record")
+        self.reject(BRAKES.replace(":TYPE CLASSIC", ":TYPE TWENTY_BYTE_NAME_XYZ"), 11, "does not fit char[20]")
+        self.reject(BRAKES.replace(":BRAKE_SPEED 5.0", ":BRAKE_SPEED 5.0.0"), 6, "unparsable value '5.0.0'")
+        truncated = BRAKES[:BRAKES.index(":ADDITIONAL_BRAKING 9000.0")]
+        self.reject(truncated, 13, "missing :END")
+        self.reject(BRAKES.replace(":END", ":END\n:BRAKE_SPEED 1.0"), 15, "content after :END on line 14")
+
+
+# The brake loader's dispatch head, its next-tag read and its default (unknown tag) branch.
+BRAKE_HEAD, BRAKE_NEXT_TAG, BRAKE_DEFAULT = (int(BRAKE_DISPATCH[key], 16) for key in ("head", "next_tag", "default"))
+
+
+def brake_dispatch(lines, tag_id):
+    return follow_dispatch(lines, tag_id, BRAKE_HEAD, BRAKE_NEXT_TAG, BRAKE_DEFAULT)
+
+
+class BrakeDispatchTests(unittest.TestCase):
+    """Follow the committed brake loader disassembly's compare tree; no game data needed."""
+
+    def setUp(self):
+        self.lines = load_brake_loader_lines()
+        self.tags = load_tag_ids()
+
+    def test_the_committed_export_is_the_loader_span(self):
+        self.assertEqual((self.lines[0][0], self.lines[-1][0] < BRAKE_LOADER_SPAN[1]), (BRAKE_LOADER_SPAN[0], True))
+        self.assertEqual(asm_lines("; header\n00520889 83f817                   cmp eax, 0x17\n"),
+                         [(0x00520889, "cmp eax, 0x17")])
+
+    def test_each_mapped_tag_reaches_its_handler_through_its_compare(self):
+        for tag, entry in [*BRAKE_FIELD_STORES.items(), ("INHERIT_TYPE", BRAKE_COPY)]:
+            with self.subTest(tag=tag):
+                self.assertEqual(self.tags[tag], entry["id"])
+                compares, reached = brake_dispatch(self.lines, self.tags[tag])
+                self.assertIsNotNone(reached)
+                self.assertEqual(compares[-1], (int(entry["compare"], 16), entry["id"]))
+                if "after_range" in entry:
+                    self.assertIn(int(entry["after_range"], 16) + 2, reached)
+
+    def test_each_handler_reads_and_writes_exactly_the_mapped_sites(self):
+        text = dict(self.lines)
+        for tag, entry in BRAKE_FIELD_STORES.items():
+            with self.subTest(tag=tag):
+                reached = brake_dispatch(self.lines, entry["id"])[1]
+                expected = {int(va, 16): ("dword", "edi", int(offset, 16))
+                            for offset, store in entry["offsets"].items() for va in store["sites"]}
+                self.assertEqual(text_database.record_writes(self.lines, reached), expected)
+                reads = sorted(va for va in reached if text[va] == "call 0x42e680")
+                self.assertEqual(reads, [int(store["read"], 16) for store in entry["offsets"].values()])
+                # One float read per stored offset: the tag's value count.
+                self.assertEqual(len(reads), {"BRAKE_RADIUS": 2, "BRAKE_MAX_FORCE": 2}.get(tag, 1))
+        reached = brake_dispatch(self.lines, BRAKE_COPY["id"])[1]
+        self.assertEqual(text_database.record_writes(self.lines, reached), {})
+        self.assertEqual(text[int(BRAKE_COPY["call"], 16)], "call 0x5209d0")
+
+    def test_every_other_registry_tag_reaches_the_default_branch(self):
+        handled = {*BRAKE_FIELD_STORES, "INHERIT_TYPE"}
+        for tag, tag_id in self.tags.items():
+            if tag not in handled:
+                with self.subTest(tag=tag):
+                    self.assertIsNone(brake_dispatch(self.lines, tag_id)[1])
+
+    def test_committed_disassembly_agrees_with_the_map(self):
+        self.assertEqual(brake_dispatch_problems(self.lines, self.tags), [])
+
+    def test_disagreements_are_reported(self):
+        stores = drifted(BRAKE_FIELD_STORES, ("BRAKE_RADIUS", "offsets", "0x20", "sites"), ["0x00520905"])
+        self.assertReports("BRAKE_RADIUS: its handler writes", brake_dispatch_problems(self.lines, self.tags, stores))
+        stores = drifted(BRAKE_FIELD_STORES, ("BRAKE_SPEED", "compare"), "0x005208f3")
+        self.assertReports("BRAKE_SPEED: the last compare on its path", brake_dispatch_problems(self.lines, self.tags,
+                                                                                                 stores))
+        stores = drifted(BRAKE_FIELD_STORES, ("ADDITIONAL_BRAKING",), None)
+        problems = brake_dispatch_problems(self.lines, self.tags, stores)
+        self.assertIn("registry tag ADDITIONAL_BRAKING (0x2) reaches a brake loader handler but is not mapped", problems)
+        self.assertIn("the brake loader writes the record at 0x00520960 (fstp dword ptr [edi + 0x30]), which is in no "
+                      "mapped tag", problems)
+        stores = drifted(BRAKE_FIELD_STORES, ("BRAKE_SPEED", "offsets", "0x14", "read"), "0x005208fe")
+        self.assertReports("BRAKE_SPEED: its handler calls the float reader at ['0x520919']",
+                           brake_dispatch_problems(self.lines, self.tags, stores))
+        self.assertIn("BRAKE_PAD_FRICTION (0x1d) reaches the brake loader's default branch, not a handler",
+                      brake_dispatch_problems(self.lines, {**self.tags, "BRAKE_PAD_FRICTION": 0x1d},
+                                              {**BRAKE_FIELD_STORES, "BRAKE_PAD_FRICTION": BRAKE_FIELD_STORES["BRAKE_SPEED"]}))
+
+    def test_a_planted_store_outside_any_handler_is_reported(self):
+        # The default branch writing the record would drop nothing from the compare tree but must still be caught.
+        lines = [(va, "fstp dword ptr [edi + 0x18]" if va == 0x0052099b else line) for va, line in self.lines]
+        self.assertIn("the brake loader writes the record at 0x0052099b (fstp dword ptr [edi + 0x18]), which is in no "
+                      "mapped tag", brake_dispatch_problems(lines, self.tags))
+
+    def test_map_covers_exactly_the_brake_tags(self):
+        self.assertEqual(set(BRAKE_FIELD_STORES), BRAKE_TAGS)
+        self.assertEqual(unmapped_brake_tags(), ([], []))
+        self.assertEqual(unmapped_brake_tags(drifted(BRAKE_FIELD_STORES, ("BRAKE_SPEED",), None)), (["BRAKE_SPEED"], []))
+        self.assertEqual(unmapped_brake_tags({**BRAKE_FIELD_STORES, "CAPACITY": {}}), ([], ["CAPACITY"]))
+
+    def assertReports(self, fragment, problems):
+        self.assertTrue(any(fragment in problem for problem in problems), problems)
+
+
+class BrakeEvidenceTests(unittest.TestCase):
+    def setUp(self):
+        self.evidence = load_field_evidence()
+        self.tags = load_tag_ids()
+
+    def problems(self, evidence=None, stores=None, brake_copy=None, tags=None, record=None, dispatch=None):
+        return brake_evidence_problems(self.evidence if evidence is None else evidence,
+                                       self.tags if tags is None else tags, stores, brake_copy, record, dispatch)
+
+    def without(self, *vas):
+        return [site for site in self.evidence if site["va"] not in vas]
+
+    def replaced(self, va, **fields):
+        return [{**site, **fields} if site["va"] == va else site for site in self.evidence]
+
+    def assertReports(self, fragment, problems):
+        self.assertTrue(any(fragment in problem for problem in problems), problems)
+
+    def test_committed_evidence_agrees_with_the_map(self):
+        self.assertEqual(self.problems(), [])
+
+    def test_wrong_id_is_reported(self):
+        problems = self.problems(stores=drifted(BRAKE_FIELD_STORES, ("BRAKE_RADIUS", "id"), 0x1a))
+        self.assertIn("BRAKE_RADIUS: analysis/tags.json gives registry ID 0x19, the map says 0x1a", problems)
+        self.assertIn("BRAKE_RADIUS: compare site 0x005208f3 (83f819) is not cmp eax, 0x1a", problems)
+        self.assertIn("ADDITIONAL_BRAKING: analysis/tags.json gives registry ID 0x3, the map says 0x2",
+                      self.problems(tags={**self.tags, "ADDITIONAL_BRAKING": 3}))
+
+    def test_missing_site_is_reported(self):
+        removals = {
+            0x00520834: "Brake allocation size: no byte-checked brake loader site at 0x00520834",
+            0x00520851: "Brake database store: no byte-checked brake loader site at 0x00520851",
+            0x00520882: "Brake next-tag call: no byte-checked brake loader site at 0x00520882",
+            0x005208ac: "Brake record allocation: no byte-checked brake loader site at 0x005208ac",
+            0x005208cc: "Brake name read: no byte-checked brake loader site at 0x005208cc",
+            0x005817c4: "Brake file name: no byte-checked data 'cars\\\\brakdata' at 0x005817c4",
+            0x005817fc: "Brake default branch message: no byte-checked data",
+            0x005209a9: "Brake default branch next tag: no byte-checked brake loader site at 0x005209a9",
+            0x00520889: "BRAKE_MAX_FORCE compare: no byte-checked brake loader site at 0x00520889",
+            0x00520915: "BRAKE_SPEED selecting jg: no byte-checked brake loader site at 0x00520915",
+            0x00520908: "BRAKE_RADIUS + 0x20 float read: no byte-checked brake loader site at 0x00520908",
+            0x005208e9: "BRAKE_MAX_FORCE + 0x2c: no byte-checked brake loader site at 0x005208e9",
+            0x00520926: "INHERIT_TYPE compare: no byte-checked brake loader site at 0x00520926",
+            0x0052093f: "INHERIT_TYPE parent lookup: no byte-checked brake loader site at 0x0052093f",
+            0x00520948: "INHERIT_TYPE copy call: no byte-checked brake loader site at 0x00520948",
+            0x00520a39: "brake lookup + 0x19: no byte-checked brake lookup site at 0x00520a39",
+            0x005209d4: "Brake copy record in EBX: no byte-checked brake copy site at 0x005209d4",
+            0x005209e4: "Brake copy + 0x14 store: no byte-checked brake copy site at 0x005209e4",
+            0x00520a08: "Brake copy block + 0x24 movsd: no byte-checked brake copy site at 0x00520a08",
+            0x00520a1c: "Brake copy ret: no byte-checked brake copy site at 0x00520a1c",
+        }
+        for va, fragment in removals.items():
+            with self.subTest(va=f"0x{va:08x}"):
+                self.assertReports(fragment, self.problems(self.without(va)))
+
+    def test_wrong_bytes_are_reported(self):
+        self.assertReports("Brake allocation size: site 0x00520834 (ba30000000) is not ba34000000",
+                           self.problems(self.replaced(0x00520834, bytes="ba30000000")))
+        self.assertReports("Brake default branch: site 0x005209a9 (e9ccfeffff) is not a jump back to 0x0052087b",
+                           self.problems(self.replaced(0x005209a9, bytes="e9ccfeffff")))
+        self.assertReports("Brake file name: no byte-checked data",
+                           self.problems(record=drifted(BRAKE_RECORD, ("file", "name"), "cars\\geardata")))
+        self.assertReports("INHERIT_TYPE: the parent lookup at 0x0052093f is not passed the buffer the name was read",
+                           self.problems(self.replaced(0x0052093c, bytes="8d45d0")))
+        self.assertReports("brake lookup + 0x06: site 0x00520a26 (a1c4735900) is not a174745900",
+                           self.problems(record=drifted(BRAKE_RECORD, ("database", "va"), "0x00597474")))
+
+    def test_selecting_jg_must_be_a_jg_about_its_tag(self):
+        self.assertIn("BRAKE_MAX_FORCE: selecting site 0x005208d6 (7d16) is not a jg whose claim is about "
+                      "BRAKE_MAX_FORCE", self.problems(self.replaced(0x005208d6, bytes="7d16")))
+        self.assertIn("BRAKE_SPEED: selecting site 0x00520915 (7f0f) is not a jg whose claim is about BRAKE_SPEED",
+                      self.problems(self.replaced(0x00520915, claim="BRAKE_RADIUS is selected")))
+
+    def test_store_at_the_wrong_offset_or_out_of_order_is_reported(self):
+        stores = drifted(BRAKE_FIELD_STORES, ("BRAKE_RADIUS", "offsets"),
+                         {"0x20": BRAKE_FIELD_STORES["BRAKE_RADIUS"]["offsets"]["0x1c"],
+                          "0x1c": BRAKE_FIELD_STORES["BRAKE_RADIUS"]["offsets"]["0x20"]})
+        problems = self.problems(stores=stores)
+        self.assertReports("BRAKE_RADIUS + 0x20: site 0x00520905 (d95f1c) is not a kind store, width dword, base edi, "
+                           "disp 0x20, register st0 instruction", problems)
+        stores = drifted(BRAKE_FIELD_STORES, ("BRAKE_MAX_FORCE", "offsets", "0x28", "read"), "0x005208e4")
+        problems = self.problems(stores=stores)
+        self.assertIn("BRAKE_MAX_FORCE + 0x28: store 0x005208e1 does not follow its read 0x005208e4 before the tag's "
+                      "next read", problems)
+        stores = drifted(BRAKE_FIELD_STORES, ("BRAKE_SPEED", "offsets", "0x14", "width"), "byte")
+        self.assertIn("BRAKE_SPEED + 0x14: a float read is stored once as a dword", self.problems(stores=stores))
+
+    def test_unmapped_tag_or_store_is_reported(self):
+        problems = self.problems(stores=drifted(BRAKE_FIELD_STORES, ("ADDITIONAL_BRAKING",), None))
+        self.assertIn("byte-checked record store at 0x00520960 (d95f30) is in no mapped tag", problems)
+        self.assertIn("the copy writes +0x18..+0x1b, +0x24..+0x27, +0x30..+0x33 that no mapped tag stores; "
+                      "BRAKE_COPIED_ONLY lists +0x18..+0x1b, +0x24..+0x27", problems)
+        problems = self.problems(stores=drifted(BRAKE_FIELD_STORES, ("BRAKE_SPEED", "offsets", "0x14", "sites"), []))
+        self.assertIn("BRAKE_SPEED + 0x14: a float read is stored once as a dword", problems)
+        self.assertIn("byte-checked record store at 0x0052091e (d95f14) is in no mapped tag", problems)
+
+    def test_store_sites_must_belong_to_their_tag(self):
+        self.assertReports("BRAKE_SPEED + 0x14: the claim at 0x0052091e is not about BRAKE_SPEED",
+                           self.problems(self.replaced(0x0052091e, claim="ADDITIONAL_BRAKING stores")))
+
+    def test_copy_moves_and_blocks_are_checked(self):
+        problems = self.problems(brake_copy=drifted(BRAKE_COPY, ("moves", "0x30"), None))
+        self.assertIn("byte-checked copy store at 0x00520a15 (894330) is in no mapped move", problems)
+        self.assertIn("mapped stores the copy misses: +0x30..+0x33", problems)
+        problems = self.problems(brake_copy=drifted(BRAKE_COPY, ("blocks", "0x24", "size"), 0x14))
+        self.assertIn("Brake copy block + 0x24 size: site 0x005209f7 (b90c000000) is not b914000000", problems)
+        self.assertIn("the copy writes the name or past the record: +0x34..+0x37", problems)
+        self.assertReports("Brake copy + 0x30 load: site 0x00520a12 (8b4234) is not",
+                           self.problems(self.replaced(0x00520a12, bytes="8b4234")))
+        problems = self.problems(brake_copy=drifted(BRAKE_COPY, ("blocks", "0x24", "record"), "eax"))
+        self.assertIn("Brake copy block + 0x24: the destination 0x005209ff uses EAX after 0x005209e8", problems)
+        self.assertReports("Brake copy block + 0x24 destination: site 0x005209ff (8d7b24) is not", problems)
+
+    def test_copied_only_offsets_are_exactly_what_no_tag_stores(self):
+        stored = text_database.engine_stored_bytes(BRAKE_FIELD_STORES)
+        self.assertEqual(byte_ranges(set(range(0x14, 0x34)) - set(stored)), "+0x18..+0x1b, +0x24..+0x27")
+        self.assertEqual(set(BRAKE_COPIED_ONLY), {"0x18", "0x24"})
+        with mock.patch.dict(text_database.BRAKE_COPIED_ONLY, {"0x18": "copied_only_18"}, clear=True):
+            self.assertIn("the copy writes +0x18..+0x1b, +0x24..+0x27 that no mapped tag stores; BRAKE_COPIED_ONLY "
+                          "lists +0x18..+0x1b", self.problems())
+
+    @unittest.skipIf(capstone is None, "needs capstone and pefile from scripts/requirements.txt")
+    def test_decoder_agrees_with_capstone_on_every_brake_site(self):
+        decoded = dict(decoded_evidence())
+        brake = [(va, raw) for va, raw, _ in EVIDENCE if BRAKE_LOADER_SPAN[0] <= va < 0x00520A57]
+        self.assertEqual(len(brake), 95)
+        for va, raw in brake:
+            mine = memory_operand(raw)
+            if mine is None:
+                continue
+            with self.subTest(va=f"0x{va:08x}"):
+                sign, disp = "-" if mine["disp"] < 0 else "+", abs(mine["disp"])
+                self.assertIn(f"[{mine['base']} {sign} {disp if disp < 10 else hex(disp)}]", decoded[va])
+                if mine["width"]:
+                    self.assertIn(f"{mine['width']} ptr", decoded[va])
+        for tag, entry in [*BRAKE_FIELD_STORES.items(), ("INHERIT_TYPE", BRAKE_COPY)]:
+            with self.subTest(tag=tag):
+                self.assertEqual(decoded[int(entry["compare"], 16)],
+                                 f"cmp eax, {entry['id'] if entry['id'] < 10 else hex(entry['id'])}")
+        for entry in BRAKE_FIELD_STORES.values():
+            for offset, store in entry["offsets"].items():
+                self.assertEqual(decoded[int(store["read"], 16)], "call 0x42e680")
+                self.assertEqual(decoded[int(store["sites"][0], 16)], f"fstp dword ptr [edi + 0x{int(offset, 16):x}]")
+        self.assertEqual(decoded[int(BRAKE_COPY["call"], 16)], "call 0x5209d0")
+        self.assertEqual({va for va, _ in brake if va >= 0x00520A20},
+                         {0x00520A20 + relative for relative in LOOKUP_SHAPE})
+        data = {va: raw for va, raw, _ in DATA_EVIDENCE}
+        self.assertEqual(bytes.fromhex(data[0x005817c4]), b"cars\\brakdata\0")
+        self.assertEqual(bytes.fromhex(data[0x005817fc]), b"DB_BRAKE: unknown data file tag %d\0")
+
+
+class BrakeLayoutTests(unittest.TestCase):
+    def test_committed_header_agrees_with_the_map(self):
+        self.assertEqual(brake_layout_problems(ENGINE_HEADER), [])
+
+    def test_offset_that_disagrees_with_the_header_is_reported(self):
+        swapped = ENGINE_HEADER.replace("    float brake_speed;\n    uint32_t copied_only_18;\n",
+                                        "    uint32_t copied_only_18;\n    float brake_speed;\n")
+        self.assertNotEqual(swapped, ENGINE_HEADER)
+        problems = brake_layout_problems(swapped)
+        self.assertIn("BRAKE_SPEED + 0x14: Fr3BrakeRecord.brake_speed is at +0x18", problems)
+        self.assertIn("copied only + 0x18: Fr3BrakeRecord.copied_only_18 is at +0x14", problems)
+
+    def test_name_size_and_assertions_are_checked(self):
+        stores = drifted(BRAKE_FIELD_STORES, ("BRAKE_RADIUS", "offsets", "0x20", "field"), "brake_radius_2")
+        self.assertIn("BRAKE_RADIUS + 0x20: Fr3BrakeRecord has no field brake_radius_2",
+                      brake_layout_problems(ENGINE_HEADER, stores))
+        line = '_Static_assert(offsetof(Fr3BrakeRecord, brake_max_force_second) == 0x2c, "BRAKE_MAX_FORCE second value");\n'
+        self.assertIn(line, ENGINE_HEADER)
+        self.assertEqual(brake_layout_problems(ENGINE_HEADER.replace(line, "")),
+                         ["BRAKE_MAX_FORCE + 0x2c: the header does not _Static_assert offsetof(Fr3BrakeRecord, "
+                          "brake_max_force_second) == 0x2c"])
+        grown = ENGINE_HEADER.replace("    float additional_braking;\n} Fr3BrakeRecord;",
+                                      "    float additional_braking;\n    float extra;\n} Fr3BrakeRecord;")
+        self.assertIn("Fr3BrakeRecord is 0x38 bytes, not 0x34", brake_layout_problems(grown))
+
+    def test_header_provenance_names_the_byte_checked_brake_offsets(self):
+        self.assertIn("Every Fr3BrakeRecord field from +0x14 on is byte-checked", ENGINE_HEADER)
+
+
+def brake_entry(status, path, source, line, values, offsets=("0x14",)):
+    return {"status": status, "values": values, "source": source, "source_line": line, "path": path,
+            "offsets": list(offsets)}
+
+
+class EffectiveBrakeFieldsTests(unittest.TestCase):
+    TEXT = """:TYPE ROOT
+:BRAKE_SPEED 5.0
+:BRAKE_RADIUS 0.24 0.25
+:TYPE MID
+:ADDITIONAL_BRAKING 1.0
+:INHERIT_TYPE ROOT
+:BRAKE_RADIUS 0.3 0.31
+:TYPE LEAF
+:INHERIT_TYPE MID
+:BRAKE_MAX_FORCE 10.0 20.0
+:END
+"""
+
+    def test_inheriting_brakes_get_effective_fields_with_provenance(self):
+        records = parse_brakes(self.TEXT, TAGS)
+        fields = effective_brake_fields(records)
+        self.assertEqual(list(fields), ["MID", "LEAF"])
+        leaf = fields["LEAF"]
+        self.assertEqual(leaf["inherit_type"], {"line": 9, "parent": "MID"})
+        self.assertEqual(leaf["fields"]["BRAKE_SPEED"],
+                         brake_entry("inherited", ["LEAF", "MID", "ROOT"], "ROOT", 2, [5.0]))
+        self.assertEqual(leaf["fields"]["BRAKE_RADIUS"],
+                         brake_entry("inherited", ["LEAF", "MID"], "MID", 7, [0.3, 0.31], ("0x1c", "0x20")))
+        self.assertEqual(leaf["fields"]["BRAKE_MAX_FORCE"],
+                         brake_entry("declared", ["LEAF"], "LEAF", 10, [10.0, 20.0], ("0x28", "0x2c")))
+        # MID's ADDITIONAL_BRAKING came before its INHERIT_TYPE, so the copy overwrote it with ROOT's zero-fill.
+        self.assertEqual(fields["MID"]["overwritten"], [{"tag": "ADDITIONAL_BRAKING", "line": 5, "values": [1.0]}])
+        self.assertEqual(leaf["fields"]["ADDITIONAL_BRAKING"],
+                         {"status": ZERO_FILLED, "path": ["LEAF", "MID", "ROOT"], "offsets": ["0x30"]})
+        check_effective_scalars(records, fields, BRAKE_FIELD_STORES, "Brake effective field")
+
+    def test_the_check_refuses_a_tampered_entry(self):
+        records = parse_brakes(self.TEXT, TAGS)
+        fields = copy.deepcopy(effective_brake_fields(records))
+        fields["LEAF"]["fields"]["BRAKE_SPEED"]["source"] = "MID"
+        with self.assertRaisesRegex(ValueError, "Brake effective field disagrees with the parent-first derivation: "
+                                                "LEAF BRAKE_SPEED"):
+            check_effective_scalars(records, fields, BRAKE_FIELD_STORES, "Brake effective field")
+
+    def test_records_without_inherit_type_have_no_entry(self):
+        self.assertEqual(effective_brake_fields(parse_brakes(brake_file(), TAGS)), {})
+
+
+class VerifyBrakeTests(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.game = Path(directory.name)
+        (self.game / "DATA/ASCII/CARS").mkdir(parents=True)
+        for stem, text in (("engines", engine_file()), ("gearboxes", gearbox_file()), ("tyres", tyre_file()),
+                           ("cars", car_file()), ("brakes", brake_file())):
+            self.write(stem, text)
+
+    def write(self, stem, text):
+        (self.game / text_database.DATABASES[stem]).write_text(text, newline="")
+
+    def verify(self, **kwargs):
+        return verify_text_databases(self.game, TAGS, **kwargs)
+
+    def test_reject_wrong_brake_count(self):
+        self.write("brakes", brake_file(11))
+        with self.assertRaisesRegex(ValueError, "Brake record count mismatch: 11"):
+            self.verify()
+
+    def test_reject_missing_brake_tag(self):
+        self.write("brakes", brake_file(tags=BRAKE_TAGS - {"BRAKE_SPEED"}))
+        with self.assertRaisesRegex(ValueError, "Brake tag set mismatch: BRAKE0"):
+            self.verify()
+
+    def test_reject_a_tag_the_loader_does_not_store(self):
+        self.write("brakes", brake_file().replace(":TYPE BRAKE3", ":TYPE BRAKE3\r\n:BRAKE_PAD_FRICTION 1.0"))
+        with self.assertRaisesRegex(TextDatabaseError, ":BRAKE_PAD_FRICTION is not a tag the brake loader stores"):
+            self.verify()
+
+    def test_reject_an_inheriting_brake(self):
+        self.write("brakes", brake_file(inherit={3: 1}))
+        with self.assertRaisesRegex(ValueError, "Brakes that declare INHERIT_TYPE: BRAKE3"):
+            self.verify()
+
+    def test_reject_brake_store_without_evidence(self):
+        evidence = [site for site in load_field_evidence() if site["va"] != 0x0052090d]
+        with self.assertRaisesRegex(ValueError, "Brake stores lack byte-checked evidence: BRAKE_RADIUS \\+ 0x20: no "
+                                                "byte-checked brake loader site at 0x0052090d"):
+            self.verify(evidence=evidence)
+
+    def test_reject_brake_dispatch_or_header_disagreement(self):
+        lines = [(va, "fstp dword ptr [edi + 0x24]" if va == 0x0052099b else line)
+                 for va, line in load_brake_loader_lines()]
+        with self.assertRaisesRegex(ValueError, "Brake loader dispatch disagrees with BRAKE_FIELD_STORES: the brake "
+                                                "loader writes the record at 0x0052099b"):
+            self.verify(brake_loader=lines)
+        header = ENGINE_HEADER.replace('_Static_assert(offsetof(Fr3BrakeRecord, brake_speed) == 0x14, "BRAKE_SPEED");\n',
+                                       "")
+        with self.assertRaisesRegex(ValueError, "Brake stores disagree with recovered/fr3_database_layouts.h"):
+            self.verify(header=header)
+
+    def test_main_writes_brakes_with_their_effective_fields(self):
+        output = self.game / "out"
+        argv = ["text_database.py", str(self.game), "--output", str(output),
+                "--tags", str(text_database.REPO_ROOT / "analysis/tags.json")]
+        with mock.patch.object(sys, "argv", argv), mock.patch("builtins.print"):
+            text_database.main()
+        brakes = json.loads((output / "brakes.json").read_text())
+        expected = read_database(self.game, text_database.DATABASES["brakes"], TAGS)
+        self.assertEqual(list(brakes), ["source", "sha256", "records", "effective_fields"])
+        self.assertEqual((brakes["source"], brakes["sha256"]), ("DATA/ASCII/CARS/BRAKDATA.DAT", expected["sha256"]))
+        self.assertEqual(brakes["records"], expected["records"])
+        self.assertEqual(len(brakes["records"]), 12)
+        self.assertEqual(brakes["records"][0]["fields"]["BRAKE_RADIUS"]["values"], [5.0, 5.0])
+        self.assertEqual(brakes["effective_fields"], {})
+        self.write("brakes", brake_file(inherit={3: 1}))
+        counts = text_database.write_databases(self.game, output, TAGS, ("brakes",))
+        self.assertEqual(counts, {"brakes": 12})
+        brakes = json.loads((output / "brakes.json").read_text())
+        self.assertEqual(list(brakes["effective_fields"]), ["BRAKE3"])
+        self.assertEqual(brakes["effective_fields"]["BRAKE3"]["fields"]["BRAKE_SPEED"]["status"], "declared")
 
 
 if __name__ == "__main__":

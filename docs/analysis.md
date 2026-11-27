@@ -602,6 +602,122 @@ is out of scope, so the four offsets are not added there. `CAR_PERFORMANCE`,
 interpreted. No unit, physics or menu meaning is claimed for them, and their
 stores are not mapped. The [Cars page](#cars-page) shows each car's references.
 
+## New finding: brake stores
+
+The demo's `DATA/ASCII/CARS/BRAKDATA.DAT` holds 12 `:TYPE` records, each
+declaring `BRAKE_SPEED`, `BRAKE_RADIUS`, `BRAKE_MAX_FORCE` and
+`ADDITIONAL_BRAKING`. `parse_brakes()` in [the parser](../scripts/text_database.py)
+reads it with the shared rules, with these differences:
+
+- A tag with no value and a line that does not start with a tag are refused.
+- Each tag but `:INHERIT_TYPE` must be one the brake loader stores. A registered
+  tag it does not store, such as `BRAKE_PAD_FRICTION`, is refused: the loader's
+  default branch would skip it.
+- Each tag must hold exactly as many numbers as the loader reads for it: two
+  for `BRAKE_RADIUS` and `BRAKE_MAX_FORCE`, one for the others. That count comes
+  from the loader's reader calls and stores below, not from the native engine's
+  `engine/src/formats/databases.ts`.
+
+`text_database.py` writes `brakes.json` beside the other four outputs, with the
+declarations as written, their lines and the source SHA-256, and an
+`effective_fields` map (below). The engine, gearbox, tyre and car outputs are
+byte-identical to before.
+
+[The brake loader](../analysis/selected/load_brake_database.asm) at `0x00520820`
+opens `"cars\brakdata"` (`0x00520862`, data at `0x005817c4`), creates its
+database with a `0x34`-byte payload (`mov edx, 0x34` at `0x00520834`,
+`call 0x0042ed50` at `0x00520842`) and keeps it at `0x005973c4` (`0x00520851`).
+Its tag loop reads the next tag with `0x0042e530` (`0x0052087b`–`0x00520882`)
+and keeps the ID in `ECX` (`0x00520887`). The record-creating branch allocates a
+node with the record allocator (`0x005208ac`), keeps it in `EDI` (`0x005208b9`),
+links it (`0x005208bb`), moves `EDI` `0x20` bytes past the node header
+(`0x005208c5`) and reads the name into the payload's first `0x14` bytes
+(`0x005208c0`–`0x005208cc`). Every handler stores at `EDI + offset`. As in the
+gearbox loader, the dispatch is a tree of range compares; `BRAKE_SPEED` and
+`BRAKE_MAX_FORCE` are selected by the `jg` at their range compare's `jge` target
+not jumping. Each tag's handler calls the float reader (`call 0x0042e680`) once
+per value and stores each value with `fstp` before the next read:
+
+| Tag | ID | Compare | Value | Read | Store | Offset |
+|---|---|---|---|---|---|---|
+| `BRAKE_SPEED` | `0x1a` | `0x005208ee`, then `jg` `0x00520915` | only | `0x00520919` | `0x0052091e` | `+0x14` |
+| `BRAKE_RADIUS` | `0x19` | `0x005208f3` | first | `0x005208fe` | `0x00520905` | `+0x1c` |
+| | | | second | `0x00520908` | `0x0052090d` | `+0x20` |
+| `BRAKE_MAX_FORCE` | `0x17` | `0x00520889`, then `jg` `0x005208d6` | first | `0x005208da` | `0x005208e1` | `+0x28` |
+| | | | second | `0x005208e4` | `0x005208e9` | `+0x2c` |
+| `ADDITIONAL_BRAKING` | `0x2` | `0x00520954` | only | `0x0052095b` | `0x00520960` | `+0x30` |
+
+Every other registry ID reaches the default branch at `0x0052098a`, which
+pushes the tag ID (`0x0052099b`) and the message
+`"DB_BRAKE: unknown data file tag %d"` (`0x0052099c`, data at `0x005817fc`),
+stores nothing and reads the next tag (`0x005209a9`).
+
+`INHERIT_TYPE` (`0x9c`, compare `0x00520926`) reads a name of up to `0x14`
+bytes into a stack buffer (`0x0052092d`–`0x00520937`), passes that buffer to
+[the brake lookup](../analysis/selected/find_brake_record.asm) (`call 0x00520a20`
+at `0x0052093f`), which has the shape of the engine, gearbox and tyre lookups
+over the brake database, and calls
+[the brake copy](../analysis/selected/copy_brake_record.asm) with the parent in
+`EDX` and the record in `EAX` (`0x00520944`–`0x00520948`). Then it jumps back to
+the next tag (`0x0052094d`); it stores no parent address. The copy saves `EBX`,
+`ECX`, `ESI` and `EDI`, keeps the record in `EBX` (`0x005209d4`) and moves, from
+the parent to the record:
+
+| Copied | How | Sites |
+|---|---|---|
+| float `+0x14` | `fld [edx + 0x14]`, `fstp [eax + 0x14]` | `0x005209d6`, `0x005209e4` |
+| `+0x18`–`+0x23` | `0xc` bytes from `EDX + 0x18` to `EAX + 0x18`: three dwords with the F2 `movsd`, no bytes with the F2 `movsb` | `0x005209d9`–`0x005209f4` |
+| `+0x24`–`+0x2f` | the same, from `EDX + 0x24` to `EBX + 0x24` | `0x005209f7`–`0x00520a0f` |
+| dword `+0x30` | `mov eax, [edx + 0x30]`, `mov [ebx + 0x30], eax` | `0x00520a12`, `0x00520a15` |
+
+`EAX` holds the record until block 1 keeps its size there (`0x005209e8`), and
+both writes through `EAX` come before it. The copy writes `+0x14`–`+0x33`: every
+stored offset, plus the dwords at `+0x18` and `+0x24`, which no tag stores
+(`BRAKE_COPIED_ONLY`, `copied_only_18` and `copied_only_24` in the header). It
+leaves the name alone. No demo brake declares `:INHERIT_TYPE`
+(`verify_text_databases()` requires none), so `brakes.json`'s
+`effective_fields` is empty. For a file that has one, `effective_brake_fields()`
+replays the loader the way `effective_scalars()` does for tyres, since the copy
+overwrites every mapped field: each field is declared, inherited along a named
+path, or not declared (zero-filled), with its source line; a declaration before
+`:INHERIT_TYPE` is listed as overwritten.
+
+`BRAKE_FIELD_STORES`, `BRAKE_RECORD`, `BRAKE_DISPATCH` and `BRAKE_COPY` record
+all of this, and
+[`field-evidence.json`](../analysis/selected/field-evidence.json) byte-checks
+every cited site (95 instruction sites and the two strings) against `fr3.exe`.
+`verify_text_databases()` checks on the real demo:
+
+- 12 records, each declaring exactly the four tags, none inheriting, and
+  `BRAKE_FIELD_STORES` covering exactly those four tags.
+- `brake_evidence_problems()`: each compare immediate equals the tag's ID in
+  `analysis/tags.json` and each selecting `jg`'s claim names its tag. Each
+  value's read calls the float reader and its store is an `fstp` of `ST0` at
+  `[edi + offset]` after that read and before the tag's next one, with a claim
+  naming the tag. Every byte-checked `[edi + n]` store in the loader must be a
+  mapped one. The allocation, file name, database store, next-tag read,
+  record-creating branch, default branch, `INHERIT_TYPE` path and lookup must
+  have the listed bytes. In the copy, each move and block must have the listed
+  load, store, size, source and destination, no other store may be
+  byte-checked, and the bytes it writes must be the stored bytes plus
+  `BRAKE_COPIED_ONLY`, inside the record and past the name.
+- `brake_dispatch_problems()` follows the compare tree of the committed
+  `load_brake_database.asm` for every registry ID: each mapped ID reaches its
+  handler through its compare, calls the float reader exactly at its mapped
+  reads and writes the record exactly at its mapped stores; `INHERIT_TYPE`
+  calls the copy and writes nothing; every other ID reaches the default branch;
+  and every write to `[edi + n]` anywhere in the loader is a mapped store. Any
+  tag the loader stores that the map lacks, or any store the map does not
+  name, fails the build instead of being dropped.
+- `brake_layout_problems()` checks each mapped offset and both
+  `BRAKE_COPIED_ONLY` dwords against `Fr3BrakeRecord` in
+  [the C header](../recovered/fr3_database_layouts.h), which must
+  `_Static_assert` every one of them and be `0x34` bytes.
+
+The field names are analyst labels for "the tag's first or second value". No
+unit, physics or menu meaning is claimed for any brake value, and nothing yet
+links `CAR_BRAKE_TYPE` from the cars to these records.
+
 ## New finding: tyre payload and tables
 
 The loader at `0x00523820` supplies size `0x58` when creating the tyre database.
@@ -779,7 +895,7 @@ Engine inheritance is resolved the same way in
 instruction evidence only (see
 [The ASCII tag reader and INDIGO's line](#the-ascii-tag-reader-and-indigos-line)).
 
-The tyre sites among the [541 byte-checked sites](../analysis/selected/field-evidence.json)
+The tyre sites among the [638 byte-checked sites](../analysis/selected/field-evidence.json)
 and [the loader's disassembly](../analysis/selected/load_tyre_database.asm)
 preserve the concrete evidence for these new findings.
 
@@ -1094,12 +1210,12 @@ VA at or below it. That is a placement rule of the page, not an established
 routine boundary. The nine reader routines (`fr3_read_integer` and the like)
 lie in no committed span. The files that hold no routine entry (such as
 `allocate_database_record`, `create_database`, `fill_memory` and the ASCII tag
-reader's `read_ascii_tag`, and the car loader, tyre lookup and record link) get their own sections. The
+reader's `read_ascii_tag`, the car loader, tyre lookup and record link, and the brake loader, copy and lookup) get their own sections. The
 engine and gearbox lookups at `0x00522d70` and `0x005234b0` lie inside the copy exports, so their sites are
 listed under `fr3_copy_engine_record` and `fr3_copy_gearbox_record`. Any site in no span, or
-before every routine entry in its file, is listed apart: today the eight data
+before every routine entry in its file, is listed apart: today the ten data
 sites (`"kind": "data"`: the character table bytes, strings, the registry entry
-and a jump table). Each of the 541 sites is shown exactly once. The page says that every label is
+and a jump table). Each of the 638 sites is shown exactly once. The page says that every label is
 analyst-assigned, not an original symbol, and that the pseudocode is Ghidra
 output with unresolved callees and inferred types. The script exits non-zero
 without writing the page when an input is missing or malformed, the routines or
@@ -1385,7 +1501,7 @@ it does not need Ghidra. The ZIP holds one folder,
   untracked file under those paths refuses the build, so the bundle never holds
   an edit its revision does not.
 - **Text databases:** `text-databases/engines.json`, `gearboxes.json`,
-  `tyres.json` and `cars.json`, regenerated from the extracted demo with
+  `tyres.json`, `cars.json` and `brakes.json`, regenerated from the extracted demo with
   `text_database.write_databases()`.
 - **Research:** the research directory unchanged under `research/`, after
   `package_research.read_research()` has checked it as the research packet
@@ -1437,7 +1553,7 @@ holds game data and stays out of Git.
 [Verification results](../analysis/verification.json) cover the exact executable,
 all game files, all tags, all identified compressed resources, every PCG index,
 the selected instruction sites, table dimensions, export counts and C layout
-assertions. All 541 sites (533 instructions, 8 data) were byte-checked against the pinned
+assertions. All 638 sites (628 instructions, 10 data) were byte-checked against the pinned
 `fr3.exe` at `field_instruction_sites_verified_utc`, with the comparison
 `verify_findings.py` makes; the other results date from `verified_utc`. Nine parser tests additionally reject malformed synthetic
 resources, and eight helper tests cover virtual-address bounds and file identity checks.

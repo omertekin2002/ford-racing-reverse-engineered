@@ -1,4 +1,12 @@
 /* In-memory layouts for the SHA-256-pinned Windows demo.
+ * Every Fr3BrakeRecord field from +0x14 on is byte-checked: the brake loader
+ * 0x00520820 stores brake_speed, both brake_radius values, both
+ * brake_max_force values and additional_braking when it parses their tags,
+ * and the copy 0x005209d0 that INHERIT_TYPE calls copies +0x14..+0x33,
+ * including copied_only_18 and copied_only_24, which no tag stores
+ * (BRAKE_FIELD_STORES, BRAKE_COPY and BRAKE_COPIED_ONLY in
+ * scripts/text_database.py). The names are analyst labels; no units or
+ * meaning are claimed for any brake value.
  * Every Fr3GearboxRecord field from +0x14 on is byte-checked: the gearbox
  * loader 0x00523220 stores each one when it parses its tag, and the copy
  * 0x00523470 that INHERIT_TYPE calls copies all nine; no parent address is
@@ -46,6 +54,18 @@ typedef struct {
     float max_fuel_flow;
     float max_delta_fuel_flow;
 } Fr3EngineRecord;
+
+typedef struct {
+    char name[20];
+    float brake_speed;
+    uint32_t copied_only_18;
+    float brake_radius_first;
+    float brake_radius_second;
+    uint32_t copied_only_24;
+    float brake_max_force_first;
+    float brake_max_force_second;
+    float additional_braking;
+} Fr3BrakeRecord;
 
 typedef struct {
     char name[20];
@@ -124,6 +144,15 @@ _Static_assert(offsetof(Fr3GearboxRecord, differential_type) == 0x28, "DIFF_TYPE
 _Static_assert(offsetof(Fr3GearboxRecord, drive_type) == 0x2c, "DRIVE_TYPE");
 _Static_assert(offsetof(Fr3GearboxRecord, anti_wheelspin) == 0x30, "ANTI_WHEELSPIN byte");
 _Static_assert(offsetof(Fr3GearboxRecord, anti_wheelskid) == 0x31, "ANTI_WHEELSKID byte, final gearbox field");
+_Static_assert(sizeof(Fr3BrakeRecord) == 0x34, "Brake record size");
+_Static_assert(offsetof(Fr3BrakeRecord, brake_speed) == 0x14, "BRAKE_SPEED");
+_Static_assert(offsetof(Fr3BrakeRecord, copied_only_18) == 0x18, "Copied, stored by no tag");
+_Static_assert(offsetof(Fr3BrakeRecord, brake_radius_first) == 0x1c, "BRAKE_RADIUS first value");
+_Static_assert(offsetof(Fr3BrakeRecord, brake_radius_second) == 0x20, "BRAKE_RADIUS second value");
+_Static_assert(offsetof(Fr3BrakeRecord, copied_only_24) == 0x24, "Copied, stored by no tag");
+_Static_assert(offsetof(Fr3BrakeRecord, brake_max_force_first) == 0x28, "BRAKE_MAX_FORCE first value");
+_Static_assert(offsetof(Fr3BrakeRecord, brake_max_force_second) == 0x2c, "BRAKE_MAX_FORCE second value");
+_Static_assert(offsetof(Fr3BrakeRecord, additional_braking) == 0x30, "ADDITIONAL_BRAKING, final brake field");
 _Static_assert(sizeof(Fr3TyreRecord) == 0x58, "Tyre record size");
 _Static_assert(offsetof(Fr3TyreRecord, inherited_address) == 0x14, "Tyre inherited address");
 _Static_assert(offsetof(Fr3TyreRecord, radius) == 0x28, "Tyre radius offset");

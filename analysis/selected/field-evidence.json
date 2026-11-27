@@ -716,6 +716,481 @@
     "claim": "Application tag setup calls the table registration at 0x0042e340 for mode 2"
   },
   {
+    "va": 5376052,
+    "bytes": "ba34000000",
+    "claim": "Brake payload allocation size: EDX = 0x34"
+  },
+  {
+    "va": 5376066,
+    "bytes": "e809e5f0ff",
+    "claim": "Brake loader calls the database creation routine at 0x0042ed50 with that payload size in EDX"
+  },
+  {
+    "va": 5376081,
+    "bytes": "a3c4735900",
+    "claim": "Brake loader keeps the database it created at 0x005973c4"
+  },
+  {
+    "va": 5376098,
+    "bytes": "bac4175800",
+    "claim": "Brake loader passes the name at 0x005817c4 in EDX to the reader opening"
+  },
+  {
+    "va": 5376123,
+    "bytes": "ba02000000",
+    "claim": "Brake loader passes EDX = 2, the lookup mode, to the next-tag dispatcher"
+  },
+  {
+    "va": 5376128,
+    "bytes": "89f0",
+    "claim": "Brake loader passes the reader (ESI) in EAX to the next-tag dispatcher"
+  },
+  {
+    "va": 5376130,
+    "bytes": "e8a9dcf0ff",
+    "claim": "Brake loader calls the next-tag dispatcher at 0x0042e530 at the head of its tag loop"
+  },
+  {
+    "va": 5376135,
+    "bytes": "89c1",
+    "claim": "Brake loader keeps the tag ID (EAX) in ECX, which its default branch passes to the message"
+  },
+  {
+    "va": 5376137,
+    "bytes": "83f817",
+    "claim": "Brake tag dispatch compares the tag ID in EAX with 0x17 (BRAKE_MAX_FORCE)"
+  },
+  {
+    "va": 5376172,
+    "bytes": "e81fe6f0ff",
+    "claim": "The brake record-creating branch calls the record allocator at 0x0042eed0"
+  },
+  {
+    "va": 5376185,
+    "bytes": "89c7",
+    "claim": "The brake record-creating branch keeps the record node returned by 0x0042eed0 in EDI"
+  },
+  {
+    "va": 5376187,
+    "bytes": "e810e7f0ff",
+    "claim": "The brake record-creating branch calls the record link at 0x0042efd0"
+  },
+  {
+    "va": 5376192,
+    "bytes": "bb14000000",
+    "claim": "The brake record-creating branch passes the name size EBX = 0x14 to the string reader"
+  },
+  {
+    "va": 5376197,
+    "bytes": "83c720",
+    "claim": "The brake record-creating branch advances EDI by 0x20 past the node header to the payload"
+  },
+  {
+    "va": 5376202,
+    "bytes": "89fa",
+    "claim": "The brake record-creating branch passes the payload (EDI) in EDX, so the name is read into + 0x00..+ 0x13"
+  },
+  {
+    "va": 5376204,
+    "bytes": "e8efdef0ff",
+    "claim": "The brake record-creating branch calls the string reader at 0x0042e7c0"
+  },
+  {
+    "va": 5376214,
+    "bytes": "7f16",
+    "claim": "BRAKE_MAX_FORCE is selected when this jg, reached from the jge after cmp eax, 0x17 at 0x00520889, does not jump: the tag ID equals 0x17"
+  },
+  {
+    "va": 5376218,
+    "bytes": "e8a1ddf0ff",
+    "claim": "BRAKE_MAX_FORCE calls the float reader at 0x0042e680 for its first value"
+  },
+  {
+    "va": 5376225,
+    "bytes": "d95f28",
+    "claim": "BRAKE_MAX_FORCE stores its first value (fstp) at record (EDI) + 0x28"
+  },
+  {
+    "va": 5376228,
+    "bytes": "e897ddf0ff",
+    "claim": "BRAKE_MAX_FORCE calls the float reader at 0x0042e680 again for its second value"
+  },
+  {
+    "va": 5376233,
+    "bytes": "d95f2c",
+    "claim": "BRAKE_MAX_FORCE stores its second value (fstp) at record (EDI) + 0x2c"
+  },
+  {
+    "va": 5376238,
+    "bytes": "83f81a",
+    "claim": "Brake tag dispatch compares the tag ID in EAX with 0x1a (BRAKE_SPEED)"
+  },
+  {
+    "va": 5376243,
+    "bytes": "83f819",
+    "claim": "Brake tag dispatch compares the tag ID in EAX with 0x19 (BRAKE_RADIUS)"
+  },
+  {
+    "va": 5376254,
+    "bytes": "e87dddf0ff",
+    "claim": "BRAKE_RADIUS calls the float reader at 0x0042e680 for its first value"
+  },
+  {
+    "va": 5376261,
+    "bytes": "d95f1c",
+    "claim": "BRAKE_RADIUS stores its first value (fstp) at record (EDI) + 0x1c"
+  },
+  {
+    "va": 5376264,
+    "bytes": "e873ddf0ff",
+    "claim": "BRAKE_RADIUS calls the float reader at 0x0042e680 again for its second value"
+  },
+  {
+    "va": 5376269,
+    "bytes": "d95f20",
+    "claim": "BRAKE_RADIUS stores its second value (fstp) at record (EDI) + 0x20"
+  },
+  {
+    "va": 5376277,
+    "bytes": "7f0f",
+    "claim": "BRAKE_SPEED is selected when this jg, reached from the jge after cmp eax, 0x1a at 0x005208ee, does not jump: the tag ID equals 0x1a"
+  },
+  {
+    "va": 5376281,
+    "bytes": "e862ddf0ff",
+    "claim": "BRAKE_SPEED calls the float reader at 0x0042e680"
+  },
+  {
+    "va": 5376286,
+    "bytes": "d95f14",
+    "claim": "BRAKE_SPEED stores its value (fstp) at record (EDI) + 0x14"
+  },
+  {
+    "va": 5376294,
+    "bytes": "3d9c000000",
+    "claim": "Brake tag dispatch compares the tag ID in EAX with 0x9c (INHERIT_TYPE)"
+  },
+  {
+    "va": 5376301,
+    "bytes": "bb14000000",
+    "claim": "INHERIT_TYPE passes the name size EBX = 0x14 to the string reader"
+  },
+  {
+    "va": 5376306,
+    "bytes": "8d55d4",
+    "claim": "INHERIT_TYPE passes the stack buffer at EBP - 0x2c in EDX to the string reader"
+  },
+  {
+    "va": 5376311,
+    "bytes": "e884def0ff",
+    "claim": "INHERIT_TYPE calls the string reader at 0x0042e7c0 to read the parent name into that buffer"
+  },
+  {
+    "va": 5376316,
+    "bytes": "8d45d4",
+    "claim": "INHERIT_TYPE passes the parent name buffer at EBP - 0x2c in EAX to the parent lookup"
+  },
+  {
+    "va": 5376319,
+    "bytes": "e8dc000000",
+    "claim": "INHERIT_TYPE calls 0x00520a20 to look up the parent record by the name just read"
+  },
+  {
+    "va": 5376324,
+    "bytes": "89c2",
+    "claim": "INHERIT_TYPE passes the parent record address in EDX to the brake copy"
+  },
+  {
+    "va": 5376326,
+    "bytes": "89f8",
+    "claim": "INHERIT_TYPE passes the current record address (EDI) in EAX to the brake copy"
+  },
+  {
+    "va": 5376328,
+    "bytes": "e883000000",
+    "claim": "INHERIT_TYPE calls the brake copy at 0x005209d0"
+  },
+  {
+    "va": 5376333,
+    "bytes": "e929ffffff",
+    "claim": "INHERIT_TYPE jumps back to read the next tag as soon as the copy returns; it stores no parent address in the record"
+  },
+  {
+    "va": 5376340,
+    "bytes": "83f802",
+    "claim": "Brake tag dispatch compares the tag ID in EAX with 2 (ADDITIONAL_BRAKING)"
+  },
+  {
+    "va": 5376347,
+    "bytes": "e820ddf0ff",
+    "claim": "ADDITIONAL_BRAKING calls the float reader at 0x0042e680"
+  },
+  {
+    "va": 5376352,
+    "bytes": "d95f30",
+    "claim": "ADDITIONAL_BRAKING stores its value (fstp) at record (EDI) + 0x30"
+  },
+  {
+    "va": 5376411,
+    "bytes": "51",
+    "claim": "The brake loader's default branch pushes the tag ID it kept in ECX"
+  },
+  {
+    "va": 5376412,
+    "bytes": "68fc175800",
+    "claim": "The brake loader's default branch pushes the message at 0x005817fc with it"
+  },
+  {
+    "va": 5376425,
+    "bytes": "e9cdfeffff",
+    "claim": "The brake loader's default branch jumps back to read the next tag; it stores nothing in the record"
+  },
+  {
+    "va": 5376464,
+    "bytes": "53",
+    "claim": "Brake copy saves EBX"
+  },
+  {
+    "va": 5376465,
+    "bytes": "51",
+    "claim": "Brake copy saves ECX"
+  },
+  {
+    "va": 5376466,
+    "bytes": "56",
+    "claim": "Brake copy saves ESI"
+  },
+  {
+    "va": 5376467,
+    "bytes": "57",
+    "claim": "Brake copy saves EDI"
+  },
+  {
+    "va": 5376468,
+    "bytes": "89c3",
+    "claim": "Brake copy keeps the record (EAX) in EBX"
+  },
+  {
+    "va": 5376470,
+    "bytes": "d94214",
+    "claim": "Brake copy loads the INHERIT_TYPE parent (EDX) float + 0x14 (fld)"
+  },
+  {
+    "va": 5376473,
+    "bytes": "b90c000000",
+    "claim": "Brake copy block 1 size: ECX = 0xc bytes"
+  },
+  {
+    "va": 5376478,
+    "bytes": "8d7218",
+    "claim": "Brake copy block 1 source: ESI = parent (EDX) + 0x18"
+  },
+  {
+    "va": 5376481,
+    "bytes": "8d7818",
+    "claim": "Brake copy block 1 destination: EDI = record (EAX) + 0x18"
+  },
+  {
+    "va": 5376484,
+    "bytes": "d95814",
+    "claim": "Brake copy stores that float (fstp) at record (EAX) + 0x14"
+  },
+  {
+    "va": 5376487,
+    "bytes": "57",
+    "claim": "Brake copy block 1 saves EDI"
+  },
+  {
+    "va": 5376488,
+    "bytes": "89c8",
+    "claim": "Brake copy block 1 keeps the size in EAX"
+  },
+  {
+    "va": 5376490,
+    "bytes": "c1e902",
+    "claim": "Brake copy block 1 dword count: ECX = 0xc >> 2 = 3"
+  },
+  {
+    "va": 5376493,
+    "bytes": "f2a5",
+    "claim": "Brake copy block 1 repeats movsd ECX times (F2 prefix): 3 dwords from parent + 0x18 to record + 0x18"
+  },
+  {
+    "va": 5376495,
+    "bytes": "8ac8",
+    "claim": "Brake copy block 1 takes the size's low byte (AL) into CL"
+  },
+  {
+    "va": 5376497,
+    "bytes": "80e103",
+    "claim": "Brake copy block 1 keeps the size's remainder bytes (CL & 3)"
+  },
+  {
+    "va": 5376500,
+    "bytes": "f2a4",
+    "claim": "Brake copy block 1 repeats movsb CL times (F2 prefix): no bytes for 0xc"
+  },
+  {
+    "va": 5376502,
+    "bytes": "5f",
+    "claim": "Brake copy block 1 restores EDI"
+  },
+  {
+    "va": 5376503,
+    "bytes": "b90c000000",
+    "claim": "Brake copy block 2 size: ECX = 0xc bytes"
+  },
+  {
+    "va": 5376508,
+    "bytes": "8d7224",
+    "claim": "Brake copy block 2 source: ESI = parent (EDX) + 0x24"
+  },
+  {
+    "va": 5376511,
+    "bytes": "8d7b24",
+    "claim": "Brake copy block 2 destination: EDI = record (EBX) + 0x24"
+  },
+  {
+    "va": 5376514,
+    "bytes": "57",
+    "claim": "Brake copy block 2 saves EDI"
+  },
+  {
+    "va": 5376515,
+    "bytes": "89c8",
+    "claim": "Brake copy block 2 keeps the size in EAX"
+  },
+  {
+    "va": 5376517,
+    "bytes": "c1e902",
+    "claim": "Brake copy block 2 dword count: ECX = 0xc >> 2 = 3"
+  },
+  {
+    "va": 5376520,
+    "bytes": "f2a5",
+    "claim": "Brake copy block 2 repeats movsd ECX times (F2 prefix): 3 dwords from parent + 0x24 to record + 0x24"
+  },
+  {
+    "va": 5376522,
+    "bytes": "8ac8",
+    "claim": "Brake copy block 2 takes the size's low byte (AL) into CL"
+  },
+  {
+    "va": 5376524,
+    "bytes": "80e103",
+    "claim": "Brake copy block 2 keeps the size's remainder bytes (CL & 3)"
+  },
+  {
+    "va": 5376527,
+    "bytes": "f2a4",
+    "claim": "Brake copy block 2 repeats movsb CL times (F2 prefix): no bytes for 0xc"
+  },
+  {
+    "va": 5376529,
+    "bytes": "5f",
+    "claim": "Brake copy block 2 restores EDI"
+  },
+  {
+    "va": 5376530,
+    "bytes": "8b4230",
+    "claim": "Brake copy loads the INHERIT_TYPE parent (EDX) dword + 0x30 into EAX"
+  },
+  {
+    "va": 5376533,
+    "bytes": "894330",
+    "claim": "Brake copy stores that dword (EAX) at record (EBX) + 0x30"
+  },
+  {
+    "va": 5376536,
+    "bytes": "5f",
+    "claim": "Brake copy restores EDI"
+  },
+  {
+    "va": 5376537,
+    "bytes": "5e",
+    "claim": "Brake copy restores ESI"
+  },
+  {
+    "va": 5376538,
+    "bytes": "59",
+    "claim": "Brake copy restores ECX"
+  },
+  {
+    "va": 5376539,
+    "bytes": "5b",
+    "claim": "Brake copy restores EBX"
+  },
+  {
+    "va": 5376540,
+    "bytes": "c3",
+    "claim": "Brake copy returns after its last store at + 0x30"
+  },
+  {
+    "va": 5376548,
+    "bytes": "89c6",
+    "claim": "Brake lookup keeps the name it is passed (EAX) in ESI"
+  },
+  {
+    "va": 5376550,
+    "bytes": "a1c4735900",
+    "claim": "Brake lookup loads the database at 0x005973c4"
+  },
+  {
+    "va": 5376555,
+    "bytes": "8b4810",
+    "claim": "Brake lookup starts at the database's first record node (database + 0x10)"
+  },
+  {
+    "va": 5376562,
+    "bytes": "8d5920",
+    "claim": "Brake lookup points EBX 0x20 past the node header, at the record payload, where the name is"
+  },
+  {
+    "va": 5376565,
+    "bytes": "89f2",
+    "claim": "Brake lookup passes the name it was given (ESI) in EDX to the string compare"
+  },
+  {
+    "va": 5376567,
+    "bytes": "89d8",
+    "claim": "Brake lookup passes the record's name (EBX) in EAX to the string compare"
+  },
+  {
+    "va": 5376569,
+    "bytes": "e8423f0100",
+    "claim": "Brake lookup calls the string compare at 0x00534980, which ignores case"
+  },
+  {
+    "va": 5376574,
+    "bytes": "85c0",
+    "claim": "Brake lookup tests the compare result"
+  },
+  {
+    "va": 5376576,
+    "bytes": "740e",
+    "claim": "Brake lookup jumps to return the record when the compare returns 0"
+  },
+  {
+    "va": 5376578,
+    "bytes": "8b4910",
+    "claim": "Brake lookup moves to the next record node (node + 0x10)"
+  },
+  {
+    "va": 5376583,
+    "bytes": "75e9",
+    "claim": "Brake lookup compares again while there is a next node"
+  },
+  {
+    "va": 5376585,
+    "bytes": "31c0",
+    "claim": "Brake lookup returns 0 when no record's name matches"
+  },
+  {
+    "va": 5376592,
+    "bytes": "89d8",
+    "claim": "Brake lookup returns the first matching record's payload (EBX)"
+  },
+  {
     "va": 5376629,
     "bytes": "babc010000",
     "claim": "Car payload allocation size: EDX = 0x1bc"
@@ -2680,6 +3155,18 @@
     "va": 5653392,
     "bytes": "494e48455249545f5459504500",
     "claim": "Data: the string \"INHERIT_TYPE\" that tag registry entry 0x9c points to",
+    "kind": "data"
+  },
+  {
+    "va": 5773252,
+    "bytes": "636172735c6272616b6461746100",
+    "claim": "Data: the brake loader's file name is \"cars\\brakdata\"",
+    "kind": "data"
+  },
+  {
+    "va": 5773308,
+    "bytes": "44425f4252414b453a20756e6b6e6f776e20646174612066696c652074616720256400",
+    "claim": "Data: the brake loader's default branch message is \"DB_BRAKE: unknown data file tag %d\"",
     "kind": "data"
   },
   {

@@ -60,14 +60,29 @@ CARS = """:CAR_TYPE ROADSTER
 """
 
 
+# Two brakes. No page reads them; the analysis bundle packages brakes.json.
+BRAKES = """:TYPE ROAD
+:BRAKE_SPEED 5.0
+:BRAKE_RADIUS 0.24 0.24
+:BRAKE_MAX_FORCE 400.00 6000.00
+:ADDITIONAL_BRAKING 11000.0
+:TYPE TRACK
+:BRAKE_SPEED 5.0
+:BRAKE_RADIUS 0.22 0.22
+:BRAKE_MAX_FORCE 500.00 6000.00
+:ADDITIONAL_BRAKING 11000.0
+:END
+"""
+
+
 def write_game(root):
-    """Write the four text databases, with the demo's CRLF line ends, under root; return root.
+    """Write the five text databases, with the demo's CRLF line ends, under root; return root.
 
     The engines include INDIGO's colon-less line, which the Open questions page requires, and every gearbox declares
     the nine mapped tags, which the Compare records page requires.
     """
     for stem, text in (("engines", QUESTION_ENGINES), ("gearboxes", COMPARE_GEARBOXES), ("tyres", TYRES),
-                       ("cars", CARS)):
+                       ("cars", CARS), ("brakes", BRAKES)):
         path = root / DATABASES[stem]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(text.replace("\n", "\r\n").encode("ascii"))
@@ -410,7 +425,7 @@ class BuildTests(ResearchTestCase):
                      "evidence/selected/field-evidence.json", *ASM):
             self.assertIn(f'href="{href}"', routines)
         self.assertEqual(routines.count('<section class="routine"'), 25)
-        self.assertEqual(routines.count('<tr class="site"'), 541)
+        self.assertEqual(routines.count('<tr class="site"'), 638)
         self.assertIn('<a href="index.html">Explore findings</a>', routines)
         # Each routine's anchor is a real id: verify_research() accepts a deep link to it from another page.
         index = self.output / INDEX_PAGE

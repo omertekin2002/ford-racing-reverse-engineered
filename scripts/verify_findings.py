@@ -180,7 +180,7 @@ def check_text_databases(ctx):
     return {key: summary[key] for key in ("engine_records", "gearbox_records", "tyre_records", "torque_arrays",
                                           "engine_mapped_tags", "engine_effective_field_records", "gearbox_mapped_tags",
                                           "tyre_effective_scalar_records", "sound_info_entries", "car_records",
-                                          "car_mapped_references")}
+                                          "car_mapped_references", "brake_records", "brake_mapped_tags")}
 
 
 def check_tyre_table_dimensions(ctx):
