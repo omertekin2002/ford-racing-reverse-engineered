@@ -1,4 +1,4 @@
-"""Strictly parse the engine, gearbox and tyre text databases into JSON.
+"""Strictly parse the engine, gearbox, tyre, car and brake text databases into JSON.
 
 Grammar accepted by parse():
   * Input is ASCII text up to MAX_TEXT_BYTES, with CRLF or LF line endings.
@@ -124,6 +124,18 @@ map, CAR_RECORD and the lookups against field-evidence.json and derives from the
 admits. resolve_car_references() resolves each car's four names the way the lookups compare them (A-Z lower-cased),
 refusing a dangling or ambiguous name, and main() writes the result to cars.json as `references`, each labelled
 byte-checked or declared by name. Nothing interprets CAR_PERFORMANCE or the other car tags.
+
+parse_brakes() reads BRAKDATA.DAT with parse(): :TYPE records, no blocks or untagged lines, and each tag but
+:INHERIT_TYPE must be one the brake loader stores, with exactly as many numbers as the loader reads for it.
+BRAKE_FIELD_STORES maps the four brake tags the loader at 0x00520820 dispatches to their registry ID, the selecting
+compare (and jg), and per payload offset the float reader call and the fstp that stores it; BRAKE_RECORD,
+BRAKE_DISPATCH and BRAKE_COPY hold the 0x34-byte record, the default branch and the INHERIT_TYPE path and copy at
+0x005209d0, which moves +0x14..+0x33, including the BRAKE_COPIED_ONLY dwords no tag stores.
+brake_evidence_problems() checks them against field-evidence.json, brake_dispatch_problems() follows the compare
+tree of the committed load_brake_database.asm for every registry ID, brake_layout_problems() checks Fr3BrakeRecord
+and unmapped_brake_tags() compares the map with BRAKE_TAGS. effective_brake_fields() resolves inheriting brakes the
+way effective_scalars() does for tyres; no demo brake declares INHERIT_TYPE, so brakes.json's `effective_fields` is
+empty. No units or meaning are claimed for any brake value.
 """
 import argparse
 from collections import Counter
@@ -144,7 +156,8 @@ WORD = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
 NAME = re.compile(r"[A-Za-z0-9_]+\Z")
 CONTROL = re.compile(r"[\x00-\x08\x0a-\x1f\x7f]")
 DATABASES = {"engines": "DATA/ASCII/CARS/ENGDATA.DAT", "gearboxes": "DATA/ASCII/CARS/GEARDATA.DAT",
-             "tyres": "DATA/ASCII/CARS/TYREDATA.DAT", "cars": "DATA/ASCII/CARS/CARDATA.DAT"}
+             "tyres": "DATA/ASCII/CARS/TYREDATA.DAT", "cars": "DATA/ASCII/CARS/CARDATA.DAT",
+             "brakes": "DATA/ASCII/CARS/BRAKDATA.DAT"}
 SOUND_INFO_DATABASES = frozenset({"tyres"})
 TYRE_TABLES = {"LONGITUDINAL_COMBINED_VALUES": {"blocks": 1, "rows": 9, "columns": 11},
                "LATERAL_COMBINED_VALUES": {"blocks": 1, "rows": 10, "columns": 21},
@@ -398,6 +411,87 @@ GEARBOX_COPY = {
               "ret": "0x005234aa"},
     "offsets": {**{f"0x{offset:x}": "dword" for offset in range(0x14, 0x30, 4)}, "0x30": "byte", "0x31": "byte"},
 }
+# BRAKDATA.DAT (parse_brakes()): the four tags every demo brake declares.
+BRAKE_TAGS = frozenset({"BRAKE_SPEED", "BRAKE_RADIUS", "BRAKE_MAX_FORCE", "ADDITIONAL_BRAKING"})
+# Each brake tag the loader at 0x00520820 stores (load_brake_database.asm): its registry ID, the `cmp eax, <id>` that
+# finally selects it (and, where a jg after that range compare's jge selects it, the jg) and the payload offsets it
+# writes, in the order it reads them. Each offset is one call of FLOAT_READER (`read`) followed by an fstp of ST0 at
+# [edi + offset] (`sites`), so a tag reads exactly as many values as it has offsets: BRAKE_RADIUS and BRAKE_MAX_FORCE
+# read two, stored first then second. The field names are analyst labels for "the tag's first or second value"; no
+# units or meaning are claimed.
+BRAKE_FIELD_STORES = {
+    "BRAKE_SPEED": {"id": 0x1a, "compare": "0x005208ee", "after_range": "0x00520915",
+                    "offsets": {"0x14": _store("brake_speed", ["0x0052091e"], read="0x00520919")}},
+    "BRAKE_RADIUS": {"id": 0x19, "compare": "0x005208f3",
+                     "offsets": {"0x1c": _store("brake_radius_first", ["0x00520905"], read="0x005208fe"),
+                                 "0x20": _store("brake_radius_second", ["0x0052090d"], read="0x00520908")}},
+    "BRAKE_MAX_FORCE": {"id": 0x17, "compare": "0x00520889", "after_range": "0x005208d6",
+                        "offsets": {"0x28": _store("brake_max_force_first", ["0x005208e1"], read="0x005208da"),
+                                    "0x2c": _store("brake_max_force_second", ["0x005208e9"], read="0x005208e4")}},
+    "ADDITIONAL_BRAKING": {"id": 0x2, "compare": "0x00520954",
+                           "offsets": {"0x30": _store("additional_braking", ["0x00520960"], read="0x0052095b")}},
+}
+BRAKE_LOADER_SPAN = (0x00520820, 0x005209AE)
+BRAKE_RECORD_SIZE = 0x34
+BRAKE_NAME_BYTES = 0x14
+NEXT_TAG_READER = 0x0042E530
+# The brake loader's database: the 0x34-byte payload allocation, the file it opens, where it keeps the database, the
+# next-tag read at the head of its tag loop, and the record-creating branch, which allocates a node, links it, moves
+# EDI 0x20 past the node header to the payload and reads the name into its first 0x14 bytes.
+BRAKE_RECORD = {
+    "allocation": {"size": "0x00520834", "call": "0x00520842"},
+    "file": {"site": "0x00520862", "va": "0x005817c4", "name": "cars\\brakdata"},
+    "database": {"site": "0x00520851", "va": "0x005973c4"},
+    "next_tag": {"mode": "0x0052087b", "reader": "0x00520880", "call": "0x00520882"},
+    "allocate": "0x005208ac", "node_in_edi": "0x005208b9", "link": "0x005208bb", "payload_in_edi": "0x005208c5",
+    "name": {"size": "0x005208c0", "destination": "0x005208ca", "call": "0x005208cc"},
+}
+# The brake loader's compare tree starts at `head`; every handler jumps back to `next_tag`, the loop head, and any ID
+# no compare selects reaches `default`, which keeps nothing: it pushes the tag ID (kept in ECX at `tag_in_ecx`) and
+# the message at `message` and reads the next tag.
+BRAKE_DISPATCH = {
+    "head": "0x00520889", "next_tag": "0x0052087b", "default": "0x0052098a",
+    "tag_in_ecx": "0x00520887", "push_tag": "0x0052099b",
+    "message": {"site": "0x0052099c", "va": "0x005817fc", "text": "DB_BRAKE: unknown data file tag %d"},
+    "default_next_tag": "0x005209a9",
+}
+# INHERIT_TYPE in the brake loader and the copy it calls (copy_brake_record.asm). As in the gearbox loader it reads the
+# parent's name into a stack buffer, looks the parent up with the brake lookup (BRAKE_LOOKUP) and calls the copy with
+# the parent in EDX and the record in EAX; it stores no parent address. The copy keeps the record in EBX, moves the
+# float at +0x14 (fld/fstp), two 0xc-byte blocks at +0x18 and +0x24 (three dwords each with an F2 movsd, no bytes with
+# the F2 movsb) and the dword at +0x30. EAX holds the record until `eax_overwritten`, where block 1 keeps its size in
+# EAX, so a move or block whose `record` is EAX must write before it. The copy writes +0x14..+0x33: every stored
+# offset, plus BRAKE_COPIED_ONLY, which no tag stores. No demo brake declares INHERIT_TYPE.
+_BLOCK_SITES = ("size", "source", "destination", "keep_size", "dword_count", "movsd", "remainder", "remainder_mask",
+                "movsb")
+BRAKE_COPY = {
+    "tag": "INHERIT_TYPE", "id": 0x9c, "compare": "0x00520926",
+    "read_name": {"size": "0x0052092d", "buffer": "0x00520932", "call": "0x00520937"},
+    "find_parent": {"name": "0x0052093c", "call": "0x0052093f", "target": "0x00520a20"},
+    "arguments": {"parent_in_edx": "0x00520944", "record_in_eax": "0x00520946"},
+    "call": "0x00520948",
+    "next_tag": "0x0052094d",
+    "span": (0x005209D0, 0x00520A1D),
+    "saves": {"push_ebx": "0x005209d0", "push_ecx": "0x005209d1", "push_esi": "0x005209d2", "push_edi": "0x005209d3",
+              "pop_edi": "0x00520a18", "pop_esi": "0x00520a19", "pop_ecx": "0x00520a1a", "pop_ebx": "0x00520a1b",
+              "ret": "0x00520a1c"},
+    "record_in_ebx": "0x005209d4",
+    "eax_overwritten": "0x005209e8",
+    "moves": {"0x14": {"register": "st0", "record": "eax", "load": "0x005209d6", "store": "0x005209e4"},
+              "0x30": {"register": "eax", "record": "ebx", "load": "0x00520a12", "store": "0x00520a15"}},
+    "blocks": {"0x18": {"size": 0xc, "record": "eax",
+                        "sites": dict(zip(_BLOCK_SITES, ("0x005209d9", "0x005209de", "0x005209e1", "0x005209e8",
+                                                         "0x005209ea", "0x005209ed", "0x005209ef", "0x005209f1",
+                                                         "0x005209f4"), strict=True))},
+               "0x24": {"size": 0xc, "record": "ebx",
+                        "sites": dict(zip(_BLOCK_SITES, ("0x005209f7", "0x005209fc", "0x005209ff", "0x00520a03",
+                                                         "0x00520a05", "0x00520a08", "0x00520a0a", "0x00520a0c",
+                                                         "0x00520a0f"), strict=True))}},
+}
+# The dwords the copy moves that no brake tag stores, with their Fr3BrakeRecord field.
+BRAKE_COPIED_ONLY = {"0x18": "copied_only_18", "0x24": "copied_only_24"}
+# The brake lookup INHERIT_TYPE calls (find_brake_record.asm): LOOKUP_SHAPE over the brake database.
+BRAKE_LOOKUP = {"routine": "0x00520a20", "database": "0x005973c4"}
 # CARDATA.DAT (parse_cars()): records start with :CAR_TYPE, whose name the loader reads into 0x20 bytes at payload + 3;
 # CAR_PERFORMANCE and VALID_LIVERY repeat within a record and every occurrence is kept.
 CAR_RECORD_TAG = "CAR_TYPE"
@@ -796,9 +890,9 @@ def inherit_chain(record, by_name, order):
     return chain
 
 
-def scalar_field(tag, origin, chain):
+def scalar_field(tag, origin, chain, stores=None):
     """Return one effective scalar entry: where the field's value comes from, or that nobody declares it."""
-    entry = {"offsets": list(TYRE_SCALAR_STORES[tag]["offsets"])}
+    entry = {"offsets": list((TYRE_SCALAR_STORES if stores is None else stores)[tag]["offsets"])}
     if origin is None:
         return {"status": ZERO_FILLED, "path": chain, **entry}
     status = "declared" if origin["source"] == chain[0] else "inherited"
@@ -806,14 +900,17 @@ def scalar_field(tag, origin, chain):
             "source_line": origin["source_line"], "path": origin["path"], **entry}
 
 
-def effective_scalars(records):
+def effective_scalars(records, stores=None):
     """Return, for each tyre with :INHERIT_TYPE, the declaration that ends up in each mapped scalar field.
 
     Replays the loader in file order: each record starts zero-filled, each mapped tag stores its declaration,
     and INHERIT_TYPE copies the parent's effective fields over all of the record's, so a declaration made
     before it is overwritten (listed under `overwritten`). `path` runs from the record to the declaring source.
     Scalar tags without a byte-checked store are listed under `unmapped` with no value. Records are not modified.
+    `stores` is the store map (TYRE_SCALAR_STORES by default; BRAKE_FIELD_STORES for brakes, whose copy also writes
+    every stored offset).
     """
+    stores = TYRE_SCALAR_STORES if stores is None else stores
     by_name = {record["type"]: record for record in records}
     order = {record["type"]: i for i, record in enumerate(records)}
     state = {}
@@ -833,7 +930,7 @@ def effective_scalars(records):
                 overwritten += [{"tag": key, "line": origin["source_line"], "values": origin["values"]}
                                 for key, origin in current.items()]
                 current = {key: {**origin, "path": [name, *origin["path"]]} for key, origin in state[parent].items()}
-            elif tag in TYRE_SCALAR_STORES:
+            elif tag in stores:
                 current[tag] = {"source": name, "source_line": field["line"], "values": field["values"], "path": [name]}
             else:
                 unmapped.append({"tag": tag, "line": field["line"], "status": UNMAPPED})
@@ -842,17 +939,18 @@ def effective_scalars(records):
             continue
         chain = inherit_chain(record, by_name, order)
         entries[name] = {"inherit_type": {"line": inherit["line"], "parent": inherit["values"][0]},
-                         "fields": {tag: scalar_field(tag, current.get(tag), chain) for tag in TYRE_SCALAR_STORES},
+                         "fields": {tag: scalar_field(tag, current.get(tag), chain, stores) for tag in stores},
                          "overwritten": sorted(overwritten, key=lambda item: item["line"]), "unmapped": unmapped}
     return entries
 
 
-def scalars_by_recursion(records):
+def scalars_by_recursion(records, stores=None):
     """Derive each inheriting tyre's effective scalar fields a second way, independent of effective_scalars().
 
     For each record and tag, parent first: the record's own declaration counts when it follows its
     INHERIT_TYPE line (or the record has none); otherwise the field is whatever the parent ends up with.
     """
+    stores = TYRE_SCALAR_STORES if stores is None else stores
     by_name = {record["type"]: record for record in records}
     order = {record["type"]: i for i, record in enumerate(records)}
 
@@ -871,20 +969,20 @@ def scalars_by_recursion(records):
         return found and {**found, "path": [name, *found["path"]]}
 
     return {record["type"]: {tag: scalar_field(tag, origin(record["type"], tag),
-                                               inherit_chain(record, by_name, order))
-                             for tag in TYRE_SCALAR_STORES}
+                                               inherit_chain(record, by_name, order), stores)
+                             for tag in stores}
             for record in records if "INHERIT_TYPE" in record["fields"]}
 
 
-def check_effective_scalars(records, effective):
-    """Compare effective_scalars() output with scalars_by_recursion(); refuse any difference."""
-    expected = scalars_by_recursion(records)
-    require(set(effective) == set(expected), "Tyre effective scalar record set mismatch")
+def check_effective_scalars(records, effective, stores=None, label="Tyre effective scalar"):
+    """Compare effective_scalars() output with scalars_by_recursion(); refuse any difference, naming `label`."""
+    expected = scalars_by_recursion(records, stores)
+    require(set(effective) == set(expected), f"{label} record set mismatch")
     for name, fields in expected.items():
         for tag, entry in fields.items():
             require(effective[name]["fields"].get(tag) == entry,
-                    f"Tyre effective scalar disagrees with the parent-first derivation: {name} {tag}")
-        require(set(effective[name]["fields"]) == set(fields), "Tyre effective scalar tag set mismatch: " + name)
+                    f"{label} disagrees with the parent-first derivation: {name} {tag}")
+        require(set(effective[name]["fields"]) == set(fields), f"{label} tag set mismatch: " + name)
 
 
 def scalar_counts(effective):
@@ -1282,6 +1380,46 @@ def unmapped_engine_tags(records, stores=None):
     return dict(sorted(unmapped.items()))
 
 
+def inherit_path_problems(checks, copy, name_bytes):
+    """Check a loader's INHERIT_TYPE path (GEARBOX_COPY or BRAKE_COPY) in the default span of checks.
+
+    Its compare must be `cmp eax, 0x9c`; it reads up to name_bytes of the parent's name into a stack buffer
+    (`lea edx`), passes the same buffer (`lea eax`) to the parent lookup, passes the parent in EDX and the record
+    (EDI) in EAX to the copy, calls the copy and jumps back to the next tag.
+    """
+    checks.compare(copy["tag"], copy)
+    name = copy["read_name"]
+    checks.exact("INHERIT_TYPE name size", name["size"], "bb" + name_bytes.to_bytes(4, "little").hex())
+    buffer = checks.site("INHERIT_TYPE name buffer", name["buffer"])
+    checks.call("INHERIT_TYPE name read", name["call"], STRING_READER)
+    find = copy["find_parent"]
+    passed = checks.site("INHERIT_TYPE parent name", find["name"])
+    if buffer is not None and passed is not None:
+        into, out = memory_operand(buffer), memory_operand(passed)
+        if not (into and out and (into["kind"], into["register"], out["kind"], out["register"])
+                == ("lea", "edx", "lea", "eax") and (into["base"], into["disp"]) == (out["base"], out["disp"])):
+            checks.problems.append(f"INHERIT_TYPE: the parent lookup at {find['call']} is not passed the buffer the name "
+                                   f"was read into ({name['buffer']} {buffer}, {find['name']} {passed})")
+    checks.call("INHERIT_TYPE parent lookup", find["call"], find["target"])
+    for key, expected in (("parent_in_edx", "89c2"), ("record_in_eax", "89f8")):
+        checks.exact(f"INHERIT_TYPE {key.replace('_', ' ')}", copy["arguments"][key], expected)
+    checks.call("INHERIT_TYPE copy call", copy["call"], copy["span"][0])
+    raw = checks.site("INHERIT_TYPE next tag", copy["next_tag"])
+    if raw is not None and raw[:2] not in ("e9", "eb"):
+        checks.problems.append(f"INHERIT_TYPE: site {copy['next_tag']} ({raw}) is not the jump back to the next tag")
+
+
+def lookup_shape_problems(checks, where, routine, database):
+    """Check every LOOKUP_SHAPE site of the lookup at routine (a VA) over the database global at database (a VA)."""
+    for relative, expected in LOOKUP_SHAPE.items():
+        va = f"0x{routine + relative:08x}"
+        if expected == "DATABASE":
+            expected = "a1" + database.to_bytes(4, "little").hex()
+        elif expected == "COMPARE":
+            expected = call_bytes(routine + relative, STRING_COMPARE)
+        checks.exact(f"{where} + 0x{relative:02x}", va, expected, where)
+
+
 def gearbox_evidence_problems(evidence, tag_ids, stores=None, copy=None):
     """List every way GEARBOX_FIELD_STORES, GEARBOX_RECORD and GEARBOX_COPY lack matching byte-checked sites.
 
@@ -1353,26 +1491,7 @@ def gearbox_evidence_problems(evidence, tag_ids, stores=None, copy=None):
                     problems.append(f"{tag} + {offset}: the claim at {va} is not about {tag}: "
                                     f"{checks.claims[int(va, 16)]!r}")
 
-    checks.compare(copy["tag"], copy)
-    name = copy["read_name"]
-    checks.exact("INHERIT_TYPE name size", name["size"], "bb" + GEARBOX_NAME_BYTES.to_bytes(4, "little").hex())
-    buffer = checks.site("INHERIT_TYPE name buffer", name["buffer"])
-    checks.call("INHERIT_TYPE name read", name["call"], STRING_READER)
-    find = copy["find_parent"]
-    passed = checks.site("INHERIT_TYPE parent name", find["name"])
-    if buffer is not None and passed is not None:
-        into, out = memory_operand(buffer), memory_operand(passed)
-        if not (into and out and (into["kind"], into["register"], out["kind"], out["register"])
-                == ("lea", "edx", "lea", "eax") and (into["base"], into["disp"]) == (out["base"], out["disp"])):
-            problems.append(f"INHERIT_TYPE: the parent lookup at {find['call']} is not passed the buffer the name was "
-                            f"read into ({name['buffer']} {buffer}, {find['name']} {passed})")
-    checks.call("INHERIT_TYPE parent lookup", find["call"], find["target"])
-    for key, expected in (("parent_in_edx", "89c2"), ("record_in_eax", "89f8")):
-        checks.exact(f"INHERIT_TYPE {key.replace('_', ' ')}", copy["arguments"][key], expected)
-    checks.call("INHERIT_TYPE copy call", copy["call"], copy["span"][0])
-    raw = checks.site("INHERIT_TYPE next tag", copy["next_tag"])
-    if raw is not None and raw[:2] not in ("e9", "eb"):
-        problems.append(f"INHERIT_TYPE: site {copy['next_tag']} ({raw}) is not the jump back to the next tag")
+    inherit_path_problems(checks, copy, GEARBOX_NAME_BYTES)
     mapped = {int(va, 16) for entry in stores.values() for store in entry["offsets"].values() for va in store["sites"]}
     for va, raw in sorted(checks.by_va.items()):
         decoded = memory_operand(raw)
@@ -1450,6 +1569,346 @@ def parse_cars(text, known_tags):
             if len(values) != 2 or not isinstance(values[0], str) or isinstance(values[1], str):
                 raise TextDatabaseError(field["line"], ":CAR_PERFORMANCE needs one word and one number")
     return records
+
+
+def parse_brakes(text, known_tags, stores=None):
+    """Return BRAKDATA.DAT's records: parse() with :TYPE records and no blocks or untagged lines.
+
+    Each tag but :INHERIT_TYPE must be one the brake loader stores (BRAKE_FIELD_STORES): the loader's default branch
+    would skip any other tag, so it is refused here rather than dropped. Each must hold exactly as many numbers as the
+    loader reads for it (one float per stored offset): BRAKE_RADIUS and BRAKE_MAX_FORCE two, the others one. Values
+    stay the declared numbers; nothing here interprets them.
+    """
+    stores = BRAKE_FIELD_STORES if stores is None else stores
+    records = parse(text, known_tags, name_bytes=BRAKE_NAME_BYTES, blocks=False)
+    for record in records:
+        for tag, field in record["fields"].items():
+            if tag == "INHERIT_TYPE":
+                continue
+            if tag not in stores:
+                raise TextDatabaseError(field["line"], f":{tag} is not a tag the brake loader stores")
+            count = len(stores[tag]["offsets"])
+            values = field["values"]
+            if len(values) != count or any(isinstance(item, str) for item in values):
+                raise TextDatabaseError(field["line"], f":{tag} needs exactly {count} number"
+                                                       f"{'s' if count > 1 else ''}, as the brake loader reads {count}")
+    return records
+
+
+def effective_brake_fields(records, stores=None):
+    """Return effective_scalars() over the brake store map: for each brake with :INHERIT_TYPE, where each mapped field's
+    value comes from. The brake copy writes every stored offset (brake_evidence_problems() checks it), so INHERIT_TYPE
+    replaces all of the record's fields, as the tyre scalar copy does."""
+    return effective_scalars(records, BRAKE_FIELD_STORES if stores is None else stores)
+
+
+# One line of a committed .asm export: VA, bytes and the instruction text.
+ASM_LINE = re.compile(r"([0-9a-f]{8}) [0-9a-f]+ +(.*?) *\Z")
+# Any instruction whose first operand is memory at [edi +/- n] or [edx +/- n] and that writes it.
+RECORD_WRITE = re.compile(r"(?:mov|fstp?|fistp?|fbstp|inc|dec|add|sub|and|or|xor|neg|not) (byte|word|dword|qword) ptr "
+                          r"\[(edi|edx) ([+-]) (0x[0-9a-f]+)\](?:, .*)?")
+SIGNED_JUMPS = {"jl": lambda c: c < 0, "jle": lambda c: c <= 0, "jg": lambda c: c > 0, "jge": lambda c: c >= 0,
+                "je": lambda c: c == 0, "jne": lambda c: c != 0}
+
+
+def asm_lines(text):
+    """Return [(va, instruction text)] for each instruction line of a committed .asm export."""
+    return [(int(match[1], 16), match[2]) for match in map(ASM_LINE.match, text.splitlines()) if match]
+
+
+def follow_dispatch(lines, tag_id, head, next_tag, default):
+    """Follow a loader's compare tree for one tag ID through a committed disassembly.
+
+    Starting at head, each `cmp eax, <imm>` compares the ID and each signed conditional jump is taken or not.
+    Returns (the compares met as [(va, immediate)], the VAs the handler can reach, or None when the ID reaches the
+    default branch). The handler is every instruction reachable, through any branch, before it jumps back to next_tag
+    or to default.
+    """
+    order = [va for va, _ in lines]
+    text = dict(lines)
+    va, compared, compares = head, None, []
+    while True:
+        mnemonic, _, operands = text[va].partition(" ")
+        if mnemonic == "cmp" and operands.startswith("eax, "):
+            value = int(operands[5:], 0) if not operands[5:].startswith("-") else -int(operands[6:], 0)
+            compared = (tag_id > value) - (tag_id < value)
+            compares.append((va, value))
+        elif mnemonic in SIGNED_JUMPS:
+            if compared is None:
+                raise ValueError(f"conditional jump at 0x{va:08x} before any compare")
+            if SIGNED_JUMPS[mnemonic](compared):
+                va = int(operands, 16)
+                continue
+        else:
+            break
+        va = order[order.index(va) + 1]
+    if va == default:
+        return compares, None
+    reached, pending = set(), [va]
+    while pending:
+        va = pending.pop()
+        # None: the fall-through past the last exported instruction.
+        if va is None or va in reached or va in (next_tag, default):
+            continue
+        if va not in text:
+            raise ValueError(f"the handler reaches 0x{va:08x}, outside the export")
+        reached.add(va)
+        mnemonic, _, operands = text[va].partition(" ")
+        index = order.index(va) + 1
+        following = order[index] if index < len(order) else None
+        if mnemonic == "jmp":
+            pending.append(int(operands, 16))
+        elif mnemonic.startswith("j"):
+            pending += [int(operands, 16), following]
+        elif mnemonic != "ret":
+            pending.append(following)
+    return compares, reached
+
+
+def record_writes(lines, reached):
+    """Return {va: (width, base, offset)} for each write to [edi + n] or [edx + n] among the reached VAs."""
+    writes = {}
+    for va, text in lines:
+        match = RECORD_WRITE.fullmatch(text) if va in reached else None
+        if match:
+            width, base, sign, offset = match.groups()
+            writes[va] = (width, base, int(offset, 16) * (-1 if sign == "-" else 1))
+    return writes
+
+
+def load_brake_loader_lines(path=REPO_ROOT / "analysis/selected/load_brake_database.asm"):
+    return asm_lines(Path(path).read_text())
+
+
+def brake_dispatch_problems(lines, tag_ids, stores=None, copy=None, dispatch=None):
+    """List every way the brake loader's committed disassembly disagrees with BRAKE_FIELD_STORES and BRAKE_COPY.
+
+    Follows the compare tree from BRAKE_DISPATCH's head for every registry ID in tag_ids. A mapped tag must reach a
+    handler whose last compare is its mapped one, whose float reader calls are exactly its mapped reads and whose
+    writes to the record are exactly its mapped stores; INHERIT_TYPE's handler must call the copy and write nothing;
+    every other registry ID must reach the default branch. Every write to [edi + n] anywhere in the loader must be a
+    mapped store.
+    """
+    stores = BRAKE_FIELD_STORES if stores is None else stores
+    copy = BRAKE_COPY if copy is None else copy
+    dispatch = BRAKE_DISPATCH if dispatch is None else dispatch
+    head, next_tag, default = (int(dispatch[key], 16) for key in ("head", "next_tag", "default"))
+    text = dict(lines)
+    problems = []
+    handled = {**stores, copy["tag"]: copy}
+    for tag, tag_id in sorted(tag_ids.items(), key=lambda item: item[1]):
+        compares, reached = follow_dispatch(lines, tag_id, head, next_tag, default)
+        entry = handled.get(tag)
+        if reached is None:
+            if entry is not None:
+                problems.append(f"{tag} (0x{tag_id:x}) reaches the brake loader's default branch, not a handler")
+            continue
+        if entry is None:
+            problems.append(f"registry tag {tag} (0x{tag_id:x}) reaches a brake loader handler but is not mapped")
+            continue
+        if not compares or compares[-1] != (int(entry["compare"], 16), entry["id"]):
+            problems.append(f"{tag}: the last compare on its path is {compares[-1:]}, not cmp eax, 0x{entry['id']:x} "
+                            f"at {entry['compare']}")
+        writes = record_writes(lines, reached)
+        reads = {va for va in reached if text[va] == f"call 0x{FLOAT_READER:x}"}
+        if tag == copy["tag"]:
+            if writes:
+                problems.append(f"INHERIT_TYPE's handler writes the record at {sorted(hex(va) for va in writes)}")
+            if int(copy["call"], 16) not in reached or text[int(copy["call"], 16)] != f"call 0x{copy['span'][0]:x}":
+                problems.append(f"INHERIT_TYPE's handler does not call the copy at 0x{copy['span'][0]:08x} from "
+                                + copy["call"])
+            continue
+        expected = {int(va, 16): ("dword", "edi", int(offset, 16))
+                    for offset, store in entry["offsets"].items() for va in store["sites"]}
+        if writes != expected:
+            problems.append(f"{tag}: its handler writes {sorted((hex(va), *write) for va, write in writes.items())}, "
+                            f"the map says {sorted((hex(va), *write) for va, write in expected.items())}")
+        mapped_reads = {int(store["read"], 16) for store in entry["offsets"].values()}
+        if reads != mapped_reads:
+            problems.append(f"{tag}: its handler calls the float reader at {sorted(hex(va) for va in reads)}, the map "
+                            f"says {sorted(hex(va) for va in mapped_reads)}")
+    mapped = {int(va, 16) for entry in stores.values() for store in entry["offsets"].values() for va in store["sites"]}
+    for va, (_, base, _) in sorted(record_writes(lines, set(text)).items()):
+        if base == "edi" and va not in mapped:
+            problems.append(f"the brake loader writes the record at 0x{va:08x} ({text[va]}), which is in no mapped tag")
+    return problems
+
+
+def brake_evidence_problems(evidence, tag_ids, stores=None, copy=None, record=None, dispatch=None):
+    """List every way BRAKE_FIELD_STORES, BRAKE_RECORD, BRAKE_DISPATCH and BRAKE_COPY lack matching byte-checked sites.
+
+    tag_ids maps tag names to analysis/tags.json registry IDs. Every cited site must be in field-evidence.json inside
+    the brake loader (or the copy, or the lookup). The record: the 0x34 allocation passed to 0x0042ed50, the file name
+    and its data bytes, the database store, the next-tag read, and the record-creating branch's allocation, link and
+    0x14-byte name read into the payload. The default branch: the tag ID kept in ECX and pushed with the message, whose
+    data bytes must match, and the jump back to the next tag. Each tag's compare must be `cmp eax, <its registry ID>`
+    and any `after_range` site a jg whose claim names the tag; each offset needs a call of the float reader followed,
+    before the tag's next read, by an fstp of ST0 at [edi + offset] whose claim names the tag. Every byte-checked
+    [edi + n] store in the loader must be mapped. The INHERIT_TYPE path is checked as for gearboxes, and the lookup it
+    calls must be LOOKUP_SHAPE over the brake database. In the copy: its register saves, the record kept in EBX, each
+    move's load of parent [edx + n] and store at [record + n], each block's size, source, destination and movsd/movsb
+    sequence, EAX used as the record only before it is overwritten, and no other store. The bytes the copy writes
+    must be the bytes the tags store plus BRAKE_COPIED_ONLY, inside the record and past the name.
+    """
+    stores = BRAKE_FIELD_STORES if stores is None else stores
+    copy = BRAKE_COPY if copy is None else copy
+    record = BRAKE_RECORD if record is None else record
+    dispatch = BRAKE_DISPATCH if dispatch is None else dispatch
+    lookup = int(copy["find_parent"]["target"], 16)
+    problems = []
+    checks = SiteChecks(evidence, tag_ids, problems, {"brake loader": BRAKE_LOADER_SPAN, "brake copy": copy["span"],
+                                                      "brake lookup": (lookup, lookup + LOOKUP_SIZE)})
+
+    checks.exact("Brake allocation size", record["allocation"]["size"], "ba" + BRAKE_RECORD_SIZE.to_bytes(4, "little").hex())
+    checks.call("Brake allocation call", record["allocation"]["call"], CREATE_DATABASE)
+    file = record["file"]
+    checks.exact("Brake file name", file["site"], "ba" + int(file["va"], 16).to_bytes(4, "little").hex())
+    if checks.by_va.get(int(file["va"], 16)) != (file["name"].encode("ascii") + b"\0").hex():
+        problems.append(f"Brake file name: no byte-checked data {file['name']!r} at {file['va']}")
+    database = int(record["database"]["va"], 16)
+    checks.exact("Brake database store", record["database"]["site"], "a3" + database.to_bytes(4, "little").hex())
+    checks.exact("Brake next-tag mode", record["next_tag"]["mode"], "ba02000000")
+    checks.exact("Brake next-tag reader", record["next_tag"]["reader"], "89f0")
+    checks.call("Brake next-tag call", record["next_tag"]["call"], NEXT_TAG_READER)
+    if record["next_tag"]["mode"] != dispatch["next_tag"]:
+        problems.append(f"Brake dispatch: the loop head {dispatch['next_tag']} is not the next-tag read "
+                        + record["next_tag"]["mode"])
+    checks.call("Brake record allocation", record["allocate"], RECORD_ALLOCATOR)
+    checks.exact("Brake record node in EDI", record["node_in_edi"], "89c7")
+    checks.call("Brake record link", record["link"], RECORD_LINK)
+    checks.exact("Brake payload in EDI", record["payload_in_edi"], "83c720")
+    checks.exact("Brake name size", record["name"]["size"], "bb" + BRAKE_NAME_BYTES.to_bytes(4, "little").hex())
+    checks.exact("Brake name destination", record["name"]["destination"], "89fa")
+    checks.call("Brake name read", record["name"]["call"], STRING_READER)
+
+    checks.exact("Brake dispatch keeps the tag ID in ECX", dispatch["tag_in_ecx"], "89c1")
+    checks.exact("Brake default branch tag ID", dispatch["push_tag"], "51")
+    message = dispatch["message"]
+    checks.exact("Brake default branch message", message["site"], "68" + int(message["va"], 16).to_bytes(4, "little").hex())
+    if checks.by_va.get(int(message["va"], 16)) != (message["text"].encode("ascii") + b"\0").hex():
+        problems.append(f"Brake default branch message: no byte-checked data {message['text']!r} at {message['va']}")
+    if not int(dispatch["default"], 16) <= int(dispatch["push_tag"], 16) < int(message["site"], 16):
+        problems.append(f"Brake default branch: {dispatch['push_tag']} and {message['site']} do not follow "
+                        + dispatch["default"])
+    raw = checks.site("Brake default branch next tag", dispatch["default_next_tag"])
+    if raw is not None:
+        target = jump_target(raw, int(dispatch["default_next_tag"], 16))
+        if target != int(dispatch["next_tag"], 16):
+            problems.append(f"Brake default branch: site {dispatch['default_next_tag']} ({raw}) is not a jump back to "
+                            + dispatch["next_tag"])
+
+    for tag, entry in stores.items():
+        checks.compare(tag, entry)
+        if "after_range" in entry:
+            raw = checks.site(f"{tag} selecting jg", entry["after_range"])
+            if raw is not None and not (re.fullmatch(r"7f[0-9a-f]{2}|0f8f[0-9a-f]{8}", raw)
+                                        and checks.about(entry["after_range"], tag)):
+                problems.append(f"{tag}: selecting site {entry['after_range']} ({raw}) is not a jg whose claim is "
+                                f"about {tag}")
+        reads = [int(store["read"], 16) for store in entry["offsets"].values()]
+        if reads != sorted(reads):
+            problems.append(f"{tag}: its reads are not in value order")
+        for index, (offset, store) in enumerate(entry["offsets"].items()):
+            checks.call(f"{tag} + {offset} float read", store["read"], FLOAT_READER)
+            if store["width"] != "dword" or len(store["sites"]) != 1:
+                problems.append(f"{tag} + {offset}: a float read is stored once as a dword")
+            following = reads[index + 1] if index + 1 < len(reads) else BRAKE_LOADER_SPAN[1]
+            for va in store["sites"]:
+                checks.operand(f"{tag} + {offset}", va, {"kind": "store", "width": "dword", "base": "edi",
+                                                         "disp": int(offset, 16), "register": "st0"})
+                if int(va, 16) in checks.by_va and not checks.about(va, tag):
+                    problems.append(f"{tag} + {offset}: the claim at {va} is not about {tag}: "
+                                    f"{checks.claims[int(va, 16)]!r}")
+                if not reads[index] < int(va, 16) < following:
+                    problems.append(f"{tag} + {offset}: store {va} does not follow its read {store['read']} before the "
+                                    "tag's next read")
+
+    inherit_path_problems(checks, copy, BRAKE_NAME_BYTES)
+    lookup_shape_problems(checks, "brake lookup", lookup, database)
+    mapped = {int(va, 16) for entry in stores.values() for store in entry["offsets"].values() for va in store["sites"]}
+    for va, raw in sorted(checks.by_va.items()):
+        decoded = memory_operand(raw)
+        if (BRAKE_LOADER_SPAN[0] <= va < BRAKE_LOADER_SPAN[1] and decoded and decoded["kind"] == "store"
+                and decoded["base"] == "edi" and va not in mapped):
+            problems.append(f"byte-checked record store at 0x{va:08x} ({raw}) is in no mapped tag")
+
+    span = "brake copy"
+    for key, expected in (("push_ebx", "53"), ("push_ecx", "51"), ("push_esi", "56"), ("push_edi", "57"),
+                          ("pop_edi", "5f"), ("pop_esi", "5e"), ("pop_ecx", "59"), ("pop_ebx", "5b"), ("ret", "c3")):
+        checks.exact(f"Brake copy {key.replace('_', ' ')}", copy["saves"][key], expected, span)
+    checks.exact("Brake copy record in EBX", copy["record_in_ebx"], "89c3", span)
+    checks.exact("Brake copy EAX overwritten", copy["eax_overwritten"], "89c8", span)
+    overwritten = int(copy["eax_overwritten"], 16)
+    copied, writes = set(), set()
+    for offset, move in copy["moves"].items():
+        disp = int(offset, 16)
+        checks.operand(f"Brake copy + {offset} load", move["load"],
+                       {"kind": "load", "width": "dword", "base": "edx", "disp": disp, "register": move["register"]},
+                       span)
+        checks.operand(f"Brake copy + {offset} store", move["store"],
+                       {"kind": "store", "width": "dword", "base": move["record"], "disp": disp,
+                        "register": move["register"]}, span)
+        if not int(move["load"], 16) < int(move["store"], 16):
+            problems.append(f"Brake copy + {offset}: the store {move['store']} does not follow the load {move['load']}")
+        if move["record"] == "eax" and int(move["store"], 16) >= overwritten:
+            problems.append(f"Brake copy + {offset}: the store {move['store']} uses EAX after {copy['eax_overwritten']}")
+        copied |= set(range(disp, disp + 4))
+        writes.add(int(move["store"], 16))
+    for offset, block in copy["blocks"].items():
+        disp, sites, label = int(offset, 16), block["sites"], f"Brake copy block + {offset}"
+        checks.exact(f"{label} size", sites["size"], "b9" + block["size"].to_bytes(4, "little").hex(), span)
+        checks.operand(f"{label} source", sites["source"], {"kind": "lea", "register": "esi", "base": "edx",
+                                                            "disp": disp}, span)
+        checks.operand(f"{label} destination", sites["destination"],
+                       {"kind": "lea", "register": "edi", "base": block["record"], "disp": disp}, span)
+        for key, expected in (("keep_size", "89c8"), ("dword_count", "c1e902"), ("movsd", "f2a5"),
+                              ("remainder", "8ac8"), ("remainder_mask", "80e103"), ("movsb", "f2a4")):
+            checks.exact(f"{label} {key.replace('_', ' ')}", sites[key], expected, span)
+        if block["record"] == "eax" and int(sites["destination"], 16) >= overwritten:
+            problems.append(f"{label}: the destination {sites['destination']} uses EAX after {copy['eax_overwritten']}")
+        copied |= set(range(disp, disp + block["size"]))
+    for va, raw in sorted(checks.by_va.items()):
+        decoded = memory_operand(raw)
+        if copy["span"][0] <= va < copy["span"][1] and decoded and decoded["kind"] == "store" and va not in writes:
+            problems.append(f"byte-checked copy store at 0x{va:08x} ({raw}) is in no mapped move")
+
+    stored = set(engine_stored_bytes(stores))
+    only = {byte for offset in BRAKE_COPIED_ONLY for byte in range(int(offset, 16), int(offset, 16) + 4)}
+    if stored - copied:
+        problems.append("mapped stores the copy misses: " + byte_ranges(stored - copied))
+    if copied - stored != only:
+        problems.append(f"the copy writes {byte_ranges(copied - stored) or 'nothing'} that no mapped tag stores; "
+                        f"BRAKE_COPIED_ONLY lists {byte_ranges(only) or 'nothing'}")
+    outside = {byte for byte in copied if byte < BRAKE_NAME_BYTES or byte >= BRAKE_RECORD_SIZE}
+    if outside:
+        problems.append("the copy writes the name or past the record: " + byte_ranges(outside))
+    return problems
+
+
+def jump_target(raw, va):
+    """Return the target of `jmp rel8` (eb) or `jmp rel32` (e9) at va, else None."""
+    data = bytes.fromhex(raw)
+    if len(data) == 2 and data[0] == 0xeb:
+        return va + 2 + int.from_bytes(data[1:], "little", signed=True)
+    if len(data) == 5 and data[0] == 0xe9:
+        return (va + 5 + int.from_bytes(data[1:], "little", signed=True)) & 0xFFFFFFFF
+    return None
+
+
+def brake_layout_problems(header, stores=None):
+    """List every mapped brake offset, and each BRAKE_COPIED_ONLY dword, that disagrees with Fr3BrakeRecord in
+    recovered/fr3_database_layouts.h."""
+    stores = BRAKE_FIELD_STORES if stores is None else stores
+    expected = [(f"{tag} + {offset}", offset, store["field"], 4)
+                for tag, entry in stores.items() for offset, store in entry["offsets"].items()]
+    expected += [(f"copied only + {offset}", offset, field, 4) for offset, field in BRAKE_COPIED_ONLY.items()]
+    return layout_problems(header, "Fr3BrakeRecord", BRAKE_RECORD_SIZE, expected)
+
+
+def unmapped_brake_tags(stores=None):
+    """Return the BRAKE_TAGS with no mapped store and the mapped tags outside BRAKE_TAGS, as two sorted lists."""
+    stores = BRAKE_FIELD_STORES if stores is None else stores
+    return sorted(BRAKE_TAGS - set(stores)), sorted(set(stores) - BRAKE_TAGS)
 
 
 # Conditional jumps by their condition nibble (7x rel8, 0f 8x rel32): the signed compares the dispatch trees use.
@@ -1656,13 +2115,7 @@ def car_evidence_problems(evidence, tag_ids, stores=None, record=None, lookups=N
             continue
         where, routine = f"{name} lookup", int(entry["routine"], 16)
         database = int(entry["database"], 16)
-        for relative, expected in LOOKUP_SHAPE.items():
-            va = f"0x{routine + relative:08x}"
-            if expected == "DATABASE":
-                expected = "a1" + database.to_bytes(4, "little").hex()
-            elif expected == "COMPARE":
-                expected = call_bytes(routine + relative, STRING_COMPARE)
-            checks.exact(f"{where} + 0x{relative:02x}", va, expected, where)
+        lookup_shape_problems(checks, where, routine, database)
         checks.exact(f"{name} database created", entry["created"], "a3" + database.to_bytes(4, "little").hex(),
                      entry["loader"])
         reads = entry["name"]
@@ -2134,9 +2587,14 @@ def load_layout_header(path=REPO_ROOT / "recovered/fr3_database_layouts.h"):
 
 
 def read_database(game_dir, relative, known_tags, sound_info=False):
-    """Read and parse one database; CARDATA.DAT (DATABASES["cars"]) with parse_cars()."""
+    """Read and parse one database; CARDATA.DAT with parse_cars() and BRAKDATA.DAT with parse_brakes()."""
     data = (Path(game_dir) / relative).read_bytes()
-    records = parse_cars(data, known_tags) if relative == DATABASES["cars"] else parse(data, known_tags, sound_info)
+    if relative == DATABASES["cars"]:
+        records = parse_cars(data, known_tags)
+    elif relative == DATABASES["brakes"]:
+        records = parse_brakes(data, known_tags)
+    else:
+        records = parse(data, known_tags, sound_info)
     return {"source": relative, "sha256": hashlib.sha256(data).hexdigest(), "records": records}
 
 
@@ -2156,11 +2614,12 @@ def table_dimensions(records, tag):
     return {"blocks": len(blocks), "rows": rows, "columns": columns}
 
 
-def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, header=None):
+def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, header=None, brake_loader=None):
     """Check the parsed demo databases against the counts observed in the data.
 
-    evidence is the field-evidence.json site list, tag_ids the analysis/tags.json name-to-ID map and header the
-    text of recovered/fr3_database_layouts.h; by default the committed ones are read.
+    evidence is the field-evidence.json site list, tag_ids the analysis/tags.json name-to-ID map, header the
+    text of recovered/fr3_database_layouts.h and brake_loader the asm_lines() of load_brake_database.asm; by default
+    the committed ones are read.
     """
     engines = read_database(game_dir, DATABASES["engines"], known_tags)["records"]
     gearboxes = read_database(game_dir, DATABASES["gearboxes"], known_tags)["records"]
@@ -2260,6 +2719,26 @@ def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, hea
     inexact = sorted(f"{car} {tag}" for car, entries in references.items() for tag, entry in entries.items()
                      if entry["match"] != "exact")
     require(not inexact, "Car references that match only ignoring case: " + ", ".join(inexact))
+    brakes = read_database(game_dir, DATABASES["brakes"], known_tags)["records"]
+    require(len(brakes) == 12, f"Brake record count mismatch: {len(brakes)}")
+    # No demo brake declares INHERIT_TYPE, so brakes.json's effective_fields is empty; the copy is still byte-checked.
+    brake_inherits = [record["type"] for record in brakes if "INHERIT_TYPE" in record["fields"]]
+    require(not brake_inherits, "Brakes that declare INHERIT_TYPE: " + ", ".join(brake_inherits))
+    for record in brakes:
+        require(set(record["fields"]) == BRAKE_TAGS, "Brake tag set mismatch: " + record["type"])
+    brake_fields = effective_brake_fields(brakes)
+    check_effective_scalars(brakes, brake_fields, BRAKE_FIELD_STORES, "Brake effective field")
+    missing, extra = unmapped_brake_tags()
+    require(not missing and not extra, "BRAKE_FIELD_STORES does not cover exactly BRAKE_TAGS: "
+            + "; ".join(part for part in (missing and "unmapped " + ", ".join(missing),
+                                          extra and "not a brake tag " + ", ".join(extra)) if part))
+    tag_ids = load_tag_ids() if tag_ids is None else tag_ids
+    problems = brake_evidence_problems(evidence, tag_ids)
+    require(not problems, "Brake stores lack byte-checked evidence: " + "; ".join(problems))
+    problems = brake_dispatch_problems(load_brake_loader_lines() if brake_loader is None else brake_loader, tag_ids)
+    require(not problems, "Brake loader dispatch disagrees with BRAKE_FIELD_STORES: " + "; ".join(problems))
+    problems = brake_layout_problems(load_layout_header() if header is None else header)
+    require(not problems, "Brake stores disagree with recovered/fr3_database_layouts.h: " + "; ".join(problems))
     return {"engine_records": len(engines), "gearbox_records": len(gearboxes), "torque_arrays": len(torque),
             "engine_mapped_tags": len(ENGINE_FIELD_STORES), "gearbox_mapped_tags": len(GEARBOX_FIELD_STORES),
             "torque_rows": [min(len(f["rows"]) for f in torque), max(len(f["rows"]) for f in torque)],
@@ -2273,15 +2752,18 @@ def verify_text_databases(game_dir, known_tags, evidence=None, tag_ids=None, hea
             "tyre_effective_scalar_counts": counts,
             "sound_info_entries": len(entries), "sound_info_per_record": sounds,
             "car_records": len(cars), "car_mapped_references": len(CAR_REFERENCE_STORES),
-            "car_reference_targets": targets}
+            "car_reference_targets": targets,
+            "brake_records": len(brakes), "brake_mapped_tags": len(BRAKE_FIELD_STORES), "brake_tags": sorted(BRAKE_TAGS),
+            "brake_inheritances": len(brake_inherits)}
 
 
 def write_databases(game_dir, output, known_tags, stems=tuple(DATABASES), bases=None):
-    """Parse the text databases under game_dir named by stems (by default all four) into <output>/<stem>.json;
+    """Parse the text databases under game_dir named by stems (by default all five) into <output>/<stem>.json;
     return the record count per stem.
 
     cars.json adds `references`, each car's resolve_car_references() against the other three, with `bases`, by
     default the basis car_reference_bases() gives on the committed field-evidence.json and tag registry.
+    brakes.json adds `effective_fields`, effective_brake_fields() of its records.
     """
     require(Path(game_dir).is_dir(), f"Game directory does not exist: {game_dir}")
     require(set(stems) <= set(DATABASES), f"Unknown text databases: {sorted(set(stems) - set(DATABASES))}")
@@ -2302,6 +2784,8 @@ def write_databases(game_dir, output, known_tags, stems=tuple(DATABASES), bases=
             database["resolved_tables"] = resolve_tyre_tables(database["records"])
             database["table_provenance"] = tyre_table_provenance(database["records"])
             database["effective_scalars"] = effective_scalars(database["records"])
+        if stem == "brakes":
+            database["effective_fields"] = effective_brake_fields(database["records"])
         if stem == "engines":
             database["effective_fields"] = effective_engine_fields(database["records"])
             database["untagged_inherit_consequences"] = untagged_inherit_consequences(database["records"])
@@ -2314,7 +2798,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("game_dir", type=Path, help="Extracted Program_Executable_Files directory")
     parser.add_argument("--output", type=Path, default=Path("artifacts/text-databases"),
-                        help="Directory for engines.json, gearboxes.json, tyres.json and cars.json")
+                        help="Directory for engines.json, gearboxes.json, tyres.json, cars.json and brakes.json")
     parser.add_argument("--tags", type=Path, default=REPO_ROOT / "analysis/tags.json", help="Tag registry JSON")
     args = parser.parse_args()
     for stem, count in write_databases(args.game_dir, args.output, load_known_tags(args.tags)).items():

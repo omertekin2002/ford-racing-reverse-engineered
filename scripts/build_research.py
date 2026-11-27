@@ -190,7 +190,9 @@ def build(game_dir=DEFAULT_GAME, output=DEFAULT_OUTPUT, analysis=ANALYSIS, revis
             work = Path(work)
             evidence_path = analysis / ROUTINE_EVIDENCE["evidence"]
             bases = car_reference_bases(load_json(evidence_path, "Field evidence"), load_tag_ids(analysis / "tags.json"))
-            write_databases(game_dir, work, load_known_tags(analysis / "tags.json"), bases=bases)
+            # No page reads brakes.json yet, so BRAKDATA.DAT is not parsed here.
+            write_databases(game_dir, work, load_known_tags(analysis / "tags.json"),
+                            ("engines", "gearboxes", "tyres", "cars"), bases=bases)
             counts = {"cars": car_page.build(work / "cars.json", work / "engines.json", work / "gearboxes.json",
                                              work / "tyres.json", game_dir, pe_path, staging / car_page.PAGE,
                                              revision, hrefs=routine_hrefs, entrance=True, evidence_path=evidence_path,

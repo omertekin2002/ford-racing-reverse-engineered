@@ -15,10 +15,15 @@
       color: #ddd;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
+    body {
+      display: flex;
+      flex-direction: column;
+    }
     #stage {
       position: relative;
+      flex: 1;
+      min-height: 0;
       width: 100%;
-      height: 100%;
     }
     #fr3-canvas {
       display: block;
@@ -65,6 +70,21 @@
       background: #ddd;
       transition: width 120ms linear;
     }
+    /* Below the canvas, outside #stage, so neither the game nor the loading overlay covers it. */
+    #rights-notice {
+      flex: none;
+      padding: 4px 10px;
+      font-size: 11px;
+      line-height: 1.4;
+      color: #999;
+    }
+    #rights-notice p {
+      margin: 0;
+    }
+    #rights-notice a {
+      color: #ccc;
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body>
@@ -76,6 +96,12 @@
       <p id="msg">Loading native engine…</p>
     </div>
   </div>
+  <aside id="rights-notice" aria-label="Rights notice">
+    <p>An independent reimplementation that reads the 2004 demo’s files, not the original executable. Its physics and AI are approximations.</p>
+    <p>Unofficial fan project, not affiliated with the rights holders. Ford Racing 3 demo © 2004 Empire Interactive Europe Ltd.
+    <a href="https://www.moddb.com/games/ford-racing/downloads/ford-racing-3-demo" target="_blank" rel="noopener">Official demo</a> ·
+    <a href="https://github.com/omertekin2002/ford-racing-reverse-engineered/issues" target="_blank" rel="noopener">Request removal</a></p>
+  </aside>
   <script type="module">
     import { mountNativeEngine } from "./native/fr3-engine.js";
 

@@ -131,6 +131,22 @@ class DispatchTests(unittest.TestCase):
         data = json.loads(report.read_text())
         self.assertEqual((data["result"], data["failure"]["check"]), ("failed", "field_instruction_sites"))
 
+    def test_text_databases_reads_brake_loader_from_checkout_root(self):
+        checkout = Checkout(self)
+        (checkout.root / "analysis/tags.json").write_text("[]")
+        (checkout.root / "analysis/selected").mkdir()
+        (checkout.root / "analysis/selected/field-evidence.json").write_text("[]")
+        (checkout.root / "analysis/selected/load_brake_database.asm").write_text("00520820 90 nop\n")
+        (checkout.root / "recovered").mkdir()
+        (checkout.root / "recovered/fr3_database_layouts.h").write_text("/* header */\n")
+        summary = {key: 0 for key in ("engine_records", "gearbox_records", "tyre_records", "torque_arrays",
+                                      "engine_mapped_tags", "engine_effective_field_records", "gearbox_mapped_tags",
+                                      "tyre_effective_scalar_records", "sound_info_entries", "car_records",
+                                      "car_mapped_references", "brake_records", "brake_mapped_tags")}
+        with mock.patch.object(verify_findings, "verify_text_databases", return_value=summary) as verify_mock:
+            verify_findings.check_text_databases(verify_findings.Context(checkout.root))
+        self.assertEqual(verify_mock.call_args.args[5], [(0x00520820, "nop")])
+
 
 class UnavailableLevelTests(unittest.TestCase):
     def assert_unavailable(self, checkout, level, *expected):

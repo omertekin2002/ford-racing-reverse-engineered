@@ -37,7 +37,8 @@ class References(HTMLParser):
 
 
 class Notice(HTMLParser):
-    """Collect the text and links of the rights notice and whether it precedes the player."""
+    """Collect the text and links of the rights notice, whether it precedes the player and whether a loading
+    overlay (#overlay) encloses it."""
 
     def __init__(self):
         super().__init__()
@@ -45,11 +46,18 @@ class Notice(HTMLParser):
         self.depth = 0
         self.found = False
         self.after_player = False
+        self.overlay_tag = None
+        self.overlay_depth = 0
+        self.in_overlay = False
         self.text = []
         self.links = []
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
+        if self.overlay_depth and tag == self.overlay_tag:
+            self.overlay_depth += 1
+        elif attrs.get("id") == "overlay" and not self.overlay_depth:
+            self.overlay_tag, self.overlay_depth = tag, 1
         if self.depth:
             if tag == self.tag:
                 self.depth += 1
@@ -57,32 +65,46 @@ class Notice(HTMLParser):
                 self.links.append(attrs["href"])
         elif attrs.get("id") == "rights-notice" and not self.found:
             self.tag, self.depth, self.found = tag, 1, True
+            self.in_overlay = bool(self.overlay_depth)
         elif "player" in (attrs.get("class") or "").split() and not self.found:
             self.after_player = True
 
     def handle_endtag(self, tag):
         if self.depth and tag == self.tag:
             self.depth -= 1
+        if self.overlay_depth and tag == self.overlay_tag:
+            self.overlay_depth -= 1
 
     def handle_data(self, data):
         if self.depth:
             self.text.append(data)
 
 
-def verify_notice(html):
-    """Require the visible rights-holder notice above the player in index.html."""
+def check_notice(html, name):
+    """Require #rights-notice in a page, with the credit and both links inside it; return the parsed notice."""
     notice = Notice()
     notice.feed(html)
     if not notice.found:
-        raise ValueError("index.html lacks the rights-holder notice (#rights-notice)")
-    if notice.after_player:
-        raise ValueError("The rights-holder notice must appear above the player")
+        raise ValueError(f"{name} lacks the rights-holder notice (#rights-notice)")
     text = " ".join(" ".join(notice.text).split())
     if RIGHTS_CREDIT not in text:
-        raise ValueError(f"The rights-holder notice lacks the credit: {RIGHTS_CREDIT}")
+        raise ValueError(f"The rights-holder notice in {name} lacks the credit: {RIGHTS_CREDIT}")
     for url in (DEMO_PAGE, ISSUES_PAGE):
         if url not in notice.links:
-            raise ValueError(f"The rights-holder notice lacks a link to {url}")
+            raise ValueError(f"The rights-holder notice in {name} lacks a link to {url}")
+    return notice
+
+
+def verify_notice(html):
+    """Require the visible rights-holder notice above the player in index.html."""
+    if check_notice(html, "index.html").after_player:
+        raise ValueError("The rights-holder notice must appear above the player")
+
+
+def verify_native_notice(html):
+    """Require the rights-holder notice in native.html, outside the loading overlay that hides it while loading."""
+    if check_notice(html, "native.html").in_overlay:
+        raise ValueError("The rights-holder notice in native.html must not be inside the loading overlay (#overlay)")
 
 
 def sha256(path):
@@ -321,6 +343,10 @@ def verify(root, manifest=None):
         manifest = json.loads(MANIFEST.read_text())
     verify_build_record(root, json.loads((root / "build.json").read_text()))
     verify_notice((root / "index.html").read_text(encoding="utf-8"))
+    native = root / "native.html"
+    if not native.is_file():
+        raise ValueError("The site lacks native.html, the page the Play button opens")
+    verify_native_notice(native.read_text(encoding="utf-8"))
     # Before the relative-URL checks, so a missing research/ or packet fails with its own message.
     listed = verify_sums(root)
     research = verify_research_site(root, listed)
