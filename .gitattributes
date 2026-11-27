@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+# Keep game assets byte-for-byte identical across platforms so manifest SHA-256 checks pass on Linux/CI.
+game/** -text
+
