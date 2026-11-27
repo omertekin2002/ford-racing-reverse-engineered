@@ -1,0 +1,205 @@
+
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			CMPSL
+:CLEAR				0
+//:TEXTURE_ENUM		"GRAPHICS\GAME\COMMON\GREYFADE.PSD"
+:TEXTURE_ENUM		"GRAPHICS\GAME\COMMON\GRADY.PSD"
+:TIME_LENGTH		1.000000
+
+:s{*****>>>
+	///////NEEDED FOR INIT FUNC//////////////
+	:INHERIT				TITLE
+	:POSITION_START	0.176563 0.200000
+	:POSITION_END		0.176563 0.200000
+	
+	// DONE
+	:INHERIT				BACK_ICON
+	:POSITION_START	0.23125 0.860416
+	:POSITION_END		0.23125 0.860416
+	
+	:INHERIT				BACK_TEXT
+	:POSITION_END		0.275000 0.841667
+	:POSITION_START	0.275000 0.841667
+	:TEXT_JUSTIFY		1
+	/////////////////////////////////////////
+	
+	/////////////////////////////////////////
+	//FORD RACING LOGO BANNER
+	/////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			LOGO_BKGND
+	:SIZE					1.000000 0.091670
+	:COLOUR				204 204 204 229
+	:POSITION_START	0.000000 0.089583
+	:POSITION_END		0.000000 0.089583
+	:TIME_LENGTH		0.166667
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			FORD_RACING_LOGO
+	:SIZE					1.000000 0.091670
+	:POSITION_START	0.057813 0.097917
+	:POSITION_END		0.057813 0.097917
+	:STRETCH_GRAPHIC	0
+	:TEXTURE_ENUM		"GRAPHICS\GAME\COMMON\FFLOGO.PSD"
+	:TIME_LENGTH		0.166667
+	
+	////////////////////////////////////////
+	//
+	////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	//MENU BAR
+	/////////////////////////////////////////////////////
+	
+	:INHERIT				MENUBAR
+	
+	//////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////
+	
+	////////////////////////////////////////////////////
+	//DUMMY OBJECT USED TO DRAW THE CONECTIONS
+	///////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			LINE_PLOTER
+	:CLEAR				1
+	:TIME_LENGTH		0.166667
+	
+	////////////////////////////////////////////////////
+	//
+	///////////////////////////////////////////////////
+	
+	////////////////////////////////////////
+	//COMPETITION LOGO HILIGHT
+	////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			COMP_HALO
+	:AUTOSIZE			0
+	:SIZE					0.109375 0.145833                //70x70
+	:COLOUR				255 255 153 255
+	:TEXTURE_ENUM		"GRAPHICS\GAME\CMPICON\HALO.PSD"
+	:TIME_LENGTH		0.166667
+	
+	////////////////////////////////////////
+	//
+	////////////////////////////////////////
+	
+	////////////////////////////////////////
+	//COMPETITION LOGOS
+	////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			COMP_ICON_1
+	:AUTOSIZE			0
+	:SIZE					0.106250 0.141667
+	:COLOUR				255 255 255 255
+	:POSITION_START	0.075000 0.377083
+	:POSITION_END		0.075000 0.377083
+	:TIME_LENGTH		0.166667
+	
+	:INHERIT				COMP_ICON_1
+	:OBJECT_ID			COMP_ICON_2
+	:POSITION_START	0.195313 0.310417
+	:POSITION_END		0.195313 0.310417
+	
+	:INHERIT				COMP_ICON_1
+	:OBJECT_ID			COMP_ICON_3
+	:POSITION_START	0.193750 0.445833
+	:POSITION_END		0.193750 0.445833
+	
+	:INHERIT				COMP_ICON_1
+	:OBJECT_ID			COMP_ICON_4
+	:POSITION_START	0.312500 0.243750
+	:POSITION_END		0.312500 0.243750
+	
+	:INHERIT				COMP_ICON_1
+	:OBJECT_ID			COMP_ICON_5
+	:POSITION_START	0.314063 0.377083
+	:POSITION_END		0.314063 0.377083
+	
+	:INHERIT				COMP_ICON_1
+	:OBJECT_ID			COMP_ICON_6
+	POSITION_START		0.314063 0.510417
+	POSITION_END		0.314063 0.510417
+	
+	:INHERIT				COMP_ICON_1
+	:OBJECT_ID			COMP_ICON_7
+	:POSITION_START	0.435937 0.310417
+	:POSITION_END		0.435937 0.310417
+	
+	:INHERIT				COMP_ICON_1
+	:OBJECT_ID			COMP_ICON_8
+	:POSITION_START	0.434375 0.445833
+	:POSITION_END		0.434375 0.445833
+	
+	:INHERIT				COMP_ICON_1
+	:OBJECT_ID			COMP_ICON_9
+	:POSITION_START	0.554688 0.243750
+	:POSITION_END		0.554688 0.243750
+	
+	:INHERIT				COMP_ICON_1
+	:OBJECT_ID			COMP_ICON_10
+	:POSITION_START	0.554688 0.375000
+	:POSITION_END		0.554688 0.375000
+	
+	:INHERIT				COMP_ICON_1
+	:OBJECT_ID			COMP_ICON_11
+	:POSITION_START	0.554688 0.512500
+	:POSITION_END		0.554688 0.512500
+	
+	:INHERIT				COMP_ICON_1
+	:OBJECT_ID			COMP_ICON_12
+	:POSITION_START	0.676562 0.306250
+	:POSITION_END		0.676562 0.306250
+	
+	:INHERIT				COMP_ICON_1
+	:OBJECT_ID			COMP_ICON_13
+	:POSITION_START	0.678125 0.441667
+	:POSITION_END		0.678125 0.441667
+	
+	:INHERIT				COMP_ICON_1
+	:OBJECT_ID			COMP_ICON_14
+	//:SIZE					0.156250 0.100000  //100x48
+	//:POSITION_START	0.771875 0.397917
+	:POSITION_START	0.793750 0.375000
+	:POSITION_END		0.793750 0.375000
+	
+	////////////////////////////////////////
+	//
+	////////////////////////////////////////
+	
+	////////////////////////////////////////
+	//MAIN COMPETITION BUTTON
+	////////////////////////////////////////
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			MAIN_COM_BUTTON
+	:POSITION_START	0.187500 0.656250
+	:POSITION_END		0.187500 0.656250
+	
+	////////////////////////////////////////
+	//
+	////////////////////////////////////////	
+	
+	////////////////////////////////////////
+	// DESCRIPTION TEXT
+	////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_TEXT
+	:OBJECT_ID			COMP_DESC_TEXT
+	:SIZE					0.703125 0.143750
+	:FONT					2
+	:FONT_COLOUR		50 50 50 255
+	:TEXT_JUSTIFY		4							//TEXT_JUSTIFY_LEFT_TOP
+	:WORD_WRAP			1
+	:POSITION_START	0.229687 0.718750
+	:POSITION_END		0.229687 0.718750
+	:TIME_LENGTH		0.166667
+	
+	////////////////////////////////////////
+	//
+	////////////////////////////////////////
+:E}*****<<<

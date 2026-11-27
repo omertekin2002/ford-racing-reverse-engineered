@@ -1,0 +1,1135 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//.TIME ATTACK TIMES /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK ALASAF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK ALASAR
+:CAR_GROUP_TYPE CLASSIC                 94.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  88.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 94.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             79.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK ALASBF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 73.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK ALASBR
+:CAR_GROUP_TYPE CLASSIC                 94.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  88.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 73.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             79.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK ALASCF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 94.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK ALASCR
+:CAR_GROUP_TYPE CLASSIC                 94.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  88.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 86.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             79.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK ENGAF
+:CAR_GROUP_TYPE CLASSIC                 69.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  65.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 69.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             56.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK ENGAR
+:CAR_GROUP_TYPE CLASSIC                 69.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  64.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 69.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             57.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK ENGBF
+:CAR_GROUP_TYPE CLASSIC                 89.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  83.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 87.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             73.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 112.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK ENGBR
+:CAR_GROUP_TYPE CLASSIC                 90.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  82.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 88.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             71.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK ENGCF
+:CAR_GROUP_TYPE CLASSIC                 84.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  79.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 84.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             69.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK ENGCR
+:CAR_GROUP_TYPE CLASSIC                 87.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 89.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             71.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK JAPAF
+:CAR_GROUP_TYPE CLASSIC                 101.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  93.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 98.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             83.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK JAPAR
+:CAR_GROUP_TYPE CLASSIC                 87.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  78.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 86.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             69.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK JAPBF
+:CAR_GROUP_TYPE CLASSIC                 107.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  97.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 105.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK JAPBR
+:CAR_GROUP_TYPE CLASSIC                 104.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 103.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             83.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK JAPCF
+:CAR_GROUP_TYPE CLASSIC                 95.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  89.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 93.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             79.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 180.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK JAPCR
+:CAR_GROUP_TYPE CLASSIC                 94.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 96.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             77.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK PACAF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 78.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK PACAR
+:CAR_GROUP_TYPE CLASSIC                 94.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  88.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 78.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             79.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK PACBF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 96.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK PACBR
+:CAR_GROUP_TYPE CLASSIC                 94.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  88.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 99.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             79.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK PACCF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 82.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK PACCR
+:CAR_GROUP_TYPE CLASSIC                 94.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  88.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 81.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             79.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK OVAL1F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK OVAL2F
+:CAR_GROUP_TYPE CLASSIC                 81.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  77.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             68.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 100.0f, 0.0f, 0.0f
+
+:TRACK FR3TPF
+:CAR_GROUP_TYPE CLASSIC                 81.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  77.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             68.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 100.0f, 0.0f, 0.0f
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FR2 TRACKS
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK BAYAF
+:CAR_GROUP_TYPE CLASSIC                 89.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  83.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 88.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             71.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+:TRACK JUNGA
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 78.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK JUNGB
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 78.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK JUNGC
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 78.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK DESA
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 78.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK DESB
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 78.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK DESC
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 78.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK FUKUOKA
+:CAR_GROUP_TYPE CLASSIC                 89.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  83.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 88.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             71.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 150.0f, 0.0f, 0.0f
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK TFUKUOKA
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TFUKUOKA2
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK THOCKEN
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK THOCKEN2
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK THOCKEN3
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TMONZA
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TMONZA2
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TROCK
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TROCK2
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TSCHILT
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TSCHILT2
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TSEBRING
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TSEBRING2
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TSILVER
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TSILVER2
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TSILVER3
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TSPRING
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TSPRING2
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TSPRING3
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK SPRING
+:CAR_GROUP_TYPE CLASSIC                 112.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  103.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 103.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 100.0f, 0.0f, 0.0f
+
+:TRACK SPRING2
+:CAR_GROUP_TYPE CLASSIC                 100.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  100.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 78.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             65.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 65.0f, 0.0f, 0.0f
+
+:TRACK FLORA
+:CAR_GROUP_TYPE CLASSIC                 78.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  75.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 79.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             66.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 100.0f, 0.0f, 0.0f
+
+:TRACK FLORB
+:CAR_GROUP_TYPE CLASSIC                 97.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  90.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 94.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 100.0f, 0.0f, 0.0f
+
+:TRACK FLORC
+:CAR_GROUP_TYPE CLASSIC                 97.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 90.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             73.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 100.0f, 0.0f, 0.0f
+
+:TRACK BAYB
+:CAR_GROUP_TYPE CLASSIC                 104.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  99.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 107.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             89.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 100.0f, 0.0f, 0.0f
+
+:TRACK BAYC
+:CAR_GROUP_TYPE CLASSIC                 98.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  89.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 99.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 100.0f, 0.0f, 0.0f
+
+:TRACK OVAL2
+:CAR_GROUP_TYPE CLASSIC                 43.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  40.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 43.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             33.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 30.0f, 0.0f, 0.0f
+
+:TRACK OVAL3
+:CAR_GROUP_TYPE CLASSIC                 49.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  48.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 50.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             40.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 37.0f, 0.0f, 0.0f
+
+:TRACK BEACH1F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK BEACH1R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK BEACH2F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK BEACH2R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK DTOWN1F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK DTOWN1R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK DTOWN2F
+:CAR_GROUP_TYPE CLASSIC                 63.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  60.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 61.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             55.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 140.5f, 0.0f, 0.0f
+
+:TRACK DTOWN2R
+:CAR_GROUP_TYPE CLASSIC                 63.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  60.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 61.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             55.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 140.5f, 0.0f, 0.0f
+
+:TRACK DTOWN3F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK DTOWN3R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK FWAY1F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK FWAY1R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK NTOWN1F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK NTOWN1R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK NTOWN2F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK NTOWN2R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK NTOWN3F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK NTOWN3R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK SANTA1F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK SANTA1R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TOPAN1F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TOPAN1R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TOPAN2F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TOPAN2R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK ICEAF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK ICEAR
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK ICEBF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK ICEBR
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK ICECF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK ICECR
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK ICEDF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK ICEDR
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK DESAF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK DESAR
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK DESBF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK DESBR
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK DESCF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK DESCR
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK DESDF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK DESDR
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK WATAF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK WATAR
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK WATBF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK WATBR
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK WATCF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK WATCR
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK WATDF
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK WATDR
+:CAR_GROUP_TYPE CLASSIC                 85.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  80.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 92.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             72.0f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.0f, 0.0f, 0.0f
+
+:TRACK BEACH3F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK BEACH3R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK HWOOD1F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK HWOOD1R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TOVAL1F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK TOVAL1R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK RIVER1F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK RIVER1R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK SANTA2F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK SANTA2R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK SKID2F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK SKID2R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK SUN1F
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+:TRACK SUN1R
+:CAR_GROUP_TYPE CLASSIC                 31.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE MODERN                  28.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE OFFROAD                 32.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE PERFORMANCE             26.5f, 0.0f, 0.0f
+:CAR_GROUP_TYPE VINTAGE                 85.5f, 0.0f, 0.0f
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

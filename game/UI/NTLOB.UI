@@ -1,0 +1,282 @@
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			NTLOB
+:CLEAR				0
+:COLOUR				255 255 255 255
+:POSITION_START	0.000000 0.000000
+:POSITION_END		0.000000 0.000000
+:TEXTURE_ENUM		GRAPHICS\GAME\BKGNDS\NET\NTLOB.PSD
+:TIME_LENGTH		1.000000
+
+
+:S{*****>>>
+
+	/////////////////////////////////////////////////
+	// TITLE
+	////////////////////////////////////////////////
+	
+	:INHERIT					TITLE
+	:POSITION_START		0.068798 0.079150
+	:POSITION_END			0.068798 0.079150
+	
+	/////////////////////////////////////////////////
+	// TITLE
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// BACK ICON AND TEXT
+	////////////////////////////////////////////////
+
+	// DONE	
+	:INHERIT					BACK_ICON
+	:POSITION_START		0.167236 0.879231
+	:POSITION_END			0.167236 0.879231
+	
+	:INHERIT					BACK_TEXT
+	:POSITION_START		0.215527 0.858348
+	:POSITION_END			0.215527 0.858348
+	:TEXT_JUSTIFY			1							//TEXT_JUSTIFY_LEFT_CENTRE
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				INFO_BAR
+	:AUTOSIZE				0
+	:SIZE						1.000000 0.045833
+	:COLOUR					0 0 0 77
+	:FONT						2
+	:FONT_COLOUR			206 206 206 255
+	:HIGHLIGHTED_FONT		2
+	:TEXT_JUSTIFY			1							//TEXT_JUSTIFY_LEFT_CENTRE
+	:JUSTIFY_OFFSET		0.111181 0.000000
+	:TEXT						0
+	:POSITION_START		0.000000 0.13750
+	:POSITION_END			0.000000 0.13750
+	:TIME_LENGTH			0.166667
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				INFO_BAR2
+	:COLOUR					0 0 0 0
+	:SIZE						0.450000 0.045833
+	:JUSTIFY_OFFSET		0.111181 0.000000
+	:POSITION_START		0.500000 0.13750
+	:POSITION_END			0.500000 0.13750
+	:TEXT_JUSTIFY			2							//TEXT_JUSTIFY_RIGHT_CENTRE
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				HOST_COMBO_INFO
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				HOST_COMBO_INFO2
+	:TEXT_JUSTIFY			2							//TEXT_JUSTIFY_RIGHT_CENTRE
+	:COLOUR					0 0 0 0
+	:JUSTIFY_OFFSET		0.111181 0.000000
+	:SIZE						0.450000 0.045833
+	:POSITION_START		0.500000 0.13750
+	:POSITION_END			0.500000 0.13750
+	
+	
+	//////////////////////////////////////////////////////////
+	//TABLE OVERHEAD TEXT
+	//////////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_TEXT
+	:OBJECT_ID				DRIVER_TITLE
+	:CLEAR					1
+	:AUTOSIZE				0
+	:SIZE						0.193750 0.045898
+	:FONT_COLOUR			51 51 51 255
+	:FONT						2
+	:TEXT_JUSTIFY			1									//TEXT_JUSTIFY_LEFT_CENTRE
+	:TEXT						TXT_GENERAL_DRIVER
+	:POSITION_START		0.140673 0.237500
+	:POSITION_END			0.140673 0.237500
+	:TIME_LENGTH			0.166667
+	
+	:INHERIT					DRIVER_TITLE
+	:OBJECT_ID				VEHICLE_TITLE
+	:TEXT						TXT_CHALLENGE_DETAILS_CAR
+	:POSITION_START		0.485880 0.235417
+	:POSITION_END			0.485880 0.235417
+	
+	:INHERIT					DRIVER_TITLE
+	:OBJECT_ID				STATUS_TITLE
+	:TEXT						TXT_CHALLENGE_DETAILS_STATUS
+	:POSITION_START		0.500000 0.235417
+	:POSITION_END			0.500000 0.235417
+	:SIZE 					0.450000 0.045898
+	:JUSTIFY_OFFSET		0.111181 0.000000
+	:TEXT_JUSTIFY		2						//TEXT_JUSTIFY_RIGHT_CENTRE
+	
+	//////////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////////
+
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				PLAYER_INFO_BAR_1
+	:SIZE						1.0 0.06875
+	:POSITION_START		0.000000 0.28125
+	:POSITION_END			0.000000 0.28125
+	
+	:S{*****>>>
+		
+		:TYPE					UI_TYPE_GRAPHIC
+		:OBJECT_ID			COMMUNICATOR_ICON
+		:AUTOSIZE			1
+		:COLOUR				255 255 255 255
+		//:POSITION_START	0.101563 0.000000
+		//:POSITION_END		0.101563 0.000000
+		:POSITION_START	0.053125 0.1000
+		:POSITION_END		0.053125 0.1000
+		
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			NUMBER
+		:CLEAR				1
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		1						//TEXT_JUSTIFY_LEFT_CENTRE
+		:TEXT					0
+		:POSITION_START	0.111181 0.000000
+		:POSITION_END		0.111181 0.000000
+		:TIME_LENGTH		0.166667
+	
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			NAME
+		:CLEAR				1
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		1						//TEXT_JUSTIFY_LEFT_CENTRE
+		:TEXT					0
+		//:POSITION_START	0.214062 0.135816
+		//:POSITION_START	0.214062 0.000000
+		//:POSITION_END		0.214062 0.000000
+		:POSITION_START	0.140673 0.000000
+		:POSITION_END		0.140673 0.000000
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			CAR_TEXT
+		:CLEAR				1
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		1						//TEXT_JUSTIFY_LEFT_CENTRE
+		:TEXT					0
+		:POSITION_START	0.485880 0.000000
+		:POSITION_END		0.485880 0.000000
+		:SIZE					0.3 1.0
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_GRAPHIC
+		:OBJECT_ID			CAR_ICON
+		//:SIZE					0.0727935 1.0	 //3/4
+		:SIZE					0.06875 0.975
+		:POSITION_START	0.485880 0.000000
+		:POSITION_END		0.485880 0.000000
+		:TIME_LENGTH		0.166667
+			
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			STATUS
+		:CLEAR				1
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		2						//TEXT_JUSTIFY_LEFT_CENTRE
+		:TEXT					0
+		:JUSTIFY_OFFSET		0.111181 0.000000
+		:POSITION_START	0.500000 0.000000
+		:POSITION_END		0.500000 0.000000
+		:SIZE 				0.450000, 1.000000
+		:TIME_LENGTH		0.166667
+		
+	:E}*****<<<
+	
+	:INHERIT					PLAYER_INFO_BAR_1
+	:OBJECT_ID				PLAYER_INFO_BAR_2
+	
+	:INHERIT					PLAYER_INFO_BAR_1
+	:OBJECT_ID				PLAYER_INFO_BAR_3
+	
+	:INHERIT					PLAYER_INFO_BAR_1
+	:OBJECT_ID				PLAYER_INFO_BAR_4
+	
+	:INHERIT					PLAYER_INFO_BAR_1
+	:OBJECT_ID				PLAYER_INFO_BAR_5
+	
+	:INHERIT					PLAYER_INFO_BAR_1
+	:OBJECT_ID				PLAYER_INFO_BAR_6
+	
+	/////////////////////////////////////////////////
+	// MENU BAR
+	////////////////////////////////////////////////
+	
+	:INHERIT					MENUBAR
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// BUTTONS
+	////////////////////////////////////////////////
+	
+	:INHERIT					FR3_DEFAULT_BUTTON
+	:OBJECT_ID				SELECT_CAR_BUTTON
+	:TEXT						TXT_XBOX_LIVE_BUTTON_SELECT_CAR
+	//:POSITION_START		0.168750 0.718749
+	//:POSITION_END			0.168750 0.718749
+	:POSITION_START		0.168750 0.699999
+	:POSITION_END			0.168750 0.699999
+	
+	:INHERIT					FR3_DEFAULT_BUTTON
+	:OBJECT_ID				SETTINGS_BUTTON
+	:TEXT						TXT_XBOX_LIVE_BUTTON_SERVER_SETTINGS
+	//:POSITION_START		0.168750 0.768748
+	//:POSITION_END			0.168750 0.768748
+	:POSITION_START		0.168750 0.749998
+	:POSITION_END			0.168750 0.749998
+	
+	:INHERIT					FR3_DEFAULT_BUTTON
+	:OBJECT_ID				START_MATCH_BUTTON
+	:TEXT						TXT_XBOX_LIVE_BUTTON_START_GAME
+	//:POSITION_START		0.168750 0.818747
+	//:POSITION_END			0.168750 0.818747
+	:POSITION_START		0.168750 0.799997
+	:POSITION_END			0.168750 0.799997
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////////
+	// LINE PLOTER
+	/////////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				LINE_PLOTER
+	:CLEAR					1
+	:AUTOSIZE				0
+	:SIZE						1.0 1.0
+	
+	//////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////////
+	// LINE PLOTER
+	/////////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				DESTROY_SESSION_HELPER_OBJECT
+	:CLEAR					1
+	:AUTOSIZE				0
+	:SIZE						0.2 0.2
+	
+	//////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////
+	
+:E}*****<<<
+
+:CONNECTION	"SELECT_CAR_BUTTON"	"START_MATCH_BUTTON"	"SETTINGS_BUTTON" "" ""
+:CONNECTION "SETTINGS_BUTTON"		"SELECT_CAR_BUTTON"	"START_MATCH_BUTTON" "" ""
+:CONNECTION "START_MATCH_BUTTON"	"SETTINGS_BUTTON"		"SELECT_CAR_BUTTON" "" ""

@@ -1,69 +1,44 @@
-# Ford Racing 3 reverse engineering
+# Ford Racing 3 Shuffle — Reverse Engineering & Native WebGL2 Engine
 
-Reproducible static analysis of the **public Windows demo**, acquired from
-[ModDB](https://www.moddb.com/games/ford-racing/downloads/ford-racing-3-demo).
-The archive and `fr3.exe` match the hashes in the supplied research report.
+This repository contains the **Ford Racing 3 Shuffle** game assets under `game/`
+(4,446 verified files, 148 cars, 125 tracks, manifested in
+[`analysis/game-file-manifest.json`](analysis/game-file-manifest.json)), an
+independent TypeScript + WebGL2 engine (`engine/`) that reads them on demand,
+and the static reverse-engineering analysis archive (`analysis/`).
 
-The baseline contains 4,922 detected functions, including 152 thunks, and 4,770
-successful C-like decompiler exports. Selected annotations correct register
-storage for 25 routines. Resource tools reproduce 363 application tags,
-146 compressed resources and 62 PCG graphics collections with 654 entries.
-The new tyre analysis reconstructs its 88-byte record and table allocations.
+## Play in the browser (Native WebGL2)
 
-## Play the demo
+The browser build packages the native TypeScript + WebGL2 engine (`engine/`)
+with an on-demand HTTP file manifest (`runtime/game-manifest.json` +
+`runtime/game/`), so only the databases, UI, and selected cars/tracks are
+downloaded when needed. Boxedwine is no longer built for Shuffle.
 
-- **Linux and macOS:** download the packages from the
-  [v0.1.0-preview release](https://github.com/omertekin2002/ford-racing-reverse-engineered/releases/tag/v0.1.0-preview).
-  They are Wine compatibility previews that run the unchanged public demo; the
-  macOS package has not been tested on a Mac. See the
-  [release instructions](docs/releases.md). A
-  [CI workflow](docs/releases.md#building-in-ci) rebuilds and verifies both
-  packages and keeps them as a downloadable workflow artifact; a pushed
-  `v<VERSION>` tag also drafts a release from them for the owner to
-  [review and publish](docs/releases.md#making-a-release).
-- **Browser:** open the
-  [browser preview](https://omertekin2002.github.io/ford-racing-reverse-engineered/).
-  Its **Play** button starts the separate [native engine](#native-engine-engine),
-  which reads the demo's files; **Play (Boxedwine)** runs the same unchanged demo
-  through Boxedwine's WebAssembly runtime. See the [browser guide](docs/browser.md).
-- **Research findings:** open
-  [Explore findings](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/),
-  the car, engine, gearbox, tyre, PCG catalogue, routines and open questions pages built from the demo in the
-  same Pages workflow and published beside the preview under `research/`. The
-  [research packet](https://omertekin2002.github.io/ford-racing-reverse-engineered/downloads/fr3-research-latest.zip)
-  is an offline ZIP of those pages with a `MANIFEST.json` naming their revision,
-  input build and the checks they passed; it is rebuilt on every deploy. The
-  entrance page also answers
-  [whether road, offroad and track tyres use different tables](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/#tyre-tables),
-  generated from the tyre table provenance with one traced example,
-  [which engines share a torque table and what they declare differently](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/#engine-torque-tables),
-  generated from the engines' effective fields,
-  [which cars share an engine, gearbox or tyre record](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/#car-shared-records),
-  generated from the cars' byte-checked references, and
-  [which cars run road, offroad or track tyres](https://omertekin2002.github.io/ford-racing-reverse-engineered/research/#car-tyre-roots),
-  generated from each car tyre's inheritance root and resolved table sources.
+Build and run locally:
 
-Read [the verified findings and limitations](docs/analysis.md). This is an
-analysis package, not restored original source or a runnable replacement game.
-The installer is extracted without execution. Separate Wine compatibility
-packages run the original demo; see [release instructions](docs/releases.md)
-and [runtime validation](docs/release-validation.md).
+```sh
+npm --prefix engine ci
+npm --prefix engine run typecheck
+npm --prefix engine run build
+npm --prefix engine test
 
-A static [browser preview and GitHub Pages workflow](docs/browser.md) package
-the same demo with Boxedwine's WebAssembly JIT and Wine's WebGL runtime.
-The workflow also builds the research pages into the site's `research/`
-directory and packages them as `downloads/fr3-research-latest.zip`. Pushes to
-`main` build, verify and deploy the site; manual runs of the workflow deploy
-only with **deploy** checked. Build and browser validation are
-described in the browser guide.
+python3 scripts/acquire_demo.py game
+python3 scripts/build_web.py --game game --output artifacts/web --symlink-game
+python3 scripts/verify_web.py artifacts/web
+python3 -m http.server 8000 --directory artifacts/web
+```
+
+Pass `--zip` to `scripts/build_web.py` if you also want `runtime/fr3.zip`
+alongside the on-demand HTTP manifest, or omit `--symlink-game` for a
+self-contained static site copy suitable for deployment (see
+[browser guide](docs/browser.md)).
 
 ## Native engine (`engine/`)
 
-`engine/` holds an independent TypeScript + WebGL2 reimplementation that the
-owner maintains. It builds one ES module, `engine/dist/fr3-engine.js`, which
-`scripts/build_web.py` copies to the site's `native/` directory; `web/native.html`
-loads it, and the preview's **Play** button opens that page. Build and test it
-with Node 22:
+`engine/` holds the independent TypeScript + WebGL2 engine. It builds one ES
+module, `engine/dist/fr3-engine.js`, which `scripts/build_web.py` copies to
+`native/fr3-engine.js`. At runtime `web/native.html` mounts it against
+`runtime/game-manifest.json` via `HttpVfs` (or `?zip=runtime/fr3.zip` via
+`ZipVfs`). Build and test it with Node 22+:
 
 ```sh
 npm --prefix engine ci
@@ -72,11 +47,12 @@ npm --prefix engine run build
 npm --prefix engine test
 ```
 
-At runtime it downloads and reads the demo's `runtime/fr3.zip`, the same
-archive of unchanged game files the Boxedwine runtime uses, so the site
-redistributes nothing new. It is not research evidence: nothing in `research/`
-or `analysis/` cites it, and the findings above come from the original demo's
-files and executable.
+## Historical static analysis (2004 demo baseline)
+
+The committed static analysis under `analysis/` and `docs/analysis.md` was
+generated from the 2004 public Windows demo (`4,922` detected functions, `4,770`
+decompiler exports, `25` annotated routines, `363` application tags). See
+[the verified findings and limitations](docs/analysis.md).
 
 ## Reproduce
 

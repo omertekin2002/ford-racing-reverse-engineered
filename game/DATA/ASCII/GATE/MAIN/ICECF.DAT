@@ -1,0 +1,231 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// W:\FR3\data\ascii\gate\main\OVAL2F.dat SCRIPT
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.987117
+    :OFFSET -4.548292
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.957027
+    :OFFSET 5.597066
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.934801
+    :OFFSET -3.942274
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.899463
+    :OFFSET 6.658010
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.879314
+    :OFFSET 6.183319
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.840987
+    :OFFSET 0.049524
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.816963
+    :OFFSET 0.649613
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.803405
+    :OFFSET 0.295109
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.790538
+    :OFFSET 1.133709
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.773834
+    :OFFSET 1.350358
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.753061
+    :OFFSET -1.037667
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.722148
+    :OFFSET 0.683592
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.692846
+    :OFFSET -1.020849
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.667121
+    :OFFSET 0.286193
+    :RADIUS 3.750000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.646265
+    :OFFSET 1.121506
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.593462
+    :OFFSET -0.630886
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.564031
+    :OFFSET -1.153625
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.535384
+    :OFFSET 0.969429
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.511149
+    :OFFSET -1.296274
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.483593
+    :OFFSET 1.282074
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.457402
+    :OFFSET 1.164814
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.424715
+    :OFFSET -1.470208
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.390751
+    :OFFSET 1.130485
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.368390
+    :OFFSET -0.403726
+    :RADIUS 3.750000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.351216
+    :OFFSET -0.470204
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.319222
+    :OFFSET -2.326046
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.293770
+    :OFFSET 1.655291
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.271674
+    :OFFSET 0.731397
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.232822
+    :OFFSET 1.435712
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.207106
+    :OFFSET 1.236817
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.156068
+    :OFFSET 2.117237
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.133947
+    :OFFSET -2.444267
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.100613
+    :OFFSET 2.490172
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.083767
+    :OFFSET 1.755138
+    :RADIUS 3.750000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.064002
+    :OFFSET -0.983934
+    :RADIUS 3.250000
+
+:TRIGGER
+    :TYPE GATE_MAIN
+    :INTERPOLANT 0.019755
+    :OFFSET -0.417963
+    :RADIUS 3.250000
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+:END
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

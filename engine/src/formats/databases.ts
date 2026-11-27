@@ -211,14 +211,16 @@ interface InheritingRecord extends NamedRecord { readonly parentId?: string }
 function records<T extends NamedRecord>(
   input: Directives, opener: string, parse: (name: string, previous: Database<T>) => T,
   nameReader = id,
+  allowDuplicate = false,
 ): Database<T> {
   const result = new Map<string, T>();
   while (input.peek() !== "END") {
     const start = input.take(opener);
     const name = nameReader(inline(start));
     const key = name.toLowerCase();
-    if (result.has(key)) fail(start, `duplicate record "${name}"`);
-    result.set(key, parse(name, result));
+    if (!allowDuplicate && result.has(key)) fail(start, `duplicate record "${name}"`);
+    const parsed = parse(name, result);
+    if (!result.has(key)) result.set(key, parsed);
   }
   input.end();
   return result;
@@ -251,9 +253,14 @@ export interface EngineRecord extends InheritingRecord {
 const rpmScale = Math.fround(0.001);
 const powerScale = Math.fround(0.00019040366169065237);
 
+const engineTagPattern = new RegExp(
+  `^([ \\t]*)(${["INHERIT_TYPE", "TORQUE_ARRAY", ...Object.keys(engineSchema)].join("|")})(?=[ \\t]|$|//)`,
+  "gm",
+);
+
 function readEngine(text: string): Directives {
-  // This single colon-less inheritance is recognized by the demo loader.
-  return tagged(text.replace(/^(\s*:TYPE[ \t]+INDIGO[ \t]*\r?\n(?:[ \t]*(?:\/\/[^\r\n]*)?\r?\n)*[ \t]*)INHERIT_TYPE(?=[ \t]+DEFAULT_TRACK\b)/m, "$1:INHERIT_TYPE"));
+  // The real engine tag reader matches known tag names even when a leading colon is omitted (e.g. INDIGO's INHERIT_TYPE and Shuffle's ENGDATA.DAT).
+  return tagged(text.replace(engineTagPattern, "$1:$2"));
 }
 
 export function parseEngineDatabase(text: string): Database<EngineRecord> {
@@ -310,7 +317,7 @@ export function parseEngineDatabase(text: string): Database<EngineRecord> {
       }
     }
     return { id: name, parentId, fields: values, torqueCurve, torque, peakPowerRpm, inverseTurboMass };
-  });
+  }, id, true);
 }
 
 const gearboxSchema = {
@@ -538,11 +545,40 @@ export function parseBodyDatabase(text: string): Database<BodyRecord> {
 }
 
 const brakeSchema = { BRAKE_SPEED: scalar, BRAKE_RADIUS: pair, BRAKE_MAX_FORCE: pair, ADDITIONAL_BRAKING: scalar };
-export type BrakeRecord = NamedRecord & Fields<typeof brakeSchema>;
+export type BrakeRecord = InheritingRecord & Fields<typeof brakeSchema>;
 
 export function parseBrakeDatabase(text: string): Database<BrakeRecord> {
   const input = tagged(text);
-  return records(input, "TYPE", name => ({ id: name, ...fields(input, brakeSchema, "TYPE", "END") }));
+  return records<BrakeRecord>(input, "TYPE", (name, previous) => {
+    let parentId: string | undefined;
+    let values: Partial<Fields<typeof brakeSchema>> = {};
+    while (input.peek() !== "TYPE" && input.peek() !== "END") {
+      const directive = input.take();
+      if (directive.tag === "INHERIT_TYPE") {
+        const base = parent(directive, previous);
+        parentId = base.id;
+        values = {
+          BRAKE_SPEED: base.BRAKE_SPEED,
+          BRAKE_RADIUS: base.BRAKE_RADIUS,
+          BRAKE_MAX_FORCE: base.BRAKE_MAX_FORCE,
+          ADDITIONAL_BRAKING: base.ADDITIONAL_BRAKING,
+        };
+      } else {
+        field(values, brakeSchema, directive);
+      }
+    }
+    if (values.BRAKE_SPEED === undefined) throw new Error("Missing :BRAKE_SPEED");
+    if (values.BRAKE_RADIUS === undefined) throw new Error("Missing :BRAKE_RADIUS");
+    if (values.BRAKE_MAX_FORCE === undefined) throw new Error("Missing :BRAKE_MAX_FORCE");
+    return {
+      id: name,
+      parentId,
+      BRAKE_SPEED: values.BRAKE_SPEED,
+      BRAKE_RADIUS: values.BRAKE_RADIUS,
+      BRAKE_MAX_FORCE: values.BRAKE_MAX_FORCE,
+      ADDITIONAL_BRAKING: values.ADDITIONAL_BRAKING ?? 0,
+    };
+  });
 }
 
 const setupSchema = {
@@ -560,8 +596,12 @@ export interface SetupRecord extends InheritingRecord {
 }
 
 export function parseSetupDatabase(text: string): Database<SetupRecord> {
-  // The demo uses a single slash on this heading. Keep line numbers intact.
-  const input = tagged(text.replace(/^[ \t]*\/[ \t]+F150 1998[ \t]*(?=\r?$)/m, ""));
+  // Keep line numbers intact while tolerating the single-slash F150 heading and Shuffle's "0.0s" typo.
+  const input = tagged(
+    text
+      .replace(/^[ \t]*\/[ \t]+F150 1998[ \t]*(?=\r?$)/m, "")
+      .replace(/^([ \t]*:WHEEL_SPACING[ \t]+[+-]?(?:\d+(?:\.\d*)?|\.\d+)[ \t]*,[ \t]*[+-]?(?:\d+(?:\.\d*)?|\.\d+))s(?=[ \t]*(?:\/\/.*)?\r?$)/gm, "$1"),
+  );
   return records<SetupRecord>(input, "CAR_TYPE", (name, previous) => {
     let parentId: string | undefined;
     let values: Partial<Fields<typeof setupSchema>> = {};
@@ -841,8 +881,8 @@ export function parseRacingLine(text: string): RacingLine {
   mark(tool("HEADER"));
   const version = whole(value("VERSION_NUMBER"));
   const creationDate = description("CREATION_DATE");
-  const timestamp = whole(value("TIMESTAMP"));
-  const sceneName = description("SCENE_NAME");
+  const timestamp = input.peek() === "TRACK_TOOL_TIMESTAMP" ? whole(value("TIMESTAMP")) : 0;
+  const sceneName = input.peek() === "TRACK_TOOL_SCENE_NAME" ? description("SCENE_NAME") : "";
   const tolerance = scalar(value("TOLERANCE"));
   const reverse = bool(value("REVERSE_FLAG"));
   mark(tool("DATA"));
@@ -929,13 +969,18 @@ export type TrackGate = Fields<typeof gateSchema>;
 export function parseTrackGates(text: string): readonly TrackGate[] {
   const input = tagged(text);
   const gates: TrackGate[] = [];
-  while (input.peek() !== "END") {
+  while (input.peek() !== "END" && input.peek() !== "END_SUB_SCRIPT") {
     mark(input.take("TRIGGER"));
-    const gate = fields(input, gateSchema, "TRIGGER", "END");
+    const gate = fields(input, gateSchema, "TRIGGER", "END", "END_SUB_SCRIPT");
     if (gate.TYPE !== "GATE_MAIN") throw new Error(`Unexpected main gate type "${gate.TYPE}"`);
     gates.push(gate);
   }
-  input.end();
+  if (input.peek() === "END_SUB_SCRIPT") {
+    mark(input.take("END_SUB_SCRIPT"));
+    input.end(false);
+  } else {
+    input.end();
+  }
   return gates;
 }
 
@@ -946,12 +991,28 @@ function fog(row: TextRow): { readonly density: number; readonly colour: Vec3 } 
 
 const trackConfigSchema = {
   FOG: fog, CAR_HEADLIGHT_STRENGTH: scalar, TRACK_WETNESS: scalar, SUN_FLARE_SIZE: scalar, HEAT_HAZE_STRENGTH: scalar,
+  SNOW_DENSITY: scalar,
 };
 
-export type TrackConfig = Fields<typeof trackConfigSchema>;
+export type TrackConfig = Omit<Fields<typeof trackConfigSchema>, "HEAT_HAZE_STRENGTH" | "SNOW_DENSITY"> & {
+  readonly HEAT_HAZE_STRENGTH?: number;
+  readonly SNOW_DENSITY?: number;
+};
 
 export function parseTrackConfig(text: string): TrackConfig {
-  return fields(tagged(text), trackConfigSchema);
+  const input = tagged(text);
+  const result: Partial<Fields<typeof trackConfigSchema>> = {};
+  while (!input.done) {
+    const directive = input.take();
+    if (directive.tag !== "SNOW_DENSITY" && Object.hasOwn(result, directive.tag)) {
+      fail(directive, `duplicate :${directive.tag}`);
+    }
+    field(result, trackConfigSchema, directive);
+  }
+  for (const key of ["FOG", "CAR_HEADLIGHT_STRENGTH", "TRACK_WETNESS", "SUN_FLARE_SIZE"] as const) {
+    if (!Object.hasOwn(result, key)) throw new Error(`Missing :${key}`);
+  }
+  return result as TrackConfig;
 }
 
 const surfaceSchema = {

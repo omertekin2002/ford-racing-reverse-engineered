@@ -1,0 +1,417 @@
+
+//////////////////////////////////////////////////////
+// UI_SCREEN
+//////////////////////////////////////////////////////
+
+:TYPE 									UI_TYPE_SCREEN
+:OBJECT_ID 								PS_CSETS
+:AUTOSIZE 								0
+:CLEAR 									0
+:POSITION_START 						0.0 0.0
+:POSITION_END 							0.0 0.0
+:SIZE 									1.0 1.0
+:STRETCH_GRAPHIC 						1
+:TEXTURE_ENUM 							GRAPHICS\GAME\BKGNDS\MUST03.PSD
+:TIME_LENGTH 							0.16667
+
+:S{*****>>>
+
+	//////////////////////////////////////////////////////
+	// TITLE BAR
+	//////////////////////////////////////////////////////
+
+	:INHERIT									TITLE
+	:POSITION_START						-0.05781 0.14375
+	:POSITION_END							-0.05781 0.14375
+	:SIZE										0.52344 0.03542
+	:TEXT_JUSTIFY							2
+	:JUSTIFY_OFFSET						0.04535 0.0
+
+	//////////////////////////////////////////////////////
+	// 
+	//////////////////////////////////////////////////////
+		
+	//////////////////////////////////////////////////////
+	// BACK ICON AND TEXT
+	//////////////////////////////////////////////////////
+
+	// DONE
+	:INHERIT									BACK_ICON
+	:POSITION_START						0.38438 0.53125
+	:POSITION_END							0.38438 0.53125
+
+	:INHERIT									BACK_TEXT
+	:POSITION_START						0.32188 0.54167
+	:POSITION_END							0.32188 0.54167
+	:TEXT_JUSTIFY							4
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+
+	//////////////////////////////////////////////////////
+	// BUTTONS
+	//////////////////////////////////////////////////////
+
+	:INHERIT									MENUBAR
+
+	:TYPE										UI_TYPE_BUTTON
+	:OBJECT_ID								BUTTON_FORCE_FEEDBACK
+	:CLEAR									1
+	:POSITION_START						0.0 0.21458
+	:POSITION_END							0.0 0.21458
+	:SIZE										1.0 0.06
+	:TEXT										TXT_OPTIONS_CONTROLS_FORCE_FEEDBACK_ENABLED
+	:TEXT_JUSTIFY							2
+	:JUSTIFY_OFFSET						0.572 0.0
+	:FONT										1
+	:FONT_COLOUR							0 0 0 50
+	:HIGHLIGHTED_FONT						1
+	:HIGHLIGHTED_FONT_COLOUR			0 0 0 255
+
+	:S{*****>>>
+
+		:TYPE										UI_TYPE_TEXT
+		:OBJECT_ID								TEXT_VALUE_FORCE_FEEDBACK
+		:POSITION_START						0.47969 0.026953
+		:POSITION_END							0.47969 0.026953
+		:SIZE										1.0 1.0
+		:TEXT										TXT_GENERAL_ON
+		:TEXT_JUSTIFY							1
+		:JUSTIFY_OFFSET						0.0 0.0
+		:FONT										1
+		:FONT_COLOUR							0 0 0 255
+		
+	:E}*****<<<
+	
+	:TYPE										UI_TYPE_BUTTON
+	:OBJECT_ID								BUTTON_CALIBRATE
+	:CLEAR									1
+	:POSITION_START						0.0 0.43542
+	:POSITION_END							0.0 0.43542	
+	:SIZE										0.453 0.06
+	:TEXT										TXT_OPTIONS_CONTROLS_CALIBRATE
+	:TEXT_JUSTIFY							2
+	:FONT										1
+	:FONT_COLOUR							0 0 0 50	
+	:HIGHLIGHTED_FONT						1
+	:HIGHLIGHTED_FONT_COLOUR			0 0 0 255
+	
+	:TYPE										UI_TYPE_AREA
+	:OBJECT_ID								BUTTON_CALIBRATE_GHOST
+	:CLEAR									1
+	:POSITION_START						0.0 0.43542
+	:POSITION_END							0.0 0.43542	
+	:SIZE										0.453 0.06
+	:FONT										1
+	:FONT_COLOUR							0 0 0 50
+	:TEXT										TXT_OPTIONS_CONTROLS_CALIBRATE
+	:TEXT_JUSTIFY							2	
+	:JUSTIFY_OFFSET						0.045352 0.000000
+
+	//////////////////////////////////////////////////////
+	// CALIBRATION AREA
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// STRENGTH
+	//////////////////////////////////////////////////////
+
+	:TYPE										UI_TYPE_BUTTON
+	:OBJECT_ID 								BUTTON_CSET_LEVEL_TYPE_STRENGTH
+	:CLEAR									1
+	:POSITION_START 						0.0 0.26666
+	:POSITION_END 							0.0 0.26666
+	:SIZE										1.0 0.06
+	:TEXT										TXT_OPTIONS_CONTROLS_FORCE_FEEDBACK_STRENGTH
+	:TEXT_JUSTIFY							2
+	:JUSTIFY_OFFSET						0.572 0.0	
+	:FONT										1
+	:FONT_COLOUR							0 0 0 50	
+	:HIGHLIGHTED_FONT						1
+	:HIGHLIGHTED_FONT_COLOUR			0 0 0 255
+
+	:S{*****>>>
+
+		:TYPE										UI_TYPE_AREA
+		:OBJECT_ID								SLIDER_HIGHLIGHT_CSET_LEVEL_TYPE_STRENGTH
+		:CLEAR									1
+		:COLOUR									255 255 255 255
+
+		:TYPE										UI_TYPE_AREA
+		:OBJECT_ID								SLIDER_BACKGROUND_CSET_LEVEL_TYPE_STRENGTH
+		:CLEAR									1	
+		:POSITION_START						0.48438 0.20867
+		:POSITION_END							0.48438 0.20867
+		:COLOUR									150 150 150 255
+		:AUTOSIZE								1
+
+		:TYPE										UI_TYPE_AREA
+		:OBJECT_ID								SLIDER_LEVEL_BACKGROUND_CSET_LEVEL_TYPE_STRENGTH
+		:CLEAR									1
+		:POSITION_START						0.48438 0.20867
+		:POSITION_END							0.48438 0.20867
+		:COLOUR									0 0 0 255
+		:AUTOSIZE								1
+
+		:TYPE 									UI_TYPE_GRAPHIC
+		:OBJECT_ID 								SLIDER_MARKER_CSET_LEVEL_TYPE_STRENGTH
+		:COLOUR 									255 255 255 255
+		:AUTOSIZE 								1
+		:POSITION_START 						0.48438 0.06992
+		:POSITION_END 							0.48438 0.06992
+		:TEXTURE_ENUM 							GRAPHICS\GAME\OPTIONS\VOLSLIDE.PSD
+			
+	:E}*****<<<
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// STRENGTH GHOST
+	//////////////////////////////////////////////////////
+	
+	:TYPE										UI_TYPE_AREA
+	:OBJECT_ID 								BUTTON_CSET_LEVEL_TYPE_STRENGTH_GHOST
+	:CLEAR									1
+	:POSITION_START 						0.0 0.26666
+	:POSITION_END 							0.0 0.26666
+	:SIZE										1.0 0.06
+	:TEXT										TXT_OPTIONS_CONTROLS_FORCE_FEEDBACK_STRENGTH
+	:TEXT_JUSTIFY							2
+	:JUSTIFY_OFFSET						0.572 0.0	
+	:FONT										1
+	:FONT_COLOUR							0 0 0 50
+	
+	:S{*****>>>
+
+		:TYPE										UI_TYPE_AREA
+		:OBJECT_ID								SLIDER_BACKGROUND_CSET_LEVEL_TYPE_STRENGTH_GHOST
+		:CLEAR									1	
+		:POSITION_START						0.48438 0.20867
+		:POSITION_END							0.48438 0.20867
+		:COLOUR									0 0 0 50
+		:AUTOSIZE								1
+
+	:E}*****<<<
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+		
+	//////////////////////////////////////////////////////
+	// DEADZONE
+	//////////////////////////////////////////////////////
+
+	:TYPE										UI_TYPE_BUTTON
+	:OBJECT_ID 								BUTTON_CSET_LEVEL_TYPE_DEADZONE
+	:CLEAR									1
+	:POSITION_START 						0.0 0.32499
+	:POSITION_END 							0.0 0.32499
+	:SIZE										1.0 0.06
+	:TEXT										TXT_OPTIONS_CONTROLS_WHEEL_DEADZONE
+	:TEXT_JUSTIFY							2
+	:JUSTIFY_OFFSET						0.572 0.0	
+	:FONT										1
+	:FONT_COLOUR							0 0 0 50	
+	:HIGHLIGHTED_FONT						1
+	:HIGHLIGHTED_FONT_COLOUR			0 0 0 255
+
+	:S{*****>>>
+
+		:TYPE										UI_TYPE_AREA
+		:OBJECT_ID								SLIDER_HIGHLIGHT_CSET_LEVEL_TYPE_DEADZONE
+		:CLEAR									1
+		:COLOUR									255 255 255 255
+
+		:TYPE										UI_TYPE_AREA
+		:OBJECT_ID								SLIDER_BACKGROUND_CSET_LEVEL_TYPE_DEADZONE
+		:CLEAR									1	
+		:POSITION_START						0.48438 0.20867
+		:POSITION_END							0.48438 0.20867
+		:COLOUR									150 150 150 255
+		:AUTOSIZE								1
+
+		:TYPE										UI_TYPE_AREA
+		:OBJECT_ID								SLIDER_LEVEL_BACKGROUND_CSET_LEVEL_TYPE_DEADZONE
+		:CLEAR									1	
+		:POSITION_START						0.48438 0.20867
+		:POSITION_END							0.48438 0.20867
+		:COLOUR									0 0 0 255
+		:AUTOSIZE								1
+	
+		:TYPE 									UI_TYPE_GRAPHIC
+		:OBJECT_ID 								SLIDER_MARKER_CSET_LEVEL_TYPE_DEADZONE
+		:COLOUR 									255 255 255 255
+		:AUTOSIZE 								1
+		:POSITION_START 						0.48438 0.06992
+		:POSITION_END 							0.48438 0.06992
+		:TEXTURE_ENUM 							GRAPHICS\GAME\OPTIONS\VOLSLIDE.PSD
+
+	:E}*****<<<
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+		
+	//////////////////////////////////////////////////////
+	// DEADZONE GHOST
+	//////////////////////////////////////////////////////
+	
+	:TYPE										UI_TYPE_AREA
+	:OBJECT_ID 								BUTTON_CSET_LEVEL_TYPE_DEADZONE_GHOST
+	:CLEAR									1
+	:POSITION_START 						0.0 0.32499
+	:POSITION_END 							0.0 0.32499
+	:SIZE										1.0 0.06
+	:TEXT										TXT_OPTIONS_CONTROLS_WHEEL_DEADZONE
+	:TEXT_JUSTIFY							2
+	:JUSTIFY_OFFSET						0.572 0.0
+	:FONT										1
+	:FONT_COLOUR							0 0 0 50
+		
+	:S{*****>>>
+			
+		:TYPE										UI_TYPE_AREA
+		:OBJECT_ID								SLIDER_BACKGROUND_CSET_LEVEL_TYPE_DEADZONE_GHOST
+		:CLEAR									1	
+		:POSITION_START						0.48438 0.20867
+		:POSITION_END							0.48438 0.20867
+		:COLOUR									0 0 0 50
+		:AUTOSIZE								1
+	
+	:E}*****<<<
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// LINEARITY
+	//////////////////////////////////////////////////////
+
+	:TYPE										UI_TYPE_BUTTON
+	:OBJECT_ID 								BUTTON_CSET_LEVEL_TYPE_LINEARITY
+	:CLEAR									1
+	:POSITION_START 						0.0 0.38125
+	:POSITION_END 							0.0 0.38125
+	:SIZE										1.0 0.06
+	:TEXT										TXT_OPTIONS_CONTROLS_WHEEL_LINEARITY
+	:TEXT_JUSTIFY							2
+	:JUSTIFY_OFFSET						0.572 0.0
+	:FONT										1
+	:FONT_COLOUR							0 0 0 255	
+	:HIGHLIGHTED_FONT						1
+	:HIGHLIGHTED_FONT_COLOUR			0 0 0 50
+
+	:S{*****>>>
+
+		:TYPE										UI_TYPE_AREA
+		:OBJECT_ID								SLIDER_HIGHLIGHT_CSET_LEVEL_TYPE_LINEARITY
+		:CLEAR									1
+		:COLOUR									255 255 255 255
+
+		:TYPE										UI_TYPE_AREA
+		:OBJECT_ID								SLIDER_BACKGROUND_CSET_LEVEL_TYPE_LINEARITY
+		:CLEAR									1	
+		:POSITION_START						0.48438 0.20867
+		:POSITION_END							0.48438 0.20867
+		:COLOUR									150 150 150 255
+		:AUTOSIZE								1
+		
+		:TYPE										UI_TYPE_AREA
+		:OBJECT_ID								SLIDER_LEVEL_BACKGROUND_CSET_LEVEL_TYPE_LINEARITY
+		:CLEAR									1
+		:POSITION_START						0.48438 0.20867
+		:POSITION_END							0.48438 0.20867
+		:COLOUR									0 0 0 255
+		:AUTOSIZE								1
+			
+		:TYPE 									UI_TYPE_GRAPHIC
+		:OBJECT_ID 								SLIDER_MARKER_CSET_LEVEL_TYPE_LINEARITY
+		:COLOUR 									255 255 255 255
+		:AUTOSIZE 								1
+		:POSITION_START 						0.48438 0.06992
+		:POSITION_END 							0.48438 0.06992
+		:TEXTURE_ENUM 							GRAPHICS\GAME\OPTIONS\VOLSLIDE.PSD
+
+	:E}*****<<<
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// LINEARITY GHOST
+	//////////////////////////////////////////////////////
+
+	:TYPE										UI_TYPE_AREA
+	:OBJECT_ID 								BUTTON_CSET_LEVEL_TYPE_LINEARITY_GHOST
+	:CLEAR									1
+	:POSITION_START 						0.0 0.38125
+	:POSITION_END 							0.0 0.38125
+	:SIZE										1.0 0.06
+	:TEXT										TXT_OPTIONS_CONTROLS_WHEEL_LINEARITY
+	:TEXT_JUSTIFY							2
+	:JUSTIFY_OFFSET						0.572 0.0	
+	:FONT										1
+	:FONT_COLOUR							0 0 0 50
+
+	:S{*****>>>
+
+		:TYPE										UI_TYPE_AREA
+		:OBJECT_ID								SLIDER_BACKGROUND_CSET_LEVEL_TYPE_LINEARITY_GHOST
+		:CLEAR									1
+		:POSITION_START						0.48438 0.20867
+		:POSITION_END							0.48438 0.20867
+		:COLOUR									0 0 0 50
+		:AUTOSIZE								1
+		
+	:E}*****<<<
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// ARROWS
+	//////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			LEFTARROW
+	:CLEAR				0
+	:AUTOSIZE			1
+	:COLOUR_START		255 255 255 0
+	:COLOUR				255 255 255 255
+	:STRETCH_GRAPHIC	1
+	:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\SMARROW.PSD
+	:TIME_LENGTH		0.166667
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			RIGHTARROW
+	:CLEAR				0
+	:AUTOSIZE			1
+	:COLOUR_START		255 255 255 0
+	:COLOUR				255 255 255 255
+	:STRETCH_GRAPHIC	1
+	:FLIP_GRAPHIC		1 0
+	:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\SMARROW.PSD
+	:TIME_LENGTH		0.166667
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+:E}*****<<<
+
+:CONNECTION "BUTTON_FORCE_FEEDBACK"					"BUTTON_CALIBRATE"						"BUTTON_CSET_LEVEL_TYPE_STRENGTH"	"none" "none"
+:CONNECTION "BUTTON_CSET_LEVEL_TYPE_STRENGTH" 	"BUTTON_FORCE_FEEDBACK"					"BUTTON_CSET_LEVEL_TYPE_DEADZONE"	"none" "none"
+:CONNECTION "BUTTON_CSET_LEVEL_TYPE_DEADZONE"	"BUTTON_CSET_LEVEL_TYPE_STRENGTH" 	"BUTTON_CSET_LEVEL_TYPE_LINEARITY"	"none" "none"
+:CONNECTION "BUTTON_CSET_LEVEL_TYPE_LINEARITY"	"BUTTON_CSET_LEVEL_TYPE_DEADZONE"	"BUTTON_CALIBRATE"						"none" "none"
+:CONNECTION "BUTTON_CALIBRATE"						"BUTTON_CSET_LEVEL_TYPE_LINEARITY"	"BUTTON_FORCE_FEEDBACK"					"none" "none"
+
+////////////////////////////////////////////////////
+//
+////////////////////////////////////////////////////

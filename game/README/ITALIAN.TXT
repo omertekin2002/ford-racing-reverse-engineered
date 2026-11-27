@@ -1,0 +1,207 @@
+======================================================
+FORD RACING 3 - (c) 2004 Empire Interactive Europe Ltd
+File Readme italiano 01/10/04
+======================================================
+
+========
+Sommario
+========
+
+1. Requisiti minimi/consigliati
+2. Installare/rimuovere FORD RACING 3
+3. Configurare Ford Racing 3
+4. Compatibilità delle schede video
+5. Problemi di prestazioni
+6. Gioco via Internet
+7. Risoluzione dei problemi
+
+===============================
+1. Requisiti minimi/consigliati
+===============================
+
+Requisiti minimi:
+Processore: Pentium III 800 MHz (o equivalente)
+RAM: 128 MB
+Video: scheda video con 32 MB di memoria compatibile con DirectX 9
+Disco: 150 MB di spazio libero
+Periferiche di controllo: tastiera
+Sistema operativo: Microsoft Windows 98/ME/2000/XP
+
+
+Requisiti consigliati:
+Processore: Pentium IV 2,4 GHz (o equivalente)
+RAM: 256 MB o superiore
+Video: scheda video con 128 MB di memoria o superiore compatibile con DirectX 9
+Periferiche di controllo: joypad compatibile con Windows, volante compatibile con Windows, tastiera
+Sistema operativo: Microsoft Windows 98/ME/2000/XP con Media Player 9 installato
+
+
+DirectX 9.0c:
+FORD RACING 3 richiede DirectX 9.0c. Se non hai installato questo componente, FORD RACING 3 ti chiederà di installarlo all'inizio della procedura di copia dei file. Una volta installato DirectX dovrai riavviare il PC, per poi seguire le normali istruzioni di installazione.
+
+
+=====================================
+2. Installare/rimuovere FORD RACING 3
+=====================================
+
+- Installare FORD RACING 3
+
+Nota: queste istruzioni danno per assodato che il tuo PC sia acceso e che utilizzi il sistema operativo Microsoft Windows 98/ME/2000/XP.
+
+1. Inserisci il disco di FORD RACING 3 nell'unità CD-ROM. Dovrebbe attivarsi la funzione di AutoPlay e comparire il messaggio "Vuoi installare FORD RACING 3?". Seleziona Sì per installare. Se il messaggio dell'AutoPlay non compare, procedi al passo 2, altrimenti vai al passo 3.
+
+2. Clicca sul pulsante Start nella barra delle applicazioni di Windows, seleziona Esegui... e quindi Sfoglia. Seleziona l'unità CD-ROM usando la freccia giù e clicca sul file SETUP.EXE, quindi su Apri e infine su OK.
+
+3. Clicca su Avanti quando ti viene richiesto. Leggi con attenzione l'accordo di licenza software, accettane i termini e clicca su Sì per procedere. Se non accetti i termini dell'accordo, l'installazione verrà interrotta e non sarà possibile utilizzare il gioco.
+
+4. Ora seleziona la cartella di destinazione, dove desideri installare il prodotto. Puoi utilizzare il pulsante Sfoglia per cambiare il percorso. Quando sei soddisfatto della selezione, clicca su Avanti.
+
+5. A questo punto l'installazione avrà inizio automaticamente.
+
+6. Leggi l'accordo di licenza software per Windows Media Format 7.1. Accettane i termini e clicca su Sì per procedere. Se non accetti i termini dell'accordo, l'installazione verrà interrotta e non sarà possibile utilizzare il gioco.
+
+7. A questo punto l'installazione di Windows Media Format 7.1 avrà inizio automaticamente.
+
+8. Clicca su Fine per concludere l'installazione.
+
+- Rimuovere FORD RACING 3
+
+Se vuoi rimuovere FORD RACING 3, puoi farlo utilizzando uno dei metodi evidenziati di seguito.
+
+a. Clicca sul pulsante Start nella barra delle applicazioni di Windows, quindi seleziona la cartella FORD RACING 3 (solitamente è Empire Interactive/Ford Racing 3). A questo punto evidenzia e seleziona la voce Rimuovi FORD RACING 3. Seleziona OK e segui le istruzioni su schermo per rimuovere FORD RACING 3.
+
+b. Clicca sul pulsante Start nella barra delle applicazioni di Windows, quindi seleziona Pannello di controllo e Installazione applicazioni. Seleziona la voce FORD RACING 3 e quindi clicca sul pulsante Rimuovi. A questo punto, segui le istruzioni su schermo.
+
+
+============================
+3. Configurare Ford Racing 3
+============================
+
+Subito dopo l'installazione di Ford Racing 3 verrà avviato il programma di configurazione, che ti permetterà di impostare diverse opzioni di gioco perché Ford Racing 3 possa funzionare in maniera ottimale.
+Nota: il programma di configurazione può essere avviato in qualsiasi momento. Per fare ciò, clicca sul pulsante Start nella barra delle applicazioni di Windows, quindi seleziona la cartella FORD RACING 3 (solitamente è Empire Interactive/Ford Racing 3). A questo punto evidenzia e seleziona la voce Configurazione.
+
+Scheda Video:
+
+Scheda video: seleziona la scheda grafica da utilizzare. Come impostazione predefinita sarà la scheda migliore presente (non saranno pertanto richieste modifiche).
+Risoluzione: imposta la risoluzione di gioco (sono visibili esclusivamente le risoluzioni supportate dalla scheda grafica 3D del tuo computer).
+
+Scheda Audio:
+
+Scheda audio: seleziona la scheda audio da utilizzare.
+Attiva audio: per disattivare interamente l'audio deseleziona quest'opzione.
+
+Scheda Rete:
+
+Nome giocatore: scegli il nome da utilizzare nelle partite multigiocatore.
+Numero porta: scegli il numero della porta di rete che vuoi utilizzare (modificalo soltanto se riscontri problemi con l'impostazione predefinita).
+Interfaccia: scegli la scheda di rete da utilizzare con Ford Racing 3 nelle partite in rete.
+
+Scheda Livello di dettaglio:
+
+Ombre dinamiche: attiva o disattiva le ombre dinamiche.
+Mappatura ambientale: attiva o disattiva la mappatura ambientale.
+Profondità di campo: attiva o disattiva gli effetti di profondità di campo.
+Distorsione calore: attiva o disattiva l'effetto visivo del calore.
+Riflessione luce: attiva o disattiva gli effetti di riflessione della luce.
+
+Dettaglio modello: imposta il livello di dettaglio di tutti gli oggetti 3D presenti nel gioco.
+Profondità visiva: imposta la distanza di tracciatura della grafica.
+
+Scheda Selezione lingua:
+
+Seleziona la lingua da utilizzare in Ford Racing 3.
+
+
+Avvia gioco: esegui Ford Racing 3 con le impostazioni attuali.
+
+OK: memorizza le impostazioni attuali ed esci dal programma di configurazione.
+
+===================================
+4. Compatibilità delle schede video
+===================================
+
+Le seguenti schede video e i seguenti chipset NON sono supportati:
+	
+	- Schede con chipset ST Kyro II
+	- Schede con chipset SiS 730S
+	- Schede con chipset Voodoo 3/5
+
+
+Problemi noti/soluzioni:
+
+- Se stai utilizzando una scheda grafica di tipo Jaton 3DForce (o similare), puoi riscontrare dei difetti grafici di minore entità. Per risolvere il problema, disattiva le Ombre dinamiche tramite il programma di configurazione.
+
+
+==========================
+5. Problemi di prestazioni
+==========================
+
+- Se riscontri una velocità di gioco insufficiente, puoi provare a intervenire come segue:
+
+Disattiva la Mappatura ambientale (nella scheda Livello di dettaglio). In questo modo otterrai un notevole aumento della velocità.
+
+Regola tutte le impostazioni presenti nella scheda Livello di dettaglio su un livello ridotto.
+
+Riduci la risoluzione di gioco. Una risoluzione molto elevata è consigliata solo per sistemi potenti: su macchine meno recenti si consiglia inoltre di optare per una risoluzione a 16-bit (per esempio, 800x600x16).
+
+Nota: verifica sempre di aver installato i driver più aggiornati per la tua scheda video.
+
+
+- Se utilizzi Windows 2000, assicurati di aver installato almeno il Service Pack 1, che puoi scaricare all'indirizzo:
+
+http://www.microsoft.com/windows2000/downloads/servicepacks/default.asp
+
+Nota: questo collegamento potrebbe cambiare. Se non funziona, visita il sito www.microsoft.com per informazioni sul Service Pack di Windows 2000.
+
+Se non hai installato Service Pack 1 o superiore, potresti riscontrare dei problemi di prestazioni.
+
+
+=====================
+6. Gioco via Internet
+=====================
+
+- Se vuoi giocare a Ford Racing 3 tramite Internet, avrai bisogno di una connessione a banda larga.
+
+Il computer che crea la sessione di gioco deve essere visibile su Internet.
+Se questo computer è protetto da un firewall, quest'ultimo dovrà ridirigere il traffico di rete verso di esso. Affinché ciò sia possibile, ridireziona la porta specificata all'interno del programma di configurazione, utilizzando il protocollo di rete UDP.
+
+
+===========================
+7. Risoluzione dei problemi
+===========================
+
+Se all'avvio di Ford Racing 3 l'animazione introduttiva risulta mancante, devi effettuare l'aggiornamento a Windows Media Player 9.
+
+Se il gioco si blocca dopo la selezione del profilo (prima di accedere al menu principale), sarà opportuno installare Media Player 9.
+
+La versione più aggiornata di Windows Media si può scaricare da:
+
+http://www.microsoft.com/mediaplayer
+
+Se la grafica del gioco è troppo scura, regola la luminosità del monitor o il livello di gamma della scheda video.
+
+
+==============================
+Contattare il servizio clienti
+==============================
+
+Per ottenere assistenza, puoi contattare il servizio clienti di Empire Interactive:
+
+Telefono: 02083439143, dal lunedì al venerdì, dalle 9:30 alle 13:00 e dalle 14:00 alle 18:00
+E-mail: support@empire.co.uk
+
+Per ottenere soluzioni rapide ed efficaci ai tuoi problemi tecnici, utilizza il nostro modulo di supporto via web:
+
+http://www.empireinteractive.com/support/supcontact.asp
+
+
+Il supporto tecnico è disponibile all'indirizzo:
+
+http://www.empireinteractive.com/support/support.asp
+
+
+
+============================================================================
+Per novità e aggiornamenti, visita il sito http://www.empireinteractive.com
+Copyright (c) 2004 Empire Interactive Europe Ltd. Tutti i diritti riservati.
+============================================================================

@@ -1,4 +1,4 @@
-"""Build Linux/macOS Wine compatibility packages from the verified public demo."""
+"""Build Linux/macOS Wine compatibility packages from the verified Ford Racing 3 Shuffle game files."""
 import argparse
 import collections
 import gzip
@@ -228,6 +228,8 @@ def main():
     parser.add_argument("--cache", type=Path, default=download_cache(), help="Download cache (env FR3_CACHE; default: %(default)s)")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--platform", choices=["linux", "macos", "both"], default="both")
+    parser.add_argument("--game", type=Path, default=Path(__file__).resolve().parents[1] / "game",
+                        help="Verified game directory (default: %(default)s)")
     parser.add_argument("--allow-dirty", action="store_true",
                         help="Build from uncommitted changes or a non-Git tree; the packages record dirty: true")
     args = parser.parse_args()
@@ -236,7 +238,7 @@ def main():
     output = (args.output or repository / "artifacts/releases").resolve()
     output.mkdir(parents=True, exist_ok=True)
     args.cache.mkdir(parents=True, exist_ok=True)
-    game = repository / "inputs/extracted/Program_Executable_Files"
+    game = args.game.resolve()
     game_count = check_game(repository, game)
     license_file = download(args.cache, *WINE_LICENSE)
     results = []
@@ -255,12 +257,12 @@ def main():
             with tarfile.open(args.cache / name) as upstream:
                 upstream.extractall(fresh, filter="data")
             runtime = fresh / ("Wine Stable.app/Contents/Resources/wine" if platform == "macos" else directory)
-            package_name = f"ford-racing-3-demo-{VERSION}-" + ("macos" if platform == "macos" else "linux-x86_64")
+            package_name = f"ford-racing-3-shuffle-{VERSION}-" + ("macos" if platform == "macos" else "linux-x86_64")
             package = work / package_name
             package.mkdir()
             resources = package
             if platform == "macos":
-                contents = package / "Ford Racing 3 Demo.app/Contents"
+                contents = package / "Ford Racing 3 Shuffle.app/Contents"
                 resources = contents / "Resources"
                 (contents / "MacOS").mkdir(parents=True)
                 resources.mkdir()
@@ -269,9 +271,9 @@ def main():
                 launcher.chmod(0o755)
                 info = {
                     "CFBundleExecutable": "ford-racing-3",
-                    "CFBundleIdentifier": "org.fordracing3.demo.compatibility",
-                    "CFBundleName": "Ford Racing 3 Demo",
-                    "CFBundleDisplayName": "Ford Racing 3 Demo",
+                    "CFBundleIdentifier": "org.fordracing3.shuffle.compatibility",
+                    "CFBundleName": "Ford Racing 3 Shuffle",
+                    "CFBundleDisplayName": "Ford Racing 3 Shuffle",
                     "CFBundlePackageType": "APPL",
                     "CFBundleInfoDictionaryVersion": "6.0",
                     "CFBundleVersion": "1",

@@ -1,0 +1,695 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Road Old
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE ROAD_OLD
+
+:CLUTCH_SPEED 0.3
+:CLUTCH_MAX_POWER 2000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE FRONT_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Road RWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE ROAD_RWD
+
+:CLUTCH_SPEED 0.2
+:CLUTCH_MAX_POWER 2000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Road RWD-safe
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE ROAD_RWD_SAFE
+
+:CLUTCH_SPEED 0.3
+:CLUTCH_MAX_POWER 2000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 1
+:ANTI_WHEELSKID 1
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Road FWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE ROAD_FWD
+
+:CLUTCH_SPEED 0.19
+:CLUTCH_MAX_POWER 2000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.5
+:DRIVE_TYPE FRONT_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE QUAIFE
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Road FWD Safe
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE ROAD_FWD_SAFE
+
+:CLUTCH_SPEED 0.24
+:CLUTCH_MAX_POWER 2000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.5
+:DRIVE_TYPE FRONT_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 1
+:ANTI_WHEELSKID 1
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Sport RWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE SPORT_RWD
+
+:CLUTCH_SPEED 0.185
+:CLUTCH_MAX_POWER 2500
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Road AWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE ROAD_AWD
+
+:CLUTCH_SPEED 0.20
+:CLUTCH_MAX_POWER 2000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.4
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Offroad AWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE OFFROAD_AWD
+
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 20000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.2
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Offroad AWD-Equal
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE OFFROAD_AWD_EQUAL
+
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 20000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Offroad RWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE OFFROAD_RWD
+
+:CLUTCH_SPEED 0.18
+:CLUTCH_MAX_POWER 20000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.0
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Rally AWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE RALLY_AWD
+
+:CLUTCH_SPEED 0.12
+:CLUTCH_MAX_POWER 20000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.2
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Rally truck AWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE RALLY_TRUCK_AWD
+
+:CLUTCH_SPEED 0.13
+:CLUTCH_MAX_POWER 20000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.1
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RS200 Evolution
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE EVOLUTION_AWD
+
+:CLUTCH_SPEED 0.11
+:CLUTCH_MAX_POWER 20000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.2
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Rally FWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE RALLY_FWD
+
+:CLUTCH_SPEED 0.095
+:CLUTCH_MAX_POWER 2000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.5
+:DRIVE_TYPE FRONT_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE QUAIFE
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Track RWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE TRACK_RWD
+
+:CLUTCH_SPEED 0.125
+:CLUTCH_MAX_POWER 3000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 1.0
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INDIGO RWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE INDIGO_RWD
+
+:CLUTCH_SPEED 0.10
+:CLUTCH_MAX_POWER 4000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 1.0
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Track AWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE COSWORTH_AWD
+
+:CLUTCH_SPEED 0.11
+:CLUTCH_MAX_POWER 3000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.3
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Track AWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE TRACK_AWD
+
+:CLUTCH_SPEED 0.115
+:CLUTCH_MAX_POWER 3000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.4
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// EX AWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE EX_AWD
+
+:CLUTCH_SPEED 0.145
+:CLUTCH_MAX_POWER 20000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.3
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Stock AWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE STOCK_RWD
+
+:CLUTCH_SPEED 0.10
+:CLUTCH_MAX_POWER 3000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 1.0
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FPV RWD
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TYPE FPV_RWD
+
+:CLUTCH_SPEED 0.155
+:CLUTCH_MAX_POWER 3000
+
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 1.0
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+:TYPE AUDI_R8
+:CLUTCH_SPEED 0.05
+:CLUTCH_MAX_POWER 1500
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE BENTLEY_SPEED_EIGHT
+:CLUTCH_SPEED 0.05
+:CLUTCH_MAX_POWER 1500
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE BMW_LMR
+:CLUTCH_SPEED 0.05
+:CLUTCH_MAX_POWER 1500
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE DOME_S101
+:CLUTCH_SPEED 0.05
+:CLUTCH_MAX_POWER 1500
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE LISTER_LMP
+:CLUTCH_SPEED 0.05
+:CLUTCH_MAX_POWER 1500
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE PANOZ_LMP_SPIDER
+:CLUTCH_SPEED 0.05
+:CLUTCH_MAX_POWER 1500.00
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.50
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE PILBEAM_MP84
+:CLUTCH_SPEED 0.05
+:CLUTCH_MAX_POWER 1500.00
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.50
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE CHAMP_CAR
+:CLUTCH_SPEED 0.001
+:CLUTCH_MAX_POWER 2000.00
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.50
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE VEMAC_320R
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 1000.00
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.0
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE MCLAREN_F1_GTR
+:CLUTCH_SPEED 0.1
+:CLUTCH_MAX_POWER 1300
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE PANOZ_GTR1
+:CLUTCH_SPEED 0.05
+:CLUTCH_MAX_POWER 1500.00
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.50
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE SINTURA_GTS
+:CLUTCH_SPEED 0.1
+:CLUTCH_MAX_POWER 1300
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE AUDI_TT
+:CLUTCH_SPEED 0.2
+:CLUTCH_MAX_POWER 600
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.4
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE BMW_M3_GTR
+:CLUTCH_SPEED 0.2
+:CLUTCH_MAX_POWER 700
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE NOBLE_M12_GTO
+:CLUTCH_SPEED 0.2
+:CLUTCH_MAX_POWER 800
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE REAR_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE QUAIFE_GT1
+:CLUTCH_SPEED 0.1
+:CLUTCH_MAX_POWER 1000
+:TRANSMISSION_TYPE MANUAL
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.3
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE BRONCO
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 12000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE SUPERCHIEF
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 18000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE DEFEND
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 12000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE DISCO3
+:CLUTCH_SPEED 0.20
+:CLUTCH_MAX_POWER 12000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.4
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE EQUATOR
+:CLUTCH_SPEED 0.20
+:CLUTCH_MAX_POWER 12000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.4
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE ESCAPE
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 12000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE EXPED
+:CLUTCH_SPEED 0.20
+:CLUTCH_MAX_POWER 12000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.4
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE EXPLORER
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 5000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE F150FX4
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 12000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE F150_09
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 12000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE F250SD
+:CLUTCH_SPEED 0.20
+:CLUTCH_MAX_POWER 12000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.4
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE F350SD
+:CLUTCH_SPEED 0.20
+:CLUTCH_MAX_POWER 12000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.4
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE FREEL2
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 5000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE MIGHT350
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 10000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE RANGER
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 12000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE RRSPORT
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 12000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE SPORTRAC
+:CLUTCH_SPEED 0.20
+:CLUTCH_MAX_POWER 12000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.4
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE STORMER
+:CLUTCH_SPEED 0.15
+:CLUTCH_MAX_POWER 18000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.5
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:TYPE SVX
+:CLUTCH_SPEED 0.20
+:CLUTCH_MAX_POWER 12000
+:TRANSMISSION_TYPE MANUAL
+:TORQUE_SHIFT 0.0
+:DRIVE_TYPE ALL_WHEELS
+:DRIVE_SPLIT 0.4
+:DIFF_TYPE TORSON
+:ANTI_WHEELSPIN 0
+:ANTI_WHEELSKID 0
+:END
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

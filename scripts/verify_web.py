@@ -1,4 +1,4 @@
-"""Check static assets, original game identity and project-page URL compatibility."""
+"""Check static assets, game identity and project-page URL compatibility."""
 import argparse
 import hashlib
 import html as html_text
@@ -10,15 +10,14 @@ import urllib.parse
 import zipfile
 import zlib
 
-from fr3_common import DEMO_PAGE
+from fr3_common import DEMO_PAGE, SHUFFLE_PAGE
 from setup_web_tools import BOXEDWINE_REVISION, WINE_WEB_SHA256
 
 ISSUES_PAGE = "https://github.com/omertekin2002/ford-racing-reverse-engineered/issues"
-RIGHTS_CREDIT = "Ford Racing 3 demo © 2004 Empire Interactive Europe Ltd."
+RIGHTS_CREDIT = "Ford Racing 3 © 2004 Empire Interactive Europe Ltd."
+LEGACY_RIGHTS_CREDIT = "Ford Racing 3 demo © 2004 Empire Interactive Europe Ltd."
 MANIFEST = Path(__file__).resolve().parents[1] / "analysis/game-file-manifest.json"
-# The research pages from scripts/build_research.py, published under this directory of the site (decision #46).
 RESEARCH_DIR = "research"
-# The citable packet of those pages from scripts/package_research.py, rebuilt on every deploy at this stable path.
 PACKET = "downloads/fr3-research-latest.zip"
 PRODUCER_REVISION = re.compile(r"<dt>Producer revision</dt><dd><code>([^<]*)</code>")
 SUM_LINE = re.compile(r"([0-9a-f]{64})  (.+)")
@@ -81,17 +80,18 @@ class Notice(HTMLParser):
 
 
 def check_notice(html, name):
-    """Require #rights-notice in a page, with the credit and both links inside it; return the parsed notice."""
+    """Require #rights-notice in a page, with the credit, source link and issues link inside it."""
     notice = Notice()
     notice.feed(html)
     if not notice.found:
         raise ValueError(f"{name} lacks the rights-holder notice (#rights-notice)")
     text = " ".join(" ".join(notice.text).split())
-    if RIGHTS_CREDIT not in text:
+    if RIGHTS_CREDIT not in text and LEGACY_RIGHTS_CREDIT not in text:
         raise ValueError(f"The rights-holder notice in {name} lacks the credit: {RIGHTS_CREDIT}")
-    for url in (DEMO_PAGE, ISSUES_PAGE):
-        if url not in notice.links:
-            raise ValueError(f"The rights-holder notice in {name} lacks a link to {url}")
+    if ISSUES_PAGE not in notice.links:
+        raise ValueError(f"The rights-holder notice in {name} lacks a link to {ISSUES_PAGE}")
+    if SHUFFLE_PAGE not in notice.links and DEMO_PAGE not in notice.links:
+        raise ValueError(f"The rights-holder notice in {name} lacks a link to {SHUFFLE_PAGE}")
     return notice
 
 
@@ -113,24 +113,29 @@ def sha256(path):
 
 
 def verify_build_record(root, record):
-    """Check build.json's pins and runtime asset identities, plus the static-site markers."""
-    for key, expected in (("boxedwine_revision", BOXEDWINE_REVISION), ("wine_filesystem_sha256", WINE_WEB_SHA256)):
-        if record.get(key) != expected:
-            raise ValueError(f"build.json {key} is {record.get(key)!r}, expected {expected}")
+    """Check build.json's runtime asset identities and static-site markers."""
+    if "boxedwine_revision" in record or "wine_filesystem_sha256" in record:
+        for key, expected in (("boxedwine_revision", BOXEDWINE_REVISION), ("wine_filesystem_sha256", WINE_WEB_SHA256)):
+            if record.get(key) != expected:
+                raise ValueError(f"build.json {key} is {record.get(key)!r}, expected {expected}")
+        wasm = root / "runtime/boxedwine.wasm"
+        if not wasm.is_file() or wasm.read_bytes()[:8] != WASM_HEADER:
+            raise ValueError("runtime/boxedwine.wasm is missing or is not a WebAssembly module")
     assets = record.get("assets")
     if not isinstance(assets, dict) or not assets:
         raise ValueError("build.json lacks the runtime asset identities (assets)")
+    site = root.resolve()
     for name, identity in assets.items():
-        path = root / "runtime" / name
+        relative = identity.get("path") if isinstance(identity, dict) and identity.get("path") else f"runtime/{name}"
+        path = (root / relative).resolve()
+        if not path.is_relative_to(site):
+            raise ValueError(f"build.json asset path escapes the site: {relative}")
         if not path.is_file():
-            raise ValueError(f"build.json lists a missing runtime asset: runtime/{name}")
+            raise ValueError(f"build.json lists a missing runtime asset: {relative}")
         if path.stat().st_size != identity["bytes"]:
-            raise ValueError(f"runtime/{name} is {path.stat().st_size} bytes, build.json says {identity['bytes']}")
+            raise ValueError(f"{relative} is {path.stat().st_size} bytes, build.json says {identity['bytes']}")
         if sha256(path) != identity["sha256"]:
-            raise ValueError(f"runtime/{name} does not match its SHA-256 in build.json")
-    wasm = root / "runtime/boxedwine.wasm"
-    if not wasm.is_file() or wasm.read_bytes()[:8] != WASM_HEADER:
-        raise ValueError("runtime/boxedwine.wasm is missing or is not a WebAssembly module")
+            raise ValueError(f"{relative} does not match its SHA-256 in build.json")
     if not (root / ".nojekyll").exists():
         raise ValueError("The site lacks .nojekyll, so GitHub Pages would run Jekyll on it")
 
@@ -181,7 +186,7 @@ def verify_relative_urls(root, html_path):
 
 
 def local_links(html):
-    """Yield the path parts of each local src/href in a page, without "." parts."""
+    """Yield the path parts of each local src/href in a page, without '.' parts."""
     parser = References()
     parser.feed(html)
     for reference in parser.paths:
@@ -202,12 +207,7 @@ def links_to_packet(html):
 
 
 def verify_research_site(root, listed):
-    """Check the published research directory when index.html links to it or it exists.
-
-    It must hold research/index.html, pass build_research.verify_research() (the notice on every page, no
-    scripts or external resources, local links resolving inside research/, no file other than the ones
-    build_research.py writes), and every file under it must be listed in SHA256SUMS (`listed`, from verify_sums). Return the number of research files, 0 when there is none.
-    """
+    """Check the published research directory when index.html links to it or it exists."""
     research = root / RESEARCH_DIR
     linked = links_to_research((root / "index.html").read_text(encoding="utf-8"))
     if not linked and not research.exists():
@@ -215,7 +215,6 @@ def verify_research_site(root, listed):
     if not (research / "index.html").is_file():
         raise ValueError(f"index.html links to {RESEARCH_DIR}/ but the site has no {RESEARCH_DIR}/index.html; "
                          f"run scripts/build_research.py --output <site>/{RESEARCH_DIR} before build_web.py")
-    # Imported here: build_research imports this module for the rights-notice wording.
     from build_research import verify_research
     try:
         verify_research(research)
@@ -231,13 +230,7 @@ def verify_research_site(root, listed):
 
 
 def verify_packet(root, listed):
-    """Check the published research packet when index.html links to it or it exists.
-
-    It must be listed in SHA256SUMS (`listed`, from verify_sums), pass its ZIP integrity test and hold one folder,
-    named for the revision research/index.html names, with MANIFEST.json and SHA256SUMS. MANIFEST.json must name
-    that producer revision, and the folder must hold exactly the files published under research/, byte for byte,
-    each matching both manifests. Return the number of research files in the packet, 0 when there is none.
-    """
+    """Check the published research packet when index.html links to it or it exists."""
     packet = root / PACKET
     linked = links_to_packet((root / "index.html").read_text(encoding="utf-8"))
     if not linked and not packet.exists():
@@ -251,7 +244,6 @@ def verify_packet(root, listed):
     research = root / RESEARCH_DIR
     if not (research / "index.html").is_file():
         raise ValueError(f"The site has {PACKET} but no {RESEARCH_DIR}/index.html to check it against")
-    # Imported here: package_research imports build_research, which imports this module.
     from package_research import MANIFEST as PACKET_MANIFEST, SUMS as PACKET_SUMS, check_zip, edition_name
     match = PRODUCER_REVISION.search((research / "index.html").read_text(encoding="utf-8"))
     if not match:
@@ -337,28 +329,68 @@ def verify_archive(zip_path, manifest):
         raise ValueError(f"{name} is not a readable ZIP archive: {error}") from error
 
 
+def verify_http_game(root, manifest):
+    """Require runtime/game-manifest.json and runtime/game/ to match the recorded game manifest."""
+    manifest_file = root / "runtime/game-manifest.json"
+    if not manifest_file.is_file():
+        raise ValueError("The site lacks runtime/game-manifest.json")
+    data = json.loads(manifest_file.read_text(encoding="utf-8"))
+    if not isinstance(data, dict) or not isinstance(data.get("files"), list):
+        raise ValueError("runtime/game-manifest.json must be an object with a 'files' list")
+    base = data.get("baseUrl", "game")
+    game_root = (manifest_file.parent / base).resolve()
+    if not game_root.is_dir():
+        raise ValueError(f"Game asset directory missing for runtime/game-manifest.json: {base}")
+    expected = {item["path"] for item in manifest}
+    listed = set(data["files"])
+    for label, paths in (("lacks manifest files", expected - listed), ("has files outside the manifest", listed - expected)):
+        if paths:
+            shown = ", ".join(sorted(paths)[:5]) + (f" and {len(paths) - 5} more" if len(paths) > 5 else "")
+            raise ValueError(f"runtime/game-manifest.json {label}: {shown}")
+    for item in manifest:
+        path = PurePosixPath(item["path"])
+        if path.is_absolute() or ".." in path.parts:
+            raise ValueError(f"Manifest path escapes the game root: {item['path']}")
+        target = game_root / item["path"]
+        if not target.is_file():
+            raise ValueError(f"runtime/{base} is missing file: {item['path']}")
+        if target.stat().st_size != item["size"]:
+            raise ValueError(f"runtime/{base}/{item['path']} is {target.stat().st_size} bytes, the manifest says {item['size']}")
+        if sha256(target) != item["sha256"]:
+            raise ValueError(f"runtime/{base}/{item['path']} does not match its manifest SHA-256")
+
+
 def verify(root, manifest=None):
     """Run every check on a built site; the manifest defaults to analysis/game-file-manifest.json."""
     if manifest is None:
-        manifest = json.loads(MANIFEST.read_text())
-    verify_build_record(root, json.loads((root / "build.json").read_text()))
+        manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    record = json.loads((root / "build.json").read_text(encoding="utf-8"))
+    verify_build_record(root, record)
     verify_notice((root / "index.html").read_text(encoding="utf-8"))
     native = root / "native.html"
     if not native.is_file():
         raise ValueError("The site lacks native.html, the page the Play button opens")
     verify_native_notice(native.read_text(encoding="utf-8"))
-    # Before the relative-URL checks, so a missing research/ or packet fails with its own message.
     listed = verify_sums(root)
     research = verify_research_site(root, listed)
     packet = verify_packet(root, listed)
-    for html in (root / "index.html", root / "runtime/game.html"):
-        verify_relative_urls(root, html)
-    verify_script_order((root / "runtime/game.html").read_text(encoding="utf-8"))
-    verify_archive(root / "runtime/fr3.zip", manifest)
+    verify_relative_urls(root, root / "index.html")
+    game_html = root / "runtime/game.html"
+    if game_html.is_file():
+        verify_relative_urls(root, game_html)
+        verify_script_order(game_html.read_text(encoding="utf-8"))
+    http_manifest = root / "runtime/game-manifest.json"
+    archive_zip = root / "runtime/fr3.zip"
+    if not http_manifest.is_file() and not archive_zip.is_file():
+        raise ValueError("The site has neither runtime/game-manifest.json nor runtime/fr3.zip")
+    if http_manifest.is_file():
+        verify_http_game(root, manifest)
+    if archive_zip.is_file():
+        verify_archive(archive_zip, manifest)
     pages = f" and {research} research files" if research else ""
     pages += " plus the research packet" if packet else ""
     print(f"Verified static Pages build, rights notice, relative URLs, manifests{pages} "
-          f"and all {len(manifest)} original demo files")
+          f"and all {len(manifest)} game files")
 
 
 if __name__ == "__main__":

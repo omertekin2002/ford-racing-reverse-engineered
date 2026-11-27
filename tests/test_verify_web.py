@@ -13,12 +13,12 @@ from unittest import mock
 import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from fr3_common import DEMO_PAGE
+from fr3_common import DEMO_PAGE, SHUFFLE_PAGE
 from setup_web_tools import BOXEDWINE_REVISION, WINE_WEB_SHA256
 import verify_web
 from verify_web import (ISSUES_PAGE, PACKET, RIGHTS_CREDIT, WASM_HEADER, links_to_packet, links_to_research, verify,
-                        verify_archive, verify_build_record, verify_native_notice, verify_notice, verify_packet,
-                        verify_relative_urls, verify_research_site, verify_script_order, verify_sums)
+                        verify_archive, verify_build_record, verify_http_game, verify_native_notice, verify_notice,
+                        verify_packet, verify_relative_urls, verify_research_site, verify_script_order, verify_sums)
 
 import build_research
 import build_web
@@ -52,15 +52,13 @@ class VerifyNoticeTests(unittest.TestCase):
 
     def test_repository_page_links_to_research(self):
         html = (ROOT / "web/index.html").read_text(encoding="utf-8")
-        self.assertIn('<a href="research/">Explore findings</a>', html)
-        self.assertTrue(links_to_research(html))
+        self.assertIn(SHUFFLE_PAGE, html)
+        self.assertFalse(links_to_research(html))
 
     def test_repository_page_links_to_packet_in_intro_and_footer(self):
         html = (ROOT / "web/index.html").read_text(encoding="utf-8")
-        self.assertTrue(links_to_packet(html))
-        intro, footer = html.split("<footer>")
-        self.assertIn('<a href="downloads/fr3-research-latest.zip">Download the research packet</a>', intro)
-        self.assertIn('<a href="downloads/fr3-research-latest.zip">Research packet (ZIP)</a>', footer)
+        self.assertFalse(links_to_packet(html))
+        self.assertIn('<a href="build.json">Build details</a>', html)
 
     def test_reject_missing_notice(self):
         with self.assertRaisesRegex(ValueError, "lacks the rights-holder notice"):
@@ -117,9 +115,8 @@ class VerifyNativeNoticeTests(unittest.TestCase):
             verify_native_notice(native_page(NATIVE_STAGE, NOTICE.replace(RIGHTS_CREDIT, "Ford Racing 3 demo")))
 
     def test_reject_missing_links(self):
-        for url in (DEMO_PAGE, ISSUES_PAGE):
-            with self.subTest(url=url), self.assertRaisesRegex(
-                    ValueError, f"^The rights-holder notice in native.html lacks a link to {url}$"):
+        for url, expected in ((DEMO_PAGE, SHUFFLE_PAGE), (ISSUES_PAGE, ISSUES_PAGE)):
+            with self.subTest(url=url), self.assertRaisesRegex(ValueError, f"^The rights-holder notice in native.html lacks a link to {expected}$"):
                 verify_native_notice(native_page(NATIVE_STAGE, NOTICE.replace(url, "https://example.com/")))
 
     def test_reject_notice_inside_loading_overlay(self):
@@ -391,7 +388,19 @@ class VerifySiteTests(SiteTestCase):
         with contextlib.redirect_stdout(output):
             verify(self.root, self.manifest)
         self.assertEqual(output.getvalue(), "Verified static Pages build, rights notice, relative URLs, manifests "
-                                            "and all 2 original demo files\n")
+                                            "and all 2 game files\n")
+
+    def test_verify_http_game_site(self):
+        for rel, data in FILES.items():
+            target = self.root / "runtime/game" / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        manifest_json = {"version": 1, "baseUrl": "game", "files": sorted(FILES)}
+        (self.root / "runtime/game-manifest.json").write_text(json.dumps(manifest_json), encoding="utf-8")
+        verify_http_game(self.root, self.manifest)
+        (self.root / "runtime/game/DATA/one.txt").write_bytes(b"corrupted")
+        with self.assertRaisesRegex(ValueError, "bytes, the manifest says"):
+            verify_http_game(self.root, self.manifest)
 
     def test_default_manifest_is_the_repository_manifest(self):
         self.assertEqual(verify_web.MANIFEST, ROOT / "analysis/game-file-manifest.json")
@@ -473,7 +482,7 @@ class ResearchSiteTests(ResearchSiteTestCase):
         self.assertIn("research/index.html", files)
         self.assertIn("research/evidence/pcg-index.json", files)
         self.assertEqual(self.verify(), f"Verified static Pages build, rights notice, relative URLs, manifests and "
-                                        f"{len(files)} research files and all 2 original demo files\n")
+                                        f"{len(files)} research files and all 2 game files\n")
 
     def test_sums_list_every_research_file(self):
         listed = verify_sums(self.root)
@@ -584,8 +593,8 @@ class PacketSiteTests(ResearchSiteTestCase):
     def test_accept_site_with_packet(self):
         files = self.research_files()
         self.assertEqual(self.verify(), f"Verified static Pages build, rights notice, relative URLs, manifests and "
-                                        f"{len(files)} research files plus the research packet and all 2 original "
-                                        "demo files\n")
+                                        f"{len(files)} research files plus the research packet and all 2 "
+                                        "game files\n")
         self.assertEqual(verify_packet(self.root, verify_sums(self.root)), len(files))
 
     def test_accept_packet_written_by_package_research(self):
@@ -722,9 +731,6 @@ class CacheBustingTests(unittest.TestCase):
 
             # Stamped index.html still passes verify_notice and verify_relative_urls (for existing targets).
             verify_notice(index1)
-            (out1 / "research").mkdir()
-            (out1 / "downloads").mkdir()
-            (out1 / "downloads/fr3-research-latest.zip").write_bytes(b"")
             (out1 / "build.json").write_text("{}", encoding="utf-8")
             verify_relative_urls(out1, out1 / "index.html")
 

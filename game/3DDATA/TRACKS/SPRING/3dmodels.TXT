@@ -1,0 +1,290 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"EFFECTS_EXHAUST"                      	scenes\effects\effects_exhaust.ma
+	"EFFECTS"                              	scenes\effects\effects.ma
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"SKYDOME"                              	scenes\environment\spskydome.ma
+	"LD_CLUMP7"                            	scenes\buildings\springfield_trees\long_distance_clump7.ma
+	"LD_CLUMP6"                            	scenes\buildings\springfield_trees\long_distance_clump6.ma
+	"LD_CLUMP5"                            	scenes\buildings\springfield_trees\long_distance_clump5.ma
+	"LD_CLUMP4"                            	scenes\buildings\springfield_trees\long_distance_clump4.ma
+	"LD_CLUMP3"                            	scenes\buildings\springfield_trees\long_distance_clump3.ma
+	"LONG_DISTANCE_CLUMP2"                 	scenes\buildings\springfield_trees\long_distance_clump2.ma
+	"LONG_DISTANCE_CLUMP1"                 	scenes\buildings\springfield_trees\long_distance_clump1.ma
+	"OAK_TREES_TRACKSIDEANGLED"            	scenes\buildings\springfield_trees\oaktrees_tracksideangled.ma
+	"OAK_TREES_ANGLED"                     	scenes\buildings\springfield_trees\oaktrees_angled.ma
+	"OAK_TREES_SPARSE"                     	scenes\buildings\springfield_trees\oaktrees_sparse.ma
+	"OAK_TREES"                            	scenes\buildings\springfield_trees\oaktrees_combined.ma
+	"OAK_TREES_DARK"                       	scenes\buildings\springfield_trees\oaktrees_dark_combined.ma
+	"NEW_CROWDS_HIGH4"                     	scenes\buildings\crowds\new_crowds_high4.ma
+	"NEW_CROWDS_HIGH3"                     	scenes\buildings\crowds\new_crowds_high3.ma
+	"NEW_CROWDS_HIGH2"                     	scenes\buildings\crowds\new_crowds_high2.ma
+	"NEW_CROWDS_HIGH"                      	scenes\buildings\crowds\new_crowds_high.ma
+	"NEW_CROWDS12"                         	scenes\buildings\crowds\new_crowds12.ma
+	"NEW_CROWDS11"                         	scenes\buildings\crowds\new_crowds11.ma
+	"NEW_CROWDS10"                         	scenes\buildings\crowds\new_crowds10.ma
+	"NEW_CROWDS9"                          	scenes\buildings\crowds\new_crowds9.ma
+	"NEW_CROWDS8"                          	scenes\buildings\crowds\new_crowds8.ma
+	"NEW_CROWDS7"                          	scenes\buildings\crowds\new_crowds7.ma
+	"NEW_CROWDS6"                          	scenes\buildings\crowds\new_crowds6.ma
+	"NEW_CROWDS5"                          	scenes\buildings\crowds\new_crowds5.ma
+	"NEW_CROWDS4"                          	scenes\buildings\crowds\new_crowds4.ma
+	"NEW_CROWDS3"                          	scenes\buildings\crowds\new_crowds3.ma
+	"NEW_CROWDS2"                          	scenes\buildings\crowds\new_crowds2.ma
+	"NEW_CROWDS1"                          	scenes\buildings\crowds\new_crowds1.ma
+	"FENCE4"                               	scenes\buildings\fence4.ma
+	"FENCE3"                               	scenes\buildings\fence3.ma
+	"FENCE2"                               	scenes\buildings\fence2.ma
+	"FENCE1"                               	scenes\buildings\fence1.ma
+	"LONGBRIDGE"                           	scenes\buildings\longbridge.ma
+	"MARQUEE"                              	scenes\buildings\marquee.ma
+	"CLUBHOUSE"                            	scenes\buildings\clubhouse.ma
+	"CASINO"                               	scenes\buildings\casino.ma
+	"DISTANCE_AMPHI"                       	scenes\buildings\distance_amphi.ma
+	"CONE"                                 	scenes\buildings\spcone.ma
+	"DARK_XPLOSIVS"                        	scenes\buildings\dark_xplosivs.ma
+	"AMPHI_EVENING"                        	scenes\buildings\amphi_evening.ma
+	"PITBOYS1"                             	scenes\buildings\pitboys1.ma
+	"PITBOYS4"                             	scenes\buildings\pitboys4.ma
+	"BIG_XPLOSIV_AD_D"                     	scenes\buildings\spad_xplosive_d.ma
+	"PITBOYS3"                             	scenes\buildings\pitboys3.ma
+	"SPLARGEUNCOVEREDGS1_DARK"             	scenes\buildings\splargeuncoveredgs1_dark.ma
+	"PITBOYS2"                             	scenes\buildings\pitboys2.ma
+	"PITBOYS5"                             	scenes\buildings\pitboys5.ma
+	"BIG_XPLOSIVE_AD"                      	scenes\buildings\spad_xplosive.ma
+	"BIG_POWER_HORSE_AD"                   	scenes\buildings\spad_power_horse.ma
+	"BIG_MOOG_AD"                          	scenes\buildings\spad_moog.ma
+	"BIG_EARLS_AD"                         	scenes\buildings\spad_earls.ma
+	"BIG_EBREY_AD"                         	scenes\buildings\spad_ebrey.ma
+	"BIG_CHAMPION_AD"                      	scenes\buildings\spad_champion.ma
+	"SPSAFETYTRUCK"                        	scenes\buildings\spsafetytruck.ma
+	"SPADBOARD_POWER"                      	scenes\buildings\spadboard_sm_power.ma
+	"BIG_SUPERFLO_AD"                      	scenes\buildings\spsuperflo_ad.ma
+	"SPFLOODLIGHT"                         	scenes\buildings\spfloodlight.ma
+	"SPADBOARDEMPIRE"                      	scenes\buildings\spadboard.ma
+	"SPADBOARDEMPIREBACK"                  	scenes\buildings\spadboardbackfaced.ma
+	"BIG_DODGE_AD"                         	scenes\buildings\spdodge_ad.ma
+	"BIGAD"                                	scenes\buildings\spmitchad.ma
+	"SPADBOARD_RAZOR"                      	scenes\buildings\spadboard razor.ma
+	"SPADBOARD_DODGE"                      	scenes\buildings\spadboard dodge.ma
+	"SPMARSHALLHUT"                        	scenes\buildings\spmarshallhut.ma
+	"SPHELICOPTER"                         	scenes\buildings\sphelicopter1.ma
+	"SPAMBULANCE"                          	scenes\buildings\spambulance.ma
+	"SP_GATOR_CHARACTER"                   	scenes\buildings\sp_gator_character.ma
+	"SPADFRAME1"                           	scenes\buildings\spadframe1.ma
+	"SPFOOTBRIDGE3"                        	scenes\buildings\spfootbridge3.ma
+	"SPFOOTBRIDGE2"                        	scenes\buildings\spfootbridge2.ma
+	"SPMARQUEESVARIOUS"                    	scenes\buildings\spmarqueesvarious.ma
+	"SPMARQUEESOPEN"                       	scenes\buildings\spmarqueesopen.ma
+	"SPMARQUEESCLOSED"                     	scenes\buildings\spmarqueesclosed.ma
+	"SP_HAVOLINE_BRIDGE"                   	scenes\buildings\sp havoline bridge.ma
+	"SPCROWDAMPHI"                         	scenes\buildings\spcrowdamphi.ma
+	"SPFOOTBRIDGE1"                        	scenes\buildings\spfootbridge1.ma
+	"SPTEAMTENTS"                          	scenes\buildings\spteamtents.ma
+	"SPCROWD2"                             	scenes\buildings\spcrowd2.ma
+	"SPCROWD1"                             	scenes\buildings\spcrowd1.ma
+	"SPSTARTGANTRY"                        	scenes\buildings\spstartgantry.ma
+	"SPADFRAME2"                           	scenes\buildings\spadframe2.ma
+	"SPADFRAME"                            	scenes\buildings\spadframe.ma
+	"BIG_DANKA_AD"                         	scenes\buildings\spdanka_ad.ma
+	"PADDOCKRVS"                           	scenes\buildings\sppaddockrvs.ma
+	"SPTRUCKS"                             	scenes\buildings\sptrucks.ma
+	"SPTRUCKS2"                            	scenes\buildings\sptrucks2.ma
+	"SPTURBINE"                            	scenes\buildings\spturbine.ma
+	"SPPETROLSTATION"                      	scenes\buildings\sppetrolstation.ma
+	"SPCAMPSITERVS"                        	scenes\buildings\spcampsitervs.ma
+	"PARKEDCARS2"                          	scenes\buildings\spparkedcars2.ma
+	"PARKEDCARS"                           	scenes\buildings\spparkedcars.ma
+	"SPCAMPSITE2"                          	scenes\buildings\spcampsite2.ma
+	"SPCAMPSITE1"                          	scenes\buildings\spcampsite1.ma
+	"SPPRESSSTAND"                         	scenes\buildings\sppressstand.ma
+	"SPDISTANCEMARKERARROW"                	scenes\buildings\spdistancemarkerarrow.ma
+	"SPDISTANCEMARKER50"                   	scenes\buildings\spdistancemarker50.ma
+	"SPDISTANCEMARKER200"                  	scenes\buildings\spdistancemarker200.ma
+	"SPDISTANCEMARKER150"                  	scenes\buildings\spdistancemarker150.ma
+	"SPDISTANCEMARKER100"                  	scenes\buildings\spdistancemarker100.ma
+	"SPBLOCKS"                             	scenes\buildings\spblocks.ma
+	"SPHOSPITAL"                           	scenes\buildings\sphospital.ma
+	"SPTANKER"                             	scenes\buildings\sptanker.ma
+	"SPVLARGEGS1"                          	scenes\buildings\spvlargegs1.ma
+	"SPVLARGEGS2"                          	scenes\buildings\spvlargegs2.ma
+	"SPMAINGS2"                            	scenes\buildings\spmaings2.ma
+	"SPMAINGS1"                            	scenes\buildings\spmaings1.ma
+	"SPRADIOPOST"                          	scenes\buildings\spradiopost.ma
+	"SPUNCOVEREDGS"                        	scenes\buildings\spuncoveredgs.ma
+	"SPUNCOVEREDGSBACK"                    	scenes\buildings\spuncoveredgsback.ma
+	"SPCONBRIDGE"                          	scenes\buildings\spconbridge.ma
+	"SPLARGEUNCOVEREDGS1"                  	scenes\buildings\splargeuncoveredgs1.ma
+	"SPRACECONTROL"                        	scenes\buildings\spracecontrol.ma
+	"SPPITBUILDING5"                       	scenes\buildings\sppitbuilding5.ma
+	"SPPITBUILDING4"                       	scenes\buildings\sppitbuilding4.ma
+	"SPPITBUILDING3"                       	scenes\buildings\sppitbuilding3.ma
+	"SPPITBUILDING2"                       	scenes\buildings\sppitbuilding2.ma
+	"SPPITBUILDING1"                       	scenes\buildings\sppitbuilding1.ma
+	"SPLEADERBOARD"                        	scenes\buildings\spleaderboard.ma
+	"SPRING_CUT_UP"                        	
+	"SPRING_OBJECTS"                       	
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+	"CONES"
+	"MARKER_BOARDS"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"CAMERA"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"COCKPIT"
+	"SUNLIGHT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	32x32   	-	[A fM       ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"GRASS"                                 	1b:1b:1b:22	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"HEADLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"REARLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"SPECULAR_SPRITE"                       	3d:3d:3d:3d	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"SUN_FLARE"                             	15:10:10:12	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"SPARK"                                 	2b:2b:2b:00	 (World size: 1.310660)
+	256x256 	-	[  fM       ]	"TRACK_SPECULAR"                        	88:88:85:00	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"TRACK_REFLECTION"                      	00:00:00:88	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"SMOKEANDDUST"                          	d3:d1:d1:54	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"TYRE_SMOKE"                            	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"EXHAUST"                               	be:be:be:53	 (World size: 1.310660)
+	64x64   	-	[  f        ]	"MINISKY"                               	9b:98:99:00	 (World size: 4022.840332)
+	256x256 	-	[  f      # ]	"SP_EV3"                                	99:a0:a4:00	 (World size: 2325.033447)
+	256x256 	-	[  f      # ]	"SP_EV4"                                	8f:96:9c:00	 (World size: 2325.032715)
+	256x256 	-	[  f      # ]	"SP_EV2"                                	9a:9c:9c:00	 (World size: 2325.032959)
+	256x256 	-	[  f      # ]	"SP_EV5"                                	91:9b:a1:00	 (World size: 2360.591797)
+	256x256 	-	[  f      # ]	"SP_EV6"                                	90:9b:a3:00	 (World size: 2360.591553)
+	256x256 	-	[  f      # ]	"SP_EV7"                                	98:a2:a9:00	 (World size: 2325.032959)
+	256x256 	-	[  f      # ]	"SP_EV8"                                	8e:93:93:00	 (World size: 2325.032715)
+	256x256 	-	[  f      # ]	"SP_EV1"                                	8d:91:91:00	 (World size: 2325.032715)
+	256x128 	-	[  fM       ]	"GRASS_TO_TARMAC_2"                     	75:6f:51:00	 (World size: 20.390873)
+	256x256 	-	[  fM       ]	"NEW_SPRING_BANK"                       	7b:77:5a:00	 (World size: 50.796730)
+	256x128 	-	[  fM       ]	"GRASS_TO_GRAVEL"                       	7b:75:58:00	 (World size: 18.384310)
+	128x128 	-	[  fM       ]	"GRASS_128X128"                         	49:45:2d:00	 (World size: 9.505049)
+	256x256 	-	[  fM       ]	"GRASS_256"                             	67:62:44:00	 (World size: 56.260818)
+	256x16  	-	[  fM       ]	"TARMAC_SPRINGFIELD_V9_WL_DASH"         	7c:7d:78:00	 (World size: 19.542538)
+	256x256 	-	[  fM       ]	"TARMAC_SPRINGFIELD_V9"                 	54:55:4e:00	 (World size: 29.761110)
+	256x16  	-	[  fM       ]	"TARMAC_SPRINGFIELD_V9_WL"              	9d:9d:9b:00	 (World size: 16.228455)
+	256x16  	-	[  fM       ]	"TARMAC_SPRINGFIELD_V9_OL"              	8f:73:32:00	 (World size: 17.291683)
+	256x128 	-	[  fM       ]	"CONCRETE_PITLANE_GRASSED"              	7b:74:57:00	 (World size: 22.634903)
+	256x128 	-	[  fM       ]	"CONCRETE_PITLANE"                      	a4:a1:a3:00	 (World size: 23.556950)
+	16x8    	-	[  f        ]	"SPCONE"                                	f2:9d:7f:00	 (World size: 6666.974121)
+	256x64  	-	[  fM       ]	"SPLEADERBOARD"                         	3b:3c:39:00	 (World size: 21.450300)
+	128x64  	-	[ASfM       ]	"PITMEN"                                	b6:8c:8c:81	 (World size: 6.502996)
+	64x64   	-	[  f        ]	"SPEMPIRE"                              	e8:d6:d6:00	 (World size: 2.298618)
+	256x32  	-	[ASfM       ]	"SPLARGECOVEREDGS1"                     	a4:91:8f:db	 (World size: 62.040798)
+	128x128 	-	[ASfM       ]	"SPFOOTBRIDGE"                          	6f:5f:68:d4	 (World size: 96.450188)
+	64x64   	-	[ASf        ]	"SPLARGECGS1CROWD"                      	ac:a1:a3:c7	 (World size: 14.273303)
+	64x64   	-	[ASf        ]	"SPTANKER"                              	b4:ad:b6:f4	 (World size: 7.204938)
+	128x64  	-	[  fM       ]	"SPHOSPITAL"                            	b5:af:ba:00	 (World size: 25.451790)
+	64x32   	-	[ASf        ]	"SPRADIOPOST"                           	47:47:47:69	 (World size: 18.472422)
+	128x128 	-	[  fM       ]	"SPMARKERS"                             	b5:a7:71:00	 (World size: 5.019670)
+	64x32   	-	[ASfM       ]	"SPPRESSSTAND"                          	83:68:59:6a	 (World size: 11.276496)
+	256x256 	-	[  fM       ]	"SPCAMPERS"                             	a8:a8:a1:00	 (World size: 59.885738)
+	128x128 	-	[ASfM       ]	"SPAMBULANCE128"                        	c4:bc:bd:fc	 (World size: 9.930902)
+	64x16   	-	[  fM       ]	"SPHELICOPTER1"                         	d5:d9:e2:00	 (World size: 12.220197)
+	64x64   	-	[  fM       ]	"SPMARSHALLHUT"                         	85:85:6b:00	 (World size: 5.734019)
+	64x64   	-	[ASfM       ]	"SPADFRAME"                             	83:7c:68:ab	 (World size: 8.194039)
+	64x32   	-	[  f        ]	"SPADBOARDBKGRND"                       	91:4c:40:00	 (World size: 7.834098)
+	64x64   	-	[  f        ]	"SPTRUCKS"                              	83:7f:83:00	 (World size: 25.349060)
+	32x16   	-	[  fM       ]	"SPFLOODLIGHT"                          	87:80:79:00	 (World size: 2.031042)
+	128x128 	-	[  fM     # ]	"SPCONBRIDGE"                           	7f:81:7b:00	 (World size: 46.604492)
+	256x128 	-	[ASfM       ]	"SPPITBUILDINGS"                        	89:86:81:f8	 (World size: 50.904266)
+	512x32  	-	[ASf        ]	"SPTRACKSIDE"                           	56:5e:5c:d1	 (World size: 18.317188)
+	128x128 	-	[ASfM       ]	"SPSAFETYTRUCK"                         	c4:a7:3c:fc	 (World size: 10.224302)
+	64x64   	-	[  fM       ]	"SPPETROLSTATION"                       	78:4c:3e:00	 (World size: 6.731589)
+	64x32   	-	[ASfM       ]	"SPTURBINE"                             	6d:59:50:ba	 (World size: 6.374299)
+	64x64   	-	[  fM       ]	"GATORS_256X256"                        	4c:5c:63:00	 (World size: 16.059807)
+	256x128 	-	[  fM       ]	"SPADS_MULTI_2"                         	a9:85:5d:00	 (World size: 66.577286)
+	128x32  	-	[ASfM       ]	"DISTANCE_AMPHI"                        	2b:28:21:97	 (World size: 205.191498)
+	128x128 	-	[  fM       ]	"SPSTARTLIGHTS"                         	63:68:6c:00	 (World size: 4.399782)
+	128x64  	-	[ASfM       ]	"GROUP5_64"                             	96:94:92:8d	 (World size: 4.840178)
+	64x64   	-	[ASfM       ]	"SPTEAMTENTS"                           	cd:ac:ab:ae	 (World size: 10.839240)
+	256x128 	-	[ASfM       ]	"SPRING_BUILDINGS16"                    	8c:8e:91:e2	 (World size: 70.296288)
+	256x256 	-	[  fM       ]	"SPADS_MULTI"                           	b0:ab:a6:00	 (World size: 67.730217)
+	128x128 	-	[  fM       ]	"SPTRACKSPONSORS"                       	cd:c8:cc:00	 (World size: 46.719296)
+	256x256 	-	[A fM  X    ]	"SHADOW_SKIDS6"                         	00:00:00:15	 (World size: 20000.000000)
+	256x128 	-	[  fM       ]	"KERB_GRASS_X_HATCH"                    	73:64:4e:00	 (World size: 25.056282)
+	256x128 	-	[  fM       ]	"KERB_GRASS_2"                          	72:63:4b:00	 (World size: 17.588892)
+	256x256 	-	[ASfM       ]	"SB1_TREECOMBO"                         	23:28:14:85	 (World size: 34.850498)
+	128x128 	-	[  fM       ]	"GRAVEL_1"                              	98:95:88:00	 (World size: 19.147100)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

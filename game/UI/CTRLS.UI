@@ -1,0 +1,250 @@
+
+//////////////////////////////////////////////////////
+// UI_SCREEN
+//////////////////////////////////////////////////////
+
+:TYPE 							UI_TYPE_SCREEN
+:OBJECT_ID 						CTRLS
+:AUTOSIZE 						0
+:CLEAR 							0
+:POSITION_START 				0.0 0.0
+:POSITION_END 					0.0 0.0
+:SIZE 							1.0 1.0
+:STRETCH_GRAPHIC 				1
+:TEXTURE_ENUM 					GRAPHICS\GAME\BKGNDS\MUSTGTRBG.PSD
+
+:S{*****>>>
+
+	//////////////////////////////////////////////////////
+	// TITLE BAR
+	//////////////////////////////////////////////////////
+
+	:INHERIT							TITLE
+	:POSITION_START				0.0 0.08333
+	:POSITION_END					0.0 0.08333
+	:SIZE								0.52344 0.03542
+	:TEXT_JUSTIFY					2
+	:JUSTIFY_OFFSET				0.04535 0.0
+
+	//////////////////////////////////////////////////////
+	// 
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// BACK ICON AND TEXT
+	//////////////////////////////////////////////////////
+
+	// DONE
+	:INHERIT							BACK_ICON
+	:POSITION_START				0.28125 0.44007
+	:POSITION_END					0.28125 0.44007
+
+	:INHERIT							BACK_TEXT
+	:POSITION_START				0.33428 0.42
+	:POSITION_END					0.33428 0.42
+	:TEXT_JUSTIFY					1
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// MOVING WINDOW
+	//////////////////////////////////////////////////////
+
+	:TYPE								UI_TYPE_BASIC
+	:OBJECT_ID	 					MOVINGWINDOW
+	:CLEAR 							1
+	:SIZE 							1.0 1.0
+
+	:S{*****>>>
+
+		:INHERIT							MENUBAR
+
+		//////////////////////////////////////////////////////
+		// ARROWS
+		//////////////////////////////////////////////////////
+
+		:TYPE								UI_TYPE_GRAPHIC
+		:AUTOSIZE						1
+		:OBJECT_ID 						DEVICE_HIGHLIGHT_LEFT_ARROW
+		:POSITION_START 				0.48906 0.44375
+		:POSITION_END					0.48906 0.44375
+		:COLOUR							204 204 204 255
+		:STRETCH_GRAPHIC 				1
+		:TEXTURE_ENUM 					GRAPHICS\GAME\COMMON\SMARROW.PSD
+		:TIME_LENGTH					0.16667
+
+		:TYPE								UI_TYPE_GRAPHIC
+		:OBJECT_ID 						DEVICE_HIGHLIGHT_RIGHT_ARROW
+		:AUTOSIZE						1
+		:FLIP_GRAPHIC 					1 0
+		:POSITION_START 				-1.0 0.44375
+		:POSITION_END					0.63125 0.44375
+		:COLOUR							204 204 204 255
+		:STRETCH_GRAPHIC 				1
+		:TEXTURE_ENUM 					GRAPHICS\GAME\COMMON\SMARROW.PSD
+		:TIME_LENGTH					0.16667
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////////
+		// DEVICE
+		//////////////////////////////////////////////////////
+
+		:TYPE								UI_TYPE_BUTTON
+		:OBJECT_ID						DEVICE
+		:CLEAR							1
+		:POSITION_START				-1.0 0.15417
+		:POSITION_END					0.0 0.15417
+		:SIZE								1.0 0.06	
+		:TIME_LENGTH					0.16667
+		:OFFSET_TIME					0.0
+
+		:S{*****>>>
+
+			:TYPE								UI_TYPE_TEXT
+			:OBJECT_ID						DEVICENUMBER
+			:POSITION_START				0.23438 0.02695
+			:POSITION_END					0.23438 0.02695
+			:SIZE								1.0 1.0
+			:TEXT_JUSTIFY					1
+			:JUSTIFY_OFFSET				0.0 0.0
+			:FONT								1
+			:FONT_COLOUR					0 0 0 255
+
+		:E}*****<<<
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+	
+		//////////////////////////////////////////////////////
+		// CONTROL_WINDOW
+		//////////////////////////////////////////////////////
+		
+		:TYPE								UI_TYPE_BASIC
+		:OBJECT_ID	 					CONTROL_WINDOW
+		:CLEAR 							1
+		:SIZE 							1.0 1.0
+		:POSITION_START				0.0 0.0
+		:POSITION_END					0.0 0.0
+	
+		:S{*****>>>
+
+			//////////////////////////////////////////////////////
+			// CONTROL
+			//////////////////////////////////////////////////////
+	
+			:TYPE								UI_TYPE_BUTTON
+			:OBJECT_ID						CONTROLTYPE
+			:CLEAR							1
+			:POSITION_START				-1.0 0.15417
+			:POSITION_END					0.0 0.15417
+			:SIZE								1.0 0.06
+			:TIME_LENGTH					0.16667
+			:OFFSET_TIME					0.1
+	
+			:S{*****>>>
+	
+				:TYPE								UI_TYPE_TEXT
+				:OBJECT_ID						CONTROLTYPENUMBER
+				:POSITION_START				0.23438 0.026953
+				:POSITION_END					0.23438 0.026953
+				:SIZE								1.0 1.0
+				:TEXT_JUSTIFY					1
+				:JUSTIFY_OFFSET				0.0 0.0
+				:FONT								1
+				:FONT_COLOUR					0 0 0 255
+	
+			:E}*****<<<
+	
+			//////////////////////////////////////////////////////
+			//
+			//////////////////////////////////////////////////////
+	
+			//////////////////////////////////////////////////////
+			// MAPPING
+			//////////////////////////////////////////////////////
+	
+			:INHERIT							FR3_DEFAULT_BUTTON
+			:OBJECT_ID						MAPPING
+			:TEXT_JUSTIFY					2
+			:TEXT								TXT_OPTIONS_CONTROLS_BUTTONS_MAPPING
+			:POSITION_START				-1.0 0.20833
+			:POSITION_END					-0.26094 0.20833
+			:HIGHLIGHTED_FONT_COLOUR	0 0 0 255
+			:TIME_LENGTH					0.16667
+			:OFFSET_TIME					0.2
+	
+			:INHERIT							FR3_DEFAULT_BUTTON
+			:OBJECT_ID						SETTINGS
+			:TEXT_JUSTIFY					2
+			:TEXT								TXT_OPTIONS_CONTROLS_SETTINGS
+			:POSITION_START				-1.0 0.26458
+			:POSITION_END					-0.375 0.26458
+			:TIME_LENGTH					0.16667
+			:OFFSET_TIME					0.3
+	
+			//////////////////////////////////////////////////////
+			//
+			//////////////////////////////////////////////////////
+				
+			//////////////////////////////////////////////////////
+			// XBOX VIBRATION
+			//////////////////////////////////////////////////////
+			
+			:INHERIT							FR3_DEFAULT_BUTTON
+			:OBJECT_ID						VIBRATION
+			:TEXT_JUSTIFY					2
+			:TEXT								TXT_OPTIONS_CONTROLS_VIBRATION
+			:POSITION_START				-0.375 0.26458
+			:POSITION_END					-0.375 0.26458
+			:TIME_LENGTH					0.16667
+			:OFFSET_TIME					0.4
+					
+			:TYPE								UI_TYPE_BUTTON
+			:OBJECT_ID 						VIBRATION_VALUE
+			:CLEAR							1
+			:POSITION_START 				0.654 0.26800
+			:POSITION_END 					0.654 0.26800
+			:SIZE 							1.0 0.05625
+			:COLOUR 							216 234 242 255
+			:FONT 							2
+			:FONT_COLOUR					216 234 242 255
+			:HIGHLIGHTED_FONT				2
+			:HIGHLIGHTED_FONT_COLOUR	0 0 0 255
+			:TEXT								TXT_GENERAL_ON
+			:TEXT_JUSTIFY 					1
+			:TIME_LENGTH					0.16667
+			:OFFSET_TIME					0.4
+			
+			//////////////////////////////////////////////////////
+			//
+			//////////////////////////////////////////////////////
+		
+		:E}*****<<<
+		
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+
+	:E}*****<<<
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+:E}*****<<<
+
+//////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////
+
+:CONNECTION "DEVICE" 			"SETTINGS"		"CONTROLTYPE" 		"none" "none"
+:CONNECTION "CONTROLTYPE" 		"DEVICE"			"MAPPING"			"none" "none"
+:CONNECTION "MAPPING"			"CONTROLTYPE"	"SETTINGS"			"none" "none"
+:CONNECTION "SETTINGS"			"MAPPING"		"VIBRATION"			"none" "none"
+:CONNECTION "VIBRATION"			"SETTINGS"		"DEVICE"				"none" "none"

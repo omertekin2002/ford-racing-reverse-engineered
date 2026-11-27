@@ -1,0 +1,210 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"WATERWATERWATERWATER"                 	scenes\water\waterfallwater.ma
+	"CAVE_ROCK"                            	scenes\water\caverock.ma
+	"CAVE_WATER"                           	scenes\water\cavewater.ma
+	"WATERROCK"                            	scenes\water\waterfallrock.ma
+	"XPLOSIV"                              	scenes\new barriers\xplosiv.ma
+	"EMPIRE"                               	scenes\new barriers\empire.ma
+	"RAZORWORKS"                           	scenes\new barriers\razorworks.ma
+	"EJAY"                                 	scenes\new barriers\ejay.ma
+	"BLANK"                                	scenes\new barriers\blank.ma
+	"START_GRID"                           	scenes\new startgrid\start_grid.ma
+	"LIGHT_FRAME"                          	scenes\new startgrid\light_frame.ma
+	"EFFECTS"                              	scenes\effects\effects.ma
+	"BAT"                                  	scenes\buildings\accessories\bat.ma
+	"DEBRIS"                               	scenes\buildings\accessories\debris.ma
+	"BOAT"                                 	scenes\buildings\accessories\boat.ma
+	"TEMPLE1"                              	scenes\buildings\accessories\temple1.ma
+	"HANGGLIDER"                           	scenes\buildings\accessories\hangglider.ma
+	"BASETREE_02_NOSPR"                    	scenes\buildings\trees\treebase_02_nospr.ma
+	"TREEBASE01_700"                       	scenes\buildings\trees\treebase_01_700.ma
+	"TREEBASE_01_NOSPR"                    	scenes\buildings\trees\treebase_01_nospr.ma
+	"TREEBASE2_700"                        	scenes\buildings\trees\treebase_02_700.ma
+	"BASETREE_02"                          	scenes\buildings\trees\treebase_02.ma
+	"TREEBASE_01"                          	scenes\buildings\trees\treebase_01.ma
+	"SMALLPALM"                            	scenes\buildings\trees\palm_small.ma
+	"LARGEPALM"                            	scenes\buildings\trees\palm_large.ma
+	"BUSHLINE2"                            	scenes\buildings\shrubs\bushline2.ma
+	"LARGE_GRASS_01"                       	scenes\buildings\shrubs\large_grass_01.ma
+	"BUSHLINE"                             	scenes\buildings\shrubs\bushline.ma
+	"SMALL_GRASS_01"                       	scenes\buildings\shrubs\small_grass_01.ma
+	"RIGHT"                                	scenes\buildings\barriers\barrier_right.ma
+	"LEFT"                                 	scenes\buildings\barriers\barrier_left.ma
+	"BARRIERS"                             	scenes\buildings\barriers\barrier_01.ma
+	"HUT1"                                 	scenes\buildings\hut1.ma
+	"DEADTREE_03"                          	scenes\buildings\deadtree_03.ma
+	"DEADTREE_02"                          	scenes\buildings\deadtree_02.ma
+	"DEADTREE_01"                          	scenes\buildings\deadtree_01.ma
+	"BROKENSTATUE"                         	scenes\buildings\broken_statue.ma
+	"BROKENHEAD"                           	scenes\buildings\broken_head.ma
+	"SUNGLOWS_01"                          	scenes\buildings\sunglows.ma
+	"HUT2"                                 	scenes\buildings\hut2.ma
+	"WATERFALLS_02"                        	scenes\buildings\waterfalls2.ma
+	"WATERFALLS"                           	scenes\buildings\waterfalls.ma
+	"SKYDOME"                              	scenes\environment\jungc_skydome.ma
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"JUNGC_CUT_UP"                         	
+	"JUNGC_OBJECTS"                        	
+	"JUNGC_ANIMATIONS"                     	
+	"JUNGC_WATERFALL_TOP"                  	
+	"JUNGC_WATER_SPRAY"                    	
+	"JUNGC_PARTICLES"                      	
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+	"WATERFALL_TOP"
+	"WATER_SPRAY"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"CAMERA"
+	"CAR_COCKPIT"
+	"CAR_BACK"
+	"BAT"
+	"HANGGLIDER"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"SUNLIGHT"
+	"AMBIENT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+	"METAL"
+	"STONE"
+	"WOOD"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+	"WATER"
+	"WATERFALL"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	256x128 	-	[  fM   !   ]	"HUTS_16"                               	6a:5a:49:00	 (World size: 52.959061)
+	256x128 	-	[ASfM   !   ]	"TREELINE_01_256"                       	3b:48:1d:00	 (World size: 125.251053)
+	256x256 	-	[  fM   !   ]	"TEMPLE_WALL_256"                       	71:73:63:00	 (World size: 50.283478)
+	128x64  	-	[  fM   !   ]	"BARK"                                  	4c:40:2f:00	 (World size: 4.232364)
+	256x256 	-	[  f        ]	"JUNGLE_ROCK_WALL_256"                  	4a:48:34:00	 (World size: 97.520958)
+	256x256 	-	[ASf    !   ]	"SHRUBS_512"                            	1d:20:18:00	 (World size: 19.540646)
+	512x512 	-	[ASfM   !   ]	"TREES_512_16"                          	15:18:0c:00	 (World size: 239.335571)
+	128x128 	-	[  fM   !   ]	"BOAT"                                  	84:63:49:00	 (World size: 25.115532)
+	128x64  	-	[  fM       ]	"HANGGLIDER"                            	85:3f:5c:00	 (World size: 29.781494)
+	64x64   	-	[  f        ]	"MINISKY"                               	83:8c:a5:00	 (World size: 3541.053467)
+	256x256 	-	[  f      # ]	"JUNGC_SEG8"                            	74:9e:c2:00	 (World size: 2325.032715)
+	256x256 	-	[  f      # ]	"JUNGC_SEG2"                            	62:70:7c:00	 (World size: 2325.032959)
+	256x256 	-	[  f      # ]	"JUNGC_SEG3"                            	69:79:86:00	 (World size: 2325.033447)
+	256x256 	-	[  f      # ]	"JUNGC_SEG4"                            	7d:91:a5:00	 (World size: 2325.032715)
+	256x256 	-	[  f      # ]	"JUNGC_SEG5"                            	68:80:98:00	 (World size: 2360.591797)
+	256x256 	-	[  f      # ]	"JUNGC_SEG6"                            	52:6d:8d:00	 (World size: 2360.591553)
+	256x256 	-	[  f      # ]	"JUNGC_SEG7"                            	7c:9c:ba:00	 (World size: 2325.032959)
+	256x256 	-	[  f      # ]	"JUNGC_SEG1"                            	70:85:95:00	 (World size: 2325.032715)
+	256x256 	-	[A fM  X    ]	"TREELINE_SHADOW10"                     	00:00:00:3a	 (World size: 518.041565)
+	32x32   	-	[A fM       ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"GRASS"                                 	1b:1b:1b:22	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"HEADLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"REARLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"SPECULAR_SPRITE"                       	3d:3d:3d:3d	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"SUN_FLARE"                             	15:10:10:12	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"SPARK"                                 	2b:2b:2b:00	 (World size: 1.310660)
+	256x256 	-	[  fM       ]	"TRACK_SPECULAR"                        	88:88:85:00	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"TRACK_REFLECTION"                      	00:00:00:88	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"SMOKEANDDUST"                          	d3:d1:d1:54	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"TYRE_SMOKE"                            	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	128x128 	-	[  fM       ]	"GRASS_GRASS"                           	37:43:1b:00	 (World size: 18.963564)
+	256x256 	-	[  fM       ]	"MUDHARD_TRACK"                         	54:41:2c:00	 (World size: 18.156984)
+	256x128 	-	[  fM       ]	"GRASS_VERGE"                           	3c:40:1e:00	 (World size: 16.549606)
+	256x256 	-	[  fM       ]	"MUDHARD_START"                         	63:5d:54:00	 (World size: 18.749331)
+	256x256 	-	[ASf    !   ]	"LEAVES"                                	53:60:3d:00	 (World size: 14.485376)
+	256x128 	-	[  f    !   ]	"WOOD"                                  	2b:28:24:00	 (World size: 8.697618)
+	128x128 	-	[A fM       ]	"WATER1"                                	81:8e:98:4b	 (World size: 52.637096)
+	128x128 	-	[  fM   !   ]	"BARRIERS_16"                           	29:18:0c:00	 (World size: 5.481120)
+	512x512 	-	[ASf    !   ]	"BURN_TREES"                            	01:01:01:00	 (World size: 51.912430)
+	256x256 	-	[  fM   !   ]	"AD_TEMP"                               	8b:8b:91:00	 (World size: 21.169933)
+	64x64   	-	[ASfM   !   ]	"GIRDERS"                               	b9:b9:b9:00	 (World size: 9.362757)
+	64x64   	-	[ASfM   !   ]	"NEW_BARRIERS"                          	7b:7b:7b:00	 (World size: 4.477161)
+	512x128 	-	[  fM   !   ]	"STARTGRID"                             	93:92:92:00	 (World size: 39.592823)
+	256x128 	-	[  fM   !   ]	"SUNGLOW"                               	10:10:10:00	 (World size: 83.813423)
+	64x64   	-	[A fM       ]	"1"                                     	4f:5a:55:80	 (World size: 22.282225)
+	64x64   	-	[A fM       ]	"2"                                     	53:68:66:59	 (World size: 22.333773)
+	64x64   	-	[A fM       ]	"3"                                     	79:8b:8a:4c	 (World size: 21.231613)
+	128x64  	-	[  fM       ]	"CHEVRON_ARROW"                         	6a:66:43:00	 (World size: 8.510911)
+	32x32   	-	[ASf        ]	"ANIMATED7"                             	02:02:02:3a	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED7_1"                           	01:01:01:3a	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED7_2"                           	01:01:01:33	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED7_3"                           	02:02:02:2e	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED7_4"                           	02:02:02:2f	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED7_5"                           	02:02:02:38	 (World size: 2.580362)
+	256x256 	-	[ASfM   !   ]	"TREES_512_16MIP"                       	15:18:0c:00	 (World size: 216.881592)
+	256x128 	-	[A fM       ]	"ALPHA_GRASS"                           	1c:28:11:20	 (World size: 1.282836)
+	256x256 	-	[  fM   !   ]	"TEMPLE_EFFIGIES_16"                    	77:7a:6b:00	 (World size: 46.588261)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,305 @@
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			NTGLI
+:CLEAR				0
+:COLOUR				255 255 255 255
+:POSITION_START	0.000000 0.000000
+:POSITION_END		0.000000 0.000000
+:TIME_LENGTH		1.000000
+//:TEXTURE_ENUM		"GRAPHICS\GAME\COMMON\GREYFADE.PSD"
+:TEXTURE_ENUM		"GRAPHICS\GAME\COMMON\GRADY.PSD"
+
+:S{*****>>>
+	
+	///////////////////////////////////////////////////////////
+	///TITLE
+	//////////////////////////////////////////////////////////
+
+	:INHERIT				TITLE
+	:POSITION_START	0.084375 0.095833
+	:POSITION_END		0.084375 0.095833
+	
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+	
+	///////////////////////////////////////////////////////////
+	///BACK ICON AND TEXT
+	//////////////////////////////////////////////////////////
+
+	// DONE	
+	:INHERIT				BACK_ICON
+	:POSITION_START	0.117188 0.86042
+	:POSITION_END		0.117188 0.86042
+	
+	:INHERIT				BACK_TEXT
+	:POSITION_START	0.120312 0.839583
+	:POSITION_END		0.120312 0.839583
+	
+	//////////////////////////////////////////////////////
+	// INFO BAR BACKGROUND ( ONLY USED IN PC)
+	/////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			INFO_BAR_BG
+	:CLEAR				1
+	:COLOUR				0 0 0 77
+	:SIZE					1.0 0.0
+	:POSITION_START	0.0 0.0
+	:POSITION_END		0.0 0.0
+	
+	//////////////////////////////////////////////////////
+	// 
+	/////////////////////////////////////////////////////
+	
+	///////////////////////////////////////////////////////////
+	///Top bar (info_bar)
+	//////////////////////////////////////////////////////////
+
+	:TYPE						UI_TYPE_BUTTON
+	:OBJECT_ID				STATUS_INFO
+	:AUTOSIZE				0
+	:SIZE						1.000000 0.045833
+	:COLOUR					0 0 0 77
+	:HIGHLIGHTED_COLOUR	0 0 0 77
+	:FONT						2
+	:FONT_COLOUR			206 206 206 255
+	:HIGHLIGHTED_FONT		2
+	:HIGHLIGHTED_FONT_COLOUR			206 206 206 255
+	:TEXT_JUSTIFY			1							//TEXT_JUSTIFY_LEFT_CENTRE
+	:JUSTIFY_OFFSET		0.120000 0.000000
+	:TEXT						0
+	:POSITION_START		0.000000 0.147917
+	:POSITION_END			0.000000 0.147917
+	:TIME_LENGTH			0.166667
+	
+	:INHERIT					STATUS_INFO
+	:OBJECT_ID				TRACK_INFO
+	:POSITION_START		0.000000 0.189583
+	:POSITION_END			0.000000 0.189583
+	
+	:INHERIT					STATUS_INFO
+	:OBJECT_ID				LAPS_INFO
+	:TEXT_JUSTIFY			2							//TEXT_JUSTIFY_RIGHT_CENTRE
+	:COLOUR					0 0 0 0	
+	:POSITION_START		0.000000 0.189583
+	:POSITION_END			0.000000 0.189583
+	
+	:INHERIT					STATUS_INFO
+	:OBJECT_ID				VEHICLE_CLASS_INFO
+	:POSITION_START		0.000000 0.235417
+	:POSITION_END			0.000000 0.235417
+	
+	:INHERIT					STATUS_INFO
+	:OBJECT_ID				COLLISIONS_INFO
+	:TEXT_JUSTIFY			2							//TEXT_JUSTIFY_RIGHT_CENTRE
+	:COLOUR					0 0 0 0	
+	:POSITION_START		0.000000 0.235417
+	:POSITION_END			0.000000 0.235417
+	
+	//////////////////////////////////////////////////////////
+	//TABLE OVERHEAD TEXT
+	//////////////////////////////////////////////////////////
+
+	:TYPE						UI_TYPE_TEXT
+	:OBJECT_ID				HOST_TITLE
+	:CLEAR					1
+	:AUTOSIZE				0
+	:SIZE						0.193750 0.045898
+	:FONT_COLOUR			51 51 51 255
+	:FONT						2
+	:TEXT_JUSTIFY			1									//TEXT_JUSTIFY_LEFT_CENTRE
+	:TEXT						TXT_GENERAL_DRIVER
+	:POSITION_START		0.125000 0.302083
+	:POSITION_END			0.125000 0.302083
+	:TIME_LENGTH			0.166667
+	
+	:TYPE						UI_TYPE_GRAPHIC
+	:OBJECT_ID				PERSON_ICON_1
+	:AUTOSIZE				1
+	:COLOUR					51 51 51 255
+	:TEXTURE_ENUM			"GRAPHICS\GAME\NET\BLOKE.PSD"
+	:POSITION_START		0.381250 0.291667
+	:POSITION_END			0.381250 0.291667
+	
+	:INHERIT					PERSON_ICON_1
+	:OBJECT_ID				PERSON_ICON_2
+	:POSITION_START		0.404687 0.291667
+	:POSITION_END			0.404687 0.291667
+	
+	:TYPE						UI_TYPE_GRAPHIC
+	:OBJECT_ID				PLUG_ICON
+	:AUTOSIZE				1
+	:COLOUR					51 51 51 255
+	:TEXTURE_ENUM			"GRAPHICS\GAME\NET\CONNPLUG.PSD"
+	:POSITION_START		0.550000 0.297917
+	:POSITION_END			0.550000 0.297917
+	
+	//////////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// MATCH INFO BACKGROUND ( ONLY USED IN PC)
+	/////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			MATCH_INFO_BG
+	:CLEAR				1
+	:COLOUR				0 0 0 77
+	:SIZE					1.0 0.0
+	:POSITION_START	0.0 0.0
+	:POSITION_END		0.0 0.0
+	
+	//////////////////////////////////////////////////////
+	// 
+	/////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// MATCH INFO
+	/////////////////////////////////////////////////////
+	
+	:INHERIT					STATUS_INFO
+	:OBJECT_ID				MATCH_INFO_1
+	:HIGHLIGHTED_COLOUR	255 249 135 77
+	:POSITION_START		0.000000 0.339583
+	:POSITION_END			0.000000 0.339583
+	
+	:S{*****>>>
+		
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			HOST_NAME
+		:CLEAR				1
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		4
+		:TEXT					0
+		:POSITION_START	0.126563 0.135816
+		:POSITION_END		0.126563 0.135816
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			PLAYER_NUMBERS
+		:CLEAR				1
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		4
+		:TEXT					0
+		:POSITION_START	0.389062 0.135816
+		:POSITION_END		0.389062 0.135816
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_AREA
+		:OBJECT_ID			CONNECTION_INDICATOR
+		:CLEAR				1
+		:POSITION_START	0.546875	-0.004167
+		:POSITION_END		0.546875	-0.004167
+		
+	:E}*****<<<
+	
+	
+	:INHERIT					MATCH_INFO_1
+	:OBJECT_ID				MATCH_INFO_2
+	:POSITION_START		0.000000 0.383333
+	:POSITION_END			0.000000 0.383333
+	
+	:INHERIT					MATCH_INFO_1
+	:OBJECT_ID				MATCH_INFO_3
+	:POSITION_START		0.000000 0.425000
+	:POSITION_END			0.000000 0.425000
+	
+	:INHERIT					MATCH_INFO_1
+	:OBJECT_ID				MATCH_INFO_4
+	:POSITION_START		0.000000 0.470833
+	:POSITION_END			0.000000 0.470833
+	
+	:INHERIT					MATCH_INFO_1
+	:OBJECT_ID				MATCH_INFO_5
+	:POSITION_START		0.000000 0.516667
+	:POSITION_END			0.000000 0.516667
+	
+	:INHERIT					MATCH_INFO_1
+	:OBJECT_ID				MATCH_INFO_6
+	:POSITION_START		0.000000 0.562500
+	:POSITION_END			0.000000 0.562500
+	
+	:INHERIT					MATCH_INFO_1
+	:OBJECT_ID				MATCH_INFO_7
+	:POSITION_START		0.000000 0.606250
+	:POSITION_END			0.000000 0.606250
+	
+	:INHERIT					MATCH_INFO_1
+	:OBJECT_ID				MATCH_INFO_8
+	:POSITION_START		0.000000 0.652083
+	:POSITION_END			0.000000 0.652083
+	
+	:INHERIT					MATCH_INFO_1
+	:OBJECT_ID				MATCH_INFO_9
+	:POSITION_START		0.000000 0.697917
+	:POSITION_END			0.000000 0.697917
+	
+	:INHERIT					MATCH_INFO_1
+	:OBJECT_ID				MATCH_INFO_10
+	:POSITION_START		0.000000 0.735417
+	:POSITION_END			0.000000 0.735417
+	
+	//////////////////////////////////////////////////////////
+	// LINE PLOTER
+	/////////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				LINE_PLOTER
+	:CLEAR					1
+	:AUTOSIZE				0
+	:SIZE						1.0 1.0
+	
+	//////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////////////
+	//SELECT ICON
+	////////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			BAR_PULSE
+	:AUTOSIZE			0
+	:SIZE					0.043750 0.0583333			//28x28
+	:COLOUR_START		255 255 255 128
+	:COLOUR_END			255 255 255 0
+	:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\MENU_RNG.PSD
+	:POSITION_START	0.064062 0.331250
+	:POSITION_END		0.064062 0.331250
+	
+	:S{*****>>>
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			SELECT_ICON
+	:AUTOSIZE			0			
+	//:SIZE					0.714285 0.714285		//20x20
+	:SIZE					1.000000 1.000000			//28x28
+	:COLOUR				255 255 255 255
+	//:POSITION_START	0.109500 0.141980
+	//:POSITION_END		0.109500 0.141980
+	:POSITION_START	0.000000 0.000000
+	:POSITION_END		0.000000 0.000000
+	
+	:E}*****<<<
+	
+	/////////////////////////////////////////////////////////
+	//
+	////////////////////////////////////////////////////////
+	
+	
+:E}*****<<<
+
+				//FOR							//UP						//DOWN					//LEFT	//RIGHT
+:CONNECTION "MATCH_INFO_1"				"MATCH_INFO_10"		"MATCH_INFO_2"			""			""
+:CONNECTION "MATCH_INFO_2"				"MATCH_INFO_1"			"MATCH_INFO_3"			""			""
+:CONNECTION "MATCH_INFO_3"				"MATCH_INFO_2"			"MATCH_INFO_4"			""			""
+:CONNECTION "MATCH_INFO_4"				"MATCH_INFO_3"			"MATCH_INFO_5"			""			""
+:CONNECTION "MATCH_INFO_5"				"MATCH_INFO_4"			"MATCH_INFO_6"			""			""
+:CONNECTION "MATCH_INFO_6"				"MATCH_INFO_5"			"MATCH_INFO_7"			""			""
+:CONNECTION "MATCH_INFO_7"				"MATCH_INFO_6"			"MATCH_INFO_8"			""			""
+:CONNECTION "MATCH_INFO_8"				"MATCH_INFO_7"			"MATCH_INFO_9"			""			""
+:CONNECTION "MATCH_INFO_9"				"MATCH_INFO_8"			"MATCH_INFO_10"		""			""
+:CONNECTION "MATCH_INFO_10"			"MATCH_INFO_9"			"MATCH_INFO_1"			""			""

@@ -63,7 +63,7 @@ jobs:
       - name: Check the tag matches VERSION
         if: startsWith(github.ref, 'refs/tags/')
         run: python3 scripts/release_tag.py check-tag "$GITHUB_REF"
-      - name: Restore pinned runtimes and demo downloads
+      - name: Restore pinned runtimes
         # The default locations: ~/.cache/fr3/downloads and ~/.local/share/fr3-tools/runtime (see README).
         # Every cached file is checked against its pinned SHA-256 again before use.
         uses: actions/cache@v4
@@ -71,17 +71,14 @@ jobs:
           path: |
             ~/.cache/fr3/downloads
             ~/.local/share/fr3-tools/runtime
-            inputs/fordracing3demo.zip
-          key: fr3-wine-packages-v1-${{ runner.os }}-${{ hashFiles('scripts/setup_release_tools.py', 'scripts/build_releases.py', 'scripts/acquire_demo.py') }}
-      - name: Install CAB extraction tool
-        run: sudo apt-get update && sudo apt-get install -y unshield
-      - name: Acquire and verify the public demo
-        run: python3 scripts/acquire_demo.py inputs --unshield unshield
+          key: fr3-wine-packages-v2-${{ runner.os }}-${{ hashFiles('scripts/setup_release_tools.py', 'scripts/build_releases.py', 'scripts/acquire_demo.py') }}
+      - name: Verify in-repo Ford Racing 3 Shuffle game files
+        run: python3 scripts/acquire_demo.py game
       - name: Prepare the pinned Wine runtimes
         run: python3 scripts/setup_release_tools.py
       - name: Build and verify both packages
         # No --allow-dirty: the packages record the checked-out commit as source_revision.
-        run: python3 scripts/build_releases.py
+        run: python3 scripts/build_releases.py --game game
       - name: Check the release checksums
         working-directory: ${{ env.RELEASES }}
         run: sha256sum -c SHA256SUMS

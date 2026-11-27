@@ -1,0 +1,362 @@
+:TYPE				UI_TYPE_SCREEN
+:OBJECT_ID		CHALLENGE_SELECT
+:CLEAR			0
+//:TEXTURE_ENUM	"GRAPHICS\GAME\COMMON\GREYFADE.PSD"
+:TEXTURE_ENUM	"GRAPHICS\GAME\COMMON\GRADY.PSD"
+:TIME_LENGTH	1.000000
+
+:s{*****>>>
+
+	///////NEEDED FOR INIT FUNC//////////////
+	:INHERIT				TITLE
+	:POSITION_START	0.171875 0.258333
+	:POSITION_END		0.171875 0.258333
+
+	// DONE	
+	:INHERIT				BACK_ICON
+	:POSITION_START	0.204688 0.8542
+	:POSITION_END		0.204688 0.8542
+	
+	:INHERIT				BACK_TEXT
+	:POSITION_END		0.251563 0.833333
+	:POSITION_START	0.251563 0.833333
+	:TEXT_JUSTIFY		1
+	/////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			LOGO_BKGND
+	:SIZE					1.000000 0.091670
+	:COLOUR				204 204 204 229
+	:POSITION_START	0.000000 0.133333
+	:POSITION_END		0.000000 0.133333
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			FORD_RACING_LOGO
+	:SIZE					1.000000 0.091670
+	:POSITION_START	0.131250 0.133333
+	:POSITION_END		0.131250 0.133333
+	:STRETCH_GRAPHIC	0
+	:TEXTURE_ENUM		"GRAPHICS\GAME\COMMON\FFLOGO.PSD"
+	
+	//////////////////////////////////////////////////////
+	//MENU BAR
+	/////////////////////////////////////////////////////
+	
+	:INHERIT				MENUBAR
+	
+	//////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	//MENU BUTTONS
+	/////////////////////////////////////////////////////
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			THUNDERBIRDS_BUTTON
+	:TEXT					TXT_CHALLENGE_THEME_THUNDERBIRDS
+	:POSITION_START	1.165625 0.312386
+	:POSITION_END		0.165625 0.312386
+	:TIME_LENGTH		0.133333
+	:OFFSET_TIME		0.000000
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			MUSTANGS_BUTTON
+	:TEXT					TXT_CHALLENGE_THEME_MUSTANGS
+	:POSITION_START	1.165625 0.360335
+	:POSITION_END		0.165625 0.360335
+	:TIME_LENGTH		0.133333
+	:OFFSET_TIME		0.033333
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			GENERATIONS_BUTTON
+	:TEXT					TXT_CHALLENGE_THEME_GENERATIONS
+	:POSITION_START	1.165625 0.416602
+	:POSITION_END		0.165625 0.416602
+	:TIME_LENGTH		0.133333
+	:OFFSET_TIME		0.066666
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			CONCEPTS_BUTTON
+	:TEXT					TXT_CHALLENGE_THEME_CONCEPTS
+	:POSITION_START	1.165625 0.462467
+	:POSITION_END		0.165625 0.462467
+	:TIME_LENGTH		0.133333
+	:OFFSET_TIME		0.099999
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			GT_BUTTON
+	:TEXT					TXT_CHALLENGE_THEME_GT
+	:POSITION_START	1.165625 0.516650
+	:POSITION_END		0.165625 0.516650
+	:TIME_LENGTH		0.133333
+	:OFFSET_TIME		0.133332
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			TRUCKS_BUTTON
+	:TEXT					TXT_CHALLENGE_THEME_TRUCKS
+	:POSITION_START	1.165625 0.564469
+	:POSITION_END		0.165625 0.564469
+	:TIME_LENGTH		0.133333
+	:OFFSET_TIME		0.166665
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			SVT_BUTTON
+	:TEXT					TXT_CHALLENGE_THEME_SVT
+	:POSITION_START	1.165625 0.620835
+	:POSITION_END		0.165625 0.620835
+	:TIME_LENGTH		0.133333
+	:OFFSET_TIME		0.166665
+	
+	//////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	//SET THE BUTTON CONECTIONS
+	/////////////////////////////////////////////////////
+	
+	:CONNECTION	"THUNDERBIRDS_BUTTON"	"TRUCKS_BUTTON"			"MUSTANGS_BUTTON"			"none"	"none"
+	:CONNECTION	"MUSTANGS_BUTTON"			"THUNDERBIRDS_BUTTON"	"GENERATIONS_BUTTON"		"none"	"none"
+	:CONNECTION	"GENERATIONS_BUTTON"		"MUSTANGS_BUTTON"			"CONCEPTS_BUTTON"			"none"	"none"
+	:CONNECTION	"CONCEPTS_BUTTON"			"GENERATIONS_BUTTON"		"GT_BUTTON"					"none"	"none"
+	:CONNECTION	"GT_BUTTON"					"CONCEPTS_BUTTON"			"TRUCKS_BUTTON"			"none"	"none"
+	:CONNECTION	"TRUCKS_BUTTON"			"GT_BUTTON"					"SVT_BUTTON"				"none"	"none"
+	:CONNECTION	"SVT_BUTTON"				"TRUCKS_BUTTON"			"THUNDERBIRDS_BUTTON"	"none"	"none"
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// CAR BACKGROUND STRIP
+	//////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				CAR_BKGND_STRIP
+	:CLEAR					0
+	:SIZE						0.582352 0.158333
+	:COLOUR					95 95 90 76
+	:POSITION_START		0.182996 0.681250
+	:POSITION_END			0.182996 0.681250
+	//:TEXTURE_ENUM			GRAPHICS\GAME\COMMON\TITLEBAR.PSD
+	:TIME_LENGTH			0.133333
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// CAR ICON SELECTION INTICATOR
+	//////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				ICON_SELECTION_HIGHLIGHT
+	:SIZE						0.138234 0.150003
+	:COLOUR					255 255 51 255
+	:POSITION_START		0.346232 1.689583
+	:POSITION_END			0.346232 0.689583
+	:TIME_LENGTH			0.166666
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// TRACK DESCRIPTION
+	//////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_TEXT
+	:OBJECT_ID				TRACK_DESC
+	:SIZE						0.775000 0.060417
+	:FONT						2
+	:FONT_COLOUR			206 206 206 255
+	:TEXT						0
+	:TEXT_JUSTIFY			1
+	//:POSITION_START		1.182996 0.456250
+	//:POSITION_END			0.182996 0.456250
+	:POSITION_START		1.419044 0.456299
+	:POSITION_END			0.419044 0.456299
+	:TIME_LENGTH			0.133333
+	:OFFSET_TIME			0.166665
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// CHALLENGE DESCRIPTION
+	//////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_TEXT
+	:OBJECT_ID				CHALLENGE_DESC
+	:SIZE						0.775000 0.060417
+	:FONT						2
+	:FONT_COLOUR			206 206 206 255
+	:TEXT						0
+	:TEXT_JUSTIFY			1
+	//:POSITION_START		1.182996 0.495833
+	//:POSITION_END			0.182996 0.495833
+	:POSITION_START		1.419044 0.495850
+	:POSITION_END			0.419044 0.495850
+	:TIME_LENGTH			0.133333
+	:OFFSET_TIME			0.199998
+		
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// CAR ICONS
+	/////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_BUTTON
+	:OBJECT_ID				CAR_ICON_1
+	:CLEAR					0
+	:SIZE						0.132352 0.141670
+	:POSITION_START		0.210938 1.689583
+	:POSITION_END			0.210938 0.689583
+	:TIME_LENGTH			0.166666
+	:OFFSET_TIME			0.033333
+	
+	:INHERIT					CAR_ICON_1
+	:OBJECT_ID				CAR_ICON_2
+	:POSITION_START		0.346232 1.689583
+	:POSITION_END			0.346232 0.689583
+	:OFFSET_TIME			0.066666
+	
+	:INHERIT					CAR_ICON_1
+	:OBJECT_ID				CAR_ICON_3
+	:POSITION_START		0.481251 1.689583
+	:POSITION_END			0.481251 0.689583
+	:OFFSET_TIME			0.099999
+	
+	:INHERIT					CAR_ICON_1
+	:OBJECT_ID				CAR_ICON_4
+	:POSITION_START		0.615626 1.689583
+	:POSITION_END			0.615626 0.689583
+	:OFFSET_TIME			0.133332
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// CAR ICON CONECTIONS
+	/////////////////////////////////////////////////////
+	
+	:CONNECTION	"CAR_ICON_1"	"none"	"none"	"CAR_ICON_4"	"CAR_ICON_2"
+	:CONNECTION	"CAR_ICON_2"	"none"	"none"	"CAR_ICON_1"	"CAR_ICON_3"
+	:CONNECTION	"CAR_ICON_3"	"none"	"none"	"CAR_ICON_2"	"CAR_ICON_4"
+	:CONNECTION	"CAR_ICON_4"	"none"	"none"	"CAR_ICON_3"	"CAR_ICON_1"
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	
+	//////////////////////////////////////////////////////
+	// TEXT FOR CHALLENGE SELECT OVERHEAD
+	//////////////////////////////////////////////////////
+	
+	:TYPE										UI_TYPE_TEXT
+	:OBJECT_ID								THEME_TITLE_TEXT
+	:SIZE										1.000000 0.060000
+	:FONT										2
+	:HIGHLIGHTED_FONT						2
+	:FONT_COLOUR							0 0 0 255
+	:TEXT										TXT_MENU_BUTTON_QUICKRACE
+	:TEXT_JUSTIFY							1
+	:JUSTIFY_OFFSET						0.045352 0.000000 
+	:POSITION_START						1.165625 0.220833
+	:POSITION_END							0.165625 0.220833
+	:TIME_LENGTH							0.166667
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// TRACK MAP AREA
+	//////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			MAP_AREA
+	:CLEAR				1
+	:DRAWABLE			0
+	:AUTOSIZE			0
+	:SIZE					0.195313 0.272917
+	:POSITION_START	0.212500 0.462500
+	:POSITION_END		0.212500 0.462500
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// RACE TYPE ICON
+	//////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			RACE_TYPE_GRAPHIC
+	:CLEAR				0
+	:DRAWABLE			0
+	:AUTOSIZE			0
+	:SIZE					0.129688 0.175000
+	:COLOUR				255 249 135 255
+	:POSITION_START	0.415625 0.556250
+	:POSITION_END		0.415625 0.556250
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// LOCKED BANNER
+	//////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			LOCKED_BANNER
+	:DRAWABLE			0
+	:AUTOSIZE			0
+	:SIZE_START			0.000000 0.225000
+	:SIZE_END			1.000000 0.225000
+	:COLOUR				0 0 0 200
+	:POSITION_START	0.5 0.485417
+	:POSITION_END		0.0 0.485417
+	:TIME_LENGTH		0.177777
+	
+	:s{*****>>>
+	
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			LOCKED_TEXT
+		:AUTOSIZE			0
+		:SIZE					1.000000 1.000000
+		:FONT					1
+		:FONT_COLOUR		155 155 155 255
+		:TEXT_JUSTIFY		0											//TEXT_JUSTIFY_MENU_CENTRE
+		:TEXT					TXT_CHALLENGE_DETAILS_LOCKED
+		:POSITION_START	0.000000 0.000000
+		:POSITION_END		0.000000 0.000000
+		
+	:E}*****<<<
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// 3D SCENE WINDOW
+	//////////////////////////////////////////////////////
+	
+	//:TYPE										UI_TYPE_AREA
+	//:OBJECT_ID								3D_SCENE_WINDOW
+	//:CLEAR									1
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	
+	
+:E}*****<<<

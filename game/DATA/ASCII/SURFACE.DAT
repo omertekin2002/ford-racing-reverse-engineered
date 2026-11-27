@@ -1,0 +1,611 @@
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+:START
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//.Alaska ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// menu_title
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+:TYPE DIRT_ALASKA
+//menu_title
+			:EFFECT_TYPE MUDHARD
+			:RUMBLE SRUMBLE
+			:FRICTION 0.95
+			:DRAG 0.018
+			:BUMP_AMPLITUDE 0.04
+			:BUMP_FREQUENCY 0.8     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.02
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE GRAVEL_ALASKA
+//menu_title
+			:EFFECT_TYPE GRAVEL
+			:RUMBLE SRUMBLE
+			:FRICTION 0.93
+			:DRAG 0.75
+			:BUMP_AMPLITUDE 0.02
+			:BUMP_FREQUENCY 0.0     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.01
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE SNOW_ALASKA
+//menu_title
+			:EFFECT_TYPE SNOW
+			:RUMBLE MRUMBLE
+			:FRICTION 0.85
+			:DRAG 1.0
+			:BUMP_AMPLITUDE 0.03
+			:BUMP_FREQUENCY 0.5     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.02
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+        
+:TYPE SNOW_DRIVEABLE_ALASKA
+//menu_title
+			:EFFECT_TYPE SNOW
+			:RUMBLE SRUMBLE
+			:FRICTION 0.95
+			:DRAG 0.018
+			:BUMP_AMPLITUDE 0.04
+			:BUMP_FREQUENCY 0.8     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.02
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+        
+:TYPE STREAM_ALASKA
+//menu_title
+			:EFFECT_TYPE STREAM
+			:RUMBLE HRUMBLE
+			:FRICTION 0.95
+			:DRAG 1.0
+			:BUMP_AMPLITUDE 0.04
+			:BUMP_FREQUENCY 0.4     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.02
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE TARMAC_ALASKA
+//menu_title
+			:EFFECT_TYPE TARMAC
+			:FRICTION 0.95
+			:DRAG 0.001
+			:BUMP_AMPLITUDE 0.0
+			:BUMP_FREQUENCY 0.0   
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 0
+			:VALID_RACING_SURFACE 1
+        
+:TYPE WOOD_ALASKA
+//menu_title
+			:EFFECT_TYPE WOOD
+			:RUMBLE SRUMBLE
+			:FRICTION 0.9
+			:DRAG 0.05
+			:BUMP_AMPLITUDE 0.01
+			:BUMP_FREQUENCY 0.75    
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 0
+			:VALID_RACING_SURFACE 1
+                  
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//.England //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// menu_title
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+:TYPE CONCRETE_ENGLAND
+//menu_title
+			:EFFECT_TYPE CONCRETE
+			:FRICTION 0.85
+			:DRAG 0.01
+			:BUMP_AMPLITUDE 0.04
+			:BUMP_FREQUENCY 0.8     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.02
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE DIRT_ENGLAND
+//menu_title
+			:EFFECT_TYPE MUDHARD
+			:RUMBLE MRUMBLE
+			:FRICTION 0.90
+			:DRAG 0.5
+			:BUMP_AMPLITUDE 0.01
+			:BUMP_FREQUENCY 0.8     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.02
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE GRASS_ENGLAND
+//menu_title
+			:EFFECT_TYPE GRASS
+			:RUMBLE SRUMBLE
+			:FRICTION 0.8
+			:DRAG 5.0
+			:BUMP_AMPLITUDE 0.007
+			:BUMP_FREQUENCY 1.0
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 0
+			:VALID_RACING_SURFACE 0
+        
+:TYPE GRASS_GRIPPY_ENGLAND
+//menu_title
+			:EFFECT_TYPE GRASS
+			:RUMBLE SRUMBLE
+			:FRICTION 0.95
+			:DRAG 0.001
+			:BUMP_AMPLITUDE 0.0
+			:BUMP_FREQUENCY 0.0   
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 0
+			:VALID_RACING_SURFACE 0
+        
+:TYPE GRAVEL_ENGLAND
+//menu_title
+			:EFFECT_TYPE GRAVEL
+			:RUMBLE HRUMBLE
+			:FRICTION 0.72
+			:DRAG 2.0
+			:BUMP_AMPLITUDE 0.04
+			:BUMP_FREQUENCY 1.2     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.01
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE LEAVES_ENGLAND
+//menu_title
+			:EFFECT_TYPE FOLIAGE
+			:FRICTION 0.9
+			:DRAG 0.1
+			:BUMP_AMPLITUDE 0.00
+			:BUMP_FREQUENCY 1.0     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.00
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE TARMAC_ENGLAND
+//menu_title
+			:EFFECT_TYPE TARMAC
+			:FRICTION 0.95
+			:DRAG 0.001
+			:BUMP_AMPLITUDE 0.0
+			:BUMP_FREQUENCY 0.0   
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 0
+			:VALID_RACING_SURFACE 1
+        
+:TYPE TARMAC_MOTORWAY_ENGLAND
+//menu_title
+			:EFFECT_TYPE TARMAC
+			:FRICTION 0.95
+			:DRAG 0.001
+			:BUMP_AMPLITUDE 0.0
+			:BUMP_FREQUENCY 0.0   
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 0
+			:VALID_RACING_SURFACE 1
+        
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//.Japan ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// menu_title
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+:TYPE DIRT_JAPAN
+//menu_title
+			:EFFECT_TYPE MUDHARD
+			:RUMBLE SRUMBLE
+			:FRICTION 0.90
+			:DRAG 0.01
+			:BUMP_AMPLITUDE 0.01
+			:BUMP_FREQUENCY 1.2     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.01
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE GRASS_JAPAN
+//menu_title
+			:EFFECT_TYPE GRASS
+			:RUMBLE MRUMBLE
+			:FRICTION 0.55
+			:DRAG 5.0
+			:BUMP_AMPLITUDE 0.03
+			:BUMP_FREQUENCY 0.5     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.02
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE TARMAC_JAPAN
+//menu_title
+			:EFFECT_TYPE TARMAC
+			:FRICTION 0.95
+			:DRAG 0.02
+			:BUMP_AMPLITUDE 0.0
+			:BUMP_FREQUENCY 0.0     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+		  
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//.Oval /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// menu_title
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+:TYPE CONCRETE_OVAL
+//menu_title
+			:EFFECT_TYPE CONCRETE
+			:FRICTION 0.95
+			:DRAG 0.2
+			:BUMP_AMPLITUDE 0.0
+			:BUMP_FREQUENCY 0.0     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+        
+:TYPE GRASS_OVAL
+//menu_title
+			:EFFECT_TYPE GRASS
+			:RUMBLE SRUMBLE
+			:FRICTION 0.50
+			:DRAG 0.5
+			:BUMP_AMPLITUDE 0.028
+			:BUMP_FREQUENCY 0.75    
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.05
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE KERB_OVAL
+//menu_title
+			:EFFECT_TYPE KERB
+			:RUMBLE MRUMBLE
+			:FRICTION 0.85
+			:DRAG 0.01
+			:BUMP_AMPLITUDE 0.03
+			:BUMP_FREQUENCY 3.0
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.00
+			:SURFACE_SCALE_BUMPS 0
+			:VALID_RACING_SURFACE 1
+        
+:TYPE SAND_OVAL
+//menu_title
+			:EFFECT_TYPE SANDLOOSE
+			:RUMBLE MRUMBLE
+			:FRICTION 0.6
+			:DRAG 0.04
+			:BUMP_AMPLITUDE 0.02
+			:BUMP_FREQUENCY 1.0     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.05
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+        
+:TYPE TARMAC_OVAL
+//menu_title
+			:EFFECT_TYPE TARMAC
+			:FRICTION 0.95
+			:DRAG 0.02
+			:BUMP_AMPLITUDE 0.0
+			:BUMP_FREQUENCY 0.0     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+        
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//.Pacific //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// menu_title
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+:TYPE DIRT_PACIFIC
+//menu_title
+			:EFFECT_TYPE MUDHARD
+			:RUMBLE SRUMBLE
+			:FRICTION 0.93
+			:DRAG 0.02
+			:BUMP_AMPLITUDE 0.03
+			:BUMP_FREQUENCY 1.2     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.01
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE GRASS_LONG_PACIFIC
+//menu_title
+			:EFFECT_TYPE GRASS
+			:RUMBLE MRUMBLE
+			:FRICTION 0.75
+			:DRAG 1.5
+			:BUMP_AMPLITUDE 0.028
+			:BUMP_FREQUENCY 0.75    
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.05
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE GRASS_SHORT_PACIFIC
+//menu_title
+			:EFFECT_TYPE GRASS
+			:RUMBLE SRUMBLE
+			:FRICTION 0.9
+			:DRAG 1.5
+			:BUMP_AMPLITUDE 0.03
+			:BUMP_FREQUENCY 0.5     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.02
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE SAND_PACIFIC
+//menu_title
+			:EFFECT_TYPE SANDLOOSE
+			:RUMBLE SRUMBLE
+			:FRICTION 0.95
+			:DRAG 0.1
+			:BUMP_AMPLITUDE 0.03
+			:BUMP_FREQUENCY 1.0     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.05
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+        
+:TYPE SAND_WET_PACIFIC
+//menu_title
+			:EFFECT_TYPE SANDLOOSE
+			:RUMBLE MRUMBLE
+			:FRICTION 0.4
+			:DRAG 4.0
+			:BUMP_AMPLITUDE 0.04
+			:BUMP_FREQUENCY 0.8     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.02
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE SEA_BED_PACIFIC
+//menu_title
+			:EFFECT_TYPE STREAM
+			:RUMBLE MRUMBLE
+			:FRICTION 0.4
+			:DRAG 40.0
+			:BUMP_AMPLITUDE 0.04
+			:BUMP_FREQUENCY 0.8     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.02
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE SEA_SHORE_PACIFIC
+//menu_title
+			:EFFECT_TYPE STREAM
+			:RUMBLE MRUMBLE
+			:FRICTION 0.4
+			:DRAG 5.0
+			:BUMP_AMPLITUDE 0.04
+			:BUMP_FREQUENCY 0.8     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.02
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+        
+:TYPE STREAM_PACIFIC
+//menu_title
+			:EFFECT_TYPE STREAM
+			:RUMBLE MRUMBLE
+			:FRICTION 0.9
+			:DRAG 1.0
+			:BUMP_AMPLITUDE 0.007
+			:BUMP_FREQUENCY 2.5
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+        
+:TYPE STREAM_FAST_PACIFIC
+//menu_title
+			:EFFECT_TYPE STREAM
+			:RUMBLE MRUMBLE
+			:FRICTION 0.9
+			:DRAG 1.0
+			:BUMP_AMPLITUDE 0.007
+			:BUMP_FREQUENCY 2.5
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+        
+:TYPE TARMAC_PACIFIC
+//menu_title
+			:EFFECT_TYPE TARMAC
+			:FRICTION 0.95
+			:DRAG 0.02
+			:BUMP_AMPLITUDE 0.0
+			:BUMP_FREQUENCY 0.0     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+        
+:TYPE WOOD_PACIFIC
+//menu_title
+			:EFFECT_TYPE WOOD
+			:RUMBLE SRUMBLE
+			:FRICTION 0.94
+			:DRAG 0.02
+			:BUMP_AMPLITUDE 0.04
+			:BUMP_FREQUENCY 0.5    
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 0
+			:VALID_RACING_SURFACE 1
+                  
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//.General //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// menu_title
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+:TYPE CONCRETE
+//menu_title
+			:EFFECT_TYPE CONCRETE
+			:FRICTION 0.95
+			:DRAG 0.02
+			:BUMP_AMPLITUDE 0.0
+			:BUMP_FREQUENCY 0.0     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+
+:TYPE GRASS
+//menu_title
+			:EFFECT_TYPE GRASS
+			:RUMBLE SRUMBLE
+			:FRICTION 0.50
+			:DRAG 0.5
+			:BUMP_AMPLITUDE 0.028
+			:BUMP_FREQUENCY 0.75    
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.05
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+
+:TYPE GRAVEL
+//menu_title
+			:EFFECT_TYPE GRAVEL
+			:RUMBLE HRUMBLE
+			:FRICTION 0.82
+			:DRAG 5.0
+			:BUMP_AMPLITUDE 0.075
+			:BUMP_FREQUENCY 1.0     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.1
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 0
+
+:TYPE PAVING
+//menu_title
+			:EFFECT_TYPE PAVING
+			:FRICTION 0.9
+			:DRAG 0.01
+			:BUMP_AMPLITUDE 0.008
+			:BUMP_FREQUENCY 3.0
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+        
+:TYPE STREAM
+//menu_title
+			:EFFECT_TYPE STREAM
+			:RUMBLE SRUMBLE
+			:FRICTION 0.9
+			:DRAG 1.0
+			:BUMP_AMPLITUDE 0.007
+			:BUMP_FREQUENCY 2.5
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+
+:TYPE STONE
+//menu_title
+			:EFFECT_TYPE STONE
+			:FRICTION 0.9
+			:DRAG 0.01
+			:BUMP_AMPLITUDE 0.007
+			:BUMP_FREQUENCY 2.5
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+        
+:TYPE TARMAC
+//menu_title
+			:EFFECT_TYPE TARMAC
+			:FRICTION 0.7
+			:DRAG 0.001
+			:BUMP_AMPLITUDE 0.0
+			:BUMP_FREQUENCY 0.0     
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 1
+			:VALID_RACING_SURFACE 1
+        
+:TYPE WATERFALL
+//menu_title
+			:EFFECT_TYPE STREAM
+			:RUMBLE MRUMBLE
+			:FRICTION 0.85
+			:DRAG 1.0
+			:BUMP_AMPLITUDE 0.01
+			:BUMP_FREQUENCY 0.75    
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 0
+			:VALID_RACING_SURFACE 1
+        
+:TYPE WOOD
+//menu_title
+			:EFFECT_TYPE WOOD
+			:RUMBLE SRUMBLE
+			:FRICTION 0.95
+			:DRAG 0.002
+			:BUMP_AMPLITUDE 0.025
+			:BUMP_FREQUENCY 0.75    
+			:SURFACE_AI_GRIP_MODIFIER 1.0
+			:SURFACE_SINK_FACTOR 0.0
+			:SURFACE_SCALE_BUMPS 0
+			:VALID_RACING_SURFACE 1
+        
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+:END
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

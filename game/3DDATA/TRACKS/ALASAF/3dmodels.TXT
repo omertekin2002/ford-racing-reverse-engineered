@@ -1,0 +1,252 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"PARTICLE_EFFECTS"                     	scenes\particles\track_particles.ma
+	"ALASAF_CUT_UP"                        	
+	"GULLYPLATFORM"                        	scenes\buildings\gullyplatform.ma
+	"FALLROCKS"                            	scenes\buildings\fallrocks.ma
+	"LOGCABIN2"                            	scenes\buildings\logcabin2.ma
+	"LOGPILE"                              	scenes\buildings\logpile.ma
+	"MOUNTAINS_ICE2"                       	scenes\buildings\mountains_ice2.ma
+	"MOUNTAINS_ICE"                        	scenes\buildings\mountains_ice.ma
+	"LONG_BRIDGE"                          	scenes\buildings\long_bridge.ma
+	"RIVER1"                               	scenes\buildings\river1.ma
+	"HOUSE_SMALL_09"                       	scenes\buildings\house_small_09.ma
+	"HOUSE_MEDIUM_06"                      	scenes\buildings\house_medium_06.ma
+	"HOUSE_LARGE_01"                       	scenes\buildings\house_large_01.ma
+	"HOUSE_MEDIUM_05"                      	scenes\buildings\house_medium_05.ma
+	"HOUSE_MEDIUM_06B"                     	scenes\buildings\house_medium_06b.ma
+	"HOUSE_LARGE_02"                       	scenes\buildings\house_large_02.ma
+	"STILTPLATFORM_TUNNEL"                 	scenes\buildings\stiltplatform_tunnel.ma
+	"STILTPLATFORM_MEDIUM"                 	scenes\buildings\stiltplatform_medium.ma
+	"STILTPLATFORM_SMALL"                  	scenes\buildings\stiltplatform_small.ma
+	"STILTPLATFORM_LARGE"                  	scenes\buildings\stiltplatform_large.ma
+	"STILTPLATFORM_LARGE_B"                	scenes\buildings\stiltplatform_large_b.ma
+	"RIVER2"                               	scenes\buildings\river2.ma
+	"LAKE"                                 	scenes\buildings\lake.ma
+	"ROCKPILE2"                            	scenes\buildings\rockpile2.ma
+	"DISTBARN"                             	scenes\buildings\distbarn.ma
+	"BARN"                                 	scenes\buildings\barn.ma
+	"RIVERBRIDGE"                          	scenes\buildings\riverbridge.ma
+	"TELEPOLE"                             	scenes\buildings\telepole.ma
+	"TELEPOLE2"                            	scenes\buildings\telepole1.ma
+	"STARTFINISH"                          	scenes\buildings\startfinish.ma
+	"SHED1"                                	scenes\buildings\logshed1 .ma
+	"SHED2"                                	scenes\buildings\logshed2 .ma
+	"LOGCABIN1"                            	scenes\buildings\logcabin1 .ma
+	"LOGCABIN3"                            	scenes\buildings\logcabin3.ma
+	"BUSHYTREE"                            	scenes\buildings\bushytree.ma
+	"BUSH"                                 	scenes\buildings\bush.ma
+	"GRASSY"                               	scenes\buildings\grassy.ma
+	"TOWER"                                	scenes\buildings\tower.ma
+	"SAP_TREE"                             	scenes\buildings\sap_tree.ma
+	"PINETREE_M"                           	scenes\buildings\pinetree_m.ma
+	"PINETREE_SM"                          	scenes\buildings\pinetree_sm.ma
+	"ALASAF_OBJECTS"                       	
+	"ALASAF_FAST_STREAM_MIST"              	
+	"ALASAF_PARTICLES"                     	
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"SKYDOME"                              	scenes\environment\oval2_skydome.ma
+	"BIN"                                  	scenes\buildings\fragments\bin.ma
+	"PINETREE2_M"                          	scenes\buildings\pinetree2_m.ma
+	"BRIDGEROCKS"                          	scenes\buildings\bridgerocks.ma
+	"TELEPOLE3"                            	scenes\buildings\telepole2.ma
+	"PINETREE3_M"                          	scenes\buildings\pinetree_ma.ma
+	"ROCKS"                                	scenes\buildings\rocks.ma
+	"WATERTANK"                            	scenes\buildings\watertank.ma
+	"PINETREES"                            	scenes\buildings\pinetrees.ma
+	"CLIFFBUSH"                            	scenes\buildings\cliffbush.ma
+	"PLATFORM1"                            	scenes\buildings\platform1.ma
+	"FLAG"                                 	scenes\buildings\test_flag.ma
+	"EFFECTS"                              	scenes\effects\effects.ma
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid skeletal animation names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+	"FAST_STREAM_MIST"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"CAR_GAMEBONNET"
+	"CAMERA"
+	"CAR_FRONT"
+	"CAR_BACK"
+	"CAR_BACK_BOUNCE"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"SUNLIGHT"
+	"AMBIENT"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+	"HEDGE"
+	"STONE"
+	"WOOD"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+	"WATERFALL"
+	"WAVES"
+	"WAVES2"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	128x128 	-	[  fM       ]	"FIRE"                                  	52:52:52:00	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"GRASS"                                 	14:14:14:22	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SMOKEANDDUST"                          	ff:ff:ff:5f	 (World size: 1.310660)
+	128x128 	-	[ASfM   !   ]	"SPARK"                                 	f5:0c:0c:ff	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SPRAY"                                 	ef:ef:ef:39	 (World size: 1.310660)
+	64x64   	-	[A fM    $  ]	"STREAM"                                	fe:fe:fe:6a	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"HEADLIGHT_FLARE"                       	07:07:07:08	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"SPECULAR_SPRITE"                       	44:43:43:44	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"REARLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"SUN_FLARE"                             	15:10:10:12	 (World size: 1.310660)
+	128x128 	-	[  fM       ]	"TRACK_SPECULAR"                        	4d:4d:4d:00	 (World size: 10.000000)
+	32x32   	-	[ASfM   !   ]	"TRACK_REFLECTION"                      	00:00:00:00	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"LENSE_REFLECTION2"                     	20:20:20:35	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM    $  ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"LENSE_REFLECTION"                      	39:39:39:39	 (World size: 1.310660)
+	64x64   	-	[  f        ]	"MINISKY"                               	aa:b9:bc:00	 (World size: 3427.191406)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD001"               	c4:c4:c4:23	 (World size: 1873.590210)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD002"               	c4:c4:c4:14	 (World size: 1873.588623)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD003"               	c4:c4:c4:0e	 (World size: 1873.588257)
+	256x256 	-	[  fM   !   ]	"STREAM_ALASKA"                         	59:4e:3e:00	 (World size: 15.076482)
+	256x128 	-	[  fM       ]	"SNOW_DRIVEABLE_ALASKA_2BRIDGE"         	af:a3:9b:00	 (World size: 8.768929)
+	512x128 	-	[  fM   !   ]	"ROCK_ALASKA"                           	80:84:82:00	 (World size: 25.243559)
+	256x64  	-	[  fM   !   ]	"SNOW_ALASKA_EDGE"                      	ec:e9:e9:00	 (World size: 10.720988)
+	256x256 	-	[  fM   !   ]	"SNOW_ALASKA"                           	f1:f2:f2:00	 (World size: 17.940979)
+	256x256 	-	[  fM   !   ]	"GRAVEL_ALASKA_BRIDGE"                  	83:6f:67:00	 (World size: 10.257875)
+	128x128 	-	[A fM       ]	"WATER_RIVER"                           	6e:70:75:8a	 (World size: 47.274471)
+	256x256 	-	[A fM  X    ]	"SHADPIECE3"                            	00:00:00:18	 (World size: 458.244568)
+	256x256 	-	[A fM  X!   ]	"SHADPIECE4"                            	00:00:00:23	 (World size: 455.075562)
+	256x128 	-	[  fM       ]	"MUDWALL"                               	94:97:94:00	 (World size: 12.905265)
+	256x128 	-	[  fM   !   ]	"WOOD_ALASKA_BRIDGE"                    	75:72:6d:00	 (World size: 9.742358)
+	256x64  	-	[  fM       ]	"ROCK_ALASKA_GRASS"                     	a7:a8:a5:00	 (World size: 11.031534)
+	256x256 	-	[  fM   !   ]	"SNOW_DRIVEABLE_ALASKA_GRAVEL"          	c5:ba:b3:00	 (World size: 10.529645)
+	256x256 	-	[A fM  X!   ]	"SHADPIECE2"                            	00:00:00:20	 (World size: 496.279083)
+	256x64  	-	[  fM       ]	"ROCK_ALASKA_GRAVEL"                    	bd:bf:bf:00	 (World size: 11.156867)
+	256x128 	-	[  fM   !   ]	"STREAM_ALASKA_JOIN1"                   	78:6f:61:00	 (World size: 6.989651)
+	128x128 	-	[A fM       ]	"WATER_RIVER2"                          	68:6f:7a:e8	 (World size: 53.057240)
+	512x128 	-	[  fM   !   ]	"ROCK_ALASKA_2"                         	90:94:94:00	 (World size: 25.335840)
+	128x64  	-	[  fM       ]	"FARBANK"                               	a5:a1:98:00	 (World size: 28.541405)
+	256x64  	-	[  fM       ]	"SNOW_DRIVEABLE_ALASKA_EDGE"            	ea:e4:e3:00	 (World size: 10.077073)
+	128x128 	-	[  fM   !   ]	"STREAM_ALASKA_JOIN2"                   	92:8a:7f:00	 (World size: 7.189399)
+	256x256 	-	[A fM  X!   ]	"SHADPIECE1"                            	00:00:00:22	 (World size: 462.569031)
+	256x256 	-	[  fM   !   ]	"SNOW_DRIVEABLE_ALASKA_DIRT"            	c3:bc:b4:00	 (World size: 10.483101)
+	256x256 	-	[  fM   !   ]	"SNOW_DRIVEABLE_ALASKA_GRAVEL2"         	d1:c9:c5:00	 (World size: 14.029789)
+	256x128 	-	[  fM   !   ]	"SNOW_DRIVEABLE_ALASKA_DIRT_JOIN"       	c7:be:b6:00	 (World size: 7.112648)
+	64x64   	-	[A fM    $  ]	"WEBBING"                               	cc:8a:5f:74	 (World size: 3.479444)
+	8x8     	-	[A fM    $  ]	"WIRE"                                  	00:00:00:92	 (World size: 28.218313)
+	256x64  	-	[  fM       ]	"NEWCHECKER_3"                          	a7:a3:a5:00	 (World size: 18.302179)
+	128x128 	-	[  fM       ]	"ROCK"                                  	8c:91:91:00	 (World size: 4.548173)
+	128x128 	-	[  fM       ]	"RCK_003"                               	f3:f3:f2:00	 (World size: 3.525052)
+	128x128 	-	[  fM   !   ]	"BRIDGE"                                	88:87:84:00	 (World size: 11.822497)
+	128x128 	-	[A fM       ]	"SEAWATER"                              	67:70:7b:b9	 (World size: 27.480556)
+	256x256 	-	[  fM       ]	"HOUSES"                                	7a:78:77:00	 (World size: 15.340312)
+	256x256 	-	[  fM   !   ]	"ROCKPILE"                              	80:85:85:00	 (World size: 24.170420)
+	256x128 	-	[  fM       ]	"LOGBUILDING"                           	72:61:51:00	 (World size: 17.354193)
+	256x128 	-	[  fM       ]	"LOGBUILDING2"                          	70:62:58:00	 (World size: 19.897350)
+	128x64  	-	[  fM   !   ]	"STILTPLATFORMSNOW"                     	7b:79:77:00	 (World size: 4.678571)
+	256x128 	-	[ASfM       ]	"PINE_TREE2"                            	93:9b:99:8b	 (World size: 19.902636)
+	128x64  	-	[  fM   !   ]	"WATERTANK"                             	98:8f:7e:00	 (World size: 9.648561)
+	128x64  	-	[  fM       ]	"WOODFENCE"                             	7b:75:6a:00	 (World size: 7.955294)
+	128x64  	-	[  fM   !   ]	"WOODBRIDGE"                            	81:7d:7e:00	 (World size: 5.978251)
+	128x64  	-	[  fM       ]	"PINE_LOG"                              	9f:9a:96:00	 (World size: 8.980222)
+	128x128 	-	[  fM       ]	"LOGCABIN"                              	80:73:64:00	 (World size: 11.384768)
+	64x64   	-	[  fM   !   ]	"LOGBUILDINGROOF"                       	c8:c5:c2:00	 (World size: 6.389215)
+	128x128 	-	[  fM   !   ]	"STILTPLATFORM"                         	60:5d:5a:00	 (World size: 17.540787)
+	128x128 	-	[  fM       ]	"RCK_004"                               	a6:a5:a1:00	 (World size: 3.670506)
+	128x128 	-	[  fM       ]	"TELEPOLE"                              	74:7b:75:00	 (World size: 29.853245)
+	128x128 	-	[  fM       ]	"BINBARREL"                             	63:71:43:00	 (World size: 2.482389)
+	256x64  	-	[  fM   !   ]	"ROCKPILE2"                             	a5:a8:a8:00	 (World size: 20.214417)
+	256x64  	-	[  fM   !   ]	"ROCKPILE3"                             	d1:cf:cf:00	 (World size: 14.294328)
+	64x64   	-	[  fM   !   ]	"ROCKPILE4"                             	db:d8:d8:00	 (World size: 7.216437)
+	128x128 	-	[ASfM   !   ]	"TOWER"                                 	5e:61:6f:77	 (World size: 3.960056)
+	128x64  	-	[  fM       ]	"PINE_LOG2"                             	8c:84:81:00	 (World size: 4.327228)
+	128x64  	-	[ASfM       ]	"PINE_TREE"                             	93:9b:99:90	 (World size: 25.052952)
+	128x64  	-	[ASfM   !   ]	"HEDGE"                                 	5b:5e:52:e9	 (World size: 9.085730)
+	256x256 	-	[  fM   !   ]	"MOUNTAIN_ICE1"                         	55:56:55:00	 (World size: 777.410522)
+	128x64  	-	[  fM   !   ]	"SINGLELOG"                             	81:7f:7c:00	 (World size: 4.865145)
+	64x64   	-	[ASfM   !   ]	"TREESLOPE"                             	36:3f:43:f9	 (World size: 20.688480)
+	64x64   	-	[ASfM       ]	"NEWSAP"                                	60:64:60:74	 (World size: 3.045989)
+	128x128 	-	[ASfM       ]	"ALPHAGRASS"                            	57:56:5f:30	 (World size: 2.091475)
+	256x128 	-	[ASfM       ]	"TREEWALL_BACK"                         	64:66:65:ef	 (World size: 29.742054)
+	128x128 	-	[ASfM       ]	"NEWPINE"                               	74:80:7e:94	 (World size: 8.811509)
+	128x128 	-	[ASf        ]	"TREEBRANCH001"                         	5e:5e:5e:38	 (World size: 5.882279)
+	128x128 	-	[ASfM       ]	"NEWPINE002"                            	5b:60:59:6b	 (World size: 8.766755)
+	128x128 	-	[ASfM       ]	"NEWPINE003"                            	60:64:5f:62	 (World size: 8.350511)
+	128x128 	-	[ASfM       ]	"CLIFFBUSH001"                          	49:4b:3e:8e	 (World size: 4.225356)
+	128x128 	-	[ASfM       ]	"ROCKBUSH003"                           	4a:4c:4c:1c	 (World size: 3.885781)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

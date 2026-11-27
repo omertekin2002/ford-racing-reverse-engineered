@@ -1,0 +1,99 @@
+
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			DRDET
+:CLEAR				0
+:COLOUR				255 255 255 255
+:POSITION_START	0.000000 0.000000
+:POSITION_END		0.000000 0.000000
+:TEXTURE_ENUM		GRAPHICS\GAME\BKGNDS\MACH1BG.PSD
+:TIME_LENGTH		1.000000
+
+:S{*****>>>
+
+	/////////////////////////////////////////////////
+	// TITLE
+	////////////////////////////////////////////////
+	
+	:TYPE UI_TYPE_AREA
+	:COLOUR 0 0 0 76
+	:COLOUR_START 0 0 0 0
+	:FONT 2
+	:FONT_COLOUR 206 206 206 255
+	:FONT_COLOUR_START 206 206 206 0
+	:JUSTIFY_OFFSET 0.040000 0.140000
+	:OBJECT_ID TITLE
+	:POSITION_START		-0.476563 0.281250
+	:POSITION_END			-0.376563 0.281250
+	:SIZE 1.000000 0.045833
+	:TEXT_JUSTIFY 2
+	:TEXTURE_ENUM GRAPHICS\GAME\COMMON\TITLEBAR.PSD
+	:TIME_LENGTH 0.166667
+	
+	/////////////////////////////////////////////////
+	// TITLE
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// BACK ICON AND TEXT
+	////////////////////////////////////////////////
+
+	// DONE	
+	:INHERIT					BACK_ICON
+	:POSITION_START		0.39375 0.86548
+	:POSITION_END			0.39375 0.86548
+	
+	:INHERIT					BACK_TEXT
+	:POSITION_START		0.296875 0.845833
+	:POSITION_END			0.296875 0.845833
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// HIGHLIGHT BAR
+	////////////////////////////////////////////////
+	
+	:INHERIT					MENUBAR
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	////////////////////////////////////////////////
+	// BUTTONS
+	////////////////////////////////////////////////
+
+	:INHERIT					FR3_DEFAULT_BUTTON
+	:OBJECT_ID				GAME_SUMMARY_BUTTON
+	:TEXT_JUSTIFY			2
+	:TEXT						TXT_DRIVER_DETAILS_BUTTON_COLLECTION_STATUS
+	:POSITION_START		-1.376563 0.352083
+	:POSITION_END			-0.376563 0.352083
+	:OFFSET_TIME			0.100000
+	
+	:INHERIT					FR3_DEFAULT_BUTTON
+	:OBJECT_ID				RECORDS_BUTTON
+	:TEXT_JUSTIFY			2
+	:TEXT						TXT_DRIVER_DETAILS_BUTTON_DRIVER_RECORDS
+	:POSITION_START		-1.376563 0.406250
+	:POSITION_END			-0.376563 0.406250
+	:OFFSET_TIME			0.200000
+	
+	:INHERIT					FR3_DEFAULT_BUTTON
+	:OBJECT_ID				TROPHY_CABINET_BUTTON
+	:TEXT_JUSTIFY			2
+	:TEXT						TXT_DRIVER_DETAILS_BUTTON_TROPHY_GALLERY
+	:POSITION_START		-1.376563 0.458333
+	:POSITION_END			-0.376563 0.458333
+	:OFFSET_TIME			0.300000
+	
+	////////////////////////////////////////////////
+	//
+	////////////////////////////////////////////////
+
+:E}*****<<<
+
+:CONNECTION	"GAME_SUMMARY_BUTTON"		"TROPHY_CABINET_BUTTON"		"RECORDS_BUTTON"				""	""
+:CONNECTION	"RECORDS_BUTTON"				"GAME_SUMMARY_BUTTON"		"TROPHY_CABINET_BUTTON"		""	""
+:CONNECTION	"TROPHY_CABINET_BUTTON"		"RECORDS_BUTTON"				"GAME_SUMMARY_BUTTON"	""	""

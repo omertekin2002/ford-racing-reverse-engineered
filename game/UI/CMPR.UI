@@ -1,0 +1,206 @@
+
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			CMPR
+:CLEAR				1
+:POSITION_START	0.000000 0.000000
+:POSITION_END		0.000000 0.000000
+:TIME_LENGTH		0.166667
+
+:S{*****>>>
+
+	/////////////////////////////////////////
+	//FORD RACING LOGO BANNER
+	/////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			LOGO_BKGND
+	:SIZE					1.000000 0.091670
+	:COLOUR				204 204 204 229
+	:POSITION_START	0.000000 0.160417
+	:POSITION_END		0.000000 0.160417
+	:TIME_LENGTH		0.166667
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			FORD_RACING_LOGO
+	:SIZE					1.000000 0.091670
+	:POSITION_START	0.100000 0.164583
+	:POSITION_END		0.100000 0.164583
+	:STRETCH_GRAPHIC	0
+	:TEXTURE_ENUM		"GRAPHICS\GAME\COMMON\FFLOGO.PSD"
+	:TIME_LENGTH		0.166667
+	
+	////////////////////////////////////////
+	//
+	////////////////////////////////////////
+	
+	/////////////////////////////////////////
+	//SCREEN BACKGROUND PANEL
+	/////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			SCREEN_BG_PANEL
+	:COLOUR				0 0 0 100
+	:AUTOSIZE			0
+	:SIZE_START			0.000000 0.533333
+	:SIZE_END			1.001562 0.533333
+	//:POSITION_START	0.000000 0.266667
+	:POSITION_START	0.500000 0.266667
+	:POSITION_END		0.000000 0.266667
+	:TIME_LENGTH		0.200000
+	
+	////////////////////////////////////////
+	//
+	////////////////////////////////////////
+	
+	//:TYPE					UI_TYPE_AREA
+	//:OBJECT_ID			TITLE_BG
+	//:AUTOSIZE			0
+	//:SIZE					1.000000 0.068750
+	//:COLOUR				0 0 0 50
+	//:POSITION_START	0.000000 0.268750
+	//:POSITION_END		0.000000 0.268750
+	
+	:TYPE					UI_TYPE_TEXT
+	:OBJECT_ID			TITLE
+	:AUTOSIZE			0
+	:SIZE					1.000000 0.068750
+	:FONT					1
+	:FONT_COLOUR		204 204 204 229
+	:TEXT_JUSTIFY		1							//TEXT_JUSTIFY_LEFT_CENTRE
+	:POSITION_START	0.117188 0.270833
+	:POSITION_END		0.117188 0.270833
+	
+	//:TYPE					UI_TYPE_AREA
+	//:OBJECT_ID			RESULT_DESC_BG
+	//:AUTOSIZE			0
+	//:SIZE					1.000000 0.075000
+	//:COLOUR				0 0 0 50
+	//:POSITION_START	0.000000 0.345833
+	//:POSITION_END		0.000000 0.345833
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			RESULT_DESC
+	:SIZE					1.000000 0.075000
+	//:COLOUR				0 0 0 50
+	:CLEAR				1
+	:FONT					2
+	:FONT_COLOUR		204 204 204 229
+	:TEXT_JUSTIFY		1							//TEXT_JUSTIFY_LEFT_CENTRE
+	:WORD_WRAP			1
+	:POSITION_START	0.117188 0.345833
+	:POSITION_END		0.117188 0.345833
+	
+	////////////////////////////////////////////////
+	//SELECTION BAR
+	///////////////////////////////////////////////
+	
+	//:INHERIT					SELECT_BAR
+	
+	////////////////////////////////////////////////
+	//
+	///////////////////////////////////////////////
+	
+	////////////////////////////////////
+	//VERTICAL BOTTOM BAR
+	/////////////////////////////////////
+	
+	:INHERIT	VERTICAL_BOTTOM_BAR
+	
+	////////////////////////////////////
+	//
+	/////////////////////////////////////
+	
+	
+	////////////////////////////////////
+	// TABLE HEADINGS
+	/////////////////////////////////////
+	
+	:TYPE							UI_TYPE_TEXT
+	:OBJECT_ID					TABLE_HEADER_POSITION_TXT
+	:AUTOSIZE					0
+	:SIZE 						0.167236 0.068750
+	:FONT							2
+	:FONT_COLOUR				204 204 204 229
+	:TEXT							TXT_GENERAL_POSITION
+	:TEXT_JUSTIFY				1
+	:POSITION_START 			0.076470 0.485417
+	:POSITION_END 				0.076470 0.485417
+	:TIME_LENGTH				0.166667
+		
+	:TYPE							UI_TYPE_TEXT
+	:OBJECT_ID					TABLE_HEADER_CAR_TEXT
+	:AUTOSIZE					0
+	:SIZE 						0.387500 0.068750
+	:FONT							2
+	:FONT_COLOUR				204 204 204 229
+	:TEXT							TXT_GENERAL_CAR
+	:TEXT_JUSTIFY				1
+	:POSITION_START 			0.208823 0.485417
+	:POSITION_END 				0.208823 0.485417
+	:TIME_LENGTH				0.166667
+
+	:TYPE							UI_TYPE_TEXT
+	:OBJECT_ID					TABLE_HEADER_POINTS_TXT
+	:AUTOSIZE					0
+	:SIZE 						0.328125 0.068750
+	:FONT							2
+	:FONT_COLOUR				204 204 204 229
+	:TEXT							TXT_GENERAL_POINTS
+	:TEXT_JUSTIFY				1
+	:POSITION_START 			0.757352 0.485417
+	:POSITION_END 				0.757352 0.485417
+	:TIME_LENGTH				0.166667
+	
+	////////////////////////////////////
+	//
+	/////////////////////////////////////
+	
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			TABLE_BKGND
+	:AUTOSIZE			0
+	:CLEAR				1
+	:COLOUR				0 0 0 50
+	:SIZE_START			0.000000 0.25 //0.229166
+	:SIZE_END			1.000000 0.25 //0.229166
+	:POSITION_START	0.500000 0.545833
+	:POSITION_END		0.000000 0.545833
+	:TIME_LENGTH		0.200000
+	
+	:S{*****>>>
+	
+		:TYPE					UI_TYPE_LIST_BOX
+		:OBJECT_ID			POSITION_LIST
+		:AUTOSIZE			0
+		:SIZE					0.05000 0.854545
+		:CLEAR				0
+		:COLOUR				0 0 0 0
+		:FONT					2
+		:FONT_COLOUR		255 255 255 255
+		:POSITION_START	0.076470 0.072727       //10 pixels from the top
+		:POSITION_END		0.076470 0.072727
+		:TEXT_JUSTIFY		1								//TEXT_JUSTIFY_LEFT_CENTRE
+		:TIME_LENGTH		1.000000
+		
+		:INHERIT				POSITION_LIST
+		:OBJECT_ID			CAR_NAME_LIST
+		:SIZE					0.441176	0.854545						//0.520000
+		:POSITION_START	0.208823 0.072727
+		:POSITION_END		0.208823 0.072727
+		
+		:INHERIT				POSITION_LIST
+		:OBJECT_ID			POINTS_LIST
+		:SIZE					0.441176 0.854545
+		:POSITION_START	0.757352 0.072727
+		:POSITION_END		0.757352 0.072727
+		
+	:E}*****<<<
+	
+	
+	////////////////////////// ADD THE X BUTTON ICON ////////////////////////////////////////////////////
+	
+	//:READ_SCRIPT_FILE UI\IGXICON.UI
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+:E}*****<<<

@@ -1,0 +1,360 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"EFFECTS"                              	scenes\effects\effects.ma
+	"SKYDOME"                              	scenes\environment\rock_skydome.ma
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"OVAL2_CUT_UP"                         	
+	"OVALBEND02"                           	scenes\buildings\ovalbend02.ma
+	"OVALBEND01"                           	scenes\buildings\ovalbend01.ma
+	"ROCKCAFE"                             	scenes\buildings\rockcafe.ma
+	"FOUNTAIN"                             	scenes\buildings\fountain.ma
+	"FOUNTAINWATER"                        	scenes\buildings\fountainwater.ma
+	"STADIUM"                              	scenes\buildings\stadium.ma
+	"ADD_ROW1"                             	scenes\buildings\add_row1.ma
+	"ADD_ROW10"                            	scenes\buildings\add_row10.ma
+	"ADD_ROW11"                            	scenes\buildings\add_row11.ma
+	"ADD_ROW12"                            	scenes\buildings\add_row12.ma
+	"ADD_ROW2"                             	scenes\buildings\add_row2.ma
+	"ADD_ROW3"                             	scenes\buildings\add_row3.ma
+	"ADD_ROW4"                             	scenes\buildings\add_row4.ma
+	"ADD_ROW5"                             	scenes\buildings\add_row5.ma
+	"ADD_ROW6"                             	scenes\buildings\add_row6.ma
+	"ADD_ROW7"                             	scenes\buildings\add_row7.ma
+	"ADD_ROW8"                             	scenes\buildings\add_row8.ma
+	"ADD_ROW9"                             	scenes\buildings\add_row9.ma
+	"BILLBOARD7_2"                         	scenes\buildings\ad_board7_2.ma
+	"BARRIER"                              	scenes\buildings\barrier.ma
+	"TREE1_2"                              	scenes\buildings\tree1_2.ma
+	"GSTAND_RIGHT"                         	scenes\buildings\g_stands\gstand_right.ma
+	"GSTAND_LEFT"                          	scenes\buildings\g_stands\gstand_left.ma
+	"GSTAND_MID"                           	scenes\buildings\g_stands\gstand_mid.ma
+	"GSTAND2_LEFT_END"                     	scenes\buildings\g_stands\gstand2_left_end.ma
+	"GSTAND2_LEFT_MID"                     	scenes\buildings\g_stands\gstand2_left_mid.ma
+	"GSTAND2_RIGHT_END"                    	scenes\buildings\g_stands\gstand2_right_end.ma
+	"GSTAND2_RIGHT_MID"                    	scenes\buildings\g_stands\gstand2_right_mid.ma
+	"PITBARRIER1"                          	scenes\buildings\infield_barriers\pitbarrier1.ma
+	"PITBARRIER2"                          	scenes\buildings\infield_barriers\pitbarrier2.ma
+	"PITBARRIER3"                          	scenes\buildings\infield_barriers\pitbarrier3.ma
+	"PITBARRIER4"                          	scenes\buildings\infield_barriers\pitbarrier4.ma
+	"BANK_PEOPLE"                          	scenes\buildings\bank_people.ma
+	"AD_BOARD_BIG_VARIOUS"                 	scenes\buildings\ad_frame_big_various.ma
+	"AD_BOARD_BIG_FORD"                    	scenes\buildings\ad_frame_big_ford.ma
+	"STARTPOST"                            	scenes\buildings\start_post_rock.ma
+	"CROWD1"                               	scenes\buildings\crowd1.ma
+	"FUKUOKA_SAFETY_TRUCK"                 	scenes\buildings\safety_truck.ma
+	"MONZATRACTOR"                         	scenes\buildings\tractor.ma
+	"AMBULANCE"                            	scenes\buildings\ambulance.ma
+	"TELTTA2"                              	scenes\buildings\tent2.ma
+	"PIT_BUILDING_MID"                     	scenes\buildings\pit_building\pit_building_mid.ma
+	"PIT_BUILDING_END"                     	scenes\buildings\pit_building\pit_building_end.ma
+	"PIT_BUILDING_LEFT"                    	scenes\buildings\pit_building\pit_building_left.ma
+	"BRIDGE"                               	scenes\buildings\bridge.ma
+	"TENT1"                                	scenes\buildings\tent1.ma
+	"LAUKKARATUSREIMA1"                    	scenes\buildings\horse.ma
+	"LIGHTS_HIGH"                          	scenes\buildings\lights.ma
+	"TIREWALL"                             	scenes\buildings\infield_barriers\tirewall.ma
+	"LAPTOWER"                             	scenes\buildings\lap_tower.ma
+	"AIR_FENCE5"                           	scenes\buildings\infield_barriers\air_fence5.ma
+	"AIR_FENCE1"                           	scenes\buildings\infield_barriers\air_fence1.ma
+	"AIR_FENCE2"                           	scenes\buildings\infield_barriers\air_fence2.ma
+	"AIR_FENCE3"                           	scenes\buildings\infield_barriers\air_fence3.ma
+	"AIR_FENCE4"                           	scenes\buildings\infield_barriers\air_fence4.ma
+	"AIR_FENCE6"                           	scenes\buildings\infield_barriers\air_fence6.ma
+	"BAR_IN1"                              	scenes\buildings\infield_barriers\bar_in1.ma
+	"BAR_IN2"                              	scenes\buildings\infield_barriers\bar_in2.ma
+	"BAR_IN3"                              	scenes\buildings\infield_barriers\bar_in3.ma
+	"BAR_IN4"                              	scenes\buildings\infield_barriers\bar_in4.ma
+	"BAR_IN5"                              	scenes\buildings\infield_barriers\bar_in5.ma
+	"BAR_IN6"                              	scenes\buildings\infield_barriers\bar_in6.ma
+	"BAR_IN7"                              	scenes\buildings\infield_barriers\bar_in7.ma
+	"BAR_IN8"                              	scenes\buildings\infield_barriers\bar_in8.ma
+	"BAR_IN9"                              	scenes\buildings\infield_barriers\bar_in9.ma
+	"BAR_IN10"                             	scenes\buildings\infield_barriers\bar_in10.ma
+	"BAR_IN11"                             	scenes\buildings\infield_barriers\bar_in11.ma
+	"BAR_IN12"                             	scenes\buildings\infield_barriers\bar_in12.ma
+	"BAR_IN13"                             	scenes\buildings\infield_barriers\bar_in13.ma
+	"BAR_IN14"                             	scenes\buildings\infield_barriers\bar_in14.ma
+	"BAR_IN15"                             	scenes\buildings\infield_barriers\bar_in15.ma
+	"BAR_IN16"                             	scenes\buildings\infield_barriers\bar_in16.ma
+	"BAR_IN18"                             	scenes\buildings\infield_barriers\bar_in18.ma
+	"BAR_IN19"                             	scenes\buildings\infield_barriers\bar_in19.ma
+	"BAR_IN20"                             	scenes\buildings\infield_barriers\bar_in20.ma
+	"BAR_IN21"                             	scenes\buildings\infield_barriers\bar_in21.ma
+	"BAR_IN22"                             	scenes\buildings\infield_barriers\bar_in22.ma
+	"BAR_IN23"                             	scenes\buildings\infield_barriers\bar_in23.ma
+	"BAR_IN24"                             	scenes\buildings\infield_barriers\bar_in24.ma
+	"BAR_IN25"                             	scenes\buildings\infield_barriers\bar_in25.ma
+	"BAR_IN26"                             	scenes\buildings\infield_barriers\bar_in26.ma
+	"BAR_IN27"                             	scenes\buildings\infield_barriers\bar_in27.ma
+	"BAR_IN28"                             	scenes\buildings\infield_barriers\bar_in28.ma
+	"BAR_IN29"                             	scenes\buildings\infield_barriers\bar_in29.ma
+	"BAR_IN30"                             	scenes\buildings\infield_barriers\bar_in30.ma
+	"BAR_IN31"                             	scenes\buildings\infield_barriers\bar_in31.ma
+	"BAR_IN32"                             	scenes\buildings\infield_barriers\bar_in32.ma
+	"BAR_IN33"                             	scenes\buildings\infield_barriers\bar_in33.ma
+	"BAR_IN34"                             	scenes\buildings\infield_barriers\bar_in34.ma
+	"BAR_IN35"                             	scenes\buildings\infield_barriers\bar_in35.ma
+	"BAR_IN36"                             	scenes\buildings\infield_barriers\bar_in36.ma
+	"BAR_IN37"                             	scenes\buildings\infield_barriers\bar_in37.ma
+	"BAR_IN38"                             	scenes\buildings\infield_barriers\bar_in38.ma
+	"BAR_IN39"                             	scenes\buildings\infield_barriers\bar_in39.ma
+	"BAR_IN40"                             	scenes\buildings\infield_barriers\bar_in40.ma
+	"BAR_IN41"                             	scenes\buildings\infield_barriers\bar_in41.ma
+	"BAR_IN42"                             	scenes\buildings\infield_barriers\bar_in42.ma
+	"BAR_IN43"                             	scenes\buildings\infield_barriers\bar_in43.ma
+	"BAR_IN44"                             	scenes\buildings\infield_barriers\bar_in44.ma
+	"BAR_IN45"                             	scenes\buildings\infield_barriers\bar_in45.ma
+	"BAR_IN46"                             	scenes\buildings\infield_barriers\bar_in46.ma
+	"BAR_IN47"                             	scenes\buildings\infield_barriers\bar_in47.ma
+	"BAR_IN48"                             	scenes\buildings\infield_barriers\bar_in48.ma
+	"BAR_IN49"                             	scenes\buildings\infield_barriers\bar_in49.ma
+	"BAR_IN50"                             	scenes\buildings\infield_barriers\bar_in50.ma
+	"BAR_IN51"                             	scenes\buildings\infield_barriers\bar_in51.ma
+	"BAR_IN52"                             	scenes\buildings\infield_barriers\bar_in52.ma
+	"TRAILER_FORD"                         	scenes\buildings\trucks\trailer_ford.ma
+	"TRAILER_EARLS"                        	scenes\buildings\trucks\trailer_earls.ma
+	"TRUCK_EARLS"                          	scenes\buildings\trucks\truck_earls.ma
+	"TRUCK_N_PIPES_EARLS"                  	scenes\buildings\trucks\truck_n_pipes_earls.ma
+	"TRUCK_N_PIPES_POWER"                  	scenes\buildings\trucks\truck_n_pipes_power.ma
+	"TRUCK_POWER"                          	scenes\buildings\trucks\truck_power.ma
+	"TRUCK_N_PIPES_FORD"                   	scenes\buildings\trucks\truck_n_pipes_ford.ma
+	"TRUCK_FORD"                           	scenes\buildings\trucks\truck_ford.ma
+	"TRAILER_POWER"                        	scenes\buildings\trucks\trailer_power.ma
+	"TRUCK_DDOG"                           	scenes\buildings\trucks\truck_ddog.ma
+	"TRAILER_DDOG"                         	scenes\buildings\trucks\trailer_ddog.ma
+	"TRUCK_N_PIPES_DDOG"                   	scenes\buildings\trucks\truck_n_pipes_ddog.ma
+	"DC_X_CHECKERS_SHADOW"                 	scenes\buildings\aircraft\dc_x_checkers_shadow.ma
+	"DC_X_CELTIC"                          	scenes\buildings\aircraft\dc_x_celtic.ma
+	"DC_X_ORANGE"                          	scenes\buildings\aircraft\dc_x_orange.ma
+	"DC_X_CHECKERS"                        	scenes\buildings\aircraft\dc_x_checkers.ma
+	"DC_X_STRIPE"                          	scenes\buildings\aircraft\dc_x_stripe.ma
+	"HANGAR1"                              	scenes\buildings\airf_hangar1.ma
+	"HANGAR2"                              	scenes\buildings\airf_hangar2.ma
+	"AIRF_TOWER"                           	scenes\buildings\airf_tower.ma
+	"HOUSE10"                              	scenes\buildings\house10.ma
+	"HOUSE1"                               	scenes\buildings\house1.ma
+	"HOUSE9"                               	scenes\buildings\house9.ma
+	"HOUSE8"                               	scenes\buildings\house8.ma
+	"HOUSE6"                               	scenes\buildings\house6.ma
+	"HOUSE5"                               	scenes\buildings\house5.ma
+	"HOUSE4"                               	scenes\buildings\house4.ma
+	"HOUSE2"                               	scenes\buildings\house2.ma
+	"HOUSE17"                              	scenes\buildings\house17.ma
+	"HOUSE16"                              	scenes\buildings\house16.ma
+	"HOUSE15"                              	scenes\buildings\house15.ma
+	"HOUSE14"                              	scenes\buildings\house14.ma
+	"HOUSE13"                              	scenes\buildings\house13.ma
+	"HOUSE12"                              	scenes\buildings\house12.ma
+	"HOUSE11"                              	scenes\buildings\house11.ma
+	"GSTAND_T_MILD"                        	scenes\buildings\g_stands\gstand_t_mid.ma
+	"GSTAND_T_RIGHT"                       	scenes\buildings\g_stands\gstand_t_right.ma
+	"GSTAND_T_LEFT"                        	scenes\buildings\g_stands\gstand_t_left.ma
+	"GSTAND_TOWER"                         	scenes\buildings\g_stands\gstand_tower.ma
+	"AUTOBAHN7"                            	scenes\buildings\autobahn7.ma
+	"AUTOBAHN6"                            	scenes\buildings\autobahn6.ma
+	"AUTOBAHN5"                            	scenes\buildings\autobahn5.ma
+	"AUTOBAHN4"                            	scenes\buildings\autobahn4.ma
+	"AUTOBAHN3"                            	scenes\buildings\autobahn3.ma
+	"AUTOBAHN2"                            	scenes\buildings\autobahn2.ma
+	"HOUSE34"                              	scenes\buildings\house34.ma
+	"HOUSE37"                              	scenes\buildings\house37.ma
+	"HOUSE3"                               	scenes\buildings\house3.ma
+	"HOUSE32"                              	scenes\buildings\house32.ma
+	"HOUSE31"                              	scenes\buildings\house31.ma
+	"HOUSE21"                              	scenes\buildings\house21.ma
+	"HOUSE20"                              	scenes\buildings\house20.ma
+	"HOUSE45"                              	scenes\buildings\house45.ma
+	"HOUSE44"                              	scenes\buildings\house44.ma
+	"HOUSE42"                              	scenes\buildings\house42.ma
+	"HOUSE41"                              	scenes\buildings\house41.ma
+	"HOUSE40"                              	scenes\buildings\house40.ma
+	"HOUSE39"                              	scenes\buildings\house39.ma
+	"HOUSE38"                              	scenes\buildings\house38.ma
+	"HOUSE36"                              	scenes\buildings\house36.ma
+	"HOUSE35"                              	scenes\buildings\house35.ma
+	"HOUSE33"                              	scenes\buildings\house33.ma
+	"HOUSE30"                              	scenes\buildings\house30.ma
+	"HOUSE29"                              	scenes\buildings\house29.ma
+	"HOUSE28"                              	scenes\buildings\house28.ma
+	"HOUSE27"                              	scenes\buildings\house27.ma
+	"HOUSE26"                              	scenes\buildings\house26.ma
+	"HOUSE25"                              	scenes\buildings\house25.ma
+	"HOUSE24"                              	scenes\buildings\house24.ma
+	"HOUSE23"                              	scenes\buildings\house23.ma
+	"HOUSE22"                              	scenes\buildings\house22.ma
+	"HOUSE19"                              	scenes\buildings\house19.ma
+	"HOUSE18"                              	scenes\buildings\house18.ma
+	"TREE2"                                	scenes\buildings\tree2.ma
+	"TREE1"                                	scenes\buildings\tree1.ma
+	"OVAL2_OBJECTS"                        	
+	"OVAL2_ANIMATIONS"                     	
+	"OVAL2_WATER_SPRAY"                    	
+	"OVAL2_PARTICLES"                      	
+	"BA_ANI_JET"                           	scenes\buildings\aircraft\ba_ani_jet.ma
+	"ZEPPELIN"                             	scenes\buildings\aircraft\zeppelin.ma
+	"AIRF_RADARDISH"                       	scenes\buildings\animated\airf_radardish.ma
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+	"WATER_SPRAY"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"CAMERA"
+	"CAR_SCREENSHOT_CLOSEUP_FRONTLEFT"
+	"CAR_FRONT"
+	"BA_ANI_JET"
+	"ZEPPELIN"
+	"AIRF_RADARDISH"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"SUNLIGHT"
+	"AMBIENT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+	"STONE"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+	"WATERFALL"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	128x128 	-	[A fM       ]	"WATER2"                                	81:8e:98:66	 (World size: 39.172943)
+	32x32   	-	[  fM   !   ]	"WATER"                                 	17:51:5b:00	 (World size: 34.295879)
+	128x64  	-	[  fM       ]	"GRASS_PATCHY"                          	81:7f:58:00	 (World size: 16.449961)
+	256x256 	-	[  fM       ]	"OVAL_WALL"                             	c2:c0:c0:00	 (World size: 10.502173)
+	128x128 	-	[  fM   !   ]	"GRASS1"                                	55:64:31:00	 (World size: 16.986216)
+	128x64  	-	[  fM       ]	"G_STAND_BASE"                          	a1:a3:a0:00	 (World size: 6.908739)
+	256x256 	-	[  fM       ]	"BANK"                                  	7b:77:51:00	 (World size: 31.811747)
+	64x64   	-	[  fM   !   ]	"SAND_V2"                               	ab:9d:89:00	 (World size: 12.972303)
+	256x128 	-	[  fM       ]	"START_GRID3"                           	6b:6b:6c:00	 (World size: 6.127075)
+	128x128 	-	[  fM   !   ]	"SIDEROAD_128X128"                      	90:87:6b:00	 (World size: 8.190723)
+	256x32  	-	[  fM       ]	"WHITELINE"                             	c6:c7:c7:00	 (World size: 8.644312)
+	256x256 	-	[  fM       ]	"CONCRETE_EDGE"                         	9e:9b:9c:00	 (World size: 27.735346)
+	256x256 	-	[  fM       ]	"CONCRETE_KERB"                         	99:98:9a:00	 (World size: 41.608150)
+	128x128 	-	[  fM   !   ]	"TARMAC_GEN"                            	60:61:61:00	 (World size: 12.604761)
+	256x256 	-	[  fM   !   ]	"CONCRETE_1"                            	a5:a2:a4:00	 (World size: 20.792521)
+	256x256 	-	[ASf    !   ]	"FENCE_256X256"                         	68:65:66:00	 (World size: 5.795255)
+	256x256 	-	[  fM   !   ]	"TARMAC_TRACK2"                         	5b:5b:5e:00	 (World size: 13.872941)
+	256x64  	-	[  fM   !   ]	"AIRFIELD_STUFF_SMALL"                  	8a:6e:6f:00	 (World size: 238.029129)
+	256x128 	-	[ASf        ]	"BUILDINGS2"                            	68:63:60:d7	 (World size: 17.463232)
+	256x256 	-	[  fM       ]	"TRUCKS"                                	8e:89:79:00	 (World size: 22.475725)
+	256x256 	-	[  fM       ]	"OVAL_2_AIRCRAFT"                       	a2:9f:9e:00	 (World size: 126.578896)
+	256x256 	-	[  fM   !   ]	"GUITARHOUSE_PAGE3"                     	57:56:54:00	 (World size: 66.457916)
+	256x256 	-	[  fM   !   ]	"HOUSES1"                               	8b:79:6a:00	 (World size: 162.414246)
+	256x128 	-	[  fM   !   ]	"HORSE"                                 	5d:60:67:00	 (World size: 61.622559)
+	128x64  	-	[ASfM   !   ]	"AMBULANCE"                             	b2:a8:a7:00	 (World size: 17.642494)
+	128x128 	-	[ASfM   !   ]	"SAFETY_TRUCK"                          	75:37:3e:00	 (World size: 4.520212)
+	256x256 	-	[  fM   !   ]	"TOWERS1_256X256_3"                     	67:6c:6e:00	 (World size: 280.388489)
+	256x256 	-	[  fM   !   ]	"TOWERS2_256X256_2"                     	65:6c:6c:00	 (World size: 416.788422)
+	256x256 	-	[  fM   !   ]	"TOWERS3_256X256_2"                     	6e:75:76:00	 (World size: 536.243835)
+	256x256 	-	[ASf    !   ]	"TREES_N_BUSHES2"                       	55:65:39:00	 (World size: 47.091652)
+	512x128 	-	[ASf    !   ]	"OVAL_2_STADIUM"                        	95:96:9e:00	 (World size: 154.509567)
+	8x8     	-	[AS M   !   ]	"OVAL_2_FLOOD_LIGHTS"                   	bd:bf:c8:00	 (World size: 6.491429)
+	64x64   	-	[  fM   !   ]	"AUTOBAHN"                              	89:8b:8a:00	 (World size: 22.885551)
+	256x128 	-	[ASf        ]	"BRIDGE_N_TENT"                         	ae:a9:ac:f1	 (World size: 44.121456)
+	256x256 	-	[  f        ]	"AD_TEMP"                               	aa:a9:b0:00	 (World size: 37.226719)
+	256x256 	-	[ASfM       ]	"PIT_BUILDING"                          	71:6b:77:f2	 (World size: 27.642284)
+	64x64   	-	[  fM       ]	"MONZATRACTOR"                          	51:4e:4d:00	 (World size: 6.288023)
+	256x256 	-	[ASfM       ]	"O2_GSTAND1"                            	c1:c4:c6:c7	 (World size: 91.105194)
+	128x128 	-	[ASfM       ]	"GUITAR_SIGN"                           	46:36:2d:8c	 (World size: 38.622158)
+	256x128 	-	[  fM       ]	"PEOPLE"                                	6b:5f:60:00	 (World size: 39.277866)
+	128x128 	-	[ASfM       ]	"PEOPLESTANDING"                        	61:5f:5d:9c	 (World size: 6.566024)
+	32x32   	-	[  fM       ]	"BANKSMALL"                             	63:64:51:00	 (World size: 81.650490)
+	8x8     	-	[  f        ]	"ZEPELING-DARK"                         	c6:99:9c:00	 (World size: 761.197266)
+	128x64  	-	[  f        ]	"ZEPELING-LIGHT"                        	97:45:4a:00	 (World size: 94.069046)
+	32x32   	-	[A fM       ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"GRASS"                                 	1b:1b:1b:22	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"REARLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"SPECULAR_SPRITE"                       	3d:3d:3d:3d	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"EXHAUST"                               	be:be:be:53	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"SPARK"                                 	2b:2b:2b:00	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"TRACK_REFLECTION"                      	00:00:00:88	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"SMOKEANDDUST"                          	d3:d1:d1:54	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"HEADLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"SUN_FLARE"                             	15:10:10:12	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	128x128 	-	[  fM       ]	"TRACK_SPECULAR"                        	99:99:99:00	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"TYRE_SMOKE"                            	9c:97:8c:4d	 (World size: 1.310660)
+	64x64   	-	[  f        ]	"MINISKY"                               	4b:98:e4:00	 (World size: 4022.840332)
+	256x256 	-	[  f      # ]	"ROCKSKY2"                              	a8:c9:e8:00	 (World size: 2325.032959)
+	256x256 	-	[  f      # ]	"ROCKSKY3"                              	7e:b0:dd:00	 (World size: 2325.033447)
+	256x256 	-	[  f      # ]	"ROCKSKY4"                              	75:b1:e4:00	 (World size: 2325.032715)
+	256x256 	-	[  f      # ]	"ROCKSKY5"                              	b9:df:fa:00	 (World size: 2360.591797)
+	256x256 	-	[  f      # ]	"ROCKSKY6"                              	a8:d1:f4:00	 (World size: 2360.591553)
+	256x256 	-	[  f      # ]	"ROCKSKY7"                              	7e:b2:e1:00	 (World size: 2325.032959)
+	256x256 	-	[  f      # ]	"ROCKSKY8"                              	7e:b0:dc:00	 (World size: 2325.032715)
+	256x256 	-	[  f      # ]	"ROCKSKY1"                              	8f:ba:e1:00	 (World size: 2325.032715)
+	256x256 	-	[A f   X    ]	"FENCE3"                                	00:00:00:0e	 (World size: 39.191551)
+	256x256 	-	[  fM       ]	"BLACK256_5"                            	0b:0b:0b:00	 (World size: 23.314112)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

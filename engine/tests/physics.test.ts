@@ -345,7 +345,9 @@ test("car sphere impacts saturate the impulse and conserve linear momentum", () 
   assert.equal(resolveCarCollision(a, b), 0);
 });
 
-const demo = "/home/omertekin2002/.cache/fr3/agent-demo/extracted/Program_Executable_Files";
+import { fileURLToPath } from "node:url";
+
+const demo = fileURLToPath(new URL("../../game", import.meta.url));
 test("local parsed track and car stay finite during a ten-second multi-maneuver run", { skip: !fs.existsSync(demo) }, async () => {
   const ascii = (file: string) => fs.readFileSync(path.join(demo, "DATA/ASCII", file), "utf8");
   const vfs = await NodeVfs.open(demo);

@@ -1,0 +1,313 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"PARTICLE_EFFECTS"                     	scenes\particles\track_particles.ma
+	"EFFECTS"                              	scenes\effects\effects.ma
+	"GROUP_MB"                             	scenes\buildings\grouped objects\group_mb.ma
+	"GROUP_MA"                             	scenes\buildings\grouped objects\group_ma.ma
+	"GROUP_LA"                             	scenes\buildings\grouped objects\group_la.ma
+	"P"                                    	scenes\buildings\grouped objects\group_p.ma
+	"O"                                    	scenes\buildings\grouped objects\group_o.ma
+	"N"                                    	scenes\buildings\grouped objects\group_n.ma
+	"GROUP_M"                              	scenes\buildings\grouped objects\group_m.ma
+	"GROUP_L"                              	scenes\buildings\grouped objects\group_l.ma
+	"GROUP_K"                              	scenes\buildings\grouped objects\group_k.ma
+	"GROUP_J"                              	scenes\buildings\grouped objects\group_j.ma
+	"GROUP_I"                              	scenes\buildings\grouped objects\group_i.ma
+	"GROUP_H"                              	scenes\buildings\grouped objects\group_h.ma
+	"GROUP_G"                              	scenes\buildings\grouped objects\group_g.ma
+	"GROUP_F"                              	scenes\buildings\grouped objects\group_f.ma
+	"GROUP_E"                              	scenes\buildings\grouped objects\group_e.ma
+	"GROUP_D"                              	scenes\buildings\grouped objects\group_d.ma
+	"GROUP_C"                              	scenes\buildings\grouped objects\group_c.ma
+	"GROUP_B"                              	scenes\buildings\grouped objects\group_b.ma
+	"GROUP_A"                              	scenes\buildings\grouped objects\group_a.ma
+	"SMALL_PIPES_BARRIERS_2V"              	scenes\buildings\pipes\small_pipes_barriers_2v.ma
+	"SMALL_PIPES_V2_H10"                   	scenes\buildings\pipes\small_pipes_v2_h10.ma
+	"LARGE_CURVED_PIPES2"                  	scenes\buildings\pipes\large_curved_pipes2.ma
+	"WARNINGLIGHT2"                        	scenes\buildings\lights\warninglight2.ma
+	"SMALLTANKS"                           	scenes\buildings\smalltanks.ma
+	"TREEWALL10"                           	scenes\buildings\treewall10.ma
+	"LADDER"                               	scenes\buildings\ladder.ma
+	"BARRELL_MOVEABLE"                     	scenes\buildings\barrell_moveable.ma
+	"DOCK_BITS_006"                        	scenes\buildings\dock_bits_006.ma
+	"DOCK_BITS_005"                        	scenes\buildings\dock_bits_005.ma
+	"DOCK_BITS_004"                        	scenes\buildings\dock_bits_004.ma
+	"DOCK_BITS_003"                        	scenes\buildings\dock_bits_003.ma
+	"SMALLMIDTANK"                         	scenes\buildings\smallmidtank.ma
+	"BARRELLS_D"                           	scenes\buildings\barrells_d.ma
+	"BARRELLS_C"                           	scenes\buildings\barrells_c.ma
+	"BARRELLS_B"                           	scenes\buildings\barrells_b.ma
+	"BARRELLS_A"                           	scenes\buildings\barrells_a.ma
+	"SMALLROUNDTANK"                       	scenes\buildings\smallroundtank.ma
+	"WAREHOUSE_SMALL_08"                   	scenes\buildings\warehouse_small_08.ma
+	"MOUNTAINS_ICE2"                       	scenes\buildings\mountains_ice2.ma
+	"MOUNTAINS_ICE"                        	scenes\buildings\mountains_ice.ma
+	"WAREHOUSE_LARGE_A1"                   	scenes\buildings\warehouse_large_a1.ma
+	"WAREHOUSE_SMALL_07"                   	scenes\buildings\warehouse_small_07.ma
+	"WAREHOUSE_SMALL_06"                   	scenes\buildings\warehouse_small_06.ma
+	"WAREHOUSE_SMALL_05"                   	scenes\buildings\warehouse_small_05.ma
+	"BLOCK_FENCE"                          	scenes\buildings\block_fence.ma
+	"PALLETTES2"                           	scenes\buildings\pallettes2.ma
+	"DOCK_BITS_002"                        	scenes\buildings\dock_bits_002.ma
+	"DOCK_BITS_001"                        	scenes\buildings\dock_bits_001.ma
+	"SHORTCUTBARRELS"                      	scenes\buildings\shortcutbarrels.ma
+	"CYLINDER_UPRIGHT_TANK"                	scenes\buildings\cylinder_single_tank_upright.ma
+	"RISKAREA_SIGNPOST"                    	scenes\buildings\riskarea_signpost.ma
+	"RISKAREA_SIGN"                        	scenes\buildings\riskarea_sign.ma
+	"DONOTENTERSIGNPOST"                   	scenes\buildings\donotentersignpost.ma
+	"DONOTENTERSIGN"                       	scenes\buildings\donotentersign.ma
+	"HIGHVOLTAGE"                          	scenes\buildings\highvoltagesign.ma
+	"WAREHOUSE_MEDIUM_C1"                  	scenes\buildings\warehouse_medium_c1.ma
+	"WAREHOUSE_MEDIUM_B2"                  	scenes\buildings\warehouse_medium_b2.ma
+	"WAREHOUSE_SMALL_02"                   	scenes\buildings\warehouse_small_02.ma
+	"WAREHOUSE_MEDIUM_A"                   	scenes\buildings\warehouse_medium_a.ma
+	"DANGER_BARRIER"                       	scenes\buildings\danger_barrier.ma
+	"DANGERSIGN"                           	scenes\buildings\dangersign.ma
+	"TANK_SINGLE_HORIZ_SMALL"              	scenes\buildings\single_tank_horiz_small.ma
+	"LARGECHIMNEY"                         	scenes\buildings\largechimney.ma
+	"LARGEBUILDING3"                       	scenes\buildings\largebuilding3.ma
+	"DOUBLELAMP"                           	scenes\buildings\doublelamp.ma
+	"SPHERE_TANK_TOP"                      	scenes\buildings\sphere_tank_top.ma
+	"BIG34TANK"                            	scenes\buildings\big34tank.ma
+	"GIRDERCAGE"                           	scenes\buildings\girdercage.ma
+	"LARGE3CHIMNEYS"                       	scenes\buildings\large3chimneys.ma
+	"PINETREE_SM"                          	scenes\buildings\pinetree_sm.ma
+	"PIPEBOX"                              	scenes\buildings\pipebox.ma
+	"SINGLELAMP"                           	scenes\buildings\singlelamp.ma
+	"TWOTANKOVER"                          	scenes\buildings\twotankover.ma
+	"BUSHYTREE"                            	scenes\buildings\bushytree.ma
+	"START_FINISH"                         	scenes\buildings\start_finish.ma
+	"PINETREE_M"                           	scenes\buildings\pinetree_m.ma
+	"CYLINDER_SINGLE_TANKS_HORIZ_SMALL"    	scenes\buildings\cylinder_single_tank_horiz.ma
+	"PALLETTES"                            	scenes\buildings\pallettes.ma
+	"LARGEBUILDING2"                       	scenes\buildings\largebuilding2.ma
+	"DIST_LARGE_CYL_TANK"                  	scenes\buildings\dist_large_cyl_tank.ma
+	"LARGEBUILDING"                        	scenes\buildings\largebuilding.ma
+	"BIGTANK_BASE"                         	scenes\buildings\bigtank_base.ma
+	"WAREHOUSE_SMALL_01"                   	scenes\buildings\warehouse_small_01.ma
+	"WAREHOUSE_MEDIUM_B1"                  	scenes\buildings\warehouse_medium_b1.ma
+	"WAREHOUSE_SMALL_04"                   	scenes\buildings\warehouse_small_04.ma
+	"WAREHOUSE_SMALL_03"                   	scenes\buildings\warehouse_small_03.ma
+	"WAREHOUSE_MEDIUM_D"                   	scenes\buildings\warehouse_medium_d.ma
+	"WAREHOUSE_MEDIUM_C"                   	scenes\buildings\warehouse_medium_c.ma
+	"WAREHOUSE_MEDIUM_B"                   	scenes\buildings\warehouse_medium_b.ma
+	"WAREHOUSE_LARGE_A"                    	scenes\buildings\warehouse_large_a.ma
+	"WAREHOUSE_LARGE_02"                   	scenes\buildings\warehouse_large_b.ma
+	"TWIN_CYLINDERS"                       	scenes\buildings\twin_cylinders.ma
+	"TANKS_3_ROW"                          	scenes\buildings\tanks_3_row.ma
+	"TALL_CYLINDER"                        	scenes\buildings\tall_cylinder.ma
+	"LARGE_CYLINDER_TANK"                  	scenes\buildings\large_cylinder_tank.ma
+	"CYLINDER_STYLE_TANK_VERTICAL_SMALL"   	scenes\buildings\cylinder_style_tank_vertical_small.ma
+	"CYLINDER_STYLE_TANKS_HORIZ_SMALL"     	scenes\buildings\cylinder_style_tanks_horiz_small.ma
+	"SPHERE_TANK"                          	scenes\buildings\sphere_tank.ma
+	"BACKGROUND_BUILDING"                  	scenes\buildings\background_building.ma
+	"STREETLAMP"                           	scenes\buildings\streetlamp.ma
+	"THREE_D_GIRDERS"                      	scenes\buildings\three_d_girders.ma
+	"STREETLAMPDOUBLE"                     	scenes\buildings\streetlampdouble.ma
+	"BIGTANK"                              	scenes\buildings\bigtank.ma
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"SKYDOME"                              	scenes\environment\alasc_skydome.ma
+	"ALASCR_CUT_UP"                        	
+	"ALASCR_OBJECTS"                       	
+	"ALASCR_INDUSTRIAL_CHIMNEY_SMOKE"      	
+	"ALASCR_PARTICLES"                     	
+	"ALASCR_LIGHT_FLARES"                  	
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid skeletal animation names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+	"INDUSTRIAL_CHIMNEY_SMOKE"
+	"TRACK_LIGHT_FLARES"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"CAMERA"
+	"CAR_FRONT"
+	"CAR_GAMEBONNET"
+	"CAR_BACK_BOUNCE"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"GREENY"
+	"SPOTS"
+	"TUNNEL"
+	"AMBIENT"
+	"SUNLIGHT"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+	"HEDGE"
+	"METAL"
+	"STONE"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	256x128 	-	[  fM       ]	"TANKS"                                 	9d:9c:9b:00	 (World size: 52.253162)
+	256x64  	-	[  fM       ]	"PIPE"                                  	a5:a3:a1:00	 (World size: 4.911216)
+	256x256 	-	[  fM       ]	"BIGTANK"                               	87:86:89:00	 (World size: 20.300020)
+	128x128 	-	[ASfM       ]	"SCAFFOLDING"                           	32:32:32:53	 (World size: 3.759529)
+	128x128 	-	[  fM       ]	"CHIMNEY"                               	59:56:53:00	 (World size: 4.755767)
+	128x128 	-	[  fM   !   ]	"TANKS_SMALL"                           	b6:b6:b6:00	 (World size: 11.719809)
+	32x32   	-	[  fM       ]	"LAMP"                                  	83:84:86:00	 (World size: 4.759305)
+	128x64  	-	[  fM   !   ]	"ARMCO"                                 	97:9f:60:00	 (World size: 3.698076)
+	128x128 	-	[ASfM       ]	"SCAFFOLDING02"                         	65:65:65:5b	 (World size: 7.745897)
+	256x64  	-	[  fM   !   ]	"WALL"                                  	74:70:67:00	 (World size: 10.048999)
+	128x128 	-	[  fM       ]	"SPHERETANK"                            	a0:99:93:00	 (World size: 33.394302)
+	64x64   	-	[  fM       ]	"HIGHVOLTAGESIGN"                       	9a:94:1e:00	 (World size: 1.691114)
+	256x128 	-	[A fM    $  ]	"FENCE001"                              	52:52:53:76	 (World size: 6.262841)
+	64x64   	-	[  fM       ]	"DONOTENTERSIGN"                        	b6:7e:85:00	 (World size: 5.180088)
+	128x64  	-	[  fM   !   ]	"DANGERSIGN"                            	7e:6c:6b:00	 (World size: 2.683749)
+	128x128 	-	[  fM       ]	"WAREHOUSE_GARAGE_DOOR"                 	58:58:56:00	 (World size: 7.001220)
+	128x128 	-	[  fM       ]	"WAREHOUSE_HIGHER_FLOOR_WALL"           	9b:a1:9d:00	 (World size: 11.046075)
+	128x128 	-	[  fM       ]	"WAREHOUSE_HIGHER_FLOOR_WINDOW"         	81:86:7f:00	 (World size: 14.514885)
+	128x128 	-	[  fM       ]	"WAREHOUSE_WALL"                        	90:93:8d:00	 (World size: 9.319453)
+	128x128 	-	[  fM       ]	"WAREHOUSE_DOOR"                        	83:87:82:00	 (World size: 6.965765)
+	64x64   	-	[  fM       ]	"WAREHOUSE_ROOF"                        	c6:c3:c0:00	 (World size: 12.362123)
+	128x128 	-	[  fM       ]	"WAREHOUSE_WINDOW"                      	70:71:69:00	 (World size: 10.174502)
+	128x128 	-	[  fM       ]	"WAREHOUSE_HIGHER_FLOOR_WINDOW_LIGHT"   	8b:8f:89:00	 (World size: 10.001859)
+	128x128 	-	[  fM       ]	"WAREHOUSE_WINDOW_LIGHT"                	7a:7b:72:00	 (World size: 7.291875)
+	128x128 	-	[  fM       ]	"TANKS02"                               	6a:6c:69:00	 (World size: 6.540107)
+	128x128 	-	[  fM       ]	"BARREL"                                	61:52:4c:00	 (World size: 4.597435)
+	16x16   	-	[  fM   !   ]	"BAR_1"                                 	85:85:85:00	 (World size: 18.245188)
+	128x128 	-	[ASfM       ]	"NEWPINE003"                            	60:64:5f:62	 (World size: 8.332919)
+	256x128 	-	[ASfM       ]	"TREEWALL_BACK"                         	77:7a:79:ef	 (World size: 25.345528)
+	128x64  	-	[ASfM       ]	"PINE_TREE2"                            	93:9b:99:90	 (World size: 25.178953)
+	64x64   	-	[  fM       ]	"DANGERBARRIER"                         	a2:87:7e:00	 (World size: 2.027709)
+	128x64  	-	[  fM       ]	"RISKAREASIGN"                          	a7:66:28:00	 (World size: 10.263447)
+	128x128 	-	[  fM       ]	"DOCK_STUFF8"                           	79:75:73:00	 (World size: 13.964869)
+	128x128 	-	[  fM       ]	"CONTAINERS"                            	7f:81:76:00	 (World size: 22.483746)
+	64x64   	-	[  fM   !   ]	"BLOCKS_FENCE"                          	80:78:46:00	 (World size: 3.590603)
+	256x256 	-	[  fM   !   ]	"MOUNTAIN_ICE1"                         	43:44:43:00	 (World size: 777.410522)
+	64x64   	-	[ASfM       ]	"TREEBRANCH001"                         	5e:5e:5e:49	 (World size: 3.501907)
+	64x64   	-	[  fM       ]	"BARRIER"                               	c9:bb:bb:00	 (World size: 6.076194)
+	64x64   	-	[A fM       ]	"GRID_1"                                	6a:6a:6a:64	 (World size: 6.954473)
+	256x64  	-	[ASfM       ]	"NEWCHECKER_3"                          	a7:a3:a5:fc	 (World size: 21.563601)
+	256x64  	-	[  fM       ]	"SMALLPIPE"                             	a5:a3:a1:00	 (World size: 1.826299)
+	128x64  	-	[  fM   !   ]	"SINGLELOG"                             	81:7f:7c:00	 (World size: 15.651554)
+	16x16   	-	[A fM       ]	"NEWCHECKER_3_ROPE"                     	81:81:81:60	 (World size: 2.292880)
+	64x64   	-	[  f        ]	"MINISKY"                               	aa:b9:bc:00	 (World size: 3427.191406)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD003"               	17:25:20:3f	 (World size: 1739.745117)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD002"               	17:25:20:20	 (World size: 1739.745117)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD001"               	17:25:20:27	 (World size: 1739.745605)
+	32x32   	-	[A fM       ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"HEADLIGHT_FLARE"                       	07:07:07:08	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"SPECULAR_SPRITE"                       	44:43:43:44	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"REARLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"SUN_FLARE"                             	15:10:10:12	 (World size: 1.310660)
+	128x128 	-	[  fM       ]	"TRACK_SPECULAR"                        	4d:4d:4d:00	 (World size: 10.000000)
+	32x32   	-	[ASfM   !   ]	"TRACK_REFLECTION"                      	00:00:00:00	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM    $  ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	256x256 	-	[  fM   !   ]	"GRAVEL_ALASKA_DIRT"                    	96:8c:86:00	 (World size: 9.263839)
+	256x256 	-	[  fM   !   ]	"TARMAC_ALASKA"                         	9e:9b:77:00	 (World size: 11.398507)
+	256x128 	-	[  fM   !   ]	"CONCRETESIDE"                          	95:8a:6a:00	 (World size: 11.624867)
+	256x256 	-	[  fM   !   ]	"DIRT_ALASKA"                           	b1:a6:9b:00	 (World size: 10.830960)
+	256x128 	-	[ASfM       ]	"INDUSTRIALWALL"                        	64:62:5c:da	 (World size: 30.353615)
+	128x128 	-	[  fM   !   ]	"TARMAC_DRAIN_COVER"                    	96:96:85:00	 (World size: 6.021023)
+	256x256 	-	[  fM   !   ]	"TARMAC_DRAIN_CONCRETE"                 	a4:a1:83:00	 (World size: 13.929108)
+	128x128 	-	[  fM   !   ]	"TARMAC_DRAIN_GRILL"                    	62:58:4f:00	 (World size: 6.529820)
+	512x128 	-	[ASfM   !   ]	"DISTANTREFINERY"                       	79:8a:70:63	 (World size: 507.875183)
+	128x128 	-	[  fM   !   ]	"WALL_WHITE"                            	ab:ab:ab:00	 (World size: 11.823743)
+	256x256 	-	[  fM   !   ]	"SNOW_ALASKA"                           	cf:cf:cd:00	 (World size: 17.408800)
+	256x256 	-	[  fM   !   ]	"GRAVEL_ALASKA"                         	8f:86:84:00	 (World size: 10.630473)
+	256x64  	-	[ASfM   !   ]	"INDUSTRIALWALL2"                       	5c:60:5c:db	 (World size: 24.305357)
+	256x128 	-	[  fM   !   ]	"GRAVEL_ALASKA_SNOW"                    	cf:cd:cb:00	 (World size: 10.227783)
+	256x256 	-	[  fM   !   ]	"TUNNELSIDE"                            	a9:a0:7a:00	 (World size: 19.604391)
+	256x256 	-	[  fM   !   ]	"TUNNELROOF"                            	94:94:69:00	 (World size: 14.336118)
+	256x256 	-	[  fM   !   ]	"GRAVEL_ALASKA_FILL"                    	cc:c7:c5:00	 (World size: 12.555492)
+	256x256 	-	[  fM   !   ]	"TARMAC_ALASKA_SEDGE"                   	a5:a2:85:00	 (World size: 13.077476)
+	256x256 	-	[A fM  X!   ]	"TSHAD1"                                	00:00:00:a5	 (World size: 576.359680)
+	256x128 	-	[A fM  X!   ]	"TSHAD2"                                	00:00:00:a7	 (World size: 562.744629)
+	256x128 	-	[A fM  X!   ]	"TSHAD4"                                	00:00:00:93	 (World size: 572.037231)
+	256x256 	-	[A fM  X    ]	"TSHAD3"                                	00:00:00:a9	 (World size: 601.811523)
+	256x128 	-	[A fM  X!   ]	"TSHAD5"                                	00:00:00:a5	 (World size: 577.864441)
+	64x32   	-	[A fM    $  ]	"ANIMATED6_6"                           	fd:fb:8a:17	 (World size: 2.043506)
+	64x32   	-	[ASfM   !   ]	"ANIMATED6_2"                           	fe:fc:79:00	 (World size: 2.043506)
+	64x32   	-	[A fM    $  ]	"ANIMATED6"                             	fd:fb:79:01	 (World size: 2.043506)
+	64x32   	-	[ASfM   !   ]	"ANIMATED6_3"                           	fe:fc:79:00	 (World size: 2.043506)
+	64x32   	-	[A fM    $  ]	"ANIMATED6_4"                           	fd:fb:79:01	 (World size: 2.043506)
+	64x32   	-	[A fM    $  ]	"ANIMATED6_5"                           	fd:fb:7f:0a	 (World size: 2.043506)
+	64x32   	-	[ASfM   !   ]	"ANIMATED6_1"                           	fe:fc:79:00	 (World size: 2.043506)
+	16x16   	-	[  fM       ]	"ANIMATED1"                             	cf:a4:50:00	 (World size: 0.235714)
+	128x128 	-	[  fM       ]	"FIRE"                                  	52:52:52:00	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"GRASS"                                 	14:14:14:22	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SMOKEANDDUST"                          	ff:ff:ff:5f	 (World size: 1.310660)
+	128x128 	-	[ASfM   !   ]	"SPARK"                                 	f5:0c:0c:ff	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SPRAY"                                 	ef:ef:ef:39	 (World size: 1.310660)
+	64x64   	-	[A fM    $  ]	"STREAM"                                	fe:fe:fe:6a	 (World size: 1.310660)
+	128x64  	-	[  fM       ]	"TUNNEL_FLARE"                          	2a:28:1b:00	 (World size: 4.949796)
+	128x128 	-	[  fM       ]	"TRACK_LIGHT_FLARE"                     	18:23:16:00	 (World size: 3.000000)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

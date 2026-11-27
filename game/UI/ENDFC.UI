@@ -1,0 +1,16 @@
+:TYPE								UI_TYPE_SCREEN
+:OBJECT_ID						ENDFC
+:CLEAR							0
+:COLOUR							204 204 204 255
+
+:s{*****>>>
+
+	:TYPE								UI_TYPE_TEXT
+	:OBJECT_ID						TITLE
+	:FONT								1
+	:TEXT								0
+	:TEXT_JUSTIFY					0
+	:FONT_COLOUR					255 0 0 255
+	:HIGHLIGHTED_FONT_COLOUR	255 0 0 255
+		
+:E}*****<<<

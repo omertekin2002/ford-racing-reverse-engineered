@@ -1,4 +1,4 @@
-name: Browser demo and GitHub Pages
+name: Browser preview and GitHub Pages
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
     paths:
       - web/**
       - engine/**
+      - game/**
       - scripts/**
       - analysis/**
       - .github/workflows/pages.yml
@@ -27,9 +28,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
-    env:
-      FR3_WEB_TOOLS: ${{ github.workspace }}/.web-tools
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -43,37 +42,17 @@ jobs:
           npm --prefix engine ci
           npm --prefix engine run typecheck
           npm --prefix engine run build
-      - name: Restore verified tools and demo downloads
-        uses: actions/cache@v4
-        with:
-          path: |
-            .web-tools
-            inputs/fordracing3demo.zip
-          key: fr3-web-v2-${{ runner.os }}-${{ hashFiles('scripts/setup_web_tools.py', 'scripts/build_web.py') }}
-      - name: Install CAB extraction tool
-        run: sudo apt-get update && sudo apt-get install -y unshield
-      - name: Prepare pinned compiler and emulator
-        run: python3 scripts/setup_web_tools.py
-      - name: Acquire and verify the public demo
-        run: python3 scripts/acquire_demo.py inputs --unshield unshield
-      - name: Build the research pages into the site
-        # Before build_web.py, so SHA256SUMS covers every file under research/.
-        run: python3 scripts/build_research.py --output artifacts/web/research
-      - name: Package the research pages as a citable download
-        # After the pages are built and before build_web.py, so SHA256SUMS covers the packet. The commit time
-        # stamps its entries; the packet's folder and MANIFEST.json name the revision.
-        run: |
-          export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
-          python3 scripts/package_research.py --research artifacts/web/research \
-            --output artifacts/web/downloads/fr3-research-latest.zip
-      - name: Compile and build the static site
-        run: python3 scripts/build_web.py --jobs 2
+          npm --prefix engine test
+      - name: Verify in-repo Ford Racing 3 Shuffle game files
+        run: python3 scripts/acquire_demo.py game
+      - name: Build the static Native WebGL2 site
+        run: python3 scripts/build_web.py --game game --output artifacts/web
       - name: Verify packaged assets and project-page paths
         run: python3 scripts/verify_web.py artifacts/web
       - name: Upload downloadable browser build
         uses: actions/upload-artifact@v4
         with:
-          name: ford-racing-3-browser-preview
+          name: ford-racing-3-shuffle-webgl2
           path: artifacts/web
           include-hidden-files: true
       - name: Upload GitHub Pages artifact

@@ -1,0 +1,86 @@
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			SERVR
+:CLEAR				0
+:COLOUR				255 255 255 255
+:POSITION_START	0.000000 0.000000
+:POSITION_END		0.000000 0.000000
+:TIME_LENGTH		1.000000
+:TEXTURE_ENUM		"GRAPHICS\GAME\BKGNDS\COBRABG.PSD"
+
+:S{*****>>>
+	///////////////////////////////////////////////////
+	// TITLE
+	//////////////////////////////////////////////////
+	
+	:INHERIT				TITLE
+	:TEXT_JUSTIFY		2
+	:POSITION_START	-0.353125 0.531250
+	:POSITION_END		-0.353125 0.531250
+	
+	///////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////
+	
+	///////////////////////////////////////////////////
+	// MENU BAR
+	//////////////////////////////////////////////////
+	
+	:INHERIT				MENUBAR
+	
+	///////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////
+	
+	///////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			SERVER_ADDRESS_BUTTON
+	:TEXT					0
+	:POSITION_START	0.0 0.604167
+	:POSITION_END		0.0 0.604167
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			SERVER_ADDRESS
+	:TEXT_JUSTIFY		2
+	:TEXT					TXT_PC_NETWORK_IP_ADDRESS_BUTTON
+	//:POSITION_START	-0.332812 0.604167
+	//:POSITION_END		-0.332812 0.604167
+	:POSITION_START	-0.668699 0.604167
+	:POSITION_END		-0.668699 0.604167
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			CONNECT_BUTTON
+	:TEXT_JUSTIFY		2
+	:TEXT					TXT_PC_NETWORK_IP_CONNECT
+	:POSITION_START	 -0.332812 0.768834
+	:POSITION_END		 -0.332812 0.768834
+	
+	///////////////////////////////////////////////////
+	// SERVER ADDRESS TEXT BOX
+	//////////////////////////////////////////////////
+	
+	:INHERIT				TEXT_BOX
+	:OBJECT_ID			SERVER_ADDRESS_TEXTBOX
+	//:SIZE					0.296875 0.037598
+	//:POSITION_START	0.634375 0.614583
+	//:POSITION_END		0.634375 0.614583
+	:SIZE					0.638965 0.037598
+	:POSITION_START	0.292188 0.614583
+	:POSITION_END		0.292188 0.614583
+	
+	///////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////
+	
+	:INHERIT				BACK_ICON
+	
+	:INHERIT				BACK_TEXT
+
+	
+:E}*****<<<
+
+:CONNECTION "SERVER_ADDRESS_BUTTON"	"CONNECT_BUTTON"			"CONNECT_BUTTON" "" ""
+:CONNECTION "CONNECT_BUTTON"			"SERVER_ADDRESS_BUTTON"	"SERVER_ADDRESS_BUTTON" "" ""
+

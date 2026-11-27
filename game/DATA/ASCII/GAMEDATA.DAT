@@ -1,0 +1,159 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//
+// Two player (multiplayer) catchup values
+//
+
+:MULTIPLAYER_CATCHUP_LEADER_POWER_ADJUSTMENT -0.15
+:MULTIPLAYER_CATCHUP_LOSER_POWER_ADJUSTMENT 0.25
+:MULTIPLAYER_CATCHUP_MIN_RANGE 40.0
+:MULTIPLAYER_CATCHUP_MAX_RANGE 100.0
+
+//
+//
+//
+
+
+:DIFFICULTY_LEVEL       EASY
+        //
+        // AI car variation off the racing line in general racing (total)
+        //
+        :DIFFICULTY_LINE_VARIATION 1.5
+        //
+        // Desired Clearance when overtaking
+        //
+        :DIFFICULTY_OVERTAKE_CLEARANCE 1.5
+        //
+        // Start Powers are the basic power the car has (ahead & behind player respectively)
+        //
+        :CATCHUP_ADDITIONAL_START_POWER 0.5
+        //
+        :CATCHUP_SUBTRACTIVE_START_POWER 0.4
+        //
+        // Power catchup when car is behind
+        //
+       :CATCHUP_ADDITIONAL_POWER 0.2
+        //
+        // power catchup (subtracted) when car is ahead
+        //
+        :CATCHUP_SUBTRACTIVE_POWER 0.25
+        //
+        // ranges over which catchup powers reach their maximum
+        //
+        :CATCHUP_RANGE_AHEAD 100.0
+        //
+        :CATCHUP_RANGE_BEHIND 150.0
+        //
+        // from START_FADEOUT to STOP_FADEOUT distance ahead, the car will return to normal power
+        //
+        :CATCHUP_START_FADEOUT 4000.0
+        //
+        :CATCHUP_STOP_FADEOUT 5000.0
+        //
+        // Ideal distance over which the pack of AI cars are distributed (with the player in the middle)
+        //
+        :CATCHUP_PACK_SPREAD 80.0
+        //
+        // move the pack backwards / forwards around the player (-1 to 1)
+        //
+        :CATCHUP_PACK_SHIFT 0.0
+        //
+        // number of times in a lap an AI car will try to change its position within the pack
+        //z
+        :CATCHUP_PACK_RATE_OF_CHANGE_PER_LAP 0.0
+        //
+        // Basic Difficulty Level for a car
+		  //
+        :CAR_BASE_DIFFICULTY_LEVEL 0.0
+        //
+        // Difficulty Level Range for cars at this level
+        //
+        :CAR_DIFFICULTY_LEVEL_SPREAD 0.01
+        //
+        // AI's power modifier for overtake mode
+        //
+        :AI_OVERTAKE_POWER_MODIFIER 1.0
+        //
+        // AI's power modifier on Drafting mode
+        //
+        :AI_DRAFTING_POWER_MODIFIER -0.05
+        //
+        // AI's power boost on RaceLine mode
+        //
+       :AI_RACELINE_POWER_BOOST 0.15
+
+:DIFFICULTY_LEVEL       MEDIUM
+
+        :DIFFICULTY_LINE_VARIATION 1.0
+        :DIFFICULTY_OVERTAKE_CLEARANCE 1.5
+
+        :CATCHUP_ADDITIONAL_START_POWER 0.75
+        :CATCHUP_SUBTRACTIVE_START_POWER 0.75
+
+        :CATCHUP_ADDITIONAL_POWER 0.3
+        :CATCHUP_SUBTRACTIVE_POWER 0.00
+
+        :CATCHUP_RANGE_AHEAD 70.0
+        :CATCHUP_RANGE_BEHIND 70.0
+
+        :CATCHUP_START_FADEOUT 3500.0
+        :CATCHUP_STOP_FADEOUT 4500.0
+
+        :CATCHUP_PACK_SPREAD 110.0
+        :CATCHUP_PACK_SHIFT 0.0
+        :CATCHUP_PACK_RATE_OF_CHANGE_PER_LAP 1.0
+                        
+        :CAR_BASE_DIFFICULTY_LEVEL 0.5
+        :CAR_DIFFICULTY_LEVEL_SPREAD 0.01
+
+        :AI_OVERTAKE_POWER_MODIFIER 1.0
+        :AI_DRAFTING_POWER_MODIFIER -0.05
+        :AI_RACELINE_POWER_BOOST 0.25
+
+
+
+:DIFFICULTY_LEVEL       HARD
+
+        :DIFFICULTY_LINE_VARIATION 0.95
+        :DIFFICULTY_OVERTAKE_CLEARANCE 0.8
+
+        :CATCHUP_ADDITIONAL_START_POWER 0.9
+        :CATCHUP_SUBTRACTIVE_START_POWER 0.85
+
+        :CATCHUP_ADDITIONAL_POWER 0.15
+        :CATCHUP_SUBTRACTIVE_POWER 0.15
+
+        :CATCHUP_RANGE_AHEAD 50.0
+        :CATCHUP_RANGE_BEHIND 10.0
+
+        :CATCHUP_START_FADEOUT 2000.0
+        :CATCHUP_STOP_FADEOUT 3000.0
+
+        :CATCHUP_PACK_SPREAD 130.0
+        :CATCHUP_PACK_SHIFT 0.00
+
+        :CATCHUP_PACK_RATE_OF_CHANGE_PER_LAP 1.0
+
+        :CAR_BASE_DIFFICULTY_LEVEL 0.7
+        :CAR_DIFFICULTY_LEVEL_SPREAD 0.02
+
+        :AI_OVERTAKE_POWER_MODIFIER 1.0
+        :AI_DRAFTING_POWER_MODIFIER -0.05
+        :AI_RACELINE_POWER_BOOST 0.45
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+

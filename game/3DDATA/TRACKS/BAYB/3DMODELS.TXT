@@ -1,0 +1,407 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"FORD"                                 	scenes\new barriers\ford.ma
+	"BLANK"                                	scenes\new barriers\blank.ma
+	"RAZORWORKS"                           	scenes\new barriers\razorworks.ma
+	"EJAY"                                 	scenes\new barriers\ejay.ma
+	"XPLOSIV"                              	scenes\new barriers\xplosiv.ma
+	"EFFECTS"                              	scenes\effects\effects.ma
+	"BAYB_CUT_UP"                          	
+	"BAYB_FARGROUND_BASE"                  	scenes\buildings\accessories\bayb_farground_base.ma
+	"BAYB_FARGROUND_PORTSIDE"              	scenes\buildings\accessories\bayb_farground_portside.ma
+	"THE_SEA"                              	scenes\buildings\accessories\the_sea.ma
+	"TREE_CLUMP_LODDED_23"                 	scenes\buildings\foliage\tree_clump_lodded_23.ma
+	"TREE_CLUMP_LODDED_1"                  	scenes\buildings\foliage\tree_clump_lodded_1.ma
+	"SIGN3_DOCKS"                          	scenes\buildings\accessories\sign3_docks.ma
+	"SIGN2_BAYBRIDGE"                      	scenes\buildings\accessories\sign2_baybridge.ma
+	"SIGN1_BAYBRIDGETOLLS"                 	scenes\buildings\accessories\sign1_baybridgetolls.ma
+	"BAYB_FARGROUND_BAYSIDE_EXTRA"         	scenes\buildings\accessories\bayb_farground_bayside_extra.ma
+	"FARGROUND_BAYSIDE"                    	scenes\buildings\accessories\bayb_farground_bayside.ma
+	"MOUNTAIN"                             	scenes\buildings\accessories\mountain.ma
+	"TREES_SINGLE_LODDED"                  	scenes\buildings\foliage\trees_single_lodded.ma
+	"SUSP_BRIDGE4"                         	scenes\buildings\accessories\susp_bridge_section4.ma
+	"SUSPBRIDGE3"                          	scenes\buildings\accessories\susp_bridge_section3.ma
+	"SUSPBRIDGE2"                          	scenes\buildings\accessories\susp_bridge_section2.ma
+	"SUSPBRIDGE1"                          	scenes\buildings\accessories\susp_bridge_section1.ma
+	"TUNNEL_PART6"                         	scenes\buildings\accessories\tunnel_part6.ma
+	"TUNNEL_PART5"                         	scenes\buildings\accessories\tunnel_part5.ma
+	"TUNNEL_PART4"                         	scenes\buildings\accessories\tunnel_part4.ma
+	"TUNNEL_PART3"                         	scenes\buildings\accessories\tunnel_part3.ma
+	"TUNNEL_PART2"                         	scenes\buildings\accessories\tunnel_part2.ma
+	"TUNNEL_PART1"                         	scenes\buildings\accessories\tunnel_part1.ma
+	"TUNNEL_SECTION1"                      	scenes\buildings\accessories\tunnel_section1.ma
+	"BRIDGE_END_WALL"                      	scenes\buildings\accessories\bridge_end_wall.ma
+	"SUSP_BRIDGE_FENCE"                    	scenes\buildings\accessories\susp_bridge_fence.ma
+	"CONC_RAILS1"                          	scenes\buildings\accessories\conc_rails1.ma
+	"WARNING_SIGN_BIG"                     	scenes\buildings\accessories\warning_sign_big.ma
+	"ARROWS_RIGHT_SINGLE"                  	scenes\buildings\accessories\arrows_right_single.ma
+	"ARROWS_LEFT_SINGLE"                   	scenes\buildings\accessories\arrows_left_single.ma
+	"ARROWS_RIGHT1"                        	scenes\buildings\accessories\arrows_right1.ma
+	"TOLL_RESTAURANT"                      	scenes\buildings\accessories\toll_restaurant.ma
+	"RAILBOOM2"                            	scenes\buildings\accessories\railboom2.ma
+	"TOLL_FENCE"                           	scenes\buildings\accessories\toll_fence.ma
+	"CHECK_BUILDING"                       	scenes\buildings\accessories\check_building.ma
+	"CONC_BLOCKS7"                         	scenes\buildings\accessories\conc_blocks7.ma
+	"CONC_BLOCKS6"                         	scenes\buildings\accessories\conc_blocks6.ma
+	"CONC_BLOCKS5"                         	scenes\buildings\accessories\conc_blocks5.ma
+	"CONC_BLOCKS4"                         	scenes\buildings\accessories\conc_blocks4.ma
+	"CONC_BLOCKS3"                         	scenes\buildings\accessories\conc_blocks3.ma
+	"CONC_BLOCKS2"                         	scenes\buildings\accessories\conc_blocks2.ma
+	"CONC_BLOCKS1"                         	scenes\buildings\accessories\conc_blocks1.ma
+	"TOLL_BOOTHS"                          	scenes\buildings\accessories\toll_booths.ma
+	"BAYB_DRIVEABLE_FLYOVER"               	scenes\buildings\accessories\bayb_driveable_flyover.ma
+	"BAYB_NONDRIVEABLE_FLYOVER"            	scenes\buildings\accessories\bayb_nondriveable_flyover.ma
+	"BRIDGE_UNDRIVEABLE_STRUCTURE"         	scenes\buildings\accessories\bridge_undriveable_structure.ma
+	"BAY_C_PARK_BRIDGE"                    	scenes\buildings\accessories\bay_c_park_bridge.ma
+	"RAILS_ON_DOCKS"                       	scenes\buildings\accessories\rails_on_docks.ma
+	"DOCK_BACK_BLDGS"                      	scenes\buildings\accessories\dock_back_bldgs.ma
+	"DOCK_CARGO3"                          	scenes\buildings\accessories\dock_cargo3.ma
+	"DOCK_CARGO1"                          	scenes\buildings\accessories\dock_cargo1.ma
+	"DOCK_WAREHOUSES"                      	scenes\buildings\accessories\dock_warehouses.ma
+	"DOCK_SHORE_CLUMP2"                    	scenes\buildings\accessories\dock_shore_clump2.ma
+	"DOCK_SHORE_CLUMP1"                    	scenes\buildings\accessories\dock_shore_clump1.ma
+	"DOCK_TRAINS"                          	scenes\buildings\accessories\dock_trains.ma
+	"CRANELEFTSIDE"                        	scenes\buildings\accessories\craneleftside.ma
+	"CRANELEFTSIDE_FAR"                    	scenes\buildings\accessories\craneleftside_far.ma
+	"CRANERIGHTSIDE"                       	scenes\buildings\accessories\cranerightside.ma
+	"CRANEBACK"                            	scenes\buildings\accessories\craneback.ma
+	"BARGESIDE"                            	scenes\buildings\accessories\bargeside.ma
+	"BARGE"                                	scenes\buildings\accessories\barge.ma
+	"WAREHOUSESMCSIDE"                     	scenes\buildings\accessories\warehousesmcside.ma
+	"WAREHOUSELGCSIDE"                     	scenes\buildings\accessories\warehouselgcside.ma
+	"GASTANKCSIDE"                         	scenes\buildings\accessories\gastankcside.ma
+	"LAMPPOST"                             	scenes\buildings\accessories\lamppost.ma
+	"LUXURY_YACHT"                         	scenes\buildings\accessories\luxury_yacht.ma
+	"SAILINGBB_BIGGER"                     	scenes\buildings\accessories\sailingbb_bigger.ma
+	"GALLON"                               	scenes\buildings\accessories\gallon.ma
+	"NEW_FRIGATE"                          	scenes\buildings\accessories\new_frigate.ma
+	"TREE32"                               	scenes\buildings\accessories\tree32.ma
+	"TREE33"                               	scenes\buildings\accessories\tree33.ma
+	"TREE31"                               	scenes\buildings\accessories\tree31.ma
+	"TREE30"                               	scenes\buildings\accessories\tree30.ma
+	"TREE29"                               	scenes\buildings\accessories\tree29.ma
+	"TREE28"                               	scenes\buildings\accessories\tree28.ma
+	"TREE26"                               	scenes\buildings\accessories\tree26.ma
+	"TREE25"                               	scenes\buildings\accessories\tree25.ma
+	"TREE24"                               	scenes\buildings\accessories\tree24.ma
+	"TREE23"                               	scenes\buildings\accessories\tree23.ma
+	"TREE22"                               	scenes\buildings\accessories\tree22.ma
+	"TREE21"                               	scenes\buildings\accessories\tree21.ma
+	"TREE20"                               	scenes\buildings\accessories\tree20.ma
+	"TREE19"                               	scenes\buildings\accessories\tree19.ma
+	"TREE18"                               	scenes\buildings\accessories\tree18.ma
+	"TREE17"                               	scenes\buildings\accessories\tree17.ma
+	"TREE16"                               	scenes\buildings\accessories\tree16.ma
+	"TREE15"                               	scenes\buildings\accessories\tree15.ma
+	"TREE14"                               	scenes\buildings\accessories\tree14.ma
+	"TREE13"                               	scenes\buildings\accessories\tree13.ma
+	"TREE12"                               	scenes\buildings\accessories\tree12.ma
+	"TREE11"                               	scenes\buildings\accessories\tree11.ma
+	"TREE10"                               	scenes\buildings\accessories\tree10.ma
+	"TREE09"                               	scenes\buildings\accessories\tree09.ma
+	"TREE08"                               	scenes\buildings\accessories\tree08.ma
+	"TREE07"                               	scenes\buildings\accessories\tree07.ma
+	"TREE06"                               	scenes\buildings\accessories\tree06.ma
+	"TREE05"                               	scenes\buildings\accessories\tree05.ma
+	"TREE04"                               	scenes\buildings\accessories\tree04.ma
+	"TREE03"                               	scenes\buildings\accessories\tree03.ma
+	"TREE02"                               	scenes\buildings\accessories\tree02.ma
+	"COMMWAREHOUSE02"                      	scenes\buildings\accessories\commwarehouse02.ma
+	"COMMERCIAL02"                         	scenes\buildings\accessories\commercial02.ma
+	"COMMERCIAL03"                         	scenes\buildings\accessories\commercial03.ma
+	"COMMERCIAL05"                         	scenes\buildings\accessories\commercial05.ma
+	"ANTENNA"                              	scenes\buildings\accessories\antenna.ma
+	"COMMERCIAL04"                         	scenes\buildings\accessories\commercial04.ma
+	"COMMERCIAL01"                         	scenes\buildings\accessories\commercial01.ma
+	"COMMWAREHOUSE01"                      	scenes\buildings\accessories\commwarehouse01.ma
+	"FENCE1"                               	scenes\buildings\accessories\fence1.ma
+	"FENCE2"                               	scenes\buildings\accessories\fence2.ma
+	"FENCE3"                               	scenes\buildings\accessories\fence3.ma
+	"BAY_B_FISHING_TRAWLER"                	scenes\buildings\accessories\bay_b_fishing_trawler.ma
+	"RAILSIGN"                             	scenes\buildings\accessories\railsign.ma
+	"RAILBOOM"                             	scenes\buildings\accessories\railboom.ma
+	"TUNLIGHT"                             	scenes\buildings\accessories\tunlight.ma
+	"FAN"                                  	scenes\buildings\accessories\fan.ma
+	"FISHINGBOAT2"                         	scenes\buildings\accessories\fishingboat2.ma
+	"FISHINGBOAT1"                         	scenes\buildings\accessories\fishingboat1.ma
+	"INDUSTRIAL_BLOCK3"                    	scenes\buildings\accessories\industrial_block3.ma
+	"INDUSTRIAL_BLOCK4"                    	scenes\buildings\accessories\industrial_block4.ma
+	"WAREHOUSE1_LONG"                      	scenes\buildings\accessories\industrial_warehouse1_long.ma
+	"INDUSTRIAL_CRANES"                    	scenes\buildings\accessories\industrial_cranes.ma
+	"WAREHOUSE2"                           	scenes\buildings\accessories\industrial_warehouse2.ma
+	"WAREHOUSE1"                           	scenes\buildings\accessories\industrial_warehouse1.ma
+	"CABLES_08"                            	scenes\buildings\accessories\cables_08.ma
+	"CABLES_07"                            	scenes\buildings\accessories\cables_07.ma
+	"CABLES_06"                            	scenes\buildings\accessories\cables_06.ma
+	"CABLES_05"                            	scenes\buildings\accessories\cables_05.ma
+	"CABLES_04"                            	scenes\buildings\accessories\cables_04.ma
+	"CABLES_03"                            	scenes\buildings\accessories\cables_03.ma
+	"CABLES_02"                            	scenes\buildings\accessories\cables_02.ma
+	"CABLES_01"                            	scenes\buildings\accessories\cables_01.ma
+	"CCPYLON"                              	scenes\buildings\accessories\cablecarpylon.ma
+	"CCHOUSE"                              	scenes\buildings\accessories\cablecar_building.ma
+	"FALLING_ROCK"                         	scenes\buildings\accessories\falling_rock_sign.ma
+	"TPOLE27"                              	scenes\buildings\tgraph_poles\tpole27.ma
+	"TPOLE26"                              	scenes\buildings\tgraph_poles\tpole26.ma
+	"TPOLE25"                              	scenes\buildings\tgraph_poles\tpole25.ma
+	"TPOLE24"                              	scenes\buildings\tgraph_poles\tpole24.ma
+	"TPOLE23"                              	scenes\buildings\tgraph_poles\tpole23.ma
+	"TPOLE22"                              	scenes\buildings\tgraph_poles\tpole22.ma
+	"TPOLE21"                              	scenes\buildings\tgraph_poles\tpole21.ma
+	"TPOLE20"                              	scenes\buildings\tgraph_poles\tpole20.ma
+	"TPOLE19"                              	scenes\buildings\tgraph_poles\tpole19.ma
+	"BUSHES2"                              	scenes\buildings\foliage\bushes2.ma
+	"BUSHES1"                              	scenes\buildings\foliage\bushes1.ma
+	"UNIQUE3"                              	scenes\buildings\foliage\unique3.ma
+	"UNIQUE_TREE_CLUMP"                    	scenes\buildings\foliage\unique_tree_clump.ma
+	"TREES_SINGLES"                        	scenes\buildings\foliage\trees_singles.ma
+	"SHRUB_CLUMP1_TINY"                    	scenes\buildings\foliage\shrub_clump1_tiny.ma
+	"TREES_ON_HILL1"                       	scenes\buildings\foliage\trees_on_hill1.ma
+	"PINE_MASS1"                           	scenes\buildings\foliage\pine_mass1.ma
+	"TREES_BACK"                           	scenes\buildings\foliage\trees_back.ma
+	"STARTFINISH_STRUCTURE"                	scenes\buildings\accessories\startfinish_structure.ma
+	"FOL_GRP1"                             	scenes\buildings\foliage\foliage_group1.ma
+	"FOL_GRP2"                             	scenes\buildings\foliage\foliage_group2.ma
+	"FOL_GRP1_FAR"                         	scenes\buildings\foliage\foliage_group1_far.ma
+	"FOL_GRP2_FAR"                         	scenes\buildings\foliage\foliage_group2_far.ma
+	"TRUCK01"                              	scenes\buildings\accessories\truck01.ma
+	"CAR01"                                	scenes\buildings\accessories\car01.ma
+	"CARS02"                               	scenes\buildings\accessories\cars02.ma
+	"LOWCAR01"                             	scenes\buildings\accessories\lowcar01.ma
+	"LOOKOUTWALL04"                        	scenes\buildings\accessories\lookoutwall04.ma
+	"LOOKOUTWALL03"                        	scenes\buildings\accessories\lookoutwall03.ma
+	"LOOKOUTWALL02"                        	scenes\buildings\accessories\lookoutwall02 .ma
+	"RESTWALL01"                           	scenes\buildings\accessories\restwall01.ma
+	"LOOKOUT"                              	scenes\buildings\accessories\lookout.ma
+	"RESTLOOKOUT"                          	scenes\buildings\accessories\restlookout.ma
+	"RESTSIGN"                             	scenes\buildings\accessories\restsign.ma
+	"RESTENTRANCE"                         	scenes\buildings\accessories\restentrance.ma
+	"TREESREST"                            	scenes\buildings\accessories\treesrest.ma
+	"CAR03"                                	scenes\buildings\accessories\car03.ma
+	"BAYB_OBJECTS"                         	
+	"BAYB_ANIMATIONS"                      	
+	"SKYDOME"                              	scenes\environment\bayb_skydome.ma
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"CAR_VII"                              	scenes\buildings\accessories\traffic\car_vii.ma
+	"CAR_VI"                               	scenes\buildings\accessories\traffic\car_vi.ma
+	"CAR_V"                                	scenes\buildings\accessories\traffic\car_v.ma
+	"TRUCK_III"                            	scenes\buildings\accessories\traffic\truck_iii.ma
+	"TRUCK_II"                             	scenes\buildings\accessories\traffic\truck_ii.ma
+	"CAR_IV"                               	scenes\buildings\accessories\traffic\car_iv.ma
+	"CAR_III"                              	scenes\buildings\accessories\traffic\car_iii.ma
+	"CAR_II"                               	scenes\buildings\accessories\traffic\car_ii.ma
+	"CAR_I"                                	scenes\buildings\accessories\traffic\car_i.ma
+	"SEAGULL"                              	scenes\buildings\accessories\seagull.ma
+	"BIRD"                                 	scenes\buildings\accessories\bird.ma
+	"FANPROP"                              	scenes\buildings\accessories\fanprop.ma
+	"CABLECAR"                             	scenes\buildings\accessories\cablecar.ma
+	"TRAIN"                                	scenes\buildings\accessories\train.ma
+	"TRAIN_CABOOSE"                        	scenes\buildings\accessories\train_caboose.ma
+	"TRAIN_TREES"                          	scenes\buildings\accessories\train_trees.ma
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"CAMERA"
+	"CAR_COCKPIT"
+	"SEAGULL"
+	"FANPROP"
+	"BIRD"
+	"TRUCK_II"
+	"CAR_VII"
+	"CAR_VI"
+	"CAR_V"
+	"CAR_IV"
+	"CAR_III"
+	"CAR_I"
+	"CAR_II"
+	"TRUCK_III"
+	"CABLECAR"
+	"TRAIN_CABOOSE"
+	"TRAIN_TREES"
+	"TRAIN"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"SUNLIGHT"
+	"AMBIENT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+	"METAL"
+	"STONE"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+	"WATER"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	256x128 	-	[ASfM       ]	"BAY_B_C_SUS_BRIDGE"                    	88:46:36:ef	 (World size: 56.607292)
+	64x64   	-	[A fM       ]	"1"                                     	4b:74:72:87	 (World size: 96.075447)
+	64x64   	-	[  fM   !   ]	"F150"                                  	78:6b:4b:00	 (World size: 13.723286)
+	256x64  	-	[ASfM       ]	"BARRIER"                               	75:73:73:b4	 (World size: 7.603303)
+	128x128 	-	[ASfM       ]	"PORT_SIDE"                             	70:5c:54:f5	 (World size: 81.139252)
+	256x128 	-	[A fM       ]	"FENCE"                                 	14:12:10:28	 (World size: 5.091416)
+	256x256 	-	[  fM       ]	"MOUNTAINS"                             	62:68:64:00	 (World size: 750.603271)
+	128x128 	-	[  fM       ]	"TOLLS"                                 	95:6f:4f:00	 (World size: 7.913889)
+	256x256 	-	[ASfM       ]	"TUNNEL"                                	7f:8b:8d:fb	 (World size: 26.011093)
+	128x128 	-	[  fM       ]	"BUILDING_CHECK"                        	5c:5c:5b:00	 (World size: 26.765175)
+	128x16  	-	[  fM       ]	"RAICROSSING"                           	b9:a8:a5:00	 (World size: 10.015985)
+	256x256 	-	[ASfM       ]	"MIKADOCK6"                             	77:73:68:fe	 (World size: 75.617966)
+	64x64   	-	[  fM       ]	"FOCUS"                                 	61:30:43:00	 (World size: 9.316579)
+	64x64   	-	[  fM       ]	"CONCRETE"                              	9d:8a:72:00	 (World size: 9.922646)
+	64x64   	-	[  fM       ]	"CROWNV"                                	60:55:64:00	 (World size: 10.540388)
+	256x128 	-	[ASf    !   ]	"BAYA_SINGLETREE"                       	23:31:19:00	 (World size: 25.001728)
+	64x64   	-	[  fM   !   ]	"COMMERCIAL_STRUCTURES_01"              	66:68:60:00	 (World size: 155.581833)
+	128x64  	-	[  fM       ]	"COMMERCIAL_STRUCTURES_02"              	68:74:5a:00	 (World size: 47.734699)
+	128x64  	-	[ASfM       ]	"LOWCARS"                               	5e:4d:43:f7	 (World size: 24.234089)
+	128x128 	-	[ASfM       ]	"REST"                                  	97:85:84:ed	 (World size: 36.416275)
+	128x128 	-	[  fM       ]	"REST2"                                 	bb:9e:96:00	 (World size: 19.597641)
+	64x64   	-	[A fM       ]	"2"                                     	4d:81:85:54	 (World size: 253.600739)
+	256x128 	-	[  fM       ]	"YARD2"                                 	85:85:82:00	 (World size: 68.750046)
+	128x128 	-	[  fM       ]	"CONTAINERS"                            	7f:81:76:00	 (World size: 31.112362)
+	128x128 	-	[  fM       ]	"CABLECAR"                              	71:70:62:00	 (World size: 67.667870)
+	64x64   	-	[  fM       ]	"WARNING_SIGN"                          	da:c5:bb:00	 (World size: 4.771583)
+	128x16  	-	[  fM       ]	"TGRAPH_POLE"                           	68:5b:42:00	 (World size: 10.175045)
+	128x128 	-	[  fM   !   ]	"ROAD_SIGNS2_BAYA"                      	cb:bb:40:00	 (World size: 14.382026)
+	128x128 	-	[  fM       ]	"TRAIN-128"                             	70:5b:55:00	 (World size: 67.577393)
+	64x64   	-	[  fM   !   ]	"COMMERCIAL_STRUCTURES_03"              	73:7e:85:00	 (World size: 31.888321)
+	64x64   	-	[  fM   !   ]	"COMMERCIAL_STRUCTURES_04"              	66:5f:4a:00	 (World size: 30.991480)
+	64x64   	-	[  fM   !   ]	"COMMERCIAL_STRUCTURES_05"              	75:70:70:00	 (World size: 45.786114)
+	64x64   	-	[  fM   !   ]	"COMMERCIAL_WAREHOUSE"                  	90:7e:62:00	 (World size: 36.846874)
+	32x32   	-	[  fM   !   ]	"PROXY_GRASS"                           	62:5b:24:00	 (World size: 72.398453)
+	64x64   	-	[  fM   !   ]	"PROXY_ROCKS"                           	94:80:62:00	 (World size: 106.468559)
+	256x128 	-	[  fM       ]	"ROAD_SIGNS"                            	53:77:5c:00	 (World size: 46.253853)
+	512x512 	-	[ASf    !   ]	"BAYA_TREEPAGE"                         	49:3e:1c:00	 (World size: 59.308590)
+	64x64   	-	[  fM   !   ]	"FLORB_FENCE_POSSU2"                    	6c:66:46:00	 (World size: 3.076751)
+	32x32   	-	[ASfM   !   ]	"SEAGULL"                               	d3:ce:b2:00	 (World size: 5.472632)
+	32x32   	-	[A fM       ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"GRASS"                                 	1b:1b:1b:22	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"HEADLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"REARLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"SPECULAR_SPRITE"                       	3d:3d:3d:3d	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"SUN_FLARE"                             	15:10:10:12	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"SPARK"                                 	2b:2b:2b:00	 (World size: 1.310660)
+	256x256 	-	[  fM       ]	"TRACK_SPECULAR"                        	88:88:85:00	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"TRACK_REFLECTION"                      	00:00:00:88	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"SMOKEANDDUST"                          	d3:d1:d1:54	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"TYRE_SMOKE"                            	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"EXHAUST"                               	be:be:be:53	 (World size: 1.310660)
+	128x128 	-	[  fM   !   ]	"ROCKS_BAYA"                            	9b:82:6b:00	 (World size: 18.848391)
+	128x128 	-	[  fM   !   ]	"GRASS_TILE_BAYA"                       	63:5b:24:00	 (World size: 32.487206)
+	128x64  	-	[  fM   !   ]	"TARMAC_CONC_EDGE_BAYA"                 	8e:7f:7c:00	 (World size: 6.885284)
+	256x256 	-	[  fM       ]	"ROCKS_V1_BAYA"                         	94:7f:62:00	 (World size: 35.518879)
+	256x256 	-	[  fM       ]	"ROCKS_V2_BAYA"                         	93:7e:5e:00	 (World size: 35.510345)
+	256x256 	-	[  fM   !   ]	"GRASS_BAYA"                            	69:61:2e:00	 (World size: 17.501995)
+	256x64  	-	[  fM       ]	"TARMAC_EDGE_PATCHY_BAYA"               	76:67:4f:00	 (World size: 8.991451)
+	128x128 	-	[  fM   !   ]	"TRAINBRIDGE"                           	7f:80:81:00	 (World size: 55.290550)
+	256x256 	-	[  fM   !   ]	"TARMAC_SOLID_YELLOW"                   	61:53:54:00	 (World size: 10.441727)
+	128x128 	-	[  fM   !   ]	"ROCKS_FOLIAGE"                         	8c:77:4e:00	 (World size: 25.430138)
+	256x256 	-	[  fM       ]	"DRYGRASS_BAYA"                         	70:6b:34:00	 (World size: 24.654678)
+	256x256 	-	[  fM   !   ]	"TARMAC_UNDOTTED_WHITE"                 	5d:4f:52:00	 (World size: 21.621820)
+	128x128 	-	[  fM   !   ]	"TARMAC_FINISHLINE"                     	5d:50:46:00	 (World size: 4.753472)
+	256x256 	-	[  fM   !   ]	"TARMAC_DASHED_WHITE"                   	5f:51:54:00	 (World size: 7.129567)
+	128x128 	-	[  fM       ]	"CONCRETE_PITLANE"                      	90:89:76:00	 (World size: 32.051346)
+	256x64  	-	[  fM       ]	"TARMAC_EDGE_V1_BAYA"                   	58:4c:38:00	 (World size: 15.599687)
+	256x64  	-	[  fM       ]	"TARMAC_EDGE_MERGE_BAYA"                	69:5b:46:00	 (World size: 9.641031)
+	256x256 	-	[  fM   !   ]	"TARMAC_DOUBLE_DASHED_WHITE"            	5d:50:52:00	 (World size: 12.309811)
+	64x64   	-	[  f        ]	"MINISKY"                               	7e:88:7f:00	 (World size: 3483.091309)
+	256x256 	-	[  f      # ]	"BAYB_SEG8"                             	8b:97:a5:00	 (World size: 2325.032715)
+	256x256 	-	[  f      # ]	"BAYB_SEG1"                             	b6:c5:cd:00	 (World size: 2325.032715)
+	256x256 	-	[  f      # ]	"BAYB_SEG2"                             	a1:ab:b4:00	 (World size: 2325.032959)
+	256x256 	-	[  f      # ]	"BAYB_SEG3"                             	7b:83:90:00	 (World size: 2325.033447)
+	256x256 	-	[  f      # ]	"BAYB_SEG4"                             	80:89:98:00	 (World size: 2325.032471)
+	256x256 	-	[  f      # ]	"BAYB_SEG5"                             	8a:93:a3:00	 (World size: 2360.591797)
+	256x256 	-	[  f      # ]	"BAYB_SEG6"                             	80:88:96:00	 (World size: 2360.591553)
+	256x256 	-	[  f      # ]	"BAYB_SEG7"                             	71:79:8c:00	 (World size: 2325.032959)
+	512x128 	-	[  fM   !   ]	"STARTGRID"                             	93:92:92:00	 (World size: 39.747887)
+	64x64   	-	[ASfM   !   ]	"GIRDERS"                               	42:24:24:00	 (World size: 9.137350)
+	64x64   	-	[ASfM   !   ]	"NEW_BARRIERS"                          	93:93:93:00	 (World size: 4.566588)
+	256x256 	-	[  fM   !   ]	"AD_TEMP"                               	8b:8b:91:00	 (World size: 21.170296)
+	32x32   	-	[ASf        ]	"ANIMATED5_1"                           	00:00:00:14	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED5"                             	00:00:00:14	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED5_2"                           	00:00:00:12	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED5_3"                           	00:00:00:11	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED5_4"                           	00:00:00:13	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED5_5"                           	00:00:00:0f	 (World size: 2.580362)
+	128x32  	-	[  f    !   ]	"ANIMATED2_5"                           	00:3d:03:00	 (World size: 4.843741)
+	128x32  	-	[  f    !   ]	"ANIMATED2_1"                           	00:3b:03:00	 (World size: 4.843741)
+	128x32  	-	[  f    !   ]	"ANIMATED2_2"                           	00:1d:01:00	 (World size: 4.843741)
+	128x32  	-	[  f    !   ]	"ANIMATED2_3"                           	00:1d:02:00	 (World size: 4.843741)
+	128x32  	-	[  f    !   ]	"ANIMATED2_4"                           	00:3c:03:00	 (World size: 4.843741)
+	128x32  	-	[  f    !   ]	"ANIMATED2"                             	00:3b:03:00	 (World size: 4.843741)
+	16x16   	-	[  fM       ]	"ANIMATED1_2"                           	cf:a4:50:00	 (World size: 0.563361)
+	16x16   	-	[  fM       ]	"ANIMATED1_1"                           	a9:6a:34:00	 (World size: 0.563361)
+	16x16   	-	[  fM       ]	"ANIMATED1"                             	cf:a4:50:00	 (World size: 0.563361)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

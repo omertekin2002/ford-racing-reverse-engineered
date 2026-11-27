@@ -9,7 +9,9 @@ import { lookupTranslation, parseTranslationTable } from "../src/formats/tlate";
 import { collectUiNodes, indexUiTemplates, parseUiScript } from "../src/formats/uiScript";
 import { NodeVfs } from "../src/vfs/nodeVfs";
 
-const DEMO_ROOT = "/home/omertekin2002/.cache/fr3/agent-demo/extracted/Program_Executable_Files";
+import { fileURLToPath } from "node:url";
+
+const DEMO_ROOT = fileURLToPath(new URL("../../game", import.meta.url));
 
 function buildSyntheticPcg(): Uint8Array {
   // 2 entries: one 4x4 DXT3 (16 bytes), one 2x2 raw BGR+invA (16 bytes).
@@ -174,12 +176,12 @@ test("UI script parser handles nesting, inheritance, includes, connections, and 
   assert.deepEqual(btn.colour, [255, 128, 50, 255]);
 });
 
-test("real demo UI, PCG, font, and translation files parse completely", { skip: !fs.existsSync(DEMO_ROOT) }, async () => {
+test("real Shuffle UI, PCG, font, and translation files parse completely", { skip: !fs.existsSync(DEMO_ROOT) }, async () => {
   const vfs = await NodeVfs.open(DEMO_ROOT);
 
-  // 1. All 62 PCGs / 654 entries
+  // 1. All 58 PCGs / 1,222 entries
   const pcgPaths = vfs.list("graphics/").filter((p) => p.endsWith(".pcg"));
-  assert.equal(pcgPaths.length, 62);
+  assert.equal(pcgPaths.length, 58);
   const pcgCache = new Map<string, ReturnType<typeof parsePcg>>();
   let totalEntries = 0;
   for (const p of pcgPaths) {
@@ -192,7 +194,7 @@ test("real demo UI, PCG, font, and translation files parse completely", { skip: 
       assert.equal(rgba.length, entry.storedWidth * entry.storedHeight * 4);
     }
   }
-  assert.equal(totalEntries, 654);
+  assert.equal(totalEntries, 1222);
 
   // 2. All 6 fonts / 804 glyphs
   const fontBase = await vfs.readBytes("FONTS/fontbase.dat");
@@ -208,9 +210,9 @@ test("real demo UI, PCG, font, and translation files parse completely", { skip: 
     assert.equal(atlas.glyphs.size, 134);
   }
 
-  // 3. English translation table (1,648 entries)
+  // 3. English translation table (2,065 entries)
   const tlate = parseTranslationTable(await vfs.readBytes("LANGUAGE/TLATE_EN.DAT"));
-  assert.equal(tlate.entries.size, 1648);
+  assert.equal(tlate.entries.size, 2065);
 
   // 4. All 92 UI files (201 balanced blocks, all 52 distinct non-none TEXTURE_ENUM paths resolve)
   const uiPaths = vfs.list("ui/").filter((p) => p.endsWith(".ui"));

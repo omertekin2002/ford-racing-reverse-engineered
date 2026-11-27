@@ -1,0 +1,414 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"BIRDA"                                	scenes\animated\birda.ma
+	"TRACKMAP"                             	scenes\trackmap\trackmap.ma
+	"LARGEFENCE"                           	scenes\moveable\large_fence.ma
+	"SMALLFENCE"                           	scenes\moveable\small_fence.ma
+	"MIDFENCE"                             	scenes\moveable\mid_fence.ma
+	"DT2CONE"                              	scenes\moveable\dt2_traffic_cone.ma
+	"DANGER"                               	scenes\moveable\dt2_danger_bar.ma
+	"MONOPOLE"                             	scenes\accessories\monopole.ma
+	"MONORAILPOLE"                         	scenes\accessories\monorailpole.ma
+	"TRAFFLIGHT_RED"                       	scenes\accessories\trafflightred.ma
+	"TRAFFIC_LIGHT_ANIM"                   	scenes\accessories\trafflightanim.ma
+	"ROOFPIPES"                            	scenes\accessories\roofpipes.ma
+	"ORNATEPOST_SIGN"                      	scenes\accessories\ornate_post_sign.ma
+	"TRAFFLIGHT"                           	scenes\accessories\trafflight.ma
+	"T_POLE2"                              	scenes\accessories\t_pole2.ma
+	"T_POLE"                               	scenes\accessories\t_pole.ma
+	"ORNATEPOST"                           	scenes\accessories\ornate_post.ma
+	"LAMPPOST"                             	scenes\accessories\lampost.ma
+	"TREE_XL"                              	scenes\accessories\tree xl.ma
+	"PARTICLE_EFFECTS"                     	scenes\particles\track_particles.ma
+	"SKYDOME"                              	scenes\environment\dtown2_skydome.ma
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"DTOWN2F_CUT_UP"                       	
+	"DTOWN2F_OBJECTS"                      	
+	"EFFECTS"                              	scenes\effects\effects.ma
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+	"REVERSE_START_LINE"
+	"FORWARD_START_LINE"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid damage names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid skeletal animation names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+	"TRACK_LINK_NORMAL"
+	"TRACK_LINK_TELEGRAPH"
+	"TRACK_LINK_FADING_NORMAL"
+	"FENCE_METAL"
+	"WOOD"
+	"RUBBER"
+	"TRACK_LINK_NONBFC"
+	"TRACK_LINK_SHADOW"
+	"TRACK_LINK_OVERLAY"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"AMBIENT"
+	"SUNLIGHT"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+	"METAL"
+	"WOOD"
+	"STONE"
+	"TELEGRAPH_LINK_TYPE_A"
+	"TELEGRAPH_LINK_TYPE_B"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+	"WATERFALL"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+	% = Texture is just a palette, with shared image data
+
+	Size			Type		Name												Palette filename
+
+	128x64  	-	[  fM  !   ]	"DT2_SIGN_LAMPOST"                      	8b:54:30:00	 (World size: 1.284895)
+	256x32  	-	[  fM  !   ]	"SIGN_01"                               	93:61:64:00	 (World size: 15.082390)
+	128x32  	-	[  fM  !   ]	"SIGN_02"                               	b7:9e:9e:00	 (World size: 8.846344)
+	128x32  	-	[  fM  !   ]	"SIGN_03"                               	a5:85:58:00	 (World size: 12.775844)
+	128x32  	-	[  fM  !   ]	"SIGN_04"                               	93:5f:5a:00	 (World size: 10.838132)
+	64x64   	-	[  fM      ]	"MINISKY"                               	c7:c9:ca:00	 (World size: 3427.191406)
+	128x128 	-	[  f     # ]	"SKYBOX_T"                              	7c:80:a3:00	 (World size: 2011.848755)
+	256x64  	-	[A f    $# ]	"PANORAMA_B"                            	72:70:69:8b	 (World size: 1484.402832)
+	256x64  	-	[A f    $# ]	"PANORAMA_C"                            	5d:5d:5a:a0	 (World size: 1484.408081)
+	256x64  	-	[A f    $# ]	"PANORAMA_D"                            	6e:6a:66:95	 (World size: 1483.307251)
+	256x128 	-	[  f     # ]	"SKYBOX_B"                              	7c:81:a4:00	 (World size: 1631.281738)
+	256x128 	-	[  f     # ]	"SKYBOX_F"                              	81:85:a4:00	 (World size: 1621.834595)
+	256x128 	-	[  f     # ]	"SKYBOX_L"                              	7e:83:a5:00	 (World size: 1631.281128)
+	256x128 	-	[  f     # ]	"SKYBOX_R"                              	7e:83:a5:00	 (World size: 1621.835205)
+	256x64  	-	[A f    $# ]	"PANORAMA_A"                            	8a:84:7b:7f	 (World size: 1479.041504)
+	256x64  	-	[A fM   $  ]	"TARMAC_DT2_LINEOVER"                   	38:33:2b:42	 (World size: 11.211747)
+	128x128 	-	[ASfM  !   ]	"TREE_LEAF_XTRALARGE"                   	37:43:25:76	 (World size: 13.485621)
+	128x128 	-	[ASfM  !   ]	"TREE_M_05_B_LARGE"                     	3a:47:2a:64	 (World size: 3.695229)
+	128x128 	-	[  fM  !   ]	"DT2_HILLGRASS001"                      	55:50:39:00	 (World size: 11.494369)
+	128x64  	-	[A fM   $  ]	"DT2_HEDGE"                             	30:45:1e:ec	 (World size: 4.809763)
+	64x64   	-	[A fM   $  ]	"CH_TREE_SHADOW"                        	00:00:00:50	 (World size: 22.005651)
+	64x64   	-	[  fM  !   ]	"TREE_BARK_XTRALARGE"                   	73:70:68:00	 (World size: 5.368862)
+	64x64   	-	[  fM  !  %]	"TREE_BARK"                             	73:70:68:00	 (World size: 1.584804)
+	128x32  	-	[  fM  !   ]	"DT2_MWALL8"                            	c5:a0:97:00	 (World size: 3.280341)
+	128x128 	-	[  fM  !   ]	"DT2_CHINBUILD006A"                     	82:36:34:00	 (World size: 8.857115)
+	128x128 	-	[A fM   $  ]	"DT2_BUILDBOTTOM001"                    	6c:48:3a:fd	 (World size: 5.693128)
+	128x128 	-	[A fM   $  ]	"DT2_BUILDTOP002"                       	64:46:3a:f9	 (World size: 5.819190)
+	128x128 	-	[A fM   $  ]	"DT2_BUILDBOTTOM002"                    	47:38:30:e3	 (World size: 6.066538)
+	64x64   	-	[  fM  !   ]	"DT2_STRIPEY-CANOPY"                    	8e:6d:6c:00	 (World size: 2.986783)
+	128x128 	-	[  fM      ]	"DT2_SIGNS"                             	8d:85:5b:00	 (World size: 4.733342)
+	128x64  	-	[  fM      ]	"DT2_SIGN_006"                          	8d:7a:30:00	 (World size: 4.696465)
+	128x64  	-	[  fM  !   ]	"DT2_SIGN_005"                          	b6:a2:62:00	 (World size: 6.010545)
+	128x64  	-	[  fM  !   ]	"DT2_SIGN_004"                          	89:82:80:00	 (World size: 4.181481)
+	128x64  	-	[  fM      ]	"DT2_SIGN_003"                          	8a:83:85:00	 (World size: 4.699158)
+	128x64  	-	[  fM      ]	"DT2_SIGN_002"                          	56:75:59:00	 (World size: 4.489229)
+	128x64  	-	[  fM      ]	"DT2_SIGN_001"                          	90:3d:3e:00	 (World size: 5.170925)
+	128x64  	-	[ASfM  !   ]	"DT2_SHOPICON003"                       	99:44:27:bf	 (World size: 2.824681)
+	64x64   	-	[  fM      ]	"DT2_SHOPICON001"                       	70:73:4f:00	 (World size: 2.126715)
+	128x64  	-	[A fM   $  ]	"DT2_SHOPFRONT005"                      	5f:5d:4a:dd	 (World size: 12.077368)
+	64x32   	-	[  fM  !   ]	"DT2_PIPE"                              	75:77:73:00	 (World size: 2.118295)
+	128x128 	-	[  fM  !   ]	"DT2_MWALL001"                          	80:7e:71:00	 (World size: 6.847693)
+	128x128 	-	[  fM  !   ]	"DT2_MWALL002"                          	67:5e:56:00	 (World size: 5.203499)
+	128x128 	-	[  fM  !   ]	"DT2_MWALL6"                            	7c:7a:6f:00	 (World size: 6.852819)
+	128x128 	-	[  fM  !   ]	"DT2_MWALL10"                           	8d:52:4c:00	 (World size: 7.774764)
+	128x128 	-	[  fM  !   ]	"DT2_MWALL03"                           	6d:6c:62:00	 (World size: 8.943664)
+	128x64  	-	[  fM  !   ]	"DT2_MWALL9"                            	bc:75:69:00	 (World size: 3.680497)
+	128x64  	-	[A fM   $  ]	"DT2_MSHOPFRONT3"                       	3f:41:33:b7	 (World size: 6.602176)
+	128x64  	-	[A fM   $  ]	"DT2_MSHOPFRONT1"                       	40:3e:31:dd	 (World size: 12.716892)
+	128x32  	-	[  fM  !   ]	"DT2_GREEN-CANOPY"                      	62:95:7a:00	 (World size: 6.212398)
+	64x64   	-	[ASfM  !   ]	"DT2_FENCE_001"                         	75:5f:53:51	 (World size: 2.444845)
+	64x64   	-	[  fM  !   ]	"DT2_DETAIL002"                         	8e:8f:84:00	 (World size: 3.873552)
+	64x64   	-	[  fM  !   ]	"DT2_DETAIL001"                         	a9:ab:a6:00	 (World size: 6.195741)
+	128x128 	-	[  fM  !   ]	"DT2_CHINBUILD007"                      	9d:47:4d:00	 (World size: 6.448419)
+	64x32   	-	[ASfM  !   ]	"DT2_CANOPYFRILL_C"                     	36:2f:3e:ea	 (World size: 2.207749)
+	128x128 	-	[  fM  !  %]	"DT2_CHINBUILD006"                      	53:5f:50:00	 (World size: 14.318318)
+	128x64  	-	[  fM      ]	"DT2_CHINBUILD005"                      	72:71:69:00	 (World size: 15.654117)
+	128x128 	-	[A fM   $  ]	"DT2_CHINBUILD004"                      	69:51:47:c1	 (World size: 7.910548)
+	128x64  	-	[  fM      ]	"DT2_CHINBUILD003"                      	c4:ad:39:00	 (World size: 4.012190)
+	256x128 	-	[  fM  !   ]	"DT2_CHINBUILD002"                      	bd:ba:b1:00	 (World size: 13.579160)
+	256x128 	-	[  fM  !  %]	"DT2_CHINBUILD001"                      	af:56:56:00	 (World size: 23.913336)
+	64x32   	-	[ASfM  !  %]	"DT2_CANOPYFRILL_B"                     	5a:26:26:ea	 (World size: 1.599637)
+	64x64   	-	[  fM  !   ]	"DT2_CANOPYFRILL_A"                     	76:2e:2b:00	 (World size: 3.208907)
+	128x128 	-	[A fM   $  ]	"DT2_BUILDTOP008"                       	65:6c:5f:f8	 (World size: 4.992559)
+	64x64   	-	[  fM  !   ]	"DT2_BUILDTOP007A"                      	83:89:7a:00	 (World size: 4.462992)
+	64x64   	-	[  fM  !   ]	"DT2_BUILDTOP007"                       	7a:6f:43:00	 (World size: 4.035878)
+	128x64  	-	[  fM  !   ]	"DT2_BUILDTOP006"                       	8a:91:8b:00	 (World size: 4.654602)
+	128x128 	-	[  fM  !   ]	"DT2_BUILDTOP005"                       	9c:91:7e:00	 (World size: 12.529366)
+	128x64  	-	[A fM   $  ]	"DT2_BUILDTOP004"                       	88:7d:6b:ea	 (World size: 6.289882)
+	64x64   	-	[A fM   $  ]	"DT2_BUILDTOP003"                       	7a:77:71:f5	 (World size: 5.421373)
+	64x64   	-	[A fM   $  ]	"DT2_BUILDTOP001"                       	76:7a:7d:ec	 (World size: 6.697420)
+	128x128 	-	[  fM  !   ]	"DT2_BUILDBOTTOM005"                    	4b:57:53:00	 (World size: 4.953228)
+	128x128 	-	[A fM      ]	"DT2_BUILDBOTTOM004"                    	4d:4b:42:cc	 (World size: 5.320386)
+	128x128 	-	[A fM   $  ]	"DT2_BUILDBOTTOM003"                    	6f:70:6d:d7	 (World size: 10.358640)
+	64x64   	-	[  fM  !   ]	"DT2_AWNING02"                          	d6:e2:dc:00	 (World size: 12.709126)
+	256x128 	-	[  fM  !   ]	"DT2_BACKDROP"                          	8d:8a:84:00	 (World size: 22.992695)
+	128x64  	-	[  fM  !   ]	"DT2_BLUECANOPY"                        	56:77:8c:00	 (World size: 4.527938)
+	256x256 	-	[  fM  !   ]	"DT2_WHITEWALL"                         	da:d7:d2:00	 (World size: 7.521556)
+	128x64  	-	[  fM      ]	"CH_CONCTOP_002"                        	cd:d2:d1:00	 (World size: 4.592193)
+	128x64  	-	[A fM   $  ]	"CH_CONCTOP_001"                        	c0:c6:c4:f1	 (World size: 6.367747)
+	128x32  	-	[ASfM  !   ]	"DT2_SHOPICON002"                       	a3:84:13:4d	 (World size: 4.732598)
+	64x64   	-	[A fM   $  ]	"BUILD_WIN_TOP_128_013"                 	76:73:6a:eb	 (World size: 10.538121)
+	64x64   	-	[A fM   $  ]	"BUILD_WIN_TOP_128_022"                 	65:61:5c:e1	 (World size: 14.014544)
+	256x256 	-	[  fM  !   ]	"DT_BROWNWALL"                          	a5:99:8f:00	 (World size: 16.334517)
+	128x64  	-	[  fM  !   ]	"DT_BUILDTOP_010"                       	77:74:69:00	 (World size: 15.311703)
+	128x32  	-	[  fM  !   ]	"BLUE-CANOPY"                           	61:80:95:00	 (World size: 5.996672)
+	64x64   	-	[A fM   $  ]	"DT_BUILDTOP_011"                       	82:88:8b:f7	 (World size: 20.167889)
+	64x64   	-	[A fM   $  ]	"DT_BUILDTOP_012"                       	79:7c:7d:f3	 (World size: 12.514727)
+	128x64  	-	[  fM  !   ]	"SHOP_SIGN_003"                         	ac:93:7d:00	 (World size: 4.658895)
+	128x64  	-	[  fM  !   ]	"RIOLTA_02"                             	6d:68:60:00	 (World size: 23.891050)
+	16x16   	-	[  fM  !  %]	"DT_JEWEL001"                           	92:3a:46:00	 (World size: 346.873718)
+	16x16   	-	[  fM  !  %]	"DT_JEWEL001A"                          	00:00:00:00	 (World size: 7.785208)
+	32x32   	-	[  fM  !   ]	"DT_JEWEL002"                           	a2:9a:8c:00	 (World size: 6.431927)
+	64x64   	-	[A fM   $  ]	"DT_JEWEL003"                           	88:84:7a:df	 (World size: 21.154236)
+	64x64   	-	[A fM   $  ]	"DT_JEWEL004"                           	8f:8e:87:e3	 (World size: 6.911033)
+	128x32  	-	[  fM  !   ]	"DT_JEWEL_SIGN1"                        	84:43:47:00	 (World size: 4.106900)
+	128x32  	-	[  fM  !   ]	"DT_JEWEL_SIGN2"                        	8a:40:47:00	 (World size: 4.106913)
+	128x64  	-	[  fM  !   ]	"DT_LEASE_SIGN"                         	ce:a0:a1:00	 (World size: 3.347880)
+	128x64  	-	[  fM  !   ]	"DT_PILLAR_001"                         	8d:3f:2d:00	 (World size: 3.108179)
+	128x64  	-	[A fM   $  ]	"DT_SHOPFRONT_001"                      	36:3d:38:cc	 (World size: 5.551806)
+	128x64  	-	[  fM  !   ]	"DT_SHUTTER002"                         	2c:29:23:00	 (World size: 8.959240)
+	128x64  	-	[  fM  !   ]	"DT_THOVER001"                          	86:86:80:00	 (World size: 4.439863)
+	128x128 	-	[ASfM  !   ]	"DT_UNIQUE_001"                         	6b:68:62:eb	 (World size: 7.571362)
+	128x128 	-	[ASfM  !   ]	"DT_UNIQUE_001A"                        	99:6d:6a:ef	 (World size: 5.185553)
+	128x128 	-	[  fM  !   ]	"DT_UNIQUE_001B"                        	29:28:27:00	 (World size: 8.274912)
+	256x256 	-	[  fM  !   ]	"DT_WHITEWALL"                          	da:d7:d3:00	 (World size: 33.804359)
+	128x64  	-	[A fM   $  ]	"DT_BUILDTOP_003"                       	61:61:52:e6	 (World size: 20.241943)
+	128x64  	-	[  fM  !   ]	"DT_BUILDTOP_007"                       	bf:ae:96:00	 (World size: 11.707534)
+	128x64  	-	[A fM   $  ]	"DT_BUILDTOP_007A"                      	9f:8b:71:e9	 (World size: 15.506511)
+	128x64  	-	[  fM  !   ]	"DT_BUILDTOP_009"                       	ad:b0:a8:00	 (World size: 11.208931)
+	128x64  	-	[A fM   $  ]	"DT_BUILDINGTOP_001"                    	4d:4f:4f:d2	 (World size: 8.133026)
+	64x64   	-	[  fM  !   ]	"DT_BUILDING_CENTERLINE_001"            	a2:94:8e:00	 (World size: 4.051239)
+	128x128 	-	[  fM  !   ]	"BUILDINGSIDE_002"                      	97:8d:88:00	 (World size: 10.925103)
+	64x64   	-	[  fM  !   ]	"BUILDING_ROOFLINE_001"                 	67:6a:58:00	 (World size: 4.999120)
+	64x64   	-	[A fM   $  ]	"BUILD_WIN_TOP_128_024"                 	69:64:5e:da	 (World size: 9.044991)
+	128x128 	-	[A fM   $  ]	"BUILD_WIN_TOP_128_014"                 	77:74:6d:ea	 (World size: 9.689435)
+	64x64   	-	[  fM  !   ]	"BUIL_DETAIL_128_005"                   	8c:86:7f:00	 (World size: 8.666964)
+	64x64   	-	[  fM  !   ]	"WOOD_PANEL"                            	b9:b2:b1:00	 (World size: 5.967394)
+	128x64  	-	[ASfM  !   ]	"DT_SIDE_001"                           	5b:5a:53:f5	 (World size: 46.562931)
+	128x64  	-	[  fM  !   ]	"DT_SIDE_003"                           	5c:5d:5b:00	 (World size: 45.240829)
+	128x64  	-	[  fM  !   ]	"DT_SIDE_002"                           	85:88:83:00	 (World size: 44.617855)
+	64x64   	-	[A fM   $  ]	"UNIQUE_003B"                           	75:63:58:f1	 (World size: 5.459260)
+	256x128 	-	[  fM  !   ]	"RIOLTA_01"                             	94:71:6d:00	 (World size: 15.350783)
+	256x32  	-	[ASfM  !   ]	"UNIQUE_001C"                           	61:3a:2e:e9	 (World size: 5.404553)
+	128x64  	-	[  fM  !   ]	"DT2_BUILD_001"                         	a6:a8:b2:00	 (World size: 23.761135)
+	64x32   	-	[  fM  !   ]	"DT2_BUILD_001A"                        	cb:cb:d6:00	 (World size: 14.586844)
+	128x128 	-	[A fM   $  ]	"DT2_BUILD_006"                         	78:87:8b:d2	 (World size: 7.499699)
+	128x64  	-	[A fM   $  ]	"DT2_BUILD_007"                         	81:8b:91:d8	 (World size: 10.729910)
+	256x128 	-	[  fM  !   ]	"DT2_BUILD_004"                         	6e:7b:79:00	 (World size: 36.547108)
+	256x128 	-	[A fM   $  ]	"DT2_BUILD_005"                         	74:7b:7b:ea	 (World size: 25.180958)
+	128x32  	-	[  fM  !   ]	"DT2_BUILD_007A"                        	98:98:95:00	 (World size: 3.982528)
+	128x64  	-	[A fM   $  ]	"CH_WAREHOUSESMALL_001"                 	90:93:8d:e9	 (World size: 27.657164)
+	128x64  	-	[A fM   $  ]	"CH_WAREHOUSE_001"                      	a3:a5:9c:ec	 (World size: 9.641092)
+	128x64  	-	[  fM  !   ]	"CH_WAREHOUSE_002"                      	79:7c:76:00	 (World size: 8.869527)
+	128x64  	-	[A fM   $  ]	"CH_WAREHOUSE_003"                      	61:57:4f:df	 (World size: 15.668169)
+	128x128 	-	[A fM   $  ]	"CH_WAREHOUSE_004"                      	93:75:63:ed	 (World size: 34.786404)
+	128x128 	-	[A fM   $  ]	"CH_WAREHOUSE_005"                      	89:90:93:ed	 (World size: 35.615780)
+	128x128 	-	[A fM   $  ]	"CH_WAREHOUSE_006"                      	73:6b:62:ec	 (World size: 15.555309)
+	128x64  	-	[ASfM  !   ]	"CH_U1_003"                             	5c:30:3a:87	 (World size: 7.706808)
+	128x64  	-	[A fM   $  ]	"CH_U1_005"                             	6d:65:61:b8	 (World size: 8.358852)
+	128x64  	-	[  fM  !   ]	"CH_U1_006"                             	81:6e:55:00	 (World size: 8.474635)
+	128x64  	-	[ASfM      ]	"CH_U1_007"                             	da:d3:bf:52	 (World size: 8.955450)
+	64x64   	-	[A fM   $  ]	"CH_U1_008"                             	4a:4b:4a:a5	 (World size: 9.460079)
+	128x64  	-	[  fM  !   ]	"CH_U1_009"                             	c8:a3:61:00	 (World size: 8.801695)
+	128x32  	-	[ASfM  !   ]	"CH_U1_010"                             	c1:b5:af:d3	 (World size: 6.514882)
+	128x128 	-	[  fM  !   ]	"CH_U2_001"                             	b8:ba:b8:00	 (World size: 7.158959)
+	64x64   	-	[  fM  !   ]	"CH_U2_002"                             	af:ad:ac:00	 (World size: 4.451860)
+	64x64   	-	[  fM  !   ]	"CH_U2_003"                             	1d:30:1e:00	 (World size: 11.554338)
+	128x32  	-	[  fM  !   ]	"CH_U2_004"                             	88:84:78:00	 (World size: 5.547712)
+	64x64   	-	[A fM   $  ]	"CH_U2_005"                             	46:46:42:87	 (World size: 5.153039)
+	128x32  	-	[A fM   $  ]	"CH_U2_006"                             	db:c1:c2:58	 (World size: 10.972014)
+	128x64  	-	[  fM  !   ]	"CH_U2_007"                             	67:65:5c:00	 (World size: 6.244376)
+	128x64  	-	[  fM  !   ]	"CH_U3_001"                             	c6:c7:c6:00	 (World size: 7.566884)
+	128x128 	-	[A fM   $  ]	"CH_U3_002"                             	3f:46:43:ad	 (World size: 10.078086)
+	128x128 	-	[  fM  !  %]	"CH_U2_001A"                            	d4:d5:d4:00	 (World size: 7.467978)
+	128x32  	-	[ASfM  !   ]	"CH_U3_003"                             	3d:43:41:6a	 (World size: 8.442979)
+	128x32  	-	[  fM  !   ]	"CH_U3_004"                             	75:55:51:00	 (World size: 7.460705)
+	128x64  	-	[A fM   $  ]	"CH_U4_001"                             	9b:99:8c:df	 (World size: 8.189646)
+	128x64  	-	[A fM   $  ]	"CH_U1_005A"                            	69:6a:65:d1	 (World size: 11.554447)
+	128x64  	-	[  fM  !  %]	"CH_U1_006A"                            	5c:79:6d:00	 (World size: 9.549061)
+	64x64   	-	[  fM  !   ]	"CH_U5_001"                             	3a:3c:32:00	 (World size: 4.657316)
+	128x128 	-	[  fM  !   ]	"CH_U5_003"                             	af:b3:a2:00	 (World size: 6.668849)
+	128x128 	-	[  fM  !   ]	"CH_U5_004"                             	40:3f:3a:00	 (World size: 7.735116)
+	128x128 	-	[  fM  !   ]	"CH_U5_005"                             	9c:9d:88:00	 (World size: 8.180222)
+	128x64  	-	[  fM  !   ]	"CH_DISTANCE_001"                       	53:53:4c:00	 (World size: 9.320940)
+	128x128 	-	[  fM  !   ]	"CH_DISTANCE_002"                       	54:59:55:00	 (World size: 14.050910)
+	128x64  	-	[  fM  !   ]	"CH_DISTANCE_003"                       	66:5e:5a:00	 (World size: 14.552197)
+	64x64   	-	[  fM  !   ]	"SKY_002"                               	8f:8c:8e:00	 (World size: 18.391054)
+	64x64   	-	[  fM  !   ]	"SKY_011"                               	a6:b6:b8:00	 (World size: 20.849350)
+	64x64   	-	[  fM  !   ]	"SKY_007"                               	69:80:87:00	 (World size: 12.051664)
+	128x64  	-	[  fM  !   ]	"SKY_003"                               	44:46:4b:00	 (World size: 22.341314)
+	64x64   	-	[  fM  !   ]	"SKY_005"                               	90:79:69:00	 (World size: 11.100792)
+	64x32   	-	[  fM  !   ]	"SKYSCRAPER_WINDOW_001"                 	4e:52:52:00	 (World size: 12.921679)
+	64x32   	-	[  fM  !   ]	"SKYSCRAPER_WINDOW_001A"                	4d:50:52:00	 (World size: 19.771023)
+	16x16   	-	[  fM      ]	"FILLER"                                	82:7d:75:00	 (World size: 31.891865)
+	64x64   	-	[  fM  !   ]	"CIVIC_CENTRE_09"                       	7a:7d:7b:00	 (World size: 17.566420)
+	32x32   	-	[  fM      ]	"CIVIC_CENTRE_11"                       	ae:af:ae:00	 (World size: 17.712873)
+	512x64  	-	[A fM      ]	"CHINASHOPFRONTS"                       	45:43:3f:e3	 (World size: 24.202850)
+	512x128 	-	[A fM   $  ]	"DOWNTSHOPFRONTS"                       	4b:4e:4d:d0	 (World size: 24.036623)
+	256x128 	-	[  fM  !   ]	"CH_CARGO_001"                          	72:6f:5b:00	 (World size: 14.816775)
+	256x128 	-	[  fM  !  %]	"CH_CARGO_002"                          	7e:5c:56:00	 (World size: 14.816605)
+	128x64  	-	[  fM      ]	"DT_DUMPSTER"                           	18:43:31:00	 (World size: 3.417310)
+	128x128 	-	[  fM  !   ]	"DT_CARDBOARDBOX"                       	83:77:5c:00	 (World size: 2.805400)
+	128x64  	-	[  fM  !   ]	"DT_BIN"                                	77:78:77:00	 (World size: 13.183267)
+	128x64  	-	[A fM   $  ]	"CH_ORNATE_LAMP_POST"                   	3b:46:3d:da	 (World size: 3.482584)
+	128x64  	-	[  fM  !   ]	"DT2_DANGBARR"                          	81:66:66:00	 (World size: 2.428290)
+	128x64  	-	[  fM  !   ]	"DT2_CONE"                              	92:53:54:00	 (World size: 1.570488)
+	32x32   	-	[ASfM  !   ]	"CH_TPOLES_TOP"                         	21:25:27:5f	 (World size: 1.083727)
+	128x32  	-	[  fM  !   ]	"CH_TPOLE"                              	38:2e:19:00	 (World size: 15.945245)
+	64x32   	-	[  fM  !   ]	"DT_TRAFFBASE"                          	3a:3d:42:00	 (World size: 1.147587)
+	128x32  	-	[  fM  !   ]	"DT_TRAFFLIGHT"                         	19:16:15:00	 (World size: 2.260170)
+	64x32   	-	[  fM  !  %]	"S_PIPE2"                               	75:77:73:00	 (World size: 2.264465)
+	128x32  	-	[  fM  !   ]	"DT_LIGHTBOTTOM"                        	8b:8c:8c:00	 (World size: 5.055425)
+	64x64   	-	[  fM  !   ]	"ROOFTOP_BOX"                           	b4:b3:b5:00	 (World size: 12.036494)
+	64x32   	-	[A fM   $  ]	"S_AERIAL"                              	00:00:00:27	 (World size: 30.032694)
+	64x64   	-	[A fM   $  ]	"MONO_RAILING"                          	16:2c:1e:6a	 (World size: 9.386069)
+	64x64   	-	[  fM  !   ]	"DT_LIGHTTOP2"                          	75:7c:7c:00	 (World size: 20.328772)
+	256x256 	-	[  fM  !   ]	"DT2_RAIL2"                             	80:81:73:00	 (World size: 15.499144)
+	256x128 	-	[  fM  !   ]	"DT2_RAIL"                              	92:93:84:00	 (World size: 4.914169)
+	128x128 	-	[A fM   $  ]	"DT2_CHAINFENCE"                        	43:46:43:35	 (World size: 6.244294)
+	128x64  	-	[ASfM  !   ]	"CH_IRONFENCE"                          	81:8a:87:ef	 (World size: 6.861484)
+	128x64  	-	[ASfM  !   ]	"CH_IRONFENCEA"                         	99:97:91:ef	 (World size: 6.366722)
+	128x64  	-	[A fM   $  ]	"DT2_FENCE"                             	21:20:20:40	 (World size: 2.600095)
+	32x32   	-	[  fM  !   ]	"DT2_B_FLARE"                           	26:26:26:00	 (World size: 0.950254)
+	32x32   	-	[  fM  !   ]	"DT2_FLARE003"                          	2f:13:14:00	 (World size: 0.327492)
+	64x64   	-	[  fM  !   ]	"DT2_ARROW4GLOW"                        	29:29:29:00	 (World size: 7.319039)
+	32x32   	-	[A fM      ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	128x128 	-	[A fM      ]	"HEADLIGHT_FLARE"                       	07:07:07:08	 (World size: 1.310660)
+	64x64   	-	[A fM      ]	"SPECULAR_SPRITE"                       	44:43:43:44	 (World size: 1.310660)
+	32x32   	-	[A fM      ]	"REARLIGHT_FLARE"                       	17:16:17:16	 (World size: 1.310660)
+	128x128 	-	[A fM      ]	"SUN_FLARE"                             	15:10:10:12	 (World size: 1.310660)
+	128x128 	-	[A fM      ]	"LENSE_REFLECTION"                      	39:39:39:39	 (World size: 1.310660)
+	32x32   	-	[ASfM  !  %]	"TRACK_REFLECTION"                      	00:00:00:00	 (World size: 1.310660)
+	128x128 	-	[A f    $  ]	"SMOKE"                                 	ff:ff:ff:64	 (World size: 20000.000000)
+	16x16   	-	[A fM   $  ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM   $  ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	128x128 	-	[A fM      ]	"LENSE_REFLECTION2"                     	20:20:20:35	 (World size: 1.310660)
+	256x128 	-	[  f       ]	"BUILDING_REFLECTION"                   	7f:85:89:00	 (World size: 19999.998047)
+	128x128 	-	[  fM      ]	"TRACK_SPECULAR"                        	98:98:98:00	 (World size: 15.000000)
+	256x8   	-	[A f     # ]	"HDR"                                   	1f:22:33:5e	 (World size: 19999.998047)
+	32x32   	-	[A f       ]	"REVERSELIGHT_FLARE"                    	08:07:07:06	 (World size: 20000.000000)
+	128x128 	-	[  fM  !   ]	"DT2_WALL001"                           	81:66:5d:00	 (World size: 2.630615)
+	128x128 	-	[  fM  !   ]	"DT2_WALL002"                           	82:6c:5a:00	 (World size: 2.541754)
+	128x64  	-	[  fM  !   ]	"DT2_HILL_WALL"                         	71:6c:69:00	 (World size: 12.044113)
+	256x128 	-	[  fM  !   ]	"DT2_WALL_SPECIAL001"                   	92:93:8b:00	 (World size: 4.943717)
+	256x128 	-	[  fM  !   ]	"DT2_WALL_SPECIAL002"                   	88:80:75:00	 (World size: 4.943717)
+	128x128 	-	[  fM      ]	"FIRE"                                  	52:52:52:00	 (World size: 1.310660)
+	64x64   	-	[A fM      ]	"GRASS"                                 	14:14:14:22	 (World size: 1.310660)
+	128x128 	-	[A fM   $  ]	"SMOKEANDDUST"                          	ff:ff:ff:5f	 (World size: 1.310660)
+	128x128 	-	[  fM  !   ]	"SPARK"                                 	f5:0c:0c:ff	 (World size: 1.310660)
+	128x128 	-	[A fM   $  ]	"SPRAY"                                 	ef:ef:ef:39	 (World size: 1.310660)
+	64x64   	-	[A fM   $  ]	"STREAM"                                	fe:fe:fe:6a	 (World size: 1.310660)
+	32x32   	-	[A fM   $  ]	"CH_SHADOW"                             	00:00:00:27	 (World size: 1.834389)
+	32x32   	-	[A fM   $  ]	"DT2_LIGHT_TOP"                         	01:01:01:0a	 (World size: 2.481703)
+	32x32   	-	[A fM   $  ]	"DT2_LIGHT_BOTTOM"                      	00:00:00:35	 (World size: 2.126431)
+	128x32  	-	[A fM   $  ]	"CH_ORNATE_SHADOW"                      	00:00:00:13	 (World size: 5.441826)
+	64x64   	-	[A fM   $  ]	"TPOLESHAD"                             	00:00:00:0d	 (World size: 7.555832)
+	128x128 	-	[  fM  !   ]	"SL_GANTRY"                             	41:4a:4b:00	 (World size: 10.706710)
+	16x16   	-	[  fM  !   ]	"BAR_1"                                 	85:85:85:00	 (World size: 0.955928)
+	128x64  	-	[ASfM  !   ]	"START_METAL"                           	bf:bf:bf:63	 (World size: 1.508187)
+	256x64  	-	[  fM  !   ]	"STARTFINISH"                           	63:63:63:00	 (World size: 21.228659)
+	128x128 	-	[  fM  !   ]	"CEMENT_01"                             	7b:78:75:00	 (World size: 3.765746)
+	256x256 	-	[A fM  !$  ]	"TARMAC_DT2_ROAD003"                    	69:68:61:05	 (World size: 8.749673)
+	256x256 	-	[A fM  !$  ]	"TARMAC_DT2_ROAD002"                    	6c:6b:62:08	 (World size: 7.441563)
+	256x256 	-	[A fM  !$  ]	"TARMAC_DT2_ROAD001"                    	6a:69:63:07	 (World size: 7.401541)
+	256x256 	-	[  fM  !   ]	"GRAVEL_DT2_GRAVEL"                     	6f:6c:65:00	 (World size: 5.722787)
+	256x256 	-	[A fM  !$  ]	"TARMAC_JUNCTION_02"                    	72:54:53:25	 (World size: 7.565613)
+	256x256 	-	[  fM  !   ]	"DT2_PAVING"                            	84:7c:70:00	 (World size: 5.070195)
+	256x256 	-	[  fM  !   ]	"DT2_CONCRETE"                          	74:79:71:00	 (World size: 10.501144)
+	256x64  	-	[A fM  !$  ]	"KERB_RED"                              	86:50:55:20	 (World size: 2.454085)
+	128x128 	-	[  fM  !   ]	"DT2_PLANTER"                           	43:42:42:00	 (World size: 4.581112)
+	128x128 	-	[  fM  !   ]	"HERRING_DT2_HERRING"                   	5c:42:43:00	 (World size: 2.517906)
+	256x64  	-	[A fM  !$  ]	"KERB_GREY"                             	72:73:68:1f	 (World size: 5.896171)
+	256x256 	-	[A fM  !$  ]	"PAVEMENT_2"                            	77:58:4d:05	 (World size: 7.712811)
+	256x256 	-	[A fM  !$  ]	"PAVEMENT_1"                            	71:6d:69:0e	 (World size: 7.358495)
+	64x64   	-	[A fM   $  ]	"S_PYLON"                               	3b:3b:3b:18	 (World size: 25.328194)
+	16x16   	-	[A fM   $  ]	"TRACKMAP_OUTLINE"                      	c1:c1:c4:be	 (World size: 88.153008)
+	16x16   	-	[A fM   $  ]	"TRACKMAP_OUTLINE_II_2"                 	c1:be:05:be	 (World size: 196.624451)
+	32x32   	-	[A fM   $  ]	"FINISH"                                	7f:7f:7f:f6	 (World size: 24.100695)
+	64x64   	-	[A fM   $  ]	"ANIMATED6"                             	00:00:00:06	 (World size: 11.795940)
+	64x64   	-	[A fM   $  ]	"ANIMATED6_1"                           	00:00:00:06	 (World size: 11.795940)
+	64x64   	-	[A fM   $  ]	"ANIMATED6_2"                           	00:00:00:06	 (World size: 11.795940)
+	64x64   	-	[A fM   $  ]	"ANIMATED6_3"                           	00:00:00:06	 (World size: 11.795940)
+	64x64   	-	[A fM   $  ]	"ANIMATED6_4"                           	00:00:00:06	 (World size: 11.795940)
+	64x64   	-	[A fM   $  ]	"ANIMATED6_5"                           	00:00:00:05	 (World size: 11.795940)
+	64x64   	-	[A fM   $  ]	"ANIMATED6_6"                           	00:00:00:06	 (World size: 11.795940)
+	64x64   	-	[A fM   $  ]	"ANIMATED6_9"                           	00:00:00:06	 (World size: 11.795940)
+	64x64   	-	[A fM   $  ]	"ANIMATED6_10"                          	00:00:00:06	 (World size: 11.795940)
+	64x64   	-	[A fM   $  ]	"ANIMATED6_11"                          	00:00:00:06	 (World size: 11.795940)
+	64x64   	-	[A fM   $  ]	"ANIMATED6_7"                           	00:00:00:06	 (World size: 11.795940)
+	64x64   	-	[A fM   $  ]	"ANIMATED6_8"                           	00:00:00:06	 (World size: 11.795940)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

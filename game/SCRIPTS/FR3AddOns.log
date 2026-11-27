@@ -1,0 +1,1922 @@
+FR3AddOns 0.8 loaded
+exe build 41640844: 324 of 324 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds pillarbox
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x1.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.14
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 00000001 -> 00000000
+anisotropic filtering x16
+MSAA x8
+MSAA x8: 1920x1080 scene target
+text: language\tlate_en.dat + 0 add-on lines, 395 added names, 1 shown by name
+grid: BAYAF (ported from FR2), slot k at -(15 k + 20) m
+grid: FR3TPF , slot k at -(20 k + 10) m
+grid: FUKUOKA (ported from FR2), slot k at -(15 k + 20) m
+FR3AddOns 0.8 loaded
+exe build 41640844: 324 of 324 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+physics: at least 100 steps per second (60 fps: 2 steps per frame)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 1 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 00000001 -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 0 add-on lines, 397 added names, 1 shown by name
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+grid: TMONZA , slot k at -(20 k + 10) m
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+grid: TFUKUOKA , slot k at -(20 k + 10) m
+grid: THOCKEN3 , slot k at -(20 k + 10) m
+grid: THOCKEN , slot k at -(20 k + 10) m
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+grid: OVAL2 , slot k at -(20 k + 10) m
+grid: TSPRING3 , slot k at -(20 k + 10) m
+grid: DESC , slot k at -(20 k + 10) m
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+grid: TMONZA2 , slot k at -(20 k + 10) m
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+grid: TMONZA2 , slot k at -(20 k + 10) m
+grid: JUNGB , slot k at -(20 k + 10) m
+grid: SPRING , slot k at -(20 k + 10) m
+grid: THOCKEN , slot k at -(20 k + 10) m
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: 223 chunks, 189356 bytes, block 189356 bytes
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: 223 chunks, 189356 bytes, block 189356 bytes
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: 223 chunks, 189356 bytes, block 189356 bytes
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: 223 chunks, 189356 bytes, block 189356 bytes
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: 223 chunks, 189356 bytes, block 189356 bytes
+FR3AddOns 0.8.6 loaded
+exe build 41640844: 349 of 349 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+frame rate: up to 360 fps (refresh rate)
+frame pacer: exact periods (microseconds), game time = real time; with vsync, frames longer than a refresh are not held back
+game speed: frame waits match the game time (retail runs 0.6% fast at 60 fps, more above)
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 + compositor sync -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: 223 chunks, 189356 bytes, block 189356 bytes
+grid: ARENA1F , slot k at -(20 k + 10) m
+FR3AddOns 0.9 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races above 122 fps up to the refresh rate, game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: 223 chunks, 189356 bytes, block 189356 bytes
+grid: ARENA1F , slot k at -(20 k + 10) m
+FR3AddOns 0.9 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races above 122 fps up to the refresh rate, game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: 223 chunks, 189356 bytes, block 189356 bytes
+grid: ARENA1F , slot k at -(20 k + 10) m
+FR3AddOns 0.9 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races above 122 fps up to the refresh rate, game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: 223 chunks, 189356 bytes, block 189356 bytes
+grid: ARENA1F , slot k at -(20 k + 10) m
+FR3AddOns 0.9 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races above 122 fps up to the refresh rate, game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: 223 chunks, 189356 bytes, block 189356 bytes
+grid: ARENA1F , slot k at -(20 k + 10) m
+FR3AddOns 0.9 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races above 122 fps up to the refresh rate, game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: 223 chunks, 189356 bytes, block 189356 bytes
+grid: ARENA1F , slot k at -(20 k + 10) m
+FR3AddOns 0.9 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races above 122 fps up to the refresh rate, game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: 223 chunks, 189356 bytes, block 189356 bytes
+grid: ARENA1F , slot k at -(20 k + 10) m
+FR3AddOns 0.9 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races above 122 fps up to the refresh rate, game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: 223 chunks, 189356 bytes, block 189356 bytes
+grid: ARENA1F , slot k at -(20 k + 10) m
+FR3AddOns 0.9 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD anchored, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races above 122 fps up to the refresh rate, game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "CUSTOM TRACKS"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: 223 chunks, 189356 bytes, block 189356 bytes
+grid: ARENA1F , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+grid: SPRING2 , slot k at -(20 k + 10) m
+grid: FLORA , slot k at -(20 k + 10) m
+grid: TSPRING3 , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+grid: TMONZA2 , slot k at -(20 k + 10) m
+grid: TSCHILT , slot k at -(20 k + 10) m
+grid: TSEBRING2 , slot k at -(20 k + 10) m
+grid: TSEBRING , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+grid: TFUKUOKA2 , slot k at -(20 k + 10) m
+grid: THOCKEN3 , slot k at -(20 k + 10) m
+grid: TROCK , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+MSAA x2: 1920x1080 scene target
+grid: TSPRING2 , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 431 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+grid: TSPRING2 , slot k at -(20 k + 10) m
+grid: TMONZA , slot k at -(20 k + 10) m
+grid: FLORA (ported from FR2), slot k at -(15 k + 20) m
+grid: BAYB (ported from FR2), slot k at -(15 k + 20) m
+grid: JUNGB (ported from FR2), slot k at -(15 k + 20) m
+grid: DESC (ported from FR2), slot k at -(15 k + 20) m
+grid: JAPBF , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 433 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 433 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+grid: TROCK , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 34 add-on lines, 433 added names, 7 shown by name
+save: chunks 216 and 221 share id 00006CFF (loaded in order)
+save: 223 chunks, 186955 bytes, block 186955 bytes
+grid: TROCK , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 58 add-on lines, 457 added names, 7 shown by name
+save: 223 chunks, 244579 bytes, block 244579 bytes
+grid: TOPAN1F , slot k at -(20 k + 10) m
+grid: FWAY1F , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 58 add-on lines, 457 added names, 7 shown by name
+save: 223 chunks, 244579 bytes, block 244579 bytes
+grid: ALASCF , slot k at -(20 k + 10) m
+grid: JAPCF , slot k at -(20 k + 10) m
+grid: OVAL1F , slot k at -(20 k + 10) m
+MSAA x2: 1920x1080 scene target
+grid: PACCF , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 82 add-on lines, 481 added names, 7 shown by name
+save: 223 chunks, 302219 bytes, block 302219 bytes
+grid: TOPAN1F , slot k at -(20 k + 10) m
+grid: WATCF , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 82 add-on lines, 481 added names, 7 shown by name
+save: 223 chunks, 302219 bytes, block 302219 bytes
+grid: TROCK , slot k at -(20 k + 10) m
+grid: THOCKEN , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 82 add-on lines, 485 added names, 7 shown by name
+save: 223 chunks, 302267 bytes, block 302267 bytes
+grid: ENGAF , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 82 add-on lines, 486 added names, 7 shown by name
+save: 223 chunks, 302267 bytes, block 302267 bytes
+grid: TSEBRING , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 82 add-on lines, 486 added names, 7 shown by name
+save: 223 chunks, 302283 bytes, block 302283 bytes
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 120 add-on lines, 523 added names, 7 shown by name
+save: 223 chunks, 302587 bytes, block 302587 bytes
+grid: WATDF , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 152 add-on lines, 555 added names, 7 shown by name
+save: 223 chunks, 302843 bytes, block 302843 bytes
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 356 of 356 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: switch distances x10.00, wide FOV compensated
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x2
+MSAA x2: 1920x1080 scene target
+text: language\tlate_en.dat + 152 add-on lines, 555 added names, 7 shown by name
+save: 223 chunks, 302843 bytes, block 302843 bytes
+grid: TSEBRING , slot k at -(20 k + 10) m
+grid: TROCK , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 368 of 368 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: always LOD 0 (or the model's lowest the game uses)
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+opponent cars: AI cars drawn from up to 1024 cars of the player's group (was 20, then a crash)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x0
+text: language\tlate_en.dat + 152 add-on lines, 555 added names, 7 shown by name
+save: 223 chunks, 302843 bytes, block 302843 bytes
+grid: BAYB (ported from FR2), slot k at -(15 k + 20) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 368 of 368 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: always LOD 0 (or the model's lowest the game uses)
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+opponent cars: AI cars drawn from up to 1024 cars of the player's group (was 20, then a crash)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x0
+text: language\tlate_en.dat + 152 add-on lines, 555 added names, 7 shown by name
+save: 223 chunks, 302843 bytes, block 302843 bytes
+grid: TSILVER3 , slot k at -(20 k + 10) m
+grid: TSEBRING , slot k at -(20 k + 10) m
+FR3AddOns 0.9.1 loaded
+exe build 41640844: 368 of 368 addresses found by signature
+widescreen: the exe's own widescreen patch taken out in memory (106 runs); FR3AddOns' widescreen in its place
+2D: menus pillarbox, HUD centered, backgrounds stretch
+display: mode 3, 0x0, vsync 1, refresh 0, AF 16, FOV x1.00, widescreen 1, free mouse 1
+frame timing: races drawn up to the lowest of FrameCap 0, RefreshRate 0 and (VSync 1) the screen's refresh; game frames as at the game's cap, cars interpolated in between
+model LOD: always LOD 0 (or the model's lowest the game uses)
+input: controller database data\ascii\ctrllers\fr3addons.cdb
+input: XInput ready, 0 XInput device(s) hidden from DirectInput
+input: XInput 1, split pedals 1, pause on focus loss 1, rumble 1, pad in menus 1, stick dead zone 0.04
+free camera: toggle key 79, pause key 76, HUD key 78
+text enums: room for 2447 new display names, language buffer 262144 chars
+graphics: room for 1024 registered menu pictures
+render states: room for 4096 per track (retail 256)
+texture lists: 2048 per category (retail 8-64)
+custom tracks: ARENA location open to every car group, labelled "TOTAL IMMERSION RACING"
+track select: pages of 6 tracks per location
+car select: pages of 16 cars per group (UP/DOWN at the edges, PgUp/PgDn, [ ], mouse wheel)
+opponent cars: AI cars drawn from up to 1024 cars of the player's group (was 20, then a crash)
+classes: records per class (800 bytes per track; saves of other layouts do not load)
+classes: off-road locations' records panels cycle through every class
+classes: 6 HIGH_PERFORMANCE, label 1650, as PERFORMANCE (locations mask 3C), own announcer sample
+classes: 7 RALLY, label 1651, as OFFROAD (locations mask 7E), own announcer sample
+profile names: up to 12 characters where KEYBD.UI has a PROFILE_NAME_TEXTBOX
+audio: music and speech on the effects' sound device
+audio: 64 voices (retail 16)
+audio: restarted sounds always rewind
+audio: before Play: finished sounds rewind, voices under the pitch floor play at their own rate
+audio: tunnel reverb in the track's reverb zones (mix -8 dB, 1500 ms)
+FR2 tracks: FR2's start grid on tracks with FR2PORT.TXT
+graphics: effects 1F (shadows, env map, DOF, heat haze, bloom = bits 0-4), model detail 2, visual range 2
+input: XInput Controller 1 opened
+display: 1920x1080 borderless
+CreateDevice 1920x1080 windowed 1 refresh 0 interval 80000000 -> 00000000
+screen refresh 180 Hz
+anisotropic filtering x16
+MSAA x0
+text: language\tlate_en.dat + 166 add-on lines, 569 added names, 7 shown by name
+save: 223 chunks, 336457 bytes, block 336457 bytes
+grid: TSILVER2 , slot k at -(20 k + 10) m
+grid: DESB (ported from FR2), slot k at -(15 k + 20) m
+grid: WATCF , slot k at -(20 k + 10) m

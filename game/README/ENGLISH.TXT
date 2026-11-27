@@ -1,0 +1,210 @@
+=======================================================
+ FORD RACING 3 - (c) 2004 Empire Interactive Europe Ltd
+ English Readme File 01/10/04
+=======================================================
+
+========
+Contents
+========
+
+1. Minimum / Recommended System Specifications
+2. Installing / Uninstalling FORD RACING 3
+3. Setting Up Ford Racing 3
+4. Graphics Card Compatibility
+5. Performance Issues
+6. Internet gaming
+7. Troubleshooting
+
+=====================================
+1. Minimum / Recommended System Specs
+=====================================
+
+Minimum PC Specifications:
+CPU: Pentium III 800MHz processor (or equivalent)
+RAM: 128MB
+Video: 32MB supported DirectX9 video card
+HD: 150MB of free space
+Controller: Keyboard
+Operating System: Microsoft Windows 98/ME/2000/XP
+
+
+Recommended PC Specifications:
+CPU: Pentium IV 2.4GHz processor (or equivalent)
+RAM: 256MB+
+Video: 128MB+ supported DirectX9 video card
+Controller: Windows supported gamepad, Windows supported steering wheel device, Keyboard.
+Operating System: Microsoft Windows 98/ME/2000/XP with Media Player 9 installed.
+
+
+DirectX 9.0c:
+FORD RACING 3 requires DirectX 9.0c.  If you do not have this installed, FORD RACING 3 will prompt you to install it at the beginning of the installation procedure.  After DirectX has installed you will be asked to reboot your PC, after this, continue with the installation instructions below.
+
+
+==========================================
+2. Installing / Uninstalling FORD RACING 3
+==========================================
+
+- Installing FORD RACING 3"
+
+Note: These instructions assume your PC is switched on and you are running Microsoft Windows 98/ME/2000/XP
+
+1. Please insert your FORD RACING 3 Disc into your CD-ROM Drive. The game should autorun and present you with the message: "Do you wish to install FORD RACING 3?". Select "Yes" to install.  If the autorun message does not appear proceed to step 2, otherwise skip to step 3.
+
+2. Click on the Windows taskbar "Start" button and select "Run..." followed by the "Browse..." button. Select your CD-ROM drive using the down arrow and click on the "SETUP.EXE" file followed by "Open", and then "OK".
+
+3. Click "Next" when prompted.  Please read through the software license agreement. Accept the terms of the agreement and click "Yes" to proceed. If you do not accept the terms, installation will be terminated and you will not be able to play the game.
+
+4. Now select the destination directory where you want this product to be installed into. You can use the "Browse" button to change to a different destination directory. Click on the "Next" button when you are happy with your selection.
+
+5. Installation will now commence automatically.
+
+6. Please read through the software license agreement for "Windows Media Format 7.1". Accept the terms of the agreement and click "Yes" to proceed. If you do not accept the terms, installation will be terminated and you will not be able to play the game.
+
+7. Installation of "Windows Media Format 7.1" will now commence automatically.
+
+8. Click "Finish" to end the installation.
+
+- Uninstalling "FORD RACING 3"
+
+If you wish to uninstall FORD RACING 3 from your computer, you can do this using one of the methods below.
+
+a. Click on the Windows taskbar "Start" button and select the FORD RACING 3 folder (typically "Empire Interactive/Ford Racing 3").  Then highlight and select "Uninstall FORD RACING 3".  Select "OK" to proceed and then follow the instructions to uninstall FORD RACING 3.
+
+b. Click on the Windows taskbar "Start" button, "Settings", "Control Panel", "Add/Remove Programs". Look for "FORD RACING 3" and click on it. The "Add/Remove" button will be highlighted, please click on it and follow the on-screen instructions.
+
+
+==============================
+3. Setting Up "Ford Racing 3"
+==============================
+
+After you install "Ford Racing 3", you will be presented with the configuration program. This program allows you to adjust various in game settings to ensure "Ford Racing 3" performs at its optimum level on your PC.
+Note: You can also run the configuration program at any time. To do this click on the Windows taskbar "Start" button and then select the "Ford Racing 3" folder (typically "Empire Interactive / Ford Racing 3"). Then highlight and select "Game Configuration".
+
+Display Tab:
+
+Display Adapter - Select your 3d Graphics card. This will default to the best device found (and in most cases does not need adjustment).
+
+Resolution - Set the in-game screen resolution (only resolutions that your PC's 3D graphics card support will be displayed).
+
+Audio Tab:
+
+Sound Device - Select your sound device
+Enable Sound - To disable all sound output, deselect this option.
+
+Network Tab:
+
+Player Name - Choose your player name for multiplayer.
+Port Number - Choose the network port number you wish to use (only change this if you experience problems with the default setting).
+Interface - Choose which network interface you with Ford Racing 3 to use for network games.
+
+Detail level Tab:
+
+Dynamic Shadows - Enable / Disable dynamic shadows.
+Environment mapping - Enable / Disable environment mapping.
+Depth of Field - Enable / Disable depth of field effects.
+Heat haze  - Enable / Disable Heat haze effects.
+Specular Bloom - Enable / Disable car specular bloom effects.
+
+Model Detail - Sets the detail level of all 3d objects in game
+Visual Range - Sets the draw distance. 
+
+Language Selection Tab:
+
+Select the language you wish to run "Ford Racing 3" in.
+
+
+Run Game - Run "Ford Racing 3" with the present settings.
+
+Ok - Save the present settings, and exit the configuration program.
+
+==============================
+4. Graphics Card Compatibility
+==============================
+
+The following graphics cards/chipsets are NOT supported:
+	
+	- ST Kyro II chipset cards
+	- SiS 730S chipset cards
+	- Voodoo 3/5 chipset cards
+
+
+Known Issues / Workarounds:
+
+- If you are using a "Jaton 3dforce" based graphics card (or similar) you may experience minor graphical errors.  To fix this, turn off the "Dynamic Shadows" option in the configuration program.
+
+
+=====================
+5. Performance Issues
+=====================
+
+- If you experience poor frame rates, you may want to try some of the following steps:
+
+Turn off 'Environment Mapping' (under the "Detail Level" tab), turning this option off will provide the greatest speed increase. 
+
+Switch all video settings (under the "Detail Level" tab) to lower settings.
+
+Lower the resolution the game runs in.  Higher resolutions should only be used on high-end systems.  On older less powerful machines it is also suggested that you choose a 16bit resolution (i.e. "800x600x16").
+
+NOTE: Always ensure you have the very latest drivers installed for your graphics card and operating system.
+
+
+- If you are using Windows 2000, please ensure you have at least Service Pack 1 installed. This can be downloaded from: 
+
+http://www.microsoft.com/windows2000/downloads/servicepacks/default.asp
+
+NOTE: This link may change, so if it does not work, just search www.microsoft.com for Windows 2000 Service Pack download.
+
+If you have not got Service Pack 1 or later installed you may experience performance problems.
+
+
+==================
+6. Internet gaming
+==================
+
+- If you wish to play Ford Racing 3 over the internet you will need a broadband internet connection.
+
+Whichever machine is creating a game session needs to be visible on the internet.
+If the machine hosting a session is behind a firewall, the firewall will have to redirect network traffic to the machine. In order to do this, redirect the port specified in the configuration program, using the UDP network protocol.
+
+
+==================
+7. Troubleshooting
+==================
+
+If the introduction animation is missing from the start of Ford Racing 3, you may need to upgrade to Windows Media Player 9.
+
+If the game crashes after you select your Profile (before you reach the Main Menu) then you will need to install Media Player 9.
+
+The latest version of Windows Media can be downloaded from:
+
+http://www.microsoft.com/mediaplayer
+
+If the game appears too dark, please adjust your monitor's brightness or your video card's gamma setting.
+
+
+===========================
+Contacting Customer Support
+===========================
+
+For assistance you can reach Empire Interactive 
+Support staff by:
+
+Phone  :  02083439143   Monday to Friday 9.30am to 1.00pm and 2.00pm to 6.00pm
+E-mail :  support@empire.co.uk
+
+For fast and efficient solutions to your technical issues,
+please use our Web Support Form:
+
+http://www.empireinteractive.com/support/
+
+
+Technical support is available at:
+
+http://www.empireinteractive.com/support/
+
+
+
+=======================================================================
+For the latest news and updates, visit http://www.empireinteractive.com
+Copyright (c) 2004 Empire Interactive Europe Ltd.  All Rights Reserved.
+=======================================================================

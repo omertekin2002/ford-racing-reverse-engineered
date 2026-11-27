@@ -1,0 +1,192 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"PARTICLE_EFFECTS"                     	scenes\particles\track_particles.ma
+	"JAPAF_CUT_UP"                         	
+	"S_SAMURAI"                            	scenes\buildings\accessories\samurai.ma
+	"PETROL_STATION"                       	scenes\buildings\accessories\petrol_station.ma
+	"LAMP_POST2"                           	scenes\buildings\extra\single_lampost.ma
+	"LAMP"                                 	scenes\buildings\extra\double_lampost.ma
+	"LAMP_FLARE"                           	scenes\effects\lamp_flare.ma
+	"CONE"                                 	scenes\buildings\cones.ma
+	"TUNNEL_LIGHTS"                        	scenes\tunnel_lights.ma
+	"MOTORWAY_BARRIER"                     	scenes\buildings\barriers\temp_barrier.ma
+	"ARROWS"                               	scenes\buildings\barriers\arrow_barrier.ma
+	"JAPAF_OBJECTS"                        	
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"SKYDOME"                              	scenes\environment\baya_skydome.ma
+	"EFFECTS"                              	scenes\effects\effects.ma
+	"SMALL_TUNNEL_LIGHTS"                  	scenes\small tunnel_lights.ma
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid skeletal animation names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+	"PLASTIC"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"CAMERA"
+	"CAR_GAMEBONNET"
+	"CAR_BACK_BOUNCE"
+	"CAR_FRONT"
+	"CAR_BACK_UP"
+	"CAR_ROOF_FORWARD"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"SUNLIGHT"
+	"AMBIENT"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+	"HEDGE"
+	"METAL"
+	"STONE"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	32x32   	-	[A fM       ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"HEADLIGHT_FLARE"                       	07:07:07:08	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"SPECULAR_SPRITE"                       	44:43:43:44	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"REARLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	128x128 	-	[ASfM       ]	"SUN_FLARE"                             	15:10:10:00	 (World size: 1.310660)
+	128x128 	-	[  fM       ]	"TRACK_SPECULAR"                        	4d:4d:4d:00	 (World size: 10.000000)
+	32x32   	-	[ASfM   !   ]	"TRACK_REFLECTION"                      	00:00:00:00	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM    $  ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	64x64   	-	[  f        ]	"MINISKY"                               	70:8d:93:00	 (World size: 3427.191406)
+	128x128 	-	[A f     $# ]	"TARMAC_PACIFIC_CLOUD001"               	17:25:20:27	 (World size: 2160.645020)
+	128x128 	-	[A f     $# ]	"TARMAC_PACIFIC_CLOUD002"               	17:25:20:20	 (World size: 2160.644531)
+	128x128 	-	[A f     $# ]	"TARMAC_PACIFIC_CLOUD003"               	17:25:20:3f	 (World size: 2160.644531)
+	256x128 	-	[  fM       ]	"TARMAC_JAPAN_RUNOFF_02"                	43:42:36:00	 (World size: 6.910817)
+	256x128 	-	[  fM       ]	"TARMAC_JAPAN_RUNOFF_03"                	4c:4c:3f:00	 (World size: 7.168635)
+	256x256 	-	[  fM   !   ]	"TARMAC_JAPAN_ROAD_01"                  	5b:5a:57:00	 (World size: 8.554498)
+	256x256 	-	[  fM   !   ]	"GRASS_JAPAN_01"                        	43:43:25:00	 (World size: 11.047109)
+	256x256 	-	[  fM   !   ]	"TARMAC_JAPAN_TILES"                    	7a:73:6b:00	 (World size: 5.967309)
+	256x128 	-	[  fM       ]	"TARMAC_JAPAN_RUNOFF_01"                	3b:3a:2e:00	 (World size: 10.416638)
+	256x256 	-	[  fM   !   ]	"TARMAC_JAPAN_ROAD_01B"                 	4b:4b:4b:00	 (World size: 8.160722)
+	256x256 	-	[  fM   !   ]	"TARMAC_JAPAN_ROAD_01C"                 	52:52:51:00	 (World size: 10.919597)
+	256x64  	-	[  fM   !   ]	"TARMAC_JAPAN_MOTORWAY_START"           	7e:7d:78:00	 (World size: 5.033148)
+	128x128 	-	[  fM   !   ]	"TARMAC_JAPAN_MOTORWAY_ARROW01"         	79:7a:75:00	 (World size: 4.179191)
+	128x128 	-	[  fM   !   ]	"TARMAC_JAPAN_MOTORWAY_ARROW02"         	79:79:75:00	 (World size: 4.120086)
+	256x256 	-	[  fM   !   ]	"TARMAC_JAPAN_MOTORWAY"                 	72:72:6b:00	 (World size: 9.934017)
+	128x64  	-	[  fM   !   ]	"TUNNEL_01"                             	5d:6c:7c:00	 (World size: 12.842221)
+	128x128 	-	[ASfM       ]	"TEMPLE_EXTRAS"                         	63:5b:56:d2	 (World size: 86.010727)
+	128x64  	-	[  fM       ]	"WOOD"                                  	5f:33:29:00	 (World size: 10.339680)
+	128x128 	-	[ASfM       ]	"TREE_07"                               	4c:4d:1b:5b	 (World size: 11.986999)
+	256x256 	-	[ASfM   !   ]	"BUSH"                                  	47:47:19:3d	 (World size: 7.221042)
+	256x128 	-	[ASf        ]	"TREEWALL1"                             	49:49:21:db	 (World size: 39.605247)
+	128x128 	-	[ASfM       ]	"TREE_07A"                              	50:46:1c:5b	 (World size: 10.604223)
+	128x32  	-	[  fM       ]	"TREE_07BARK"                           	29:26:22:00	 (World size: 4.180122)
+	256x256 	-	[ASfM   !   ]	"LARGE_SHRUB"                           	24:25:11:44	 (World size: 4.002771)
+	128x128 	-	[ASf    !   ]	"LARGE_SHRUB2"                          	63:62:2e:44	 (World size: 8.629872)
+	256x256 	-	[ASfM   !   ]	"JAP-FENCING"                           	3a:1a:18:6d	 (World size: 41.504650)
+	128x64  	-	[  fM       ]	"ARMCO2"                                	4a:3b:38:00	 (World size: 1.744794)
+	256x32  	-	[ASfM   !   ]	"ARMCO"                                 	9e:a5:9f:fd	 (World size: 4.248007)
+	256x128 	-	[  fM   !   ]	"CONCRETE_SLEEPER"                      	65:69:66:00	 (World size: 3.069854)
+	256x128 	-	[A fM    $  ]	"BRIDGE_FENCE"                          	2d:2f:2b:91	 (World size: 6.956397)
+	256x256 	-	[  fM   !   ]	"NATURAL_01"                            	6e:66:54:00	 (World size: 10.729882)
+	128x64  	-	[  fM   !   ]	"ARMCO4"                                	bc:74:71:00	 (World size: 3.748669)
+	128x128 	-	[  f    !   ]	"BRONZE"                                	84:84:84:00	 (World size: 5.481173)
+	64x64   	-	[  fM       ]	"LAMP-POSTS"                            	88:88:81:00	 (World size: 4.033411)
+	128x64  	-	[  fM   !   ]	"DOOR"                                  	81:83:80:00	 (World size: 4.177238)
+	128x128 	-	[  fM       ]	"FLARE"                                 	21:21:1a:00	 (World size: 11.921212)
+	256x256 	-	[  fM   !   ]	"WALLS"                                 	42:3a:30:00	 (World size: 13.877436)
+	128x128 	-	[  fM       ]	"WHITE"                                 	9a:9a:97:00	 (World size: 14.470955)
+	128x128 	-	[A fM  X    ]	"PETROL_SHADOW"                         	00:00:00:37	 (World size: 24.442835)
+	256x256 	-	[  fM       ]	"PETROLSTATION"                         	6a:7a:87:00	 (World size: 31.781651)
+	16x16   	-	[A fM       ]	"NEWCHECKER_3_ROPE"                     	81:81:81:60	 (World size: 1.134771)
+	256x128 	-	[  fM   !   ]	"TUNNEL_02"                             	87:89:86:00	 (World size: 12.851832)
+	256x256 	-	[  fM   !   ]	"BUDDAH"                                	a0:73:47:00	 (World size: 79.301857)
+	256x128 	-	[  fM       ]	"TEMPLE_01"                             	5a:43:3e:00	 (World size: 39.533310)
+	256x128 	-	[  fM       ]	"TEMPLE_02"                             	6c:6c:5c:00	 (World size: 36.715057)
+	256x128 	-	[  fM       ]	"TEMPLE_03"                             	34:42:25:00	 (World size: 29.866055)
+	256x128 	-	[  fM       ]	"TEMPLE_04"                             	6f:6d:6b:00	 (World size: 51.571320)
+	64x64   	-	[A fM       ]	"GRID_1"                                	6a:6a:6a:64	 (World size: 2.141844)
+	256x64  	-	[ASfM       ]	"NEWCHECKER_3"                          	a7:a3:a5:fc	 (World size: 10.034036)
+	16x16   	-	[  fM   !   ]	"BAR_1"                                 	85:85:85:00	 (World size: 6.723211)
+	128x128 	-	[  fM   !   ]	"CONE001"                               	c2:4a:37:00	 (World size: 3.961151)
+	256x256 	-	[A fM  X!   ]	"SHADOWS"                               	00:00:00:82	 (World size: 253.124374)
+	128x128 	-	[A fM  X!   ]	"DETAIL"                                	00:00:00:6c	 (World size: 52.144901)
+	128x128 	-	[  fM       ]	"FIRE"                                  	52:52:52:00	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"GRASS"                                 	14:14:14:22	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SMOKEANDDUST"                          	ff:ff:ff:5f	 (World size: 1.310660)
+	128x128 	-	[ASfM   !   ]	"SPARK"                                 	f5:0c:0c:ff	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SPRAY"                                 	ef:ef:ef:39	 (World size: 1.310660)
+	64x64   	-	[A fM    $  ]	"STREAM"                                	fe:fe:fe:6a	 (World size: 1.310660)
+	512x128 	-	[ASf    !   ]	"CITY"                                  	35:2b:23:6c	 (World size: 492.867554)
+	128x64  	-	[  fM       ]	"TUNNEL_FLARE"                          	2a:28:1b:00	 (World size: 9.055654)
+	256x256 	-	[  fM   !   ]	"TUNNEL_TILES"                          	6f:78:7b:00	 (World size: 11.047191)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

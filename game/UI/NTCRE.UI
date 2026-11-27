@@ -1,0 +1,457 @@
+
+:TYPE UI_TYPE_SCREEN
+:AUTOSIZE 0
+:CLEAR 0
+:COLOUR 255 255 255 255
+:FONT_COLOUR 0 0 0 0
+:HIGHLIGHTED_COLOUR 0 0 0 0
+:HIGHLIGHTED_FONT_COLOUR 0 0 0 0
+:ITEM_NUMBER -1
+:OBJECT_ID NTCRE
+:POSITION_END 0.000000 0.000000
+:POSITION_START 0.000000 0.000000
+:SIZE 1.000000 1.000000
+:STRETCH_GRAPHIC 1
+:TEXT_JUSTIFY 0
+:TIME_LENGTH 1.000000
+:WORD_WRAP 0
+
+:S{*****>>>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	:TYPE UI_TYPE_BASIC
+	:AUTOSIZE 0
+	:CLEAR 1
+	:COLOUR 0 0 0 0
+	:FONT 2
+	:FONT_COLOUR 216 234 242 255
+	:HIGHLIGHTED_COLOUR 0 0 0 102
+	:HIGHLIGHTED_FONT 3
+	:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+	:ITEM_NUMBER 1
+	:JUSTIFY_OFFSET 0.500000 0.000000
+	:OBJECT_ID MOVINGWINDOW
+	:POSITION_END 0.000000 -0.1420000
+	:POSITION_START 0.000000 -0.1420000
+	:SIZE 1.000000 1.00000
+	:STRETCH_GRAPHIC 1
+	:TEXT_JUSTIFY 0
+	:TIME_LENGTH 1.000000
+	:WORD_WRAP 0
+	
+	:S{*****>>>
+
+		:READ_SCRIPT_FILE UI\MENUBAR.UI
+		
+		:TYPE UI_TYPE_BUTTON
+		:OBJECT_ID CARTYPE
+		:AUTOSIZE 0
+		:CLEAR 0
+		:COLOUR 255 255 255 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 3
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 2
+		:JUSTIFY_OFFSET 0.045352 0.0
+		:OFFSET_TIME 0.000000
+		:POSITION_END -0.493750 0.291992
+		:POSITION_START -1.493750 0.291992
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1
+		:TEXT TXT_XBOX_LIVE_CAR_TYPE
+		:TEXT_JUSTIFY 2
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+		:TYPE UI_TYPE_TEXT
+		:OBJECT_ID CARTYPENUMBER
+		:AUTOSIZE 0
+		:CLEAR 1
+		:COLOUR 255 255 255 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 1
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 2
+		:OFFSET_TIME 0.000000
+		:POSITION_END 0.512500 0.291992
+		:POSITION_START 1.512500 0.291992
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1
+		:TEXT_JUSTIFY 1
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		:TYPE UI_TYPE_BUTTON
+		:OBJECT_ID TRACKTYPE
+		:AUTOSIZE 0
+		:CLEAR 0
+		:COLOUR 255 255 255 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 3
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 2
+		:JUSTIFY_OFFSET 0.045352 0.0
+		:OFFSET_TIME 0.100000
+		:POSITION_END -0.493750 0.348389
+		:POSITION_START -1.493750 0.348389
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1
+		:TEXT TXT_XBOX_LIVE_TRACK_TYPE
+		:TEXT_JUSTIFY 2
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+		:TYPE UI_TYPE_TEXT
+		:OBJECT_ID TRACKTYPENUMBER
+		:AUTOSIZE 0
+		:CLEAR 1
+		:COLOUR 255 255 255 0
+		:FONT 3
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 3
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 2
+		:OFFSET_TIME 0.100000
+		:POSITION_END 0.512500 0.348389
+		:POSITION_START 1.512500 0.348389
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1
+		:TEXT_JUSTIFY 1
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		:TYPE UI_TYPE_BUTTON
+		:OBJECT_ID COLLISION
+		:AUTOSIZE 0
+		:CLEAR 0
+		:COLOUR 255 255 255 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 3
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 2
+		:JUSTIFY_OFFSET 0.045352 0.0
+		:OFFSET_TIME 0.200000
+		:POSITION_END -0.493750 0.400472
+		:POSITION_START -1.493750 0.400472
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1
+		:TEXT TXT_XBOX_LIVE_COLLISIONS
+		:TEXT_JUSTIFY 2
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+		:TYPE UI_TYPE_TEXT
+		:OBJECT_ID COLLISIONNUMBER
+		:AUTOSIZE 0
+		:CLEAR 1
+		:COLOUR 255 255 255 0
+		:FONT 3
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 3
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 2
+		:OFFSET_TIME 0.200000
+		:POSITION_END 0.512500 0.400472
+		:POSITION_START 1.512500 0.400472
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1
+		:TEXT_JUSTIFY 1
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+		:TYPE UI_TYPE_BUTTON
+		:OBJECT_ID LAPS
+		:AUTOSIZE 0
+		:CLEAR 0
+		:COLOUR 255 255 255 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 3
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 2
+		:JUSTIFY_OFFSET 0.045352 0.0
+		:OFFSET_TIME 0.300000
+		:POSITION_END -0.493750 0.458724
+		:POSITION_START -1.493750 0.458724
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1
+		:TEXT TXT_RACE_OPTIONS_LAPS
+		:TEXT_JUSTIFY 2
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+		:TYPE UI_TYPE_TEXT
+		:OBJECT_ID LAPSNUMBER
+		:AUTOSIZE 0
+		:CLEAR 1
+		:COLOUR 255 255 255 0
+		:FONT 3
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 3
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 2
+		:OFFSET_TIME 0.300000
+		:POSITION_END 0.512500 0.458724
+		:POSITION_START 1.512500 0.458724
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1
+		:TEXT_JUSTIFY 1
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		:TYPE UI_TYPE_BUTTON
+		:OBJECT_ID PUBLICSLOTS
+		:AUTOSIZE 0
+		:CLEAR 0
+		:COLOUR 255 255 255 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 3
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 2
+		:JUSTIFY_OFFSET 0.045352 0.0
+		:OFFSET_TIME 0.400000
+		:POSITION_END -0.493750 0.514974
+		:POSITION_START -1.493750 0.514974
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1
+		:TEXT TXT_XBOX_LIVE_SLOT_PUBLIC
+		:TEXT_JUSTIFY 2
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+		:TYPE UI_TYPE_TEXT
+		:OBJECT_ID PUBLICSLOTSNUMBER
+		:AUTOSIZE 0
+		:CLEAR 1
+		:COLOUR 255 255 255 0
+		:FONT 3
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 3
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 2
+		:OFFSET_TIME 0.4000000
+		:POSITION_END 0.512500 0.514974
+		:POSITION_START 1.512500 0.514974
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1
+		:TEXT_JUSTIFY 1
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		:TYPE UI_TYPE_BUTTON
+		:OBJECT_ID PRIVATESLOTS
+		:AUTOSIZE 0
+		:CLEAR 0
+		:COLOUR 255 255 255 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 3
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 2
+		:JUSTIFY_OFFSET 0.045352 0.0
+		:OFFSET_TIME 0.500000
+		:POSITION_END -0.493750 0.562566
+		:POSITION_START -1.493750 0.562566
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1
+		:TEXT TXT_XBOX_LIVE_SLOT_PRIVATE
+		:TEXT_JUSTIFY 2
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+		:TYPE UI_TYPE_TEXT
+		:OBJECT_ID PRIVATESLOTSNUMBER
+		:AUTOSIZE 0
+		:CLEAR 1
+		:COLOUR 255 255 255 0
+		:FONT 3
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 3
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 2
+		:OFFSET_TIME 0.500000
+		:POSITION_END 0.512500 0.562566
+		:POSITION_START 1.512500 0.562566
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1
+		:TEXT_JUSTIFY 1
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		:TYPE UI_TYPE_BUTTON
+		:OBJECT_ID START
+		:AUTOSIZE 0
+		:CLEAR 0
+		:COLOUR 255 255 255 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 3
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 2
+		:JUSTIFY_OFFSET 0.045352 0.0
+		:OFFSET_TIME 0.600000
+		:POSITION_END -0.493750 0.542090
+		:POSITION_START -1.493750 0.542090
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1
+		:TEXT 0
+		:TEXT_JUSTIFY 2
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+		:TYPE UI_TYPE_TEXT
+		:AUTOSIZE 0
+		:CLEAR 1
+		:COLOUR 255 255 255 0
+		:DRAWABLE 0
+		:FONT 3
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 3
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 2
+		:OBJECT_ID STARTNUMBER
+		:OFFSET_TIME 0.700000
+		:POSITION_END 0.550000 0.770000
+		:POSITION_START 1.550000 0.770000
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1
+		:TEXT_JUSTIFY 1
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		:TYPE UI_TYPE_GRAPHIC
+		:AUTOSIZE 1
+		:CLEAR 0
+		:COLOUR 255 255 255 255
+		:COLOUR_START 255 255 255 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 102
+		:HIGHLIGHTED_FONT 1
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 0
+		:OBJECT_ID LEFTARROW
+		:POSITION_END 0.473438 0.443750
+		:POSITION_START 0.473438 0.443750
+		:SIZE 0.000000 0.000000
+		:STRETCH_GRAPHIC 1
+		:TEXTURE_ENUM GRAPHICS\GAME\COMMON\SMARROW.PSD
+		:TEXT_JUSTIFY 0
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+		:TYPE UI_TYPE_GRAPHIC
+		:AUTOSIZE 1
+		:CLEAR 0
+		:COLOUR 255 255 255 255
+		:COLOUR_START 255 255 255 0
+		:FLIP_GRAPHIC 1 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 102
+		:HIGHLIGHTED_FONT 1
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 0
+		:OBJECT_ID RIGHTARROW
+		:POSITION_END 0.63125 0.443750
+		:POSITION_START 0.63125 0.443750
+		:SIZE 0.000000 0.000000
+		:STRETCH_GRAPHIC 1
+		:TEXTURE_ENUM GRAPHICS\GAME\COMMON\SMARROW.PSD
+		:TEXT_JUSTIFY 0
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+	:E}*****<<<
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	:INHERIT					TITLE
+	:TEXT_JUSTIFY			3
+	:POSITION_START		0.000000 0.093750
+	:POSITION_END			0.000000 0.093750
+
+	// DONE
+	:INHERIT					BACK_ICON
+	:POSITION_END 			0.432813 0.8666
+	:POSITION_START 		0.432813 0.8666
+
+	:TYPE UI_TYPE_TEXT
+	:FONT 2
+	:FONT_COLOUR 0 0 0 255
+	:FONT_COLOUR_START 0 0 0 0
+	:OBJECT_ID BACK_TEXT
+	:POSITION_END 0.332812 0.875000
+	:POSITION_START 0.332812 0.875000
+	:SIZE 0.100000 0.039583
+	:TEXT TXT_GENERAL_BACK
+	:TEXT_JUSTIFY 2
+	:TIME_LENGTH 0.166667
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+:E}*****<<<
+
+
+:CONNECTION "CARTYPE" "START" "TRACKTYPE" "none" "none"
+:CONNECTION "TRACKTYPE" "CARTYPE" "COLLISION" "none" "none"
+//:CONNECTION "RATING" "TRACKTYPE" "COLLISION" "none" "none"
+:CONNECTION "COLLISION" "TRACKTYPE" "LAPS" "none" "none"
+:CONNECTION "LAPS" "COLLISION" "PUBLICSLOTS" "none" "none"
+:CONNECTION "PUBLICSLOTS" "LAPS" "PRIVATESLOTS" "none" "none"
+:CONNECTION "PRIVATESLOTS" "PUBLICSLOTS" "START" "none" "none"
+:CONNECTION "START" "PRIVATESLOTS" "CARTYPE" "none" "none"

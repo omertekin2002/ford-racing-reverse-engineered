@@ -1,0 +1,482 @@
+
+//////////////////////////////////////////////////////
+// UI_SCREEN
+//////////////////////////////////////////////////////
+
+:TYPE 									UI_TYPE_SCREEN
+:OBJECT_ID 								WHEEL
+:POSITION_START 						0.0 0.0
+:POSITION_END 							0.0 0.0
+:SIZE 									1.0 1.0
+:STRETCH_GRAPHIC 						1
+//:TEXTURE_ENUM 							GRAPHICS\GAME\BKGNDS\MUST03.PSD
+:TEXTURE_ENUM 							GRAPHICS\GAME\BKGNDS\MACH3BG.PSD
+:TIME_LENGTH							1.0
+
+:S{*****>>>
+
+	:INHERIT									MENUBAR
+
+	//////////////////////////////////////////////////////
+	// TITLE BAR
+	//////////////////////////////////////////////////////
+
+	:INHERIT									TITLE
+	:POSITION_START						-0.05781 0.14375
+	:POSITION_END							-0.05781 0.14375
+	:SIZE										0.52344 0.03542
+	:TEXT_JUSTIFY							2
+	:JUSTIFY_OFFSET						0.04535 0.0
+
+	//////////////////////////////////////////////////////
+	// 
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// BACK ICON AND TEXT
+	//////////////////////////////////////////////////////
+
+	// DONE
+	:INHERIT									BACK_ICON
+	:POSITION_START						0.38438 0.53125
+	:POSITION_END							0.38438 0.53125
+
+	:INHERIT									BACK_TEXT
+	:POSITION_START						0.06719 0.54167
+	:POSITION_END							0.06719 0.54167
+	:SIZE										0.31718 0.10000
+	:TEXT_JUSTIFY							5
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// MOVING WINDOW
+	//////////////////////////////////////////////////////
+
+	:TYPE 									UI_TYPE_BASIC
+	:OBJECT_ID 								MOVINGWINDOW
+	:CLEAR 									1
+	:POSITION_START 						0.0 0.0
+	:POSITION_END 							0.0 0.0
+	:SIZE										1.0 1.0
+	
+	:S{*****>>>
+	
+		//////////////////////////////////////////////////////
+		// VIBRATION
+		//////////////////////////////////////////////////////
+		
+		:TYPE										UI_TYPE_BUTTON
+		:OBJECT_ID								VIBRATION
+		:TEXT										TXT_OPTIONS_CONTROLS_VIBRATION
+		:CLEAR									1
+		:POSITION_START						-1.0 0.21458
+		:POSITION_END							0.0 0.21458
+		:SIZE										1.0 0.05625
+		:FONT										1
+		:FONT_COLOUR							0 0 0 50
+		:HIGHLIGHTED_FONT						1
+		:HIGHLIGHTED_FONT_COLOUR			0 0 0 255
+		:TEXT_JUSTIFY							2
+		:JUSTIFY_OFFSET						0.572 0.0
+		:TIME_LENGTH							0.16667
+		:OFFSET_TIME							0.0
+
+		:S{*****>>>
+	
+			:TYPE										UI_TYPE_TEXT
+			:OBJECT_ID								VIBRATION_VALUE
+			:POSITION_START						0.47969 0.026953
+			:POSITION_END							0.47969 0.026953
+			:SIZE										1.0 1.0
+			:TEXT										TXT_GENERAL_ON
+			:TEXT_JUSTIFY							1
+			:JUSTIFY_OFFSET						0.0 0.0
+			:FONT										1
+			:FONT_COLOUR							0 0 0 255
+			
+		:E}*****<<<
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////////
+		// PRESSURE
+		//////////////////////////////////////////////////////
+
+		:TYPE										UI_TYPE_BUTTON
+		:OBJECT_ID								PRESSURE
+		:TEXT										TXT_OPTIONS_CONTROLS_PRESSURE_SENSITIVITY
+		:CLEAR									1
+		:POSITION_START						-1.0 0.26666
+		:POSITION_END							0.0 0.26666
+		:SIZE										1.0 0.05625
+		:FONT										1
+		:FONT_COLOUR							0 0 0 50
+		:HIGHLIGHTED_FONT						1
+		:HIGHLIGHTED_FONT_COLOUR			0 0 0 255
+		:TEXT_JUSTIFY							2
+		:JUSTIFY_OFFSET						0.572 0.0
+		:TIME_LENGTH							0.16667
+		:OFFSET_TIME							0.1
+
+		:S{*****>>>
+
+			:TYPE										UI_TYPE_TEXT
+			:OBJECT_ID								PRESSURE_VALUE
+			:POSITION_START						0.47969 0.020867
+			:POSITION_END							0.47969 0.020867
+			:SIZE										1.0 1.0
+			:TEXT										TXT_GENERAL_ON
+			:TEXT_JUSTIFY							1
+			:JUSTIFY_OFFSET						0.0 0.0
+			:FONT										1
+			:FONT_COLOUR							0 0 0 255
+
+		:E}*****<<<
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////////
+		// FORCE FEEDBACK
+		//////////////////////////////////////////////////////
+
+		:TYPE										UI_TYPE_BUTTON
+		:OBJECT_ID								FFENABLED
+		:TEXT										TXT_OPTIONS_CONTROLS_FORCE_FEEDBACK_ENABLED
+		:CLEAR									1
+		:POSITION_START						-1.0 0.21458
+		:POSITION_END							0.0 0.21458
+		:SIZE										1.0 0.05625
+		:FONT										1
+		:FONT_COLOUR							0 0 0 50
+		:HIGHLIGHTED_FONT						1
+		:HIGHLIGHTED_FONT_COLOUR			0 0 0 255
+		:TEXT_JUSTIFY							2
+		:JUSTIFY_OFFSET						0.572 0.0
+		:TIME_LENGTH							0.16667
+		:OFFSET_TIME							0.0
+
+		:TYPE										UI_TYPE_TEXT
+		:OBJECT_ID								FFENABLED_VALUE
+		:POSITION_START						1.0 0.21458	
+		:POSITION_END							0.47969 0.21458
+		:SIZE										1.0 0.05625
+		:TEXT										TXT_GENERAL_ON
+		:TEXT_JUSTIFY							1
+		:JUSTIFY_OFFSET						0.0 0.0
+		:FONT										1
+		:FONT_COLOUR							0 0 0 255
+		:TIME_LENGTH							0.16667
+		:OFFSET_TIME							0.0
+		
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////////
+		// STRENGTH
+		//////////////////////////////////////////////////////
+
+		:TYPE										UI_TYPE_BUTTON
+		:OBJECT_ID 								FFSTRENGTH
+		:TEXT 									TXT_OPTIONS_CONTROLS_FORCE_FEEDBACK_STRENGTH
+		:CLEAR									1
+		:POSITION_START 						-1.0 0.26666
+		:POSITION_END 							0.0 0.26666
+		:SIZE 									1.0 0.05625
+		:FONT 									2
+		:FONT_COLOUR 							216 234 242 255
+		:HIGHLIGHTED_FONT 					3
+		:HIGHLIGHTED_FONT_COLOUR			255 249 135 255
+		:JUSTIFY_OFFSET						0.572 0.0
+		:TEXT_JUSTIFY							2
+		:TIME_LENGTH							0.16667
+		:OFFSET_TIME							0.1
+		
+		:TYPE										UI_TYPE_BUTTON
+		:OBJECT_ID 								FFSTRENGTHAREA
+		:CLEAR									1
+		:POSITION_START 						1.0 0.26666
+		:POSITION_END 							0.0 0.26666
+		:SIZE 									1.0 0.05625
+		:JUSTIFY_OFFSET						0.572 0.0
+		:TIME_LENGTH							0.16667
+		:OFFSET_TIME							0.1
+
+		:S{*****>>>
+				
+			:TYPE										UI_TYPE_AREA
+			:OBJECT_ID								SLIDER_HIGHLIGHT_FFSTRENGTH
+			:CLEAR									1
+			:COLOUR									255 255 255 255
+	
+			:TYPE										UI_TYPE_AREA
+			:OBJECT_ID								SLIDER_BACKGROUND_FFSTRENGTH
+			:CLEAR									1
+			:POSITION_START						0.48438 0.20867
+			:POSITION_END							0.48438 0.20867
+			:COLOUR									150 150 150 255
+			:AUTOSIZE								1
+	
+			:TYPE										UI_TYPE_AREA
+			:OBJECT_ID								SLIDER_LEVEL_BACKGROUND_FFSTRENGTH
+			:CLEAR									1
+			:POSITION_START						0.48438 0.20867
+			:POSITION_END							0.48438 0.20867
+			:COLOUR									0 0 0 255
+			:AUTOSIZE								1
+			
+			:TYPE 									UI_TYPE_GRAPHIC
+			:OBJECT_ID 								SLIDER_MARKER_FFSTRENGTH
+			:COLOUR 									255 255 255 255
+			:AUTOSIZE 								1
+			:POSITION_START 						0.48438 0.06992
+			:POSITION_END 							0.48438 0.06992
+			:TEXTURE_ENUM 							GRAPHICS\GAME\OPTIONS\VOLSLIDE.PSD
+	
+		:E}*****<<<
+		
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+		
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+		
+		//////////////////////////////////////////////////////
+		// DEADZONE
+		//////////////////////////////////////////////////////
+
+		:TYPE										UI_TYPE_BUTTON
+		:OBJECT_ID								DEADZONE
+		:TEXT										TXT_OPTIONS_CONTROLS_WHEEL_DEADZONE
+		:CLEAR									1
+		:POSITION_START						-1.0 0.32499
+		:POSITION_END							0.0 0.32499
+		:SIZE										1.0 0.06
+		:FONT 									2
+		:FONT_COLOUR 							216 234 242 255
+		:HIGHLIGHTED_FONT 					3
+		:HIGHLIGHTED_FONT_COLOUR			255 249 135 255
+		:JUSTIFY_OFFSET						0.572 0.0
+		:TEXT_JUSTIFY							2
+		:TIME_LENGTH							0.16667
+		:OFFSET_TIME							0.2
+
+		:TYPE										UI_TYPE_BUTTON	
+		:OBJECT_ID								DEADZONEAREA
+		:CLEAR									1
+		:POSITION_START						1.0 0.32499
+		:POSITION_END							0.0 0.32499
+		:SIZE										1.0 0.06
+		:JUSTIFY_OFFSET						0.572 0.0
+		:TEXT_JUSTIFY							2
+		:TIME_LENGTH							0.16667
+		:OFFSET_TIME							0.2
+
+		:S{*****>>>
+
+			:TYPE										UI_TYPE_AREA
+			:OBJECT_ID								SLIDER_HIGHLIGHT_DEADZONE
+			:CLEAR									1
+			:COLOUR									255 255 255 255
+
+			:TYPE										UI_TYPE_AREA
+			:OBJECT_ID								SLIDER_BACKGROUND_DEADZONE
+			:CLEAR									1	
+			:POSITION_START						0.48438 0.20867
+			:POSITION_END							0.48438 0.20867
+			:COLOUR									150 150 150 255
+			:AUTOSIZE								1
+
+			:TYPE										UI_TYPE_AREA
+			:OBJECT_ID								SLIDER_LEVEL_BACKGROUND_DEADZONE
+			:CLEAR									1	
+			:POSITION_START						0.48438 0.20867
+			:POSITION_END							0.48438 0.20867
+			:COLOUR									0 0 0 255
+			:AUTOSIZE								1
+
+			:TYPE 									UI_TYPE_GRAPHIC
+			:OBJECT_ID 								SLIDER_MARKER_DEADZONE
+			:COLOUR 									255 255 255 255
+			:AUTOSIZE 								1
+			:POSITION_START 						0.48438 0.06992
+			:POSITION_END 							0.48438 0.06992
+			:TEXTURE_ENUM 							GRAPHICS\GAME\OPTIONS\VOLSLIDE.PSD
+
+		:E}*****<<<
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////////
+		// LINEARITY
+		//////////////////////////////////////////////////////
+
+		:TYPE										UI_TYPE_BUTTON
+		:OBJECT_ID 								LINEARITY
+		:TEXT 									TXT_OPTIONS_CONTROLS_WHEEL_LINEARITY
+		:CLEAR									1
+		:POSITION_START 						-1.0 0.38125
+		:POSITION_END 							0.0 0.38125
+		:SIZE 									1.0 0.06
+		:FONT 									2
+		:FONT_COLOUR 							216 234 242 255
+		:HIGHLIGHTED_FONT 					3
+		:HIGHLIGHTED_FONT_COLOUR 			255 249 135 255
+		:JUSTIFY_OFFSET 						0.572 0.0
+		:TEXT_JUSTIFY 							2
+		:TIME_LENGTH							0.16667
+		:OFFSET_TIME							0.3
+		
+		:TYPE										UI_TYPE_BUTTON
+		:OBJECT_ID 								LINEARITYAREA
+		:CLEAR									1
+		:POSITION_START 						1.0 0.38125
+		:POSITION_END 							0.0 0.38125
+		:SIZE 									1.0 0.06
+		:TEXT_JUSTIFY 							2
+		:TIME_LENGTH							0.16667
+		:OFFSET_TIME							0.3
+
+		:S{*****>>>
+			
+			:TYPE										UI_TYPE_AREA
+			:OBJECT_ID								SLIDER_HIGHLIGHT_LINEARITY
+			:CLEAR									1
+			:COLOUR									255 255 255 255
+	
+			:TYPE										UI_TYPE_AREA
+			:OBJECT_ID								SLIDER_BACKGROUND_LINEARITY
+			:CLEAR									1	
+			:POSITION_START						0.48438 0.20867
+			:POSITION_END							0.48438 0.20867
+			:COLOUR									150 150 150 255
+			:AUTOSIZE								1
+			
+			:TYPE										UI_TYPE_AREA
+			:OBJECT_ID								SLIDER_LEVEL_BACKGROUND_LINEARITY
+			:CLEAR									1
+			:POSITION_START						0.48438 0.20867
+			:POSITION_END							0.48438 0.20867
+			:COLOUR									0 0 0 255
+			:AUTOSIZE								1
+			
+			:TYPE 									UI_TYPE_GRAPHIC
+			:OBJECT_ID 								SLIDER_MARKER_LINEARITY
+			:COLOUR 									255 255 255 255
+			:AUTOSIZE 								1
+			:POSITION_START 						0.48438 0.06992
+			:POSITION_END 							0.48438 0.06992
+			:TEXTURE_ENUM 							GRAPHICS\GAME\OPTIONS\VOLSLIDE.PSD
+
+		:E}*****<<<
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+		
+		//////////////////////////////////////////////////////
+		// PEDALS
+		//////////////////////////////////////////////////////
+
+		:TYPE 									UI_TYPE_BUTTON
+		:TEXT 									TXT_OPTIONS_CONTROLS_COMBINE_PEDAL_AXIS
+		:OBJECT_ID 								PEDALS
+		:DRAWABLE 								0
+		:CLEAR									1
+		:POSITION_START 						0.0 0.62
+		:POSITION_END 							0.0 0.62
+		:SIZE 									1.0 0.1
+		:FONT 									2
+		:FONT_COLOUR 							216 234 242 255
+		:HIGHLIGHTED_FONT 					3
+		:HIGHLIGHTED_FONT_COLOUR 			255 249 135 255
+		:JUSTIFY_OFFSET 						0.5 0.0
+		:TEXT_JUSTIFY 							2
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+		
+		//////////////////////////////////////////////////////
+		// CALIBRATE
+		//////////////////////////////////////////////////////
+
+		:TYPE										UI_TYPE_BUTTON
+		:OBJECT_ID								CALIBRATE
+		:CLEAR									1
+		:POSITION_START						-1.0 0.43542
+		:POSITION_END							0.0 0.43542	
+		:SIZE										0.428 0.05625
+		:TEXT										TXT_OPTIONS_CONTROLS_CALIBRATE
+		:TEXT_JUSTIFY							2
+		:FONT										1
+		:FONT_COLOUR							0 0 0 50	
+		:HIGHLIGHTED_FONT						1
+		:HIGHLIGHTED_FONT_COLOUR			0 0 0 255
+		:TIME_LENGTH							0.16667
+		:OFFSET_TIME							0.4
+
+	:E}*****<<<
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// ARROWS
+	//////////////////////////////////////////////////////
+
+	:TYPE												UI_TYPE_GRAPHIC
+	:OBJECT_ID										LEFT_ARROW
+	:TEXTURE_ENUM									GRAPHICS\GAME\COMMON\SMARROW.PSD
+	:CLEAR											0
+	:POSITION_START								0.438 0.0
+	:POSITION_END									0.438 0.0
+	:AUTOSIZE										1
+	:COLOUR											204 204 204 255
+	:HIGHLIGHTED_COLOUR							204 204 204 255
+	:STRETCH_GRAPHIC								1
+	:TIME_LENGTH									0.16667
+
+	:TYPE												UI_TYPE_GRAPHIC
+	:OBJECT_ID										RIGHT_ARROW
+	:TEXTURE_ENUM									GRAPHICS\GAME\COMMON\SMARROW.PSD
+	:POSITION_START 								0.0 0.0
+	:POSITION_END									0.0 0.0
+	:CLEAR											0
+	:AUTOSIZE										1
+	:COLOUR											204 204 204 255
+	:HIGHLIGHTED_COLOUR							204 204 204 255
+	:STRETCH_GRAPHIC								1
+	:FLIP_GRAPHIC									1 0
+	:TIME_LENGTH									0.16667
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+:E}*****<<<
+
+//////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////
+
+:CONNECTION "VIBRATION"		"PRESSURE"		"PRESSURE"		"none" "none"
+:CONNECTION "PRESSURE" 		"VIBRATION"		"VIBRATION"		"none" "none"
+
+:CONNECTION "FFENABLED"		"CALIBRATE"		"FFSTRENGTH"	"none" "none"
+:CONNECTION "FFSTRENGTH"	"FFENABLED"		"DEADZONE"		"none" "none"
+:CONNECTION "DEADZONE"		"FFSTRENGTH"	"LINEARITY"		"none" "none"
+:CONNECTION "LINEARITY"		"DEADZONE"		"CALIBRATE"		"none" "none"
+:CONNECTION "CALIBRATE"		"LINEARITY"		"FFENABLED"		"none" "none"

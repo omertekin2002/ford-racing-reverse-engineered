@@ -1,0 +1,5951 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME FOCUS_WRC 
+//menu_title
+:BANK AI_4T
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.56 
+0.81 
+1.00 
+1.00 
+:START_RPM 5603.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.7
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.56 
+0.81 
+1.00 
+1.00 
+:START_RPM 5603.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.14 
+0.40 
+0.56 
+0.81 
+:START_RPM 3301.00 
+:RPM_TO_HZ 0.7
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.14 
+0.40 
+0.56 
+0.81 
+:START_RPM 3301.00 
+:RPM_TO_HZ 0.7
+:SOUND_SAMPLE_MAX_VOLUME 0.6
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.14 
+0.40 
+:START_RPM 2150.00 
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.0
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TURBO 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.70
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_GEARBOX_WHINE 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.44
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.00 
+0.88
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.00 
+0.88 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.02 
+0.65 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.02 
+0.65 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME F350 
+//menu_title
+:BANK BNG_V8D
+
+:ENGINE_PITCH_MODIFIER 1.00
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.65 
+0.92 
+1.00 
+1.00 
+:START_RPM 5198.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.90
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.65 
+0.92 
+1.00 
+1.00 
+:START_RPM 5198.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.81 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.23 
+0.46 
+0.65 
+0.92 
+:START_RPM 4198.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.85 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.23 
+0.46 
+0.65 
+0.92 
+:START_RPM 4198.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.78 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.23 
+0.46 
+:START_RPM 2099.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.50
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TURBO 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.70 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.05 
+0.84 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.05 
+0.84 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.06 
+0.64 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.06 
+0.64 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME F150_2004 
+//menu_title
+:BANK AI_F450
+
+//:ENGINE_PITCH_MODIFIER 1.07 
+:ENGINE_PITCH_MODIFIER 0.97 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.62 
+0.83 
+1.00 
+1.00 
+:START_RPM 7204.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.76
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.62 
+0.83 
+1.00 
+1.00 
+:START_RPM 7204.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.70
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.19 
+0.44 
+0.62 
+0.83 
+:START_RPM 3702.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.19 
+0.44 
+0.62 
+0.83 
+:START_RPM 3702.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.66 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.19 
+0.44 
+:START_RPM 2201.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.59
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.04 
+0.86 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.86 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.02 
+0.61 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.02 
+0.61 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME F150 
+//menu_title
+:BANK FRR_V8_1
+
+:ENGINE_PITCH_MODIFIER 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.44
+0.85
+1.00
+1.00
+:START_RPM 7101.00
+:RPM_TO_HZ 1.1
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.44
+0.85
+1.00
+1.00
+:START_RPM 7101.00
+:RPM_TO_HZ 1.1
+:SOUND_SAMPLE_MAX_VOLUME 0.68
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.21
+0.44
+0.44
+0.85
+:START_RPM 3500.00
+:RPM_TO_HZ 1.1
+:SOUND_SAMPLE_MAX_VOLUME 0.98
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.21
+0.44
+0.44
+0.85
+:START_RPM 3500.00
+:RPM_TO_HZ 1.1
+:SOUND_SAMPLE_MAX_VOLUME 0.62
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.21
+0.44
+:START_RPM 1800.00
+:RPM_TO_HZ 0.9
+:SOUND_SAMPLE_MAX_VOLUME 0.40
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.06 
+0.86 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.06 
+0.86 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.01 
+0.64 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.01 
+0.64 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME F100_1965 
+//menu_title
+:BANK ENGINE6 
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.63 
+0.82 
+1.00 
+1.00 
+:START_RPM 7598.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.63 
+0.82 
+1.00 
+1.00 
+:START_RPM 7598.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.74 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.22 
+0.45 
+0.63 
+0.82 
+:START_RPM 3799.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.91 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.22 
+0.45 
+0.63 
+0.82 
+:START_RPM 3799.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.70 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.22 
+0.45 
+:START_RPM 1899.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.58 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.04 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.03 
+0.62 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.62 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME F100_1956 
+//menu_title
+:BANK ENGINE6 
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.58 
+0.87 
+1.00 
+1.00 
+:START_RPM 7598.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.58 
+0.87 
+1.00 
+1.00 
+:START_RPM 7598.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.73 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.24 
+0.44 
+0.58 
+0.87 
+:START_RPM 3799.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.90 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.24 
+0.44 
+0.58 
+0.87 
+:START_RPM 3799.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.71 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.24 
+0.44 
+:START_RPM 1899.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.60 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.04 
+0.86 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.86 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.03 
+0.61 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.61 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME EX 
+//menu_title
+:BANK AI_V6T
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_SUPERCHARGER
+:START_RPM 3000.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.43 
+0.86 
+1.00 
+1.00 
+:START_RPM 4903.00
+:RPM_TO_HZ 0.95
+:SOUND_SAMPLE_MAX_VOLUME 0.86
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.43 
+0.86 
+1.00 
+1.00 
+:START_RPM 4903.00
+:RPM_TO_HZ 0.95
+:SOUND_SAMPLE_MAX_VOLUME 0.79
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.22 
+0.43 
+0.43 
+0.86 
+:START_RPM 2401.00
+:RPM_TO_HZ 0.50
+:SOUND_SAMPLE_MAX_VOLUME 0.83
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.22 
+0.43 
+0.43 
+0.86 
+:START_RPM 2401.00
+:RPM_TO_HZ 0.50
+:SOUND_SAMPLE_MAX_VOLUME 0.69
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.22 
+0.43 
+:START_RPM 2650.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.65 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.02 
+0.84 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.02 
+0.84 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.02 
+0.84 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.02 
+0.84 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME TAURUS_STOCK_A 
+//menu_title
+:BANK AI_F450
+:ENGINE_PITCH_MODIFIER 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.91
+1.00
+1.00
+:START_RPM 6198.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.91
+1.00
+1.00
+:START_RPM 6198.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.69
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.22
+0.41
+0.40
+0.91
+:START_RPM 6198.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.22
+0.41
+0.40
+0.91
+:START_RPM 6198.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.66
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_GEARBOX_WHINE
+:START_RPM 4000.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.22
+0.41
+:START_RPM 2099.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.81
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.03
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.03
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.04
+0.56
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.04
+0.56
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME EV
+//menu_title
+:BANK AI_ELECTRIC
+:ENGINE_PITCH_MODIFIER 0.99
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.91
+1.00
+1.00
+:START_RPM 8198.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.40
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.91
+1.00
+1.00
+:START_RPM 8198.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.29
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.22
+0.41
+0.40
+0.91
+:START_RPM 6198.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.30
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.22
+0.41
+0.40
+0.91
+:START_RPM 6198.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.16
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.14
+0.40
+:START_RPM 2150.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.15
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.03
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.03
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.04
+0.56
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.04
+0.56
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME MUSTANG_2005 
+//menu_title
+:BANK ENGINE6
+
+//:ENGINE_PITCH_MODIFIER 1.0
+:ENGINE_PITCH_MODIFIER 0.75
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.38 
+0.96 
+1.00 
+1.00 
+:START_RPM 5898.00 
+:RPM_TO_HZ 1.20 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.38 
+0.96 
+1.00 
+1.00 
+:START_RPM 5898.00 
+:RPM_TO_HZ 1.20 
+:SOUND_SAMPLE_MAX_VOLUME 0.78 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.17 
+0.38 
+0.38 
+0.96 
+:START_RPM 2949.00 
+:RPM_TO_HZ 1.20 
+:SOUND_SAMPLE_MAX_VOLUME 0.89 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.17 
+0.38 
+0.38 
+0.96 
+:START_RPM 2949.00 
+:RPM_TO_HZ 1.20 
+:SOUND_SAMPLE_MAX_VOLUME 0.67 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.17 
+0.38 
+:START_RPM 1899.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.74 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_SUPERCHARGER 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.90 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.05 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.05 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.05 
+0.61 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.05 
+0.61 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME EXPLORER_2008
+//menu_title
+:BANK ENGINE6
+
+//:ENGINE_PITCH_MODIFIER 1.0
+:ENGINE_PITCH_MODIFIER 0.725
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.38
+0.96
+1.00
+1.00
+:START_RPM 5898.00
+:RPM_TO_HZ 1.20
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.38
+0.96
+1.00
+1.00
+:START_RPM 5898.00
+:RPM_TO_HZ 1.20
+:SOUND_SAMPLE_MAX_VOLUME 0.78
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.17
+0.38
+0.38
+0.96
+:START_RPM 2949.00
+:RPM_TO_HZ 1.20
+:SOUND_SAMPLE_MAX_VOLUME 0.89
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.17
+0.38
+0.38
+0.96
+:START_RPM 2949.00
+:RPM_TO_HZ 1.20
+:SOUND_SAMPLE_MAX_VOLUME 0.67
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.17
+0.38
+:START_RPM 1899.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.74
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.05
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.05
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.05
+0.61
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.05
+0.61
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME MACH3 
+//menu_title
+:BANK AI_BMWM3V8
+
+:ENGINE_PITCH_MODIFIER 0.97
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.69
+1.00
+1.00
+:START_RPM 7852.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.66
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.69
+1.00
+1.00
+:START_RPM 7852.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.64
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.41
+0.40
+0.89
+:START_RPM 7852.00
+:RPM_TO_HZ 0.95
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.41
+0.40
+0.89
+:START_RPM 7852.00
+:RPM_TO_HZ 0.95
+:SOUND_SAMPLE_MAX_VOLUME 0.62
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.17
+0.38
+:START_RPM 2299.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.89
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_SUPERCHARGER 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.90 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.03 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.05 
+0.63 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.05 
+0.63 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME INDIGO 
+//menu_title
+:BANK ENGINE7
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.38 
+0.89 
+1.00 
+1.00 
+:START_RPM 5202.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.38 
+0.89 
+1.00 
+1.00 
+:START_RPM 5202.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.85 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.15 
+0.39 
+0.38 
+0.89 
+:START_RPM 5202.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.86 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.15 
+0.39 
+0.38 
+0.89 
+:START_RPM 5202.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.69 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.15 
+0.39 
+:START_RPM 2901.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.61 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.04 
+0.85 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.85 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.03 
+0.63 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.63 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME GT90 
+//menu_title
+:BANK ENGINE7 
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.34 
+0.87 
+1.00 
+1.00 
+:START_RPM 8603.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.34 
+0.87 
+1.00 
+1.00 
+:START_RPM 8603.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.81 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.17 
+0.34 
+0.34 
+0.87 
+:START_RPM 4301.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.91 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.17 
+0.34 
+0.34 
+0.87 
+:START_RPM 4301.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.67 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.17 
+0.34 
+:START_RPM 2150.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.68 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TURBO 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.90 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.05 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.05 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.03 
+0.59 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.59 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME FORD_GT
+//menu_title
+:BANK AI_Z06
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_GEARBOX_WHINE 
+:START_RPM 4000.00 
+:RPM_TO_HZ 0.70 
+:SOUND_SAMPLE_MAX_VOLUME 0.60
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.69
+1.00 
+1.00 
+:START_RPM 5802.00 
+:RPM_TO_HZ 0.90 
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.69
+1.00
+1.00
+:START_RPM 5802.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.60
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS
+0.14 
+0.41 
+0.40 
+0.89 
+:START_RPM 5802.00
+:RPM_TO_HZ 0.95
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.41
+0.40
+0.89
+:START_RPM 5802.00
+:RPM_TO_HZ 0.95
+:SOUND_SAMPLE_MAX_VOLUME 0.60
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.14
+0.31
+:START_RPM 1800.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_SUPERCHARGER
+:START_RPM 4000.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.03
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.03 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.87 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME GT70
+//menu_title
+:BANK ENGINE5
+
+:ENGINE_PITCH_MODIFIER 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_GEARBOX_WHINE
+:START_RPM 4000.00
+:RPM_TO_HZ 0.70
+:SOUND_SAMPLE_MAX_VOLUME 0.10
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.30
+0.91
+1.00
+1.00
+:START_RPM 7301.00
+:RPM_TO_HZ 1.35
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.30
+0.91
+1.00
+1.00
+:START_RPM 7301.00
+:RPM_TO_HZ 1.35
+:SOUND_SAMPLE_MAX_VOLUME 0.61
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.31
+0.30
+0.91
+:START_RPM 3600.00
+:RPM_TO_HZ 1.35
+:SOUND_SAMPLE_MAX_VOLUME 0.87
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.31
+0.30
+0.91
+:START_RPM 3600.00
+:RPM_TO_HZ 1.35
+:SOUND_SAMPLE_MAX_VOLUME 0.67
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.14
+0.31
+:START_RPM 1800.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.03
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.03
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.03
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.03
+0.87
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME FR500 
+//menu_title
+:BANK ENGINE3 
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_SUPERCHARGER 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.0 
+:SOUND_SAMPLE_MAX_VOLUME 0.90 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.40 
+0.89 
+1.00 
+1.00 
+:START_RPM 5452.00
+:RPM_TO_HZ 1.25 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.40 
+0.89 
+1.00 
+1.00 
+:START_RPM 5452.00
+:RPM_TO_HZ 1.25 
+:SOUND_SAMPLE_MAX_VOLUME 0.71 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.14 
+0.41 
+0.40 
+0.89 
+:START_RPM 5402.00
+:RPM_TO_HZ 1.25 
+:SOUND_SAMPLE_MAX_VOLUME 0.94 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.14 
+0.41 
+0.40 
+0.89 
+:START_RPM 5402.00
+:RPM_TO_HZ 1.25 
+:SOUND_SAMPLE_MAX_VOLUME 0.70 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.14 
+0.41 
+:START_RPM 2901.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.84 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.07 
+0.84 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.07 
+0.84 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.05 
+0.63 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.05 
+0.63 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME FOCUS_FR200 
+//menu_title
+:BANK AI_4T
+
+:ENGINE_PITCH_MODIFIER 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.56
+0.81
+1.00
+1.00
+:START_RPM 5603.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.7
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.56
+0.81
+1.00
+1.00
+:START_RPM 5603.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.40
+0.56
+0.81
+:START_RPM 3301.00
+:RPM_TO_HZ 0.7
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.40
+0.56
+0.81
+:START_RPM 3301.00
+:RPM_TO_HZ 0.7
+:SOUND_SAMPLE_MAX_VOLUME 0.6
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.14
+0.40
+:START_RPM 2150.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.0
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TURBO 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.70 
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_GEARBOX_WHINE
+:START_RPM 4000.00
+:RPM_TO_HZ 1.10
+:SOUND_SAMPLE_MAX_VOLUME 0.40
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.04 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.04 
+0.62 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.62 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME RS200_EVOLUTION
+//menu_title
+:BANK AI_4T
+
+:ENGINE_PITCH_MODIFIER 1.0
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.56
+0.81
+1.00
+1.00
+:START_RPM 5403.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.56
+0.81
+1.00
+1.00
+:START_RPM 5403.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.7
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.40
+0.56
+0.81
+:START_RPM 3101.00
+:RPM_TO_HZ 0.7
+:SOUND_SAMPLE_MAX_VOLUME 0.7
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.40
+0.56
+0.81
+:START_RPM 3101.00
+:RPM_TO_HZ 0.7
+:SOUND_SAMPLE_MAX_VOLUME 0.66
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.14
+0.40
+:START_RPM 2350.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.0
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TURBO
+:START_RPM 4000.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.70
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_GEARBOX_WHINE
+:START_RPM 4000.00
+:RPM_TO_HZ 1.10
+:SOUND_SAMPLE_MAX_VOLUME 0.50
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.04
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.04
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.04
+0.62
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.04
+0.62
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME ESCORT_RS
+//menu_title
+:BANK AI_4T
+
+:ENGINE_PITCH_MODIFIER 0.95
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.50
+0.79
+1.00
+1.00
+:START_RPM 6205.00
+:RPM_TO_HZ 1.10
+:SOUND_SAMPLE_MAX_VOLUME 0.90
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.50
+0.79
+1.00
+1.00
+:START_RPM 6205.00
+:RPM_TO_HZ 1.10
+:SOUND_SAMPLE_MAX_VOLUME 0.78
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.15
+0.36
+0.50
+0.79
+:START_RPM 4502.00
+:RPM_TO_HZ 1.10
+:SOUND_SAMPLE_MAX_VOLUME 0.82
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.15
+0.36
+0.50
+0.79
+:START_RPM 4502.00
+:RPM_TO_HZ 1.10
+:SOUND_SAMPLE_MAX_VOLUME 0.71
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.15 
+0.36 
+:START_RPM 2301.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TURBO 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.60
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.04 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.04 
+0.62 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.62 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME ESCORT_RS_2
+//menu_title
+:BANK FSR_COSWORT
+
+:ENGINE_PITCH_MODIFIER 1.4
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.50
+0.79
+1.00
+1.00
+:START_RPM 6205.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.95
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.50
+0.79
+1.00
+1.00
+:START_RPM 6205.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.95
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.15
+0.36
+0.50
+0.79
+:START_RPM 4502.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.95
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.15
+0.36
+0.50
+0.79
+:START_RPM 4502.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.95
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.15 
+0.36 
+:START_RPM 2301.00 
+:RPM_TO_HZ 0.70
+:SOUND_SAMPLE_MAX_VOLUME 0.90
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TURBO 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.60
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.04 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.04 
+0.62 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.62 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME MONDEO_ST220
+//menu_title
+:BANK AI_V6NA
+
+:ENGINE_PITCH_MODIFIER 0.94
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 8603.00
+:RPM_TO_HZ 1.10
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 8603.00
+:RPM_TO_HZ 1.10
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 4301.00 
+:RPM_TO_HZ 0.77
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 4301.00
+:RPM_TO_HZ 0.77
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.10 
+0.34 
+:START_RPM 2150.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.05 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.05 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.03 
+0.59 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.59 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME MUSTANG_V6
+//menu_title
+:BANK AI_V6NA
+
+:ENGINE_PITCH_MODIFIER 0.96
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 8603.00
+:RPM_TO_HZ 1.10
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 8603.00
+:RPM_TO_HZ 1.10
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 4301.00
+:RPM_TO_HZ 0.77
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 4301.00
+:RPM_TO_HZ 0.77
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.10
+0.34
+:START_RPM 2150.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.05
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.05
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.03
+0.59
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.03
+0.59
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME 2008_V6
+//menu_title
+:BANK AI_V6NA
+
+:ENGINE_PITCH_MODIFIER 0.98
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 8303.00
+:RPM_TO_HZ 1.10
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 8303.00
+:RPM_TO_HZ 1.10
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 4001.00
+:RPM_TO_HZ 0.77
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 4001.00
+:RPM_TO_HZ 0.77
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.10
+0.34
+:START_RPM 2200.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.05
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.05
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.03
+0.59
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.03
+0.59
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME EXPLORER_ADR
+//menu_title
+:BANK AI_V6T
+
+:ENGINE_PITCH_MODIFIER 0.96
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 8603.00
+:RPM_TO_HZ 1.10
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 8603.00
+:RPM_TO_HZ 1.10
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 4301.00
+:RPM_TO_HZ 0.77
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 4301.00
+:RPM_TO_HZ 0.77
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.10
+0.34
+:START_RPM 2150.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_SUPERCHARGER
+:START_RPM 4000.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.85
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.05
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.05
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.03
+0.59
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.03
+0.59
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME RS2000
+//menu_title
+:BANK ENGINE7
+
+:ENGINE_PITCH_MODIFIER 0.94
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.34 
+0.97 
+1.00 
+1.00 
+:START_RPM 8703.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.34 
+0.97 
+1.00 
+1.00 
+:START_RPM 8703.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.10 
+0.34 
+0.34 
+0.97 
+:START_RPM 4401.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.10 
+0.34 
+0.34 
+0.97 
+:START_RPM 4401.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.10 
+0.34 
+:START_RPM 1150.00
+:RPM_TO_HZ 0.50
+:SOUND_SAMPLE_MAX_VOLUME 0.94 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.05 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.05 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.03 
+0.59 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.59 
+
+:NAME RS2000_SRP
+//menu_title
+:BANK ENGINE7
+
+:ENGINE_PITCH_MODIFIER 1.0
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 7903.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 7903.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 3301.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 3301.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.10
+0.34
+:START_RPM 1950.00
+:RPM_TO_HZ 0.50
+:SOUND_SAMPLE_MAX_VOLUME 0.94
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.05
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.05
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.03
+0.59
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.03
+0.59
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME ESCORT_DX
+//menu_title
+:BANK ENGINE7
+
+:ENGINE_PITCH_MODIFIER 0.93
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 9703.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 9703.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 5401.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 5401.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.10
+0.34
+:START_RPM 850.00
+:RPM_TO_HZ 0.50
+:SOUND_SAMPLE_MAX_VOLUME 0.94
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.05
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.05
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.03
+0.59
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.03
+0.59
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME CAPRI_1600
+//menu_title
+:BANK FSR_RS2000
+
+:ENGINE_PITCH_MODIFIER 1.6
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.34 
+0.97 
+1.00 
+1.00 
+:START_RPM 8703.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.05
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.34 
+0.97 
+1.00 
+1.00 
+:START_RPM 8703.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.05
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.10 
+0.34 
+0.34 
+0.97 
+:START_RPM 4401.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.90
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.10 
+0.34 
+0.34 
+0.97 
+:START_RPM 4401.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.90
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.10 
+0.34 
+:START_RPM 1150.00
+:RPM_TO_HZ 0.48
+:SOUND_SAMPLE_MAX_VOLUME 0.85
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.05 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.05 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.03 
+0.59 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.59 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME CAPRI_1600_RALLY
+//menu_title
+:BANK FSR_RS2000
+
+:ENGINE_PITCH_MODIFIER 1.5
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 6803.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.15
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 6803.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.15
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 3501.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 3501.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.10
+0.34
+:START_RPM 1150.00
+:RPM_TO_HZ 0.48
+:SOUND_SAMPLE_MAX_VOLUME 0.95
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.05
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.05
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.03
+0.59
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.03
+0.59
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME THUNDERBIRD_MOVIE 
+//menu_title
+:BANK AI_BMWM3V8
+
+:ENGINE_PITCH_MODIFIER 1.0
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.69
+1.00
+1.00
+:START_RPM 7852.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.66
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.69
+1.00
+1.00
+:START_RPM 7852.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.64
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.41
+0.40
+0.89
+:START_RPM 7852.00
+:RPM_TO_HZ 0.95
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.41
+0.40
+0.89
+:START_RPM 7852.00
+:RPM_TO_HZ 0.95
+:SOUND_SAMPLE_MAX_VOLUME 0.62
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.17
+0.38
+:START_RPM 2299.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.89
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.05
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.05
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.05
+0.61
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.05
+0.61
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME THUNDERBIRD_2002 
+//menu_title
+:BANK AI_BMWM3V8
+
+:ENGINE_PITCH_MODIFIER 0.98
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.69
+1.00
+1.00
+:START_RPM 7852.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.66
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.69
+1.00
+1.00
+:START_RPM 7852.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.64
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.41
+0.40
+0.89
+:START_RPM 7852.00
+:RPM_TO_HZ 0.95
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.41
+0.40
+0.89
+:START_RPM 7852.00
+:RPM_TO_HZ 0.95
+:SOUND_SAMPLE_MAX_VOLUME 0.62
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.17
+0.38
+:START_RPM 2299.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.89
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.05
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.05
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.05
+0.61
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.05
+0.61
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME POWERSTROKE 
+//menu_title
+:BANK BNG_V8D
+
+:ENGINE_PITCH_MODIFIER 0.90
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.40 
+0.91 
+1.00 
+1.00 
+:START_RPM 4198.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.90
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.40 
+0.91 
+1.00 
+1.00 
+:START_RPM 4198.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.22 
+0.41 
+0.40 
+0.91 
+:START_RPM 4198.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.22 
+0.41 
+0.40 
+0.91 
+:START_RPM 4198.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.22 
+0.41 
+:START_RPM 2099.00 
+:RPM_TO_HZ 1.20
+:SOUND_SAMPLE_MAX_VOLUME 0.5
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TURBO 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.70 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.03 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.04 
+0.56 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.56 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME MONDEO_TDCI
+//menu_title
+:BANK BNG_V8D
+
+:ENGINE_PITCH_MODIFIER 1.30
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.91
+1.00
+1.00
+:START_RPM 4198.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.88
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.91
+1.00
+1.00
+:START_RPM 4198.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.77
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.22
+0.41
+0.40
+0.91
+:START_RPM 4198.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.82
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.22
+0.41
+0.40
+0.91
+:START_RPM 4198.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.77
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TURBO
+:START_RPM 4000.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.60
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.22
+0.41
+:START_RPM 2099.00
+:RPM_TO_HZ 1.20
+:SOUND_SAMPLE_MAX_VOLUME 0.62
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.03
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.03
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.04
+0.56
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.04
+0.56
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME LIGHTNING_SVT 
+//menu_title
+:BANK AI_Z06
+
+:ENGINE_PITCH_MODIFIER 0.895
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.69
+1.00 
+1.00 
+:START_RPM 5802.00 
+:RPM_TO_HZ 0.725
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.69
+1.00
+1.00
+:START_RPM 5802.00
+:RPM_TO_HZ 0.725
+:SOUND_SAMPLE_MAX_VOLUME 0.6
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS
+0.14 
+0.41 
+0.40 
+0.89 
+:START_RPM 5802.00
+:RPM_TO_HZ 0.75
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.41
+0.40
+0.89
+:START_RPM 5802.00
+:RPM_TO_HZ 0.75
+:SOUND_SAMPLE_MAX_VOLUME 0.6
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.14
+0.31
+:START_RPM 1800.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.55
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_SUPERCHARGER 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.95
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.04 
+0.86 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.86 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.04 
+0.86 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.86 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME FORTYNINE 
+//menu_title
+:BANK AI_BMWM3V8
+
+:ENGINE_PITCH_MODIFIER 0.95
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.69
+1.00
+1.00
+:START_RPM 7852.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.66
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.69
+1.00
+1.00
+:START_RPM 7852.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.64
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.41
+0.40
+0.89
+:START_RPM 7852.00
+:RPM_TO_HZ 0.95
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.14
+0.41
+0.40
+0.89
+:START_RPM 7852.00
+:RPM_TO_HZ 0.95
+:SOUND_SAMPLE_MAX_VOLUME 0.62
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.17
+0.38
+:START_RPM 2299.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.89
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.05
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.05
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.05
+0.61
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.05
+0.61
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME FOCUS_SVT 
+//menu_title
+:BANK AI_4NA
+
+:ENGINE_PITCH_MODIFIER 0.93
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00
+0.00
+0.16
+0.42
+:START_RPM 2000.00
+:RPM_TO_HZ 0.750 
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 8603.00
+:RPM_TO_HZ 1.25
+:SOUND_SAMPLE_MAX_VOLUME 0.70
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.34
+0.97
+1.00
+1.00
+:START_RPM 8603.00
+:RPM_TO_HZ 1.25
+:SOUND_SAMPLE_MAX_VOLUME 0.70
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 4301.00 
+:RPM_TO_HZ 0.85
+:SOUND_SAMPLE_MAX_VOLUME 0.70
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.10
+0.34
+0.34
+0.97
+:START_RPM 4301.00
+:RPM_TO_HZ 0.85
+:SOUND_SAMPLE_MAX_VOLUME 0.70
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.04 
+0.85 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.85 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.04 
+0.64 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.64 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME CROWN_VICTORIA 
+//menu_title
+:BANK AI_F450
+
+:ENGINE_PITCH_MODIFIER 0.94
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.65
+0.92
+1.00
+1.00
+:START_RPM 6498.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.65
+0.92
+1.00
+1.00
+:START_RPM 6498.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.79
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.23
+0.46
+0.65
+0.92
+:START_RPM 4498.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.23
+0.46
+0.65
+0.92
+:START_RPM 4498.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.74
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.23
+0.46
+:START_RPM 1799.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.62
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.17
+0.38
+:START_RPM 2299.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.89
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.05
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.05
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.05
+0.61
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.05
+0.61
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME COBRA 
+//menu_title
+:BANK ENGINE3 
+
+:ENGINE_PITCH_MODIFIER 1.10
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.44 
+0.90 
+1.00 
+1.00 
+:START_RPM 5402.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.44 
+0.90 
+1.00 
+1.00 
+:START_RPM 5402.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.80 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.16 
+0.44 
+0.44 
+0.90 
+:START_RPM 5802.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.16 
+0.44 
+0.44 
+0.90 
+:START_RPM 5802.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.78 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.16 
+0.44 
+:START_RPM 2901.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.70 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_SUPERCHARGER 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.90 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.00 
+1.00 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.03 
+0.64 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.64 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME THUNDERBIRD 
+//menu_title
+:BANK FO2_V8
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.47 
+0.83 
+1.00 
+1.00 
+:START_RPM 7498.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.9
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.47 
+0.83 
+1.00 
+1.00 
+:START_RPM 7498.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.73 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.22 
+0.48 
+0.47 
+0.83 
+:START_RPM 3699.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.88 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.22 
+0.48 
+0.47 
+0.83 
+:START_RPM 3699.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.64 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.22 
+0.48 
+:START_RPM 1899.00 
+:RPM_TO_HZ 1.15
+:SOUND_SAMPLE_MAX_VOLUME 0.63 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.03 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.03 
+0.59 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.59 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME GTHO
+:BANK FO2_V8
+
+:ENGINE_PITCH_MODIFIER 1.01
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.47
+0.83
+1.00
+1.00
+:START_RPM 6598.00
+:RPM_TO_HZ 1.08
+:SOUND_SAMPLE_MAX_VOLUME 0.9
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.47
+0.83
+1.00
+1.00
+:START_RPM 6598.00
+:RPM_TO_HZ 1.08
+:SOUND_SAMPLE_MAX_VOLUME 0.73
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.22
+0.48
+0.47
+0.83
+:START_RPM 2499.00
+:RPM_TO_HZ 0.70
+:SOUND_SAMPLE_MAX_VOLUME 0.88
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.22
+0.48
+0.47
+0.83
+:START_RPM 2499.00
+:RPM_TO_HZ 0.70
+:SOUND_SAMPLE_MAX_VOLUME 0.64
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.22
+0.48
+:START_RPM 2099.00
+:RPM_TO_HZ 1.15
+:SOUND_SAMPLE_MAX_VOLUME 0.63
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.03
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.03
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.03
+0.59
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.03
+0.59
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME MACH1_SIXTY 
+//menu_title
+:BANK ENGINE5
+
+:ENGINE_PITCH_MODIFIER 1.05
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.62 
+0.85 
+1.00 
+1.00 
+:START_RPM 8804.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.62 
+0.85 
+1.00 
+1.00 
+:START_RPM 8804.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.72 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.18 
+0.48 
+0.62 
+0.85 
+:START_RPM 4402.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.92 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.18 
+0.48 
+0.62 
+0.85 
+:START_RPM 4402.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.78 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.18 
+0.48 
+:START_RPM 2201.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.58 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.02 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.02 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.04 
+0.59 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.59 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME MACH1_AGENT 
+//menu_title
+:BANK AI_F450 
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.56 
+0.81 
+1.00 
+1.00 
+:START_RPM 8804.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.56 
+0.81 
+1.00 
+1.00 
+:START_RPM 8804.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.675
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.20 
+0.45 
+0.56 
+0.81 
+:START_RPM 4402.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.725
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.20 
+0.45 
+0.56 
+0.81 
+:START_RPM 4402.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.68
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.20 
+0.45 
+:START_RPM 2201.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.59
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.02 
+0.92 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.02 
+0.92 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.05 
+0.55 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.05 
+0.55 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME GRAN_TORINO
+//menu_title
+:BANK AI_F450
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.42 
+0.88 
+1.00 
+1.00 
+:START_RPM 8804.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.90 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.42 
+0.88 
+1.00 
+1.00 
+:START_RPM 8804.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.81 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.19 
+0.42 
+0.42 
+0.88 
+:START_RPM 4402.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.90 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.19 
+0.42 
+0.42 
+0.88 
+:START_RPM 4402.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.82 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.19 
+0.42 
+:START_RPM 2201.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.79 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.04 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.06 
+0.59 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.06 
+0.59 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME 49_COUPE_MOVIE 
+//menu_title
+:BANK ENGINE6 
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.57 
+0.84 
+1.00 
+1.00 
+:START_RPM 7598.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.57 
+0.84 
+1.00 
+1.00 
+:START_RPM 7598.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.75 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.22 
+0.47 
+0.57 
+0.84 
+:START_RPM 3799.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.87 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.22 
+0.47 
+0.57 
+0.84 
+:START_RPM 3799.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.69 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.22 
+0.47 
+:START_RPM 1899.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.61 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.05 
+0.84 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.05 
+0.84 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.02 
+0.61 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.02 
+0.61 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME 49_COUPE 
+//menu_title
+:BANK ENGINE6 
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.43 
+0.82 
+1.00 
+1.00 
+:START_RPM 7598.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.43 
+0.82 
+1.00 
+1.00 
+:START_RPM 7598.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.68 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.21 
+0.44 
+0.43 
+0.82 
+:START_RPM 3799.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.90 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.21 
+0.44 
+0.43 
+0.82 
+:START_RPM 3799.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.67 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.21 
+0.44 
+:START_RPM 1899.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.66 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.05 
+0.88 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.05 
+0.88 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.04 
+0.66 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.66 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// old mustang sound
+:NAME MUSTANG_68B 
+//menu_title
+:BANK ENGINE3 
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.60 
+0.83 
+1.00 
+1.00 
+:START_RPM 5802.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.60 
+0.83 
+1.00 
+1.00 
+:START_RPM 5802.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.75 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.21 
+0.42 
+0.60 
+0.83 
+:START_RPM 5802.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.91 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.21 
+0.42 
+0.60 
+0.83 
+:START_RPM 5802.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.73 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.21 
+0.42 
+:START_RPM 2901.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.60 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.02 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.02 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.03 
+0.59 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.59 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME MUSTANG_68 
+//menu_title
+:BANK ENGINE5 
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.44 
+0.85 
+1.00 
+1.00 
+:START_RPM 7201.00 
+:RPM_TO_HZ 1.0 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.44 
+0.85 
+1.00 
+1.00 
+:START_RPM 7201.00 
+:RPM_TO_HZ 1.0 
+:SOUND_SAMPLE_MAX_VOLUME 0.68 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.21 
+0.44 
+0.44 
+0.85 
+:START_RPM 3600.00 
+:RPM_TO_HZ 1.0 
+:SOUND_SAMPLE_MAX_VOLUME 0.98 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.21 
+0.44 
+0.44 
+0.85 
+:START_RPM 3600.00 
+:RPM_TO_HZ 1.0 
+:SOUND_SAMPLE_MAX_VOLUME 0.62 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.21 
+0.44 
+:START_RPM 1800.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.69 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.03 
+0.86 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.86 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.03 
+0.60 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.60 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME MODEL_A 
+//menu_title
+:BANK MODELA 
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_GEARBOX_WHINE 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.80 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.21 
+0.43 
+:START_RPM 1200.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.86 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.21 
+0.43 
+0.43 
+0.78 
+:START_RPM 2000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.80 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.21 
+0.43 
+0.43 
+0.78 
+:START_RPM 2000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.98 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.43 
+0.78 
+1.00 
+1.00 
+:START_RPM 3000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.83 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.43 
+0.78 
+1.00 
+1.00 
+:START_RPM 3000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.15 
+0.76 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.15 
+0.76 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.16 
+0.75 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.16 
+0.75 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME MODEL_T 
+//menu_title
+:BANK MODELT 
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_GEARBOX_WHINE 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.80 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.21 
+0.44 
+:START_RPM 1200.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.93 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.21 
+0.44 
+0.43 
+0.92 
+:START_RPM 2000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.83 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.21 
+0.44 
+0.43 
+0.92 
+:START_RPM 2000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.98 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.43 
+0.92 
+1.00 
+1.00 
+:START_RPM 3000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.86 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.43 
+0.92 
+1.00 
+1.00 
+:START_RPM 3000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.05 
+0.88 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.05 
+0.88 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.04 
+0.66 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.66 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME RS500 
+//menu_title
+:BANK ENGINE9
+
+:ENGINE_PITCH_MODIFIER 1.0 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.50 
+0.79 
+1.00 
+1.00 
+:START_RPM 9205.00 
+:RPM_TO_HZ 1.4
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.50 
+0.79 
+1.00 
+1.00 
+:START_RPM 9205.00 
+:RPM_TO_HZ 1.4
+:SOUND_SAMPLE_MAX_VOLUME 0.75 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.15 
+0.36 
+0.50 
+0.79 
+:START_RPM 4602.00 
+:RPM_TO_HZ 1.3
+:SOUND_SAMPLE_MAX_VOLUME 0.89 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.15 
+0.36 
+0.50 
+0.79 
+:START_RPM 4602.00 
+:RPM_TO_HZ 1.3
+:SOUND_SAMPLE_MAX_VOLUME 0.75 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.15 
+0.36 
+:START_RPM 2301.00 
+:RPM_TO_HZ 1.0
+:SOUND_SAMPLE_MAX_VOLUME 0.80 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TURBO 
+:START_RPM 4000.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.475
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.04 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.04 
+0.62 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.62 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// everyday I'm Shufflin'
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME VISOS
+//menu_title
+:BANK ENGINE4 
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.42 
+0.88 
+1.00 
+1.00 
+:START_RPM 7804.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.42 
+0.88 
+1.00 
+1.00 
+:START_RPM 7804.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.81 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.19 
+0.42 
+0.42 
+0.88 
+:START_RPM 4402.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.19 
+0.42 
+0.42 
+0.88 
+:START_RPM 4402.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.82 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TURBO 
+:START_RPM 4500.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.50 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.19 
+0.42 
+:START_RPM 2201.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.79 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.04 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.06 
+0.59 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.06 
+0.59 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME MUSTANG_RALLY
+//menu_title
+:BANK ENGINE5
+
+:ENGINE_PITCH_MODIFIER 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.44
+0.85
+1.00
+1.00
+:START_RPM 7101.00
+:RPM_TO_HZ 1.0
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.44
+0.85
+1.00
+1.00
+:START_RPM 7101.00
+:RPM_TO_HZ 1.0
+:SOUND_SAMPLE_MAX_VOLUME 0.68
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.21
+0.44
+0.44
+0.85
+:START_RPM 3500.00
+:RPM_TO_HZ 1.0
+:SOUND_SAMPLE_MAX_VOLUME 0.98
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.21
+0.44
+0.44
+0.85
+:START_RPM 3500.00
+:RPM_TO_HZ 1.0
+:SOUND_SAMPLE_MAX_VOLUME 0.62
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.21
+0.44
+:START_RPM 1800.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.73
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.03
+0.86
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.03
+0.86
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.03
+0.60
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.03
+0.60
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME FALCON_XR8
+:BANK FO2_V8
+
+:ENGINE_PITCH_MODIFIER 1.0
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.42 
+0.91 
+1.00 
+1.00 
+:START_RPM 5702.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.90
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.42 
+0.91 
+1.00 
+1.00 
+:START_RPM 5702.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.82 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.21 
+0.43 
+0.42 
+0.91 
+:START_RPM 3702.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.85
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.21 
+0.43 
+0.42 
+0.91 
+:START_RPM 3702.00
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.74 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.21 
+0.43 
+:START_RPM 2301.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.72 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.04 
+0.86 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.86 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.04 
+0.86 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.04 
+0.86 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME FPV_BOSS_290
+:BANK FO2_V8
+
+:ENGINE_PITCH_MODIFIER 1.01
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.42
+0.91
+1.00
+1.00
+:START_RPM 5402.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.90
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.42
+0.91
+1.00
+1.00
+:START_RPM 5402.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.82
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.21
+0.43
+0.42
+0.91
+:START_RPM 3402.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.85
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.21
+0.43
+0.42
+0.91
+:START_RPM 3402.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.74
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.21
+0.43
+:START_RPM 2301.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.72
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.04
+0.86
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.04
+0.86
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.04
+0.86
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.04
+0.86
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME MUSTANG_GTR
+//menu_title
+:BANK ENGINE1 
+
+:ENGINE_PITCH_MODIFIER 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.56 
+0.92 
+1.00 
+1.00 
+:START_RPM 4602.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 1.00 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.56 
+0.92 
+1.00 
+1.00 
+:START_RPM 9204.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.78 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.18 
+0.43 
+0.56 
+0.92 
+:START_RPM 4602.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.92 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.18 
+0.43 
+0.56 
+0.92 
+:START_RPM 4602.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.77 
+
+:SOUND_INFO 
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER 
+:SOUND_SAMPLE_EDIT_POINTS 
+0.00 
+0.00 
+0.18 
+0.43 
+:START_RPM 2301.00 
+:RPM_TO_HZ 1.00 
+:SOUND_SAMPLE_MAX_VOLUME 0.72 
+
+//:SOUND_INFO 
+//:TYPE ENGINE_SAMPLE_TYPE_SUPERCHARGER 
+//:START_RPM 4000.00 
+//:RPM_TO_HZ 1.00 
+//:SOUND_SAMPLE_MAX_VOLUME 0.90
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_IN 
+0.03 
+0.87 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE HIGH_LOAD_OUT 
+0.00 
+0.00 
+0.03 
+0.87 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_IN 
+0.05 
+0.63 
+1.00 
+1.00 
+
+:CROSSFADE_INFO 
+:TYPE LOW_LOAD_OUT 
+0.00 
+0.00 
+0.05 
+0.63
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME CAPRI_RS2600_70
+//menu_title
+:BANK ENGINE4
+
+:ENGINE_PITCH_MODIFIER 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.42
+0.88
+1.00
+1.00
+:START_RPM 8804.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.42
+0.88
+1.00
+1.00
+:START_RPM 8804.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.81
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.19
+0.42
+0.42
+0.88
+:START_RPM 4402.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.19
+0.42
+0.42
+0.88
+:START_RPM 4402.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.82
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.19
+0.42
+:START_RPM 2201.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.79
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.04
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.04
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.06
+0.59
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.06
+0.59
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME MUSTANG_68_I6
+//menu_title
+:BANK ENGINE4
+
+:ENGINE_PITCH_MODIFIER 0.90
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.42
+0.88
+1.00
+1.00
+:START_RPM 9204.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.42
+0.88
+1.00
+1.00
+:START_RPM 9204.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.81
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.19
+0.42
+0.42
+0.88
+:START_RPM 4402.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.19
+0.42
+0.42
+0.88
+:START_RPM 4402.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.82
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.19
+0.42
+:START_RPM 2201.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.79
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.04
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.04
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.06
+0.59
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.06
+0.59
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME SHELBY_GR1
+//menu_title
+:BANK AI_Z06
+
+:ENGINE_PITCH_MODIFIER 1.0
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.38
+0.96
+1.00
+1.00
+:START_RPM 5898.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.38
+0.96
+1.00
+1.00
+:START_RPM 5898.00
+:RPM_TO_HZ 0.90
+:SOUND_SAMPLE_MAX_VOLUME 0.6
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.17
+0.38
+0.38
+0.96
+:START_RPM 2949.00
+:RPM_TO_HZ 0.75
+:SOUND_SAMPLE_MAX_VOLUME 0.65
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.17
+0.38
+0.38
+0.96
+:START_RPM 2949.00
+:RPM_TO_HZ 0.75
+:SOUND_SAMPLE_MAX_VOLUME 0.6
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.17
+0.38
+:START_RPM 1899.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.75
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.05
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.05
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.05
+0.61
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.05
+0.61
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME SHELBY_GT500
+//menu_title
+:BANK ENGINE3
+
+:ENGINE_PITCH_MODIFIER 0.98
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.44
+0.90
+1.00
+1.00
+:START_RPM 5802.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.44
+0.90
+1.00
+1.00
+:START_RPM 5802.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.16
+0.44
+0.44
+0.90
+:START_RPM 5802.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.16
+0.44
+0.44
+0.90
+:START_RPM 5802.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.78
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.16
+0.44
+:START_RPM 2901.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.70
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.00
+1.00
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.03
+0.64
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.03
+0.64
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME FR100
+//menu_title
+:BANK AI_F450
+
+:ENGINE_PITCH_MODIFIER 0.98
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.91
+1.00
+1.00
+:START_RPM 4298.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.40
+0.91
+1.00
+1.00
+:START_RPM 4298.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.69
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.22
+0.41
+0.40
+0.91
+:START_RPM 4298.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.22
+0.41
+0.40
+0.91
+:START_RPM 4298.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.66
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.22
+0.41
+:START_RPM 1599.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.85
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.03
+0.87
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.03
+0.87
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.04
+0.56
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.04
+0.56
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:NAME MUSTANG_1993
+//menu_title
+:BANK ENGINE3
+
+:ENGINE_PITCH_MODIFIER 0.90
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.44
+0.90
+1.00
+1.00
+:START_RPM 5802.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_HIGH_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.44
+0.90
+1.00
+1.00
+:START_RPM 5802.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.80
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_LOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.16
+0.44
+0.44
+0.90
+:START_RPM 5802.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 1.00
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_LOW_UNLOADED
+:SOUND_SAMPLE_EDIT_POINTS
+0.16
+0.44
+0.44
+0.90
+:START_RPM 5802.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.78
+
+:SOUND_INFO
+:TYPE ENGINE_SAMPLE_TYPE_TICKOVER
+:SOUND_SAMPLE_EDIT_POINTS
+0.00
+0.00
+0.16
+0.44
+:START_RPM 2901.00
+:RPM_TO_HZ 1.00
+:SOUND_SAMPLE_MAX_VOLUME 0.70
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_IN
+0.00
+1.00
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE HIGH_LOAD_OUT
+0.00
+0.00
+0.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_IN
+0.03
+0.64
+1.00
+1.00
+
+:CROSSFADE_INFO
+:TYPE LOW_LOAD_OUT
+0.00
+0.00
+0.03
+0.64
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:END 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -3,35 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Play the Ford Racing 3 demo in your browser, in a WebGL2 reimplementation that reads its files or as the unchanged executable under Boxedwine.">
-  <title>Ford Racing 3 demo</title>
+  <meta name="description" content="Play Ford Racing 3 Shuffle in your browser using the independent TypeScript + WebGL2 engine.">
+  <title>Ford Racing 3 Shuffle</title>
   <link rel="stylesheet" href="site.css">
   <script src="site.js" defer></script>
 </head>
 <body>
   <main>
     <section class="intro">
-      <h1>Ford Racing 3 demo</h1>
-      <p><b>Play</b> runs an independent WebGL2 reimplementation that reads the 2004 PC demo’s files; <b>Play (Boxedwine)</b> runs the unchanged demo executable. Works best in desktop Chrome, Edge or Firefox with a keyboard.</p>
-      <p class="links"><a href="research/">Explore findings</a> · <a href="downloads/fr3-research-latest.zip">Download the research packet</a> (ZIP)</p>
+      <h1>Ford Racing 3 Shuffle</h1>
+      <p><b>Play</b> runs the independent TypeScript + WebGL2 engine directly against the Ford Racing 3 Shuffle game files, streaming only the cars and tracks you select on demand. Works best in desktop Chrome, Edge or Firefox with a keyboard.</p>
       <aside id="rights-notice" class="rights" aria-label="Rights notice">
-        <p>Unofficial fan project, not affiliated with the rights holders. Ford Racing 3 demo © 2004 Empire Interactive Europe Ltd.
-        <a href="https://www.moddb.com/games/ford-racing/downloads/ford-racing-3-demo" rel="noopener">Official demo</a> ·
+        <p>Unofficial fan project, not affiliated with the rights holders. Ford Racing 3 © 2004 Empire Interactive Europe Ltd.
+        <a href="https://github.com/ZippyZolton/Ford-Racing-3-Shuffle" rel="noopener">Ford Racing 3 Shuffle</a> ·
         <a href="https://github.com/omertekin2002/ford-racing-reverse-engineered/issues" rel="noopener">Request removal</a></p>
       </aside>
     </section>
     <section class="player" aria-label="Game player">
       <div class="toolbar">
         <button id="play-native" class="primary">Play</button>
-        <button id="play">Play (Boxedwine)</button>
-        <button id="configure">Settings</button>
         <button id="restart" disabled>Restart</button>
         <button id="fullscreen" disabled>Fullscreen</button>
         <label class="sound"><input id="sound" type="checkbox" checked> Sound</label>
       </div>
       <div id="screen"></div>
       <div class="statusbar">
-        <p id="status" role="status" aria-live="polite">The first download is about 133 MB.</p>
+        <p id="status" role="status" aria-live="polite">Ready to stream assets on demand.</p>
         <button id="log" class="link">Download log</button>
       </div>
       <progress id="progress" max="100" value="0" hidden aria-label="Game loading progress"></progress>
@@ -46,9 +43,9 @@
         <dt>Right Ctrl</dt><dd>Boost</dd>
         <dt>P</dt><dd>Pause</dd>
       </dl>
-      <p>Click the game first so it gets keyboard input, then pick Quick Race. Saves and settings stay in this browser. Music and video are disabled.</p>
+      <p>Click the game first so it gets keyboard input, then pick Quick Race or Single Player to choose cars and tracks.</p>
     </section>
   </main>
-  <footer><a href="research/">Explore findings</a> · <a href="downloads/fr3-research-latest.zip">Research packet (ZIP)</a> · <a href="THIRD_PARTY.md">Credits &amp; licenses</a> · <a href="build.json">Build details</a></footer>
+  <footer><a href="THIRD_PARTY.md">Credits &amp; licenses</a> · <a href="build.json">Build details</a></footer>
 </body>
 </html>

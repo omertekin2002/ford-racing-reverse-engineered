@@ -1,0 +1,472 @@
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			XBTAB
+:CLEAR				0
+:COLOUR				255 255 255 255
+:POSITION_START	0.000000 0.000000
+:POSITION_END		0.000000 0.000000
+:TIME_LENGTH		1.000000
+//:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\GREYFADE.PSD
+:TEXTURE_ENUM		"GRAPHICS\GAME\COMMON\GRADY.PSD"
+
+:S{*****>>>
+	
+	///////////////////////////////////////////////////////////
+	///TITLE
+	//////////////////////////////////////////////////////////
+
+	:INHERIT				TITLE
+	:POSITION_START	0.084375 0.095833
+	:POSITION_END		0.084375 0.095833
+	
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+	
+	///////////////////////////////////////////////////////////
+	///BACK ICON AND TEXT
+	//////////////////////////////////////////////////////////
+	
+	// DONE	
+	:INHERIT				BACK_ICON
+	:POSITION_START	0.117188 0.86042
+	:POSITION_END		0.117188 0.86042
+	
+	:INHERIT				BACK_TEXT
+	:POSITION_START	0.120312 0.839583
+	:POSITION_END		0.120312 0.839583
+	
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+
+
+	///////////////////////////////////////////////////////////
+	/// BG PANEL FOR INFO BARS
+	//////////////////////////////////////////////////////////
+
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				INFO_BAR_BG
+	:CLEAR					0
+	:COLOUR					0 0 0 77
+	:AUTOSIZE				0
+	:SIZE						1.000000 0.000000 //Y size set in code
+	:POSITION_START		0.000000 0.000000
+	:POSITION_END			0.000000 0.000000
+
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+
+
+	:TYPE						UI_TYPE_BUTTON
+	:OBJECT_ID				INFO_BAR
+	:CLEAR					1
+	:AUTOSIZE				0
+	:SIZE						1.000000 0.045833
+	:COLOUR					0 0 0 77
+	:HIGHLIGHTED_COLOUR	0 0 0 77
+	:FONT						2
+	:FONT_COLOUR			206 206 206 255
+	:HIGHLIGHTED_FONT		2
+	:HIGHLIGHTED_FONT_COLOUR			206 206 206 255
+	:TEXT_JUSTIFY			1							//TEXT_JUSTIFY_LEFT_CENTRE
+	:JUSTIFY_OFFSET		0.120000 0.000000
+	:TEXT						0
+	:POSITION_START		0.000000 0.147917
+	:POSITION_END			0.000000 0.147917
+	:TIME_LENGTH			0.166667
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				TRACK_INFO
+	:POSITION_START		0.000000 0.189583
+	:POSITION_END			0.000000 0.189583
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				VEHICLE_CLASS_INFO
+	:COLOUR					0 0 0 0
+	:TEXT_JUSTIFY			2							//TEXT_JUSTIFY_RIGHT_CENTRE
+	:POSITION_START		0.000000 0.189583
+	:POSITION_END			0.000000 0.189583
+	
+	//////////////////////////////////////////////////////////
+	//TABLE OVERHEAD TEXT
+	//////////////////////////////////////////////////////////
+
+	:TYPE						UI_TYPE_TEXT
+	:OBJECT_ID				GAMERTAG_TITLE
+	:CLEAR					1
+	:AUTOSIZE				0
+	:SIZE						0.193750 0.045898
+	:FONT_COLOUR			51 51 51 255
+	:FONT						2
+	:TEXT_JUSTIFY			1									//TEXT_JUSTIFY_LEFT_CENTRE
+	:TEXT						TXT_GENERAL_DRIVER
+	:POSITION_START		0.125000 0.256249
+	:POSITION_END			0.125000 0.256249
+	:TIME_LENGTH			0.166667
+	
+	:TYPE						UI_TYPE_TEXT
+	:OBJECT_ID				VEHICLE_NAME_TITLE
+	:CLEAR					1
+	:AUTOSIZE				0
+	:SIZE						0.193750 0.045898
+	:FONT_COLOUR			51 51 51 255
+	:FONT						2
+	:TEXT_JUSTIFY			1
+	:TEXT						TXT_CHALLENGE_DETAILS_CAR
+	:POSITION_START		0.485938 0.256249
+	:POSITION_END			0.485938 0.256249
+	:TIME_LENGTH			0.166667
+	
+	:TYPE						UI_TYPE_TEXT
+	:OBJECT_ID				SCORE_VALUE
+	:CLEAR					1
+	:AUTOSIZE				0
+	:SIZE						0.193750 0.045898
+	:FONT_COLOUR			51 51 51 255
+	:FONT						2
+	:TEXT_JUSTIFY			2
+	:POSITION_START		0.760637 0.256249
+	:POSITION_END			0.760637 0.256249
+	:TIME_LENGTH			0.166667
+	
+	//////////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////////
+	
+	///////////////////////////////////////////////////////////
+	/// BG PANEL FOR TABLE
+	//////////////////////////////////////////////////////////
+
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				TABLE_BG
+	:CLEAR					0
+	:COLOUR					0 0 0 77
+	:AUTOSIZE				0
+	:SIZE						1.000000 0.000000 //Y size set in code
+	:POSITION_START		0.000000 0.000000
+	:POSITION_END			0.000000 0.000000
+
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// MATCH INFO
+	/////////////////////////////////////////////////////
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				ENTRY_INFO_1
+	:CLEAR					1
+	:HIGHLIGHTED_COLOUR	255 249 135 77
+	:POSITION_START		0.000000 0.293749
+	:POSITION_END			0.000000 0.293749
+	
+	:S{*****>>>
+	
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			NUMBER
+		:CLEAR				1
+		:AUTOSIZE			0
+		:SIZE					0.171875 1.000000
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		4
+		:TEXT					0
+		:POSITION_START	0.050000 0.135816
+		:POSITION_END		0.050000 0.135816
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			PLAYER_NAME
+		:CLEAR				1
+		:AUTOSIZE			0
+		:SIZE					0.335938 1.000000
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		4
+		:TEXT					0
+		:POSITION_START	0.125000 0.135816
+		:POSITION_END		0.125000 0.135816
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			VEHICLE_NAME
+		:CLEAR				1
+		:AUTOSIZE			0
+		:SIZE					0.307813 1.000000
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		4
+		:TEXT					0
+		:POSITION_START	0.482812 0.135816
+		:POSITION_END		0.482812 0.135816
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			SCORE_VALUE
+		:CLEAR				1
+		:AUTOSIZE			0
+		:SIZE					0.171875 1.000000
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		5						//TEXT_JUSTIFY_RIGHT_TOP
+		:TEXT					0
+		:POSITION_START	0.781250 0.135816
+		:POSITION_END		0.781250 0.135816
+		:TIME_LENGTH		0.166667
+		
+	:E}*****<<<
+	
+	
+	:INHERIT					ENTRY_INFO_1
+	:OBJECT_ID				ENTRY_INFO_2
+	:POSITION_START		0.000000 0.383333
+	:POSITION_END			0.000000 0.383333
+	
+	:INHERIT					ENTRY_INFO_1
+	:OBJECT_ID				ENTRY_INFO_3
+	:POSITION_START		0.000000 0.425000
+	:POSITION_END			0.000000 0.425000
+	
+	:INHERIT					ENTRY_INFO_1
+	:OBJECT_ID				ENTRY_INFO_4
+	:POSITION_START		0.000000 0.470833
+	:POSITION_END			0.000000 0.470833
+	
+	:INHERIT					ENTRY_INFO_1
+	:OBJECT_ID				ENTRY_INFO_5
+	:POSITION_START		0.000000 0.516667
+	:POSITION_END			0.000000 0.516667
+	
+	:INHERIT					ENTRY_INFO_1
+	:OBJECT_ID				ENTRY_INFO_6
+	:POSITION_START		0.000000 0.562500
+	:POSITION_END			0.000000 0.562500
+	
+	:INHERIT					ENTRY_INFO_1
+	:OBJECT_ID				ENTRY_INFO_7
+	:POSITION_START		0.000000 0.606250
+	:POSITION_END			0.000000 0.606250
+	
+	:INHERIT					ENTRY_INFO_1
+	:OBJECT_ID				ENTRY_INFO_8
+	:POSITION_START		0.000000 0.652083
+	:POSITION_END			0.000000 0.652083
+	
+	:INHERIT					ENTRY_INFO_1
+	:OBJECT_ID				ENTRY_INFO_9
+	:POSITION_START		0.000000 0.697917
+	:POSITION_END			0.000000 0.697917
+	
+	:INHERIT					ENTRY_INFO_1
+	:OBJECT_ID				ENTRY_INFO_10
+	:POSITION_START		0.000000 0.735417
+	:POSITION_END			0.000000 0.735417
+	
+	//////////////////////////////////////////////////////////
+	// LINE PLOTER
+	/////////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				LINE_PLOTER
+	:CLEAR					1
+	:AUTOSIZE				0
+	:SIZE						1.0 1.0
+	
+	//////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////
+	
+	////////////////////////////////////////////////////////
+	//NAVIGATION BUTTONS
+	/////////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			NVIGATION_BUTTONS_AREA
+	:CLEAR				1
+	:SIZE					1.0 0.5
+	//:POSITION_START	0.000000 0.770901
+	:POSITION_START	0.000000 0.762568
+	:POSITION_END		0.000000 0.762568
+	
+	:S{*****>>>
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			PAGE_UP_GFX
+	//:AUTOSIZE			1
+	:AUTOSIZE			0
+	//:SIZE					0.1 0.133333
+	//:SIZE					0.1125 0.15
+	:SIZE					0.05625 0.075
+	:COLOUR				0 0 0 255
+	:POSITION_START	0.000000 0.000000
+	:POSITION_END		0.000000 0.000000
+	
+		:S{*****>>>
+	
+			:TYPE					UI_TYPE_TEXT
+			:OBJECT_ID			PAGE_UP_GFX_TEXT
+			:AUTOSIZE			0
+			:SIZE					1.0 1.0
+			:FONT					2
+			:TEXT_JUSTIFY		0      //CENTRE
+			:FONT_COLOUR		204 204 204 255
+			:TEXT					TXT_XBOX_LEFT_TRIGGER_LEGEND
+			:POSITION_START	0.0 0.0
+			:POSITION_END		0.0 0.0
+		
+		:E}*****<<<
+	
+	:TYPE					UI_TYPE_TEXT
+	:OBJECT_ID			PAGE_UP_TEXT
+	:CLEAR				1
+	:AUTOSIZE			0
+	:SIZE					1.0 1.0
+	:FONT					2
+	:FONT_COLOUR		51 51 51 255
+	:TEXT					TXT_PC_CONTROLLER_KEY_CURSOR_UP
+	:TEXT_JUSTIFY		4						//TEXT_JUSTIFY_LEFT_TOP
+	:POSITION_START	0.000000 0.000000
+	:POSITION_END		0.000000 0.000000
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			PAGE_DOWN_GFX
+	//:AUTOSIZE			1
+	:AUTOSIZE			0
+	:SIZE					0.05625 0.075
+	:COLOUR				0 0 0 255
+	:POSITION_START	0.000000 0.083333
+	:POSITION_END		0.000000 0.083333
+	
+		:S{*****>>>
+	
+			:TYPE					UI_TYPE_TEXT
+			:OBJECT_ID			PAGE_DOWN_GFX_TEXT
+			:AUTOSIZE			0
+			:SIZE					1.0 1.0
+			:FONT					2
+			:TEXT_JUSTIFY		0      //CENTRE
+			:FONT_COLOUR		204 204 204 255
+			:TEXT					TXT_XBOX_RIGHT_TRIGGER_LEGEND
+			:POSITION_START	0.0 0.0
+			:POSITION_END		0.0 0.0
+		
+		:E}*****<<<
+	
+	:TYPE					UI_TYPE_TEXT
+	:OBJECT_ID			PAGE_DOWN_TEXT
+	:CLEAR				1
+	:AUTOSIZE			0
+	:SIZE					1.0 1.0
+	:FONT					2
+	:FONT_COLOUR		51 51 51 255
+	:TEXT					TXT_PC_CONTROLLER_KEY_CURSOR_DOWN
+	:TEXT_JUSTIFY		4						//TEXT_JUSTIFY_LEFT_TOP
+	:POSITION_START	0.000000 0.083333
+	:POSITION_END		0.000000 0.083333
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			TOP_GFX
+	:AUTOSIZE			1
+	:POSITION_START	0.400000 0.000000
+	:POSITION_END		0.400000 0.000000
+	
+	:TYPE					UI_TYPE_TEXT
+	:OBJECT_ID			TOP_TEXT
+	:CLEAR				1
+	:AUTOSIZE			0
+	:SIZE					1.0 1.0
+	:FONT					2
+	:FONT_COLOUR		51 51 51 255
+	:TEXT					TXT_SCOREBOARDS_TOP
+	:TEXT_JUSTIFY		4						//TEXT_JUSTIFY_LEFT_TOP
+	:POSITION_START	0.400000 0.000000
+	:POSITION_END		0.400000 0.000000
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			BOTTOM_GFX
+	:AUTOSIZE			1
+	:POSITION_START	0.600000 0.083333
+	:POSITION_END		0.600000 0.083333
+	
+	:TYPE					UI_TYPE_TEXT
+	:OBJECT_ID			BOTTOM_TEXT
+	:CLEAR				1
+	:AUTOSIZE			0
+	:SIZE					1.0 1.0
+	:FONT					2
+	:FONT_COLOUR		51 51 51 255
+	:TEXT					TXT_SCOREBOARDS_BOTTOM
+	:TEXT_JUSTIFY		4						//TEXT_JUSTIFY_LEFT_TOP
+	:POSITION_START	0.600000 0.083333
+	:POSITION_END		0.600000 0.083333
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			MY_POSITION_GFX
+	:AUTOSIZE			1
+	:POSITION_START	0.800000 0.000000
+	:POSITION_END		0.800000 0.000000
+	
+	:TYPE					UI_TYPE_TEXT
+	:OBJECT_ID			MY_POSITION_TEXT
+	:CLEAR				1
+	:AUTOSIZE			0
+	:SIZE					1.0 1.0
+	:FONT					2
+	:FONT_COLOUR		51 51 51 255
+	:TEXT					TXT_SCOREBOARDS_MY_POSITION
+	:TEXT_JUSTIFY		4						//TEXT_JUSTIFY_LEFT_TOP
+	:POSITION_START	0.800000 0.020833
+	:POSITION_END		0.800000 0.020833
+	
+	:E}*****<<<
+	
+	//////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////////////
+	//SELECT ICON
+	////////////////////////////////////////////////////////
+	
+	//:TYPE					UI_TYPE_GRAPHIC
+	//:OBJECT_ID			BAR_PULSE
+	//:AUTOSIZE			0
+	//:SIZE					0.043750 0.0583333			//28x28
+	//:COLOUR_START		255 255 255 128
+	//:COLOUR_END			255 255 255 0
+	//:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\MENU_RNG.PSD
+	//:POSITION_START	0.064062 0.331250
+	//:POSITION_END		0.064062 0.331250
+	
+	//:S{*****>>>
+	
+	//:TYPE					UI_TYPE_GRAPHIC
+	//:OBJECT_ID			SELECT_ICON
+	//:AUTOSIZE			0			
+	//:SIZE					0.714285 0.714285		//20x20
+	//:COLOUR				255 255 255 255
+	//:POSITION_START	0.109500 0.141980
+	//:POSITION_END		0.109500 0.141980
+	
+	//:E}*****<<<
+	
+	/////////////////////////////////////////////////////////
+	//
+	////////////////////////////////////////////////////////
+	
+	
+:E}*****<<<
+
+				//FOR							//UP						//DOWN					//LEFT	//RIGHT
+:CONNECTION "ENTRY_INFO_1"				"ENTRY_INFO_10"		"ENTRY_INFO_2"			""			""
+:CONNECTION "ENTRY_INFO_2"				"ENTRY_INFO_1"			"ENTRY_INFO_3"			""			""
+:CONNECTION "ENTRY_INFO_3"				"ENTRY_INFO_2"			"ENTRY_INFO_4"			""			""
+:CONNECTION "ENTRY_INFO_4"				"ENTRY_INFO_3"			"ENTRY_INFO_5"			""			""
+:CONNECTION "ENTRY_INFO_5"				"ENTRY_INFO_4"			"ENTRY_INFO_6"			""			""
+:CONNECTION "ENTRY_INFO_6"				"ENTRY_INFO_5"			"ENTRY_INFO_7"			""			""
+:CONNECTION "ENTRY_INFO_7"				"ENTRY_INFO_6"			"ENTRY_INFO_8"			""			""
+:CONNECTION "ENTRY_INFO_8"				"ENTRY_INFO_7"			"ENTRY_INFO_9"			""			""
+:CONNECTION "ENTRY_INFO_9"				"ENTRY_INFO_8"			"ENTRY_INFO_10"		""			""
+:CONNECTION "ENTRY_INFO_10"			"ENTRY_INFO_9"			"ENTRY_INFO_1"			""			""

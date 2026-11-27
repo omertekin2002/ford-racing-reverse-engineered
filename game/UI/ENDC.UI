@@ -1,0 +1,218 @@
+
+//////////////////////////////////////////////////////
+// UI SCREEN
+//////////////////////////////////////////////////////
+
+:TYPE								UI_TYPE_SCREEN
+:OBJECT_ID						ENDC
+:CLEAR							0
+:POSITION_START				0.0 0.0
+:POSITION_END					0.0 0.0
+:SIZE								1.0 1.0
+:TEXTURE_ENUM 					GRAPHICS\GAME\COMMON\GRADY.PSD
+:OFFSET_TIME					0.0
+
+:s{*****>>>
+
+	//////////////////////////////////////////////////////
+	// GRAPHIC STAGE 1
+	//////////////////////////////////////////////////////
+
+	:TYPE								UI_TYPE_AREA
+	:OBJECT_ID						COMPETITION_GRAPHIC_AREA_1
+	:DRAWABLE						1
+	:CLEAR							1
+	:SIZE								0.31718 0.36042
+	:POSITION_START				0.34688 -0.36042
+	:POSITION_END					0.34688 0.14
+	:TIME_LENGTH					0.2
+	:OFFSET_TIME					0.0
+	
+	:s{*****>>>
+
+		:TYPE								UI_TYPE_AREA
+		:OBJECT_ID						COMPETITION_LAUREL_GRAPHIC_1
+		:SIZE								1.0 1.0
+		:POSITION_START				0.0 0.0
+		:POSITION_END					0.0 0.0
+		:COLOUR							255 255 153 255
+		:TEXTURE_ENUM					"GRAPHICS\GAME\COMMON\LAUREL.PSD"
+		
+		:TYPE								UI_TYPE_AREA
+		:OBJECT_ID						COMPETITION_CENTRE_GRAPHIC_1
+		:DRAWABLE						1
+		:SIZE								0.64831 0.73288
+		:POSITION_START				0.17925 -0.03329
+		:POSITION_END					0.17925 -0.03329
+		:COLOUR							255 255 153 255
+		:TIME_LENGTH					1.0
+		:OFFSET_TIME					2.0
+
+	:E}*****<<<
+	
+	//////////////////////////////////////////////////////
+	// GRAPHIC STAGE 2
+	//////////////////////////////////////////////////////
+
+	:TYPE								UI_TYPE_AREA
+	:OBJECT_ID						COMPETITION_GRAPHIC_AREA_2
+	:DRAWABLE						1
+	:CLEAR							1
+	:SIZE								0.31718 0.36042
+	:POSITION_START				0.34688 0.14
+	:POSITION_END					0.34688 0.1
+	:TIME_LENGTH					0.1
+	//:OFFSET_TIME					0.2
+	
+	:s{*****>>>
+
+		:TYPE								UI_TYPE_AREA
+		:OBJECT_ID						COMPETITION_LAUREL_GRAPHIC_2
+		:SIZE								1.0 0.9
+		:POSITION_START				0.0 0.0
+		:POSITION_END					0.0 0.0
+		:COLOUR							255 255 153 255
+		:TEXTURE_ENUM					"GRAPHICS\GAME\COMMON\LAUREL.PSD"
+		
+		:TYPE								UI_TYPE_AREA
+		:OBJECT_ID						COMPETITION_CENTRE_GRAPHIC_2
+		:DRAWABLE						1
+		:SIZE								0.64831 0.73288
+		:POSITION_START				0.17925 -0.03329
+		:POSITION_END					0.17925 -0.03329
+		:COLOUR							255 255 153 255
+		:TIME_LENGTH					1.0
+		:OFFSET_TIME					2.0
+		
+	:E}*****<<<
+
+	//////////////////////////////////////////////////////
+	// GRAPHIC STAGE 3
+	//////////////////////////////////////////////////////
+
+	:TYPE								UI_TYPE_AREA
+	:OBJECT_ID						COMPETITION_GRAPHIC_AREA_3
+	:DRAWABLE						1
+	:CLEAR							1
+	:SIZE								0.31718 0.36042
+	:POSITION_START				0.34688 0.1
+	:POSITION_END					0.34688 0.12917
+	:TIME_LENGTH					0.1
+	//:OFFSET_TIME					0.3
+	
+	:s{*****>>>
+
+		:TYPE								UI_TYPE_AREA
+		:OBJECT_ID						COMPETITION_LAUREL_GRAPHIC_3
+		:SIZE								1.0 1.0
+		:POSITION_START				0.0 0.0
+		:POSITION_END					0.0 0.0
+		:COLOUR							255 255 153 255
+		:TEXTURE_ENUM					"GRAPHICS\GAME\COMMON\LAUREL.PSD"
+
+		:TYPE								UI_TYPE_AREA
+		:OBJECT_ID						COMPETITION_CENTRE_GRAPHIC_3
+		:DRAWABLE						1
+		:SIZE								0.64831 0.73288
+		:POSITION_START				0.17925 -0.03329
+		:POSITION_END					0.17925 -0.03329
+		:COLOUR							255 255 153 255
+		:TIME_LENGTH					1.0
+		:OFFSET_TIME					2.0
+		
+	:E}*****<<<
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+	:TYPE								UI_TYPE_AREA
+	:OBJECT_ID						COMPETITION_TITLE_AREA
+	:POSITION_START				0.5 0.51666
+	:POSITION_END					0.0 0.51666
+	:SIZE_START						0.0 0.09583
+	:SIZE_END						1.0 0.09583
+	:COLOUR							59 59 56 210	
+	:COLOUR_START					59 59 56 0
+	:TIME_LENGTH					0.2
+	:OFFSET_TIME					0.3
+
+	:TYPE								UI_TYPE_AREA
+	:OBJECT_ID						COMPETITION_TITLE_TEXT_AREA
+	:CLEAR							1
+	:SIZE								1.0 0.09583
+	:POSITION_START				0.0 0.49792
+	:POSITION_END					0.0 0.49792	
+	:FONT_COLOUR					204 204 204 255
+	:FONT_COLOUR_START			204 204 204 0
+	:TIME_LENGTH					0.2
+	:OFFSET_TIME					0.3
+
+	:TYPE								UI_TYPE_AREA
+	:OBJECT_ID						COMPETITION_FINAL_RESULT_TITLE_TEXT_AREA
+	:TEXT								TXT_COMPETITION_END_FINAL_RESULT
+	:CLEAR							1
+	:SIZE								1.0 0.08333
+	:POSITION_START				0.0 0.5458
+	:POSITION_END					0.0 0.5458
+	:TIME_LENGTH					0.35
+	:OFFSET_TIME					0.35
+	:FONT								2
+	:FONT_COLOUR					204 204 204 255
+	:FONT_COLOUR_START			204 204 204 0
+	:TIME_LENGTH					0.2
+	:OFFSET_TIME					0.3
+
+	:TYPE								UI_TYPE_AREA
+	:OBJECT_ID						FINAL_POSITION_AREA
+	:POSITION_START				0.5 0.63542
+	:POSITION_END					0.0 0.63542	
+	:SIZE_START						0.0 0.08333
+	:SIZE_END						1.0 0.08333
+	:COLOUR							59 59 56 210	
+	:COLOUR_START					59 59 56 0
+	:TIME_LENGTH					0.2
+	:OFFSET_TIME					0.3
+
+	:TYPE								UI_TYPE_AREA
+	:OBJECT_ID						FINAL_POSITION_TEXT_AREA_MOVING
+	:CLEAR							1
+	:SIZE								1.0 0.08333
+	:POSITION_START				-1.0 0.63967
+	:POSITION_END					0.0 0.63967
+	:FONT								4
+	:FONT_COLOUR					204 204 204 255
+	:TIME_LENGTH					0.4
+	:OFFSET_TIME					0.4
+	
+	:TYPE								UI_TYPE_AREA
+	:OBJECT_ID						FINAL_POSITION_TEXT_AREA_FLASHING
+	:DRAWABLE						0
+	:CLEAR							1
+	:SIZE								1.0 0.08333
+	:POSITION_START				0.0 0.63967
+	:POSITION_END					0.0 0.63967
+	:FONT								4
+	:FONT_COLOUR					204 204 204 255
+	:FONT_COLOUR_START			204 204 204 255
+	:ANIMATION_TYPE				2
+	:TIME_LENGTH					0.3
+
+	:INHERIT VERTICAL_BOTTOM_BAR
+	
+	//:TYPE								UI_TYPE_AREA
+	//:OBJECT_ID						BUTTON
+	//:TEXT								TXT_GENERAL_OK
+	//:CLEAR							1
+	//:POSITION_START				0.45151 0.86051
+	//:POSITION_END					0.45151 0.86051
+	//:SIZE								0.1 0.1
+	//:FONT								2
+	//:FONT_COLOUR					0 0 0 255
+	//:HIGHLIGHTED_FONT_COLOUR	0 0 0 255
+
+:E}*****<<<
+
+//////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////

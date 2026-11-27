@@ -1,0 +1,309 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// CA_DEBUG.DAT ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug Plan
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_PLAN
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug plan",
+																							CAMERA_LEVEL_TYPE_PRIMARY
+                                                                                                                                                
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, 0.0
+
+:CAMERA_SYSTEM_CAMERA_FOV															65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET			 										0.0, 10.0, -1.0,
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug High Plan
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_PLAN
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug high plan"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, 0.0
+                                                                         
+:CAMERA_SYSTEM_CAMERA_FOV															65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													0.0, 40.0, -1.0,
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Front Side
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_CAR
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug front side" 
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, 0.0
+
+:CAMERA_SYSTEM_CAMERA_FOV															65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													-4.0, 1.0, 4.0
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug Back Left Wheel
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_CAR
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug back left wheel"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, 10.0
+                                                                                                                                                
+:CAMERA_SYSTEM_CAMERA_FOV															65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET			
+																							1.7, 0.6, -1.7
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug Back Right Wheel
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_CAR
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug back right wheel" 
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, 10.0
+
+:CAMERA_SYSTEM_CAMERA_FOV															65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET			                              -1.7, 0.6, -1.7
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug Front Right Wheel
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_CAR
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug front right wheel"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, -10.0
+                                                                                                                                                
+:CAMERA_SYSTEM_CAMERA_FOV															65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													-1.7, 0.6, 1.7
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug Front Left Wheel
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_CAR
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug front left wheel" 
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, -10.0
+                                                                                                                                                
+:CAMERA_SYSTEM_CAMERA_FOV															65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													1.7, 0.6, 1.7
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug Back Side Right
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_CAR
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug back side right"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, 10.0
+                                                                                                                                                
+:CAMERA_SYSTEM_CAMERA_FOV															65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													1.7, 0.4, -3.6
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug Back Side Left
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_CAR
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug back side left"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, 10.0
+
+:CAMERA_SYSTEM_CAMERA_FOV															65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													-1.7, 0.4, -3.6
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug Front Side Right
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_CAR
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug front side right"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, -10.0,
+                                                                                                                                                
+:CAMERA_SYSTEM_CAMERA_FOV														
+																							65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													1.7, 0.4, 3.6
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug Front Side Left
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_CAR
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug front side left"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, -10.0
+                                                                                                                                                
+:CAMERA_SYSTEM_CAMERA_FOV															65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													-1.7, 0.4, 3.6
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug Right Side
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_CAR
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug right side"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+                                                                                                                                                
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, 0.0
+
+:CAMERA_SYSTEM_CAMERA_FOV															65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													6.0, 1.1, 0.0
+                                                                                                                                                
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug Left Side
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_CAR
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug left side"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, 0.0
+
+:CAMERA_SYSTEM_CAMERA_FOV															65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													-6.0, 1.1, 0.0
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug Perspective
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_CAR
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug perspective"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, 0.0
+
+:CAMERA_SYSTEM_CAMERA_FOV															65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													10.0, 10.0, 8.0
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debug Reverse
+// menu_title
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA 																ENTITY_SUB_TYPE_CAMERA_CAR
+																							DIRECTOR_CAMERA_GROUP_TYPE_DEBUG
+																							"debug reverse"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 0.0, 0.0
+
+:CAMERA_SYSTEM_CAMERA_FOV															65.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													0.0, 0.1, 6.0
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

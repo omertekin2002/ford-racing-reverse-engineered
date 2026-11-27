@@ -1,0 +1,385 @@
+:TYPE				UI_TYPE_SCREEN
+:OBJECT_ID		COMMON_OBJECTS
+:CLEAR			0
+
+:s{*****>>>
+
+	:TYPE										UI_TYPE_BUTTON
+	:OBJECT_ID								FR3_DEFAULT_BUTTON
+	:CLEAR									1
+	:AUTOSIZE								0
+	:SIZE										1.000000 0.060000
+	:FONT										1									//FONT_NORMAL
+	:HIGHLIGHTED_FONT						1									//FONT_NORMAL
+	:TEXT										TXT_MENU_BUTTON_QUICKRACE
+	:TEXT_JUSTIFY							1
+	:JUSTIFY_OFFSET						0.045352 0.000000
+	:TIME_LENGTH							0.166667
+	
+	///////////////////////////////////////////////////////////
+	///TITLE
+	//////////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				TITLE
+	//:CLEAR					1
+	:CLEAR					0
+	:SIZE						1.000000 0.037500
+	:COLOUR					95 95 90 255
+	:FONT						2
+	:TEXT_JUSTIFY			4
+	:JUSTIFY_OFFSET		0.040000 0.110000
+	:FONT_COLOUR			206 206 206 255
+	:FONT_COLOUR_START	206 206 206 0
+	//:TEXTURE_ENUM			GRAPHICS\GAME\COMMON\TITLEBAR.PSD
+	:TIME_LENGTH			0.166667
+	
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+	
+	///////////////////////////////////////////////////////////
+	///BACK ICON AND TEXT
+	//////////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			BACK_ICON
+	:COLOUR				255 255 255 255
+	:COLOUR_START		255 255 255 0
+	:SIZE 				0.0421875 0.05625
+	:POSITION_END		0.48275 0.872916
+	:POSITION_START	0.48275 0.872916
+	:STRETCH_GRAPHIC	1
+	:TIME_LENGTH		0.166667
+
+	
+	:TYPE						UI_TYPE_TEXT
+	:OBJECT_ID				BACK_TEXT
+	:SIZE						0.100000 0.100000
+	:FONT						2
+	:FONT_COLOUR			0 0 0 255
+	:FONT_COLOUR_START	0 0 0 0
+	:POSITION_END			0.526402 0.852067
+	:POSITION_START		0.526402 0.852067
+	:TEXT						TXT_GENERAL_BACK
+	:TEXT_JUSTIFY			2
+	:TIME_LENGTH			0.166667
+		
+	
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+	
+	
+	///////////////////////////////////////////////////////////
+	///MENU BAR
+	//////////////////////////////////////////////////////////
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			MENUBAR
+	:SIZE					1.000000 0.05625
+	:COLOUR				255, 255, 0, 76
+	:COLOUR_START		255, 255, 0, 0
+	:POSITION_START	1.00000 1.00000
+	:POSITION_END		1.00000 1.00000
+	:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\MENU_HI.PSD
+	:TIME_LENGTH		0.166667
+
+	:S{*****>>>
+
+		:TYPE			UI_TYPE_BASIC
+		:OBJECT_ID	MENUBAR_ICONS
+		:CLEAR		1
+
+		:S{*****>>>
+		
+			// LEFT SIDE ICON
+			
+			:TYPE					UI_TYPE_GRAPHIC
+			:OBJECT_ID			MENUBAR_PULSE
+			:SIZE					0.042188 1.000000
+			:ANIMATION_TYPE	2
+			:COLOUR				255 255 255 128
+			:POSITION_START	0.000000 0.000000
+			:POSITION_END		0.000000 0.000000
+			:STRETCH_GRAPHIC	1
+			:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\MENU_RNG.PSD
+			:TIME_LENGTH		0.166667 // NOTE: This get's overriden in code
+
+			:TYPE					UI_TYPE_GRAPHIC
+			:OBJECT_ID			MENUBAR_ICON
+			:SIZE					0.042188 1.000000
+			:COLOUR				255 255 255 255
+			:COLOUR_START		255 255 255 0
+			:POSITION_START	0.000000 0.000000
+			:POSITION_END		0.000000 0.000000
+			:STRETCH_GRAPHIC	1
+			:TIME_LENGTH		0.166667
+
+			// RIGHT SIDE ICON
+			
+			:TYPE					UI_TYPE_GRAPHIC
+			:OBJECT_ID			MENUBAR_PULSE2
+			:SIZE					0.042188 1.000000
+			:ANIMATION_TYPE	2
+			:COLOUR				255 255 255 128
+			:POSITION_START	0.957812 0.000000
+			:POSITION_END		0.957812 0.000000
+			:STRETCH_GRAPHIC	1
+			:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\MENU_RNG.PSD
+			:TIME_LENGTH		0.166667 // NOTE: This get's overriden in code
+
+			:TYPE					UI_TYPE_GRAPHIC
+			:OBJECT_ID			MENUBAR_ICON2
+			:SIZE					0.042188 1.000000
+			:COLOUR				255 255 255 255
+			:COLOUR_START		255 255 255 0
+			:POSITION_START	0.957812 0.000000
+			:POSITION_END		0.957812 0.000000
+			:STRETCH_GRAPHIC	1
+			:TIME_LENGTH		0.166667
+			
+		:E}*****<<<
+
+	:E}*****<<<
+	
+	///////////////////////////////////////////////////////////
+	///MENU BAR WITH ARROWS
+	//////////////////////////////////////////////////////////
+	
+	//
+	//The area is created to include both a menu bar and arrows the area is the 
+	//same size as the video screen because the function in ui_funcs position the
+	//arrows according to their screen position
+	//
+	//:TYPE			UI_TYPE_AREA
+	//:OBJECT_ID	MENU_BAR_WITH_ARROWS
+	//:CLEAR		1
+	//:AUTOSIZE	0
+	//:SIZE			1.000000 1.000000
+	
+	//:S{*****>>>
+		
+		//
+		//MENU BAR
+		//
+		//Different object ID than a normal menu bar this has an underscore
+	//	:INHERIT		MENUBAR
+	//	:OBJECT_ID	MENU_BAR
+		
+		
+		//
+		// ARROWS
+		//
+		:TYPE					UI_TYPE_GRAPHIC
+		:OBJECT_ID			LEFTARROW
+		:CLEAR				0
+		:AUTOSIZE			1
+		:COLOUR_START		255 255 255 0
+		:COLOUR				255 255 255 255
+		:STRETCH_GRAPHIC	1
+		:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\SMARROW.PSD
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_GRAPHIC
+		:OBJECT_ID			RIGHTARROW
+		:CLEAR				0
+		:AUTOSIZE			1
+		:COLOUR_START		255 255 255 0
+		:COLOUR				255 255 255 255
+		:STRETCH_GRAPHIC	1
+		:FLIP_GRAPHIC		1 0
+		:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\SMARROW.PSD
+		:TIME_LENGTH		0.166667
+		
+	//:E}*****<<<
+	
+	//////////////////////////////////////////////////////////////////
+	// SELECT_BAR
+	/////////////////////////////////////////////////////////////////
+	:TYPE				UI_TYPE_AREA
+	:OBJECT_ID		SELECT_BAR
+	:CLEAR			1
+	
+	:S{*****>>>
+	
+		:TYPE				UI_TYPE_AREA
+		:OBJECT_ID		HIGHLIGHT_AREA
+		:AUTOSIZE		0
+		:SIZE				0.0 0.0
+		:COLOUR			255 255 0 76
+		
+		:TYPE				UI_TYPE_GRAPHIC
+		:OBJECT_ID		BAR_PULSE_BG
+		:AUTOSIZE		0
+		:SIZE				0.043750 0.0583333			//28x28
+		:COLOUR			255 255 0 76
+		:TEXTURE_ENUM	GRAPHICS\GAME\COMMON\MRNG_BG.PSD
+			
+		:TYPE				UI_TYPE_GRAPHIC
+		:OBJECT_ID		BAR_PULSE
+		:AUTOSIZE		0
+		:SIZE				0.043750 0.0583333			//28x28
+		:COLOUR_START	255 255 255 128
+		:COLOUR_END		255 255 255 0
+		:TEXTURE_ENUM	GRAPHICS\GAME\COMMON\MENU_RNG.PSD
+		
+		:TYPE				UI_TYPE_GRAPHIC
+		:OBJECT_ID		SELECT_ICON
+		:AUTOSIZE		0
+		:SIZE				0.043750 0.0583333			//28x28
+		:COLOUR			255 255 255 255
+
+	:E}*****<<<
+	
+	
+	/////////////////////////////////////////////////////////////////
+	//VERSION INFO
+	/////////////////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_TEXT
+	:OBJECT_ID			GAME_VERSION_INFO
+	:AUTOSIZE			0
+	:SIZE					0.276563 0.087500
+	:FONT					2
+	:FONT_COLOUR		255 255 255 255
+	:POSITION_START	0.681250 0.100000
+	:POSITION_END		0.681250 0.100000
+	
+	/////////////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////////////
+	
+	////////////////////////////////////////////////////////////////
+	//VERTICAL BAR
+	/////////////////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			VERTICAL_BOTTOM_BAR
+	:CLEAR				1
+	:AUTOSIZE			0
+	:SIZE					1.000000 1.000000
+	:POSITION_START	0.000000 0.000000
+	:POSITION_END		0.000000 0.000000
+	
+	:S{*****>>>
+	
+		:TYPE UI_TYPE_GRAPHIC
+		:OBJECT_ID MENUBAR
+		:ANIMATION_TYPE 0
+		:AUTOSIZE 0
+		:COLOUR 255, 255, 0, 76
+		:COLOUR_START 255, 255, 0, 0
+		//:POSITION_END 0.481000 0.828000
+		:POSITION_END 0.481000 0.798714
+		:POSITION_START 0.481000 0.798714
+		//:SIZE 0.0421875 0.173000
+		:SIZE 0.0421875 0.207422
+		:STRETCH_GRAPHIC 1
+		:TEXTURE_ENUM GRAPHICS\GAME\COMMON\RES_BOT.PSD
+		:TIME_LENGTH 0.166667
+
+		:S{*****>>>
+	
+			:TYPE UI_TYPE_GRAPHIC
+			:ANIMATION_TYPE 2
+			:OBJECT_ID MENUBAR_PULSE
+			:COLOUR 255 255 255 128
+			:POSITION_END 0.000000 0.000000
+			:POSITION_START 0.000000 0.000000
+			//:SIZE 1.000000 0.325301
+			:SIZE 1.000000 0.272727
+			:STRETCH_GRAPHIC 1
+			:TEXTURE_ENUM GRAPHICS\GAME\COMMON\MENU_RNG.PSD
+			:TIME_LENGTH 0.166667 // NOTE: This get's overriden in code
+
+			:TYPE UI_TYPE_GRAPHIC
+			:OBJECT_ID MENUBAR_ICON
+			:COLOUR 255 255 255 255
+			:COLOUR_START 255 255 255 0
+			//:POSITION_END 0.148148 0.048192
+			//:POSITION_START 0.148148 0.048192
+			//:SIZE 1.000000 0.325301
+			:SIZE 1.000000 0.272727
+			:POSITION_END 0.000000 0.000000
+			:POSITION_START 0.000000 0.000000
+			:STRETCH_GRAPHIC 1
+			:TIME_LENGTH 0.166667
+	
+		:E}*****<<<
+	
+	:E}*****<<<
+	
+	
+	////////////////////////////////////////////////////////////////////////////
+	// Select bar 2
+	///////////////////////////////////////////////////////////////////////////
+	
+	:TYPE										UI_TYPE_GRAPHIC
+	:OBJECT_ID								SELECT_BAR_2
+	:AUTOSIZE								0
+	:SIZE										0.188235 0.07
+	:COLOUR									255 255 0 76
+	:HIGHLIGHTED_COLOUR					255 255 0 76
+	:POSITION_START						0.0  0.0
+	:POSITION_END							0.0  0.0
+	:TEXTURE_ENUM							GRAPHICS\GAME\COMMON\BUTTON.PSD
+	
+	:S{*****>>>
+	
+		:TYPE											UI_TYPE_GRAPHIC
+		:OBJECT_ID									BAR_PULSE
+		:SIZE											0.042188 1.000000
+		:COLOUR										255 255 255 128
+		:COLOUR_END									255 255 255 0
+		:TEXTURE_ENUM								GRAPHICS\GAME\COMMON\MENU_RNG.PSD
+		:POSITION_START							0.0 0.0
+		:POSITION_END								0.0 0.0
+		
+		:S{*****>>>
+		
+			:TYPE										UI_TYPE_GRAPHIC
+			:OBJECT_ID								BAR_ICON
+			:SIZE										1.0 1.0
+			:COLOUR									255 255, 255 255
+			:POSITION_START						0.0f, 0.0
+		
+		:E}*****<<<
+	
+	:E}*****<<<
+	
+	////////////////////////////////////////////////////////////////////////////
+	// 
+	///////////////////////////////////////////////////////////////////////////
+	
+	////////////////////////////////////////////////////////////////////////////
+	// TEXT BOX
+	///////////////////////////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				TEXT_BOX
+	:CLEAR					0
+	:SIZE						1.000000 0.037500
+	:COLOUR					95 95 90 255
+	:HIGHLIGHTED_COLOUR	95 95 90 255
+	:TIME_LENGTH			0.166667
+	
+	:S{*****>>>
+		
+		:TYPE					UI_TYPE_AREA
+		:OBJECT_ID			TEXT_OBJECT
+		:CLEAR				1
+		:AUTOSIZE			0
+		:SIZE					1.0 1.0
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		1
+		:POSITION_START	0.0 0.0
+		:POSITION_END		0.0 0.0
+		
+	:E}*****<<<
+	
+	////////////////////////////////////////////////////////////////////////////
+	// 
+	///////////////////////////////////////////////////////////////////////////
+	
+:E}*****<<<

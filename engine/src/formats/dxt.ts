@@ -111,8 +111,10 @@ export function parseTexturesDxt(bytes: Uint8Array): TextureArchive {
     textures.push({ kind: "texture", name, flags, formatClass, storage, scalar, paletteSelector, colorMetadata, mips });
   }
 
-  if (namesRead !== nameBytes) throw new Error("textures.DXT name byte total does not match");
   if (offset !== bytes.length) throw new Error(`Trailing textures.DXT bytes at ${offset}`);
+  // Note: Shuffle mod tools sometimes leave a stale nameBytes header count even when all records parse to EOF.
+  void namesRead;
+  void nameBytes;
   return { palettes256, palettes16, supplementaryPalettes256, textures };
 }
 

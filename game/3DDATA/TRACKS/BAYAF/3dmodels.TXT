@@ -1,0 +1,342 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"LIGHT_FRAME"                          	scenes\new startgrid\light_frame.ma
+	"START_GRID"                           	scenes\new startgrid\start_grid.ma
+	"FORD"                                 	scenes\new barriers\ford.ma
+	"BLANK"                                	scenes\new barriers\blank.ma
+	"RAZORWORKS"                           	scenes\new barriers\razorworks.ma
+	"EJAY"                                 	scenes\new barriers\ejay.ma
+	"XPLOSIV"                              	scenes\new barriers\xplosiv.ma
+	"EFFECTS"                              	scenes\effects\effects.ma
+	"FOL_GRP1_V2"                          	scenes\buildings\foliage\foliage_group1_v2.ma
+	"FOL_GRP2_V2"                          	scenes\buildings\foliage\foliage_group2_v2.ma
+	"BUSHES2_TINY"                         	scenes\buildings\foliage\bushes2_tiny.ma
+	"SHRUB_CLUMP1_TINY"                    	scenes\buildings\foliage\shrub_clump1_tiny.ma
+	"UNIQUE2_FAR"                          	scenes\buildings\foliage\unique2_far.ma
+	"UNIQUE3"                              	scenes\buildings\foliage\unique3.ma
+	"UNIQUE2"                              	scenes\buildings\foliage\unique2.ma
+	"UNIQUE_TREE_CLUMP"                    	scenes\buildings\foliage\unique_tree_clump.ma
+	"BUSHES2"                              	scenes\buildings\foliage\bushes2.ma
+	"BUSHES1"                              	scenes\buildings\foliage\bushes1.ma
+	"TREES_ON_HILL1"                       	scenes\buildings\foliage\trees_on_hill1.ma
+	"BRIDGE_ENTRANCE_CLUMP"                	scenes\buildings\foliage\bridge_entrance_clump.ma
+	"FACING_GRASS_02"                      	scenes\buildings\foliage\facing_grass_02.ma
+	"FACING_GRASS_01"                      	scenes\buildings\foliage\facing_grass_01.ma
+	"FOL_GRP2_FAR"                         	scenes\buildings\foliage\foliage_group2_far.ma
+	"FOL_GRP1_FAR"                         	scenes\buildings\foliage\foliage_group1_far.ma
+	"PINE_MASS2"                           	scenes\buildings\foliage\pine_mass2.ma
+	"PINE_MASS1"                           	scenes\buildings\foliage\pine_mass1.ma
+	"BAYA_CLUMP_SLOPE2"                    	scenes\buildings\foliage\foliage_sloped2.ma
+	"BAYA_CLUMP_SLOPE1"                    	scenes\buildings\foliage\foliage_sloped1.ma
+	"HILLSIDE_TREES"                       	scenes\buildings\foliage\hillside_trees.ma
+	"SHRUB_CLUMP1"                         	scenes\buildings\foliage\shrub_clump1.ma
+	"BAYA_CLUMP3"                          	scenes\buildings\foliage\far_off_singles.ma
+	"BAYA_SINGLE1"                         	scenes\buildings\foliage\lonely_tree.ma
+	"DETAIL_PLANT4"                        	scenes\buildings\foliage\detail_plant4.ma
+	"DETAIL_PLANT3"                        	scenes\buildings\foliage\detail_plant3.ma
+	"DETAIL_PLANT2"                        	scenes\buildings\foliage\detail_plant2.ma
+	"DETAIL_PLANT"                         	scenes\buildings\foliage\detail_plant1.ma
+	"TREES_SINGLES"                        	scenes\buildings\foliage\trees_singles.ma
+	"FOL_GRP2"                             	scenes\buildings\foliage\foliage_group2.ma
+	"TREES_BACK"                           	scenes\buildings\foliage\trees_back.ma
+	"FOL_GRP1"                             	scenes\buildings\foliage\foliage_group1.ma
+	"TPOLE35"                              	scenes\buildings\tgraph_poles\tpole35.ma
+	"TPOLE34"                              	scenes\buildings\tgraph_poles\tpole34.ma
+	"TPOLE33"                              	scenes\buildings\tgraph_poles\tpole33.ma
+	"TPOLE32"                              	scenes\buildings\tgraph_poles\tpole32.ma
+	"TPOLE31"                              	scenes\buildings\tgraph_poles\tpole31.ma
+	"TPOLE30"                              	scenes\buildings\tgraph_poles\tpole30.ma
+	"TPOLE29"                              	scenes\buildings\tgraph_poles\tpole29.ma
+	"TPOLE28"                              	scenes\buildings\tgraph_poles\tpole28.ma
+	"TPOLE27"                              	scenes\buildings\tgraph_poles\tpole27.ma
+	"TPOLE26"                              	scenes\buildings\tgraph_poles\tpole26.ma
+	"TPOLE25"                              	scenes\buildings\tgraph_poles\tpole25.ma
+	"TPOLE24"                              	scenes\buildings\tgraph_poles\tpole24.ma
+	"TPOLE23"                              	scenes\buildings\tgraph_poles\tpole23.ma
+	"TPOLE22"                              	scenes\buildings\tgraph_poles\tpole22.ma
+	"TPOLE21"                              	scenes\buildings\tgraph_poles\tpole21.ma
+	"TPOLE20"                              	scenes\buildings\tgraph_poles\tpole20.ma
+	"TPOLE19"                              	scenes\buildings\tgraph_poles\tpole19.ma
+	"TPOLE16"                              	scenes\buildings\tgraph_poles\tpole16.ma
+	"TPOLE15"                              	scenes\buildings\tgraph_poles\tpole15.ma
+	"TPOLE14"                              	scenes\buildings\tgraph_poles\tpole14.ma
+	"TPOLE13"                              	scenes\buildings\tgraph_poles\tpole13.ma
+	"TPOLE12"                              	scenes\buildings\tgraph_poles\tpole12.ma
+	"TPOLE11"                              	scenes\buildings\tgraph_poles\tpole11.ma
+	"TPOLE10"                              	scenes\buildings\tgraph_poles\tpole10.ma
+	"TPOLE9"                               	scenes\buildings\tgraph_poles\tpole9.ma
+	"TPOLE8"                               	scenes\buildings\tgraph_poles\tpole8.ma
+	"TPOLE7"                               	scenes\buildings\tgraph_poles\tpole7.ma
+	"TPOLE6"                               	scenes\buildings\tgraph_poles\tpole6.ma
+	"TPOLE5"                               	scenes\buildings\tgraph_poles\tpole5.ma
+	"TPOLE4"                               	scenes\buildings\tgraph_poles\tpole4.ma
+	"TPOLE3"                               	scenes\buildings\tgraph_poles\tpole3.ma
+	"TPOLE2"                               	scenes\buildings\tgraph_poles\tpole2.ma
+	"TPOLE1"                               	scenes\buildings\tgraph_poles\tpole1.ma
+	"TPOLE18"                              	scenes\buildings\tgraph_poles\tpole18.ma
+	"TPOLE17"                              	scenes\buildings\tgraph_poles\tpole17.ma
+	"STARTFINISH_STRUCTURE"                	scenes\buildings\accessories\startfinish_structure.ma
+	"RAILBRIDGE3"                          	scenes\buildings\accessories\railbridge3.ma
+	"DISH"                                 	scenes\buildings\accessories\big_dish.ma
+	"MOUNTAINS_ICE2"                       	scenes\buildings\accessories\mountains_ice2.ma
+	"DISTANT_FILLIN_LAND"                  	scenes\buildings\accessories\distant_fillin_land.ma
+	"NEW_IRON_BRIDGE"                      	scenes\buildings\accessories\new_iron_bridge.ma
+	"HOTAIRBALLOON_II_LIT"                 	scenes\buildings\accessories\hotairballoon_ii_lit.ma
+	"SUSPENSION_BRIDGE"                    	scenes\buildings\accessories\suspension_bridge.ma
+	"HOTAIRBALLOON_III"                    	scenes\buildings\accessories\hotairballoon_iii.ma
+	"HOTAIRBALLOON_II"                     	scenes\buildings\accessories\hotairballoon_ii.ma
+	"HOTAIRBALLOON_I"                      	scenes\buildings\accessories\hotairballoon_i.ma
+	"MARKER_POST"                          	scenes\buildings\accessories\marker_post.ma
+	"RAILBRIDGE2"                          	scenes\buildings\accessories\railbridge2.ma
+	"CRANE_FAR"                            	scenes\buildings\accessories\crane_far.ma
+	"MOUNTAINS_ICE"                        	scenes\buildings\accessories\mountains_ice.ma
+	"BIG_DISH_HUT"                         	scenes\buildings\accessories\big_dish_hut.ma
+	"TRAIN_CONTAINERS"                     	scenes\buildings\accessories\train_containers.ma
+	"TRAIN_CABOOSE"                        	scenes\buildings\accessories\train_caboose.ma
+	"TRAIN_OIL"                            	scenes\buildings\accessories\train_oil.ma
+	"ARROW_LEFT"                           	scenes\buildings\accessories\chevron_arrow_left.ma
+	"ARROW_RIGHT"                          	scenes\buildings\accessories\chevron_arrow_right.ma
+	"YACHT3"                               	scenes\buildings\accessories\yacht3.ma
+	"CLIFF_WATERS_EDGE"                    	scenes\buildings\accessories\cliff_waters_edge.ma
+	"BIRDWIRE"                             	scenes\buildings\accessories\birdwire.ma
+	"DIGGER"                               	scenes\buildings\accessories\digger.ma
+	"FALLING_ROCK"                         	scenes\buildings\accessories\falling_rock_sign.ma
+	"RIGHT_TURN"                           	scenes\buildings\accessories\right_turn_sign.ma
+	"FORT5"                                	scenes\buildings\accessories\fort5.ma
+	"FORT4"                                	scenes\buildings\accessories\fort4.ma
+	"FORT3"                                	scenes\buildings\accessories\fort3.ma
+	"FORT1"                                	scenes\buildings\accessories\fort1.ma
+	"JETTY"                                	scenes\buildings\accessories\jetty.ma
+	"TRUNKS"                               	scenes\buildings\accessories\trunks.ma
+	"CEDAR"                                	scenes\buildings\accessories\cedar.ma
+	"TRUNK"                                	scenes\buildings\accessories\trunk.ma
+	"TREES1"                               	scenes\buildings\accessories\trees.ma
+	"SATELLITE_MAST"                       	scenes\buildings\accessories\satellite_mast.ma
+	"RIVER"                                	scenes\buildings\accessories\river.ma
+	"OBSERVATORY"                          	scenes\buildings\accessories\observatory.ma
+	"SUNLIGHT2"                            	scenes\buildings\accessories\sunlight2.ma
+	"SUNLIGHT1"                            	scenes\buildings\accessories\sunlight1.ma
+	"WOODBRIDGE"                           	scenes\buildings\accessories\woodbridge.ma
+	"NEW_CRANE_TRUNKS"                     	scenes\buildings\accessories\new_crane_trunks.ma
+	"BAYA_LANDSCAPE"                       	scenes\buildings\accessories\baya_landscape.ma
+	"BIRD"                                 	scenes\buildings\accessories\bird.ma
+	"TRAIN"                                	scenes\buildings\accessories\train.ma
+	"NEW_CRANE"                            	scenes\buildings\accessories\new_crane.ma
+	"SUSP_BRIDGE"                          	scenes\buildings\accessories\susp_bridge.ma
+	"START_BANNER"                         	scenes\buildings\accessories\start_banner.ma
+	"CONE"                                 	scenes\buildings\accessories\cone.ma
+	"WARNING_SIGN_BIG"                     	scenes\buildings\accessories\warning_sign_big.ma
+	"CRANE"                                	scenes\buildings\accessories\crane.ma
+	"ALPINE_SIGN"                          	scenes\buildings\accessories\alpine_sign.ma
+	"ROADS_SIGN"                           	scenes\buildings\accessories\roads_sign.ma
+	"WIGGLY_SIGN"                          	scenes\buildings\accessories\wiggly_sign.ma
+	"MOUNTAINS"                            	scenes\buildings\accessories\mountains.ma
+	"TRAIN_TREES"                          	scenes\buildings\accessories\train_trees.ma
+	"RAILBRIDGEKEGS"                       	scenes\buildings\accessories\railbridge_legs.ma
+	"RAILBRIDGE"                           	scenes\buildings\accessories\railbridge.ma
+	"LAKE"                                 	scenes\buildings\accessories\lake.ma
+	"FISHER_HUT"                           	scenes\buildings\accessories\fish_hut.ma
+	"IRON_BRIDGE"                          	scenes\buildings\accessories\iron_bridge.ma
+	"MOUNT2"                               	scenes\buildings\accessories\mount2.ma
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"SKYDOME"                              	scenes\environment\baya_skydome.ma
+	"BAYA_CUT_UP"                          	
+	"BAYA_OBJECTS"                         	
+	"BAYA_ANIMATIONS"                      	
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+	"CONE"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"OUTRO_CAMERA"
+	"INTRO_CAMERA"
+	"CAMERA"
+	"CAR_COCKPIT"
+	"BIRD"
+	"BIRDWIRE"
+	"NEW_CRANE_TRUNKS"
+	"HOTAIRBALLOON_II_LIT"
+	"HOTAIRBALLOON_II"
+	"HOTAIRBALLOON_III"
+	"HOTAIRBALLOON_I"
+	"TRAIN_CABOOSE"
+	"TRAIN_TREES"
+	"TRAIN"
+	"TRAIN_OIL"
+	"TRAIN_CONTAINERS"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"AMBIENT"
+	"SUNLIGHT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+	"METAL"
+	"STONE"
+	"WOOD"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+	"WATER"
+	"ROTOR"
+	"WATERFALL"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	128x128 	-	[  fM       ]	"BRIDGE_128X128"                        	8b:7a:70:00	 (World size: 17.449564)
+	128x64  	-	[  fM       ]	"RAILBRIDGE"                            	6f:3c:31:00	 (World size: 9.738984)
+	128x32  	-	[ASfM   !   ]	"FLAGS"                                 	85:85:97:00	 (World size: 2.489251)
+	128x128 	-	[  fM       ]	"WOODBRIDGE"                            	6b:6c:6b:00	 (World size: 16.376175)
+	64x64   	-	[  fM   !   ]	"YACHT3"                                	98:95:96:00	 (World size: 25.811956)
+	128x128 	-	[ASfM       ]	"WOODEN_FENCE"                          	b6:b0:a9:66	 (World size: 3.481247)
+	256x256 	-	[  fM       ]	"MOUNTAINS"                             	82:7a:69:00	 (World size: 726.315063)
+	32x32   	-	[ASf        ]	"BIRDWIRE"                              	00:00:00:3a	 (World size: 1.310660)
+	256x128 	-	[  fM       ]	"SUNGLOW"                               	0b:0b:0b:00	 (World size: 15.265028)
+	256x128 	-	[  fM       ]	"ROAD_SIGNS_BAYA"                       	8a:99:49:00	 (World size: 14.948161)
+	128x128 	-	[  fM       ]	"FORT"                                  	84:87:78:00	 (World size: 14.988197)
+	128x128 	-	[  fM       ]	"OBSERVATORY"                           	af:b1:b4:00	 (World size: 50.641502)
+	64x64   	-	[  fM       ]	"WARNING_SIGN"                          	da:c5:bb:00	 (World size: 4.727261)
+	128x16  	-	[  fM       ]	"TGRAPH_POLE"                           	68:5b:42:00	 (World size: 7.760060)
+	128x128 	-	[  fM   !   ]	"BAYA_LAND"                             	71:69:36:00	 (World size: 4685.470703)
+	16x16   	-	[  f    !   ]	"CONE"                                  	fe:be:82:00	 (World size: 0.906468)
+	128x128 	-	[ASfM       ]	"SAT_TEX1"                              	d0:d0:d0:57	 (World size: 8.475430)
+	128x128 	-	[A fM       ]	"WATER_FALLING"                         	c2:bf:d1:e7	 (World size: 57.383743)
+	64x64   	-	[A fM       ]	"FISHERHUT-256"                         	7a:68:51:ef	 (World size: 19.801233)
+	512x512 	-	[ASf    !   ]	"BAYA_TREEPAGE"                         	50:54:1e:00	 (World size: 39.229362)
+	256x128 	-	[ASf    !   ]	"BAYA_SINGLETREE"                       	36:49:25:00	 (World size: 16.787737)
+	64x64   	-	[ASfM   !   ]	"TPOLE_WIRE"                            	fc:0d:0d:00	 (World size: 7.138240)
+	256x128 	-	[ASfM   !   ]	"FACINGGRASS"                           	5f:47:35:00	 (World size: 2.083541)
+	64x64   	-	[  fM       ]	"CHEVRON_ARROW"                         	72:6c:2b:00	 (World size: 2.079749)
+	128x128 	-	[  fM       ]	"ROAD_SIGNS2_BAYA"                      	cb:bb:40:00	 (World size: 12.427404)
+	256x256 	-	[  fM       ]	"FL_B_MAINTENANCE_VS"                   	90:83:66:00	 (World size: 17.145052)
+	32x32   	-	[ASfM       ]	"WATER_SPARKLE"                         	64:93:ab:eb	 (World size: 31.482849)
+	128x128 	-	[  fM       ]	"TRAIN-128"                             	70:5b:55:00	 (World size: 75.407028)
+	256x256 	-	[  fM   !   ]	"MOUNTAIN_ICE1"                         	80:83:80:00	 (World size: 1488.534180)
+	256x64  	-	[ASfM       ]	"BARRIER"                               	75:73:73:b4	 (World size: 7.376191)
+	128x64  	-	[  fM       ]	"HOTAIRBALLOON"                         	97:56:5f:00	 (World size: 49.577137)
+	128x128 	-	[ASfM   !   ]	"TREEWALL"                              	33:3d:1b:00	 (World size: 32.891842)
+	64x64   	-	[  fM       ]	"SAT_TEX2"                              	73:81:87:00	 (World size: 10.781724)
+	128x64  	-	[  fM       ]	"HOTAIRBALLOON-LIT"                     	a9:61:51:00	 (World size: 45.391483)
+	128x128 	-	[  fM       ]	"ROCKS_BAYA"                            	9b:82:6b:00	 (World size: 70.387207)
+	128x128 	-	[  fM       ]	"GRASS_TILE_BAYA"                       	63:5b:24:00	 (World size: 13.634293)
+	256x64  	-	[  fM   !   ]	"TARMAC_CONC_EDGE_BAYA"                 	8e:7e:7b:00	 (World size: 10.126964)
+	256x64  	-	[  fM       ]	"TARMAC_EDGE_V1_BAYA"                   	58:4c:3a:00	 (World size: 15.941033)
+	256x256 	-	[  fM       ]	"ROCKS_V1_BAYA"                         	94:80:63:00	 (World size: 37.072983)
+	256x256 	-	[  fM       ]	"ROCKS_V2_BAYA"                         	93:7e:5e:00	 (World size: 51.687801)
+	256x64  	-	[  fM       ]	"TARMAC_EDGE_PATCHY_BAYA"               	76:67:4f:00	 (World size: 18.166500)
+	256x256 	-	[  fM       ]	"TARMAC_BAYA_V2"                        	61:53:54:00	 (World size: 11.087216)
+	256x256 	-	[  fM       ]	"GRASS_BAYA"                            	6a:61:30:00	 (World size: 33.750370)
+	64x64   	-	[  fM       ]	"OLDWALL_BAYA"                          	87:73:4a:00	 (World size: 4.306926)
+	128x128 	-	[  fM       ]	"ROCKS_FOLIAGE"                         	8c:77:4e:00	 (World size: 41.251579)
+	256x256 	-	[  fM       ]	"DRYGRASS_BAYA"                         	70:6b:34:00	 (World size: 39.084759)
+	128x128 	-	[  fM   !   ]	"TARMAC_BAYA_FINISHLINE"                	5d:50:46:00	 (World size: 5.518741)
+	256x64  	-	[  fM       ]	"TARMAC_EDGE_MERGE_BAYA"                	69:5b:46:00	 (World size: 17.961563)
+	256x256 	-	[  fM   !   ]	"WOOD_BRIDGEFLOOR"                      	62:4e:3f:00	 (World size: 33.973167)
+	64x64   	-	[  f        ]	"MINISKY"                               	6f:77:8f:00	 (World size: 3486.453857)
+	256x256 	-	[  f      # ]	"BAY_A_SEG7"                            	72:83:b6:00	 (World size: 2325.032959)
+	256x256 	-	[  f      # ]	"BAY_A_SEG8"                            	7c:90:c4:00	 (World size: 2325.032715)
+	256x256 	-	[  f      # ]	"BAY_A_SEG1"                            	6b:88:ce:00	 (World size: 2325.032959)
+	256x256 	-	[  f      # ]	"BAY_A_SEG4"                            	88:9a:c9:00	 (World size: 2325.032471)
+	256x256 	-	[  f      # ]	"BAY_A_SEG3"                            	73:96:dd:00	 (World size: 2325.033691)
+	256x256 	-	[  f      # ]	"BAY_A_SEG6"                            	b3:be:da:00	 (World size: 2360.591553)
+	256x256 	-	[  f      # ]	"BAY_A_SEG2"                            	77:96:dc:00	 (World size: 2325.032715)
+	256x256 	-	[  f      # ]	"BAY_A_SEG5"                            	a8:b4:cf:00	 (World size: 2360.592041)
+	32x32   	-	[A fM       ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"GRASS"                                 	1b:1b:1b:22	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"HEADLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"SPECULAR_SPRITE"                       	3d:3d:3d:3d	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"REARLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"SUN_FLARE"                             	15:10:10:12	 (World size: 1.310660)
+	128x128 	-	[  fM       ]	"TRACK_SPECULAR"                        	4d:4d:4d:00	 (World size: 1.310660)
+	32x32   	-	[ASfM       ]	"TRACK_REFLECTION"                      	00:00:00:00	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"SMOKEANDDUST"                          	d3:d1:d1:54	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"TYRE_SMOKE"                            	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"EXHAUST"                               	be:be:be:53	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"SPARK"                                 	35:35:35:00	 (World size: 1.310660)
+	256x128 	-	[A fM  X    ]	"BRIDGE_SHADOW"                         	00:00:00:1a	 (World size: 96.549026)
+	256x256 	-	[A fM  X    ]	"TREELINE_SHADOW"                       	00:00:00:73	 (World size: 189.470154)
+	16x16   	-	[  fM       ]	"ANIMATED1_1"                           	a9:6a:34:00	 (World size: 0.899608)
+	16x16   	-	[  fM       ]	"ANIMATED1"                             	c9:a4:5d:00	 (World size: 0.899608)
+	16x16   	-	[  fM       ]	"ANIMATED1_2"                           	c9:a3:5a:00	 (World size: 0.899608)
+	32x32   	-	[ASf        ]	"ANIMATED5"                             	00:00:00:14	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED5_1"                           	00:00:00:14	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED5_2"                           	00:00:00:12	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED5_3"                           	00:00:00:11	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED5_4"                           	00:00:00:13	 (World size: 2.580362)
+	32x32   	-	[ASf        ]	"ANIMATED5_5"                           	00:00:00:0f	 (World size: 2.580362)
+	512x128 	-	[  fM   !   ]	"STARTGRID"                             	93:92:92:00	 (World size: 40.039433)
+	64x64   	-	[ASfM   !   ]	"GIRDERS"                               	d5:24:24:00	 (World size: 9.156556)
+	64x64   	-	[ASfM   !   ]	"NEW_BARRIERS"                          	93:93:93:00	 (World size: 4.566588)
+	256x256 	-	[  fM   !   ]	"AD_TEMP"                               	8b:8b:91:00	 (World size: 22.331881)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

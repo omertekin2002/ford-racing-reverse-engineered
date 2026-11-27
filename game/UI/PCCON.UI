@@ -1,0 +1,319 @@
+
+//////////////////////////////////////////////////////
+// UI SCREEN
+//////////////////////////////////////////////////////
+
+:TYPE										UI_TYPE_SCREEN
+:OBJECT_ID 								UI\PSCON.UI
+:POSITION_START 						0.0 0.0
+:POSITION_END 							0.0 0.0
+:SIZE 									1.0 1.0
+:TEXTURE_ENUM 							GRAPHICS\GAME\BKGNDS\MACH3BG.PSD
+
+:S{*****>>>
+
+	//////////////////////////////////////////////////////
+	// TITLE BAR
+	//////////////////////////////////////////////////////
+
+	:INHERIT									TITLE
+	:POSITION_START 						0.0 0.125
+	:POSITION_END 							0.0 0.125
+	:SIZE										1.0 0.03125
+	:TEXT_JUSTIFY							0
+
+	// DONE
+	:INHERIT									BACK_ICON
+	:POSITION_END 							0.4375 0.78136
+	:POSITION_START 						0.4375 0.78136
+
+	:INHERIT									BACK_TEXT
+	:POSITION_START 						0.06718 0.793750
+	:POSITION_END 							0.06718 0.793750
+	:SIZE										0.37190 0.100000
+	:TEXT_JUSTIFY							5
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// KEY CHANGE BUTTONS
+	//////////////////////////////////////////////////////
+
+	:INHERIT									MENUBAR
+
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID 								BRAKE
+	:TEXT 									TXT_OPTIONS_CONTROLS_INPUT_BRAKE
+	:POSITION_START 						-1.0 0.18958
+	:POSITION_END 							-0.47813 0.18958
+	:TEXT_JUSTIFY							2
+	:FONT 									2
+	:FONT_COLOUR							50 50 50 255
+	:HIGHLIGHTED_FONT 					2
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:TIME_LENGTH							0.16667
+	:OFFSET_TIME							0.0
+
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID 								ACCELERATE
+	:TEXT 									TXT_OPTIONS_CONTROLS_INPUT_ACCELERATE
+	:POSITION_START 						-1.0 0.24583
+	:POSITION_END 							-0.47813 0.24583
+	:TEXT_JUSTIFY							2
+	:FONT 									2
+	:FONT_COLOUR							50 50 50 255	
+	:HIGHLIGHTED_FONT 					2
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:TIME_LENGTH							0.16667
+	:OFFSET_TIME							0.1
+	
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID 								STEERLEFT
+	:TEXT 									TXT_OPTIONS_CONTROLS_INPUT_STEER_LEFT
+	:POSITION_START 						-1.0 0.30417
+	:POSITION_END 							-0.47813 0.30417
+	:TEXT_JUSTIFY							2
+	:FONT 									2
+	:FONT_COLOUR							50 50 50 255
+	:HIGHLIGHTED_FONT 					2
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:TIME_LENGTH							0.16667
+	:OFFSET_TIME							0.2
+	
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID 								STEERRIGHT
+	:TEXT 									TXT_OPTIONS_CONTROLS_INPUT_STEER_RIGHT
+	:POSITION_START 						-1.0 0.36042
+	:POSITION_END 							-0.47813 0.36042
+	:TEXT_JUSTIFY							2
+	:FONT 									2
+	:FONT_COLOUR							50 50 50 255
+	:HIGHLIGHTED_FONT 					2
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:TIME_LENGTH							0.16667
+	:OFFSET_TIME							0.3
+
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID 								GEARUP
+	:TEXT 									TXT_OPTIONS_CONTROLS_INPUT_GEAR_UP
+	:POSITION_START 						-1.0 0.41458
+	:POSITION_END 							-0.47813 0.41458
+	:TEXT_JUSTIFY							2
+	:FONT 									2
+	:FONT_COLOUR							50 50 50 255
+	:HIGHLIGHTED_FONT 					2
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:TIME_LENGTH							0.16667
+	:OFFSET_TIME							0.4
+
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID 								GEARDOWN
+	:TEXT 									TXT_OPTIONS_CONTROLS_INPUT_GEAR_DOWN
+	:POSITION_START 						-1.0 0.46875
+	:POSITION_END 							-0.47813 0.46875
+	:TEXT_JUSTIFY							2
+	:FONT 									2
+	:FONT_COLOUR							50 50 50 255
+	:HIGHLIGHTED_FONT 					2
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:TIME_LENGTH							0.16667
+	:OFFSET_TIME							0.5
+
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID 								HANDBRAKE
+	:TEXT 									TXT_OPTIONS_CONTROLS_INPUT_HAND_BRAKE
+	:POSITION_START 						-1.0 0.525
+	:POSITION_END 							-0.47813 0.525
+	:TEXT_JUSTIFY							2
+	:FONT 									2
+	:FONT_COLOUR							50 50 50 255
+	:HIGHLIGHTED_FONT 					2
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:TIME_LENGTH							0.16667
+	:OFFSET_TIME							0.6
+
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID 								CHANGECAMERA
+	:TEXT 									TXT_OPTIONS_CONTROLS_INPUT_CHANGE_DRIVING_VIEW
+	:POSITION_START 						-1.0 0.58125
+	:POSITION_END 							-0.47813 0.58125
+	:TEXT_JUSTIFY							2
+	:FONT 									2
+	:FONT_COLOUR							50 50 50 255
+	:HIGHLIGHTED_FONT 					2
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:TIME_LENGTH							0.16667
+	:OFFSET_TIME							0.7
+
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID 								REVERSECAMERA
+	:TEXT 									TXT_OPTIONS_CONTROLS_INPUT_REVERSE_VIEW
+	:POSITION_START 						-1.0 0.6375
+	:POSITION_END 							-0.47813 0.6375
+	:TEXT_JUSTIFY							2
+	:FONT 									2
+	:FONT_COLOUR							50 50 50 255
+	:HIGHLIGHTED_FONT 					2
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:TIME_LENGTH							0.16667
+	:OFFSET_TIME							0.8
+	
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID 								BOOST
+	:TEXT 									TXT_GAMEMODE_BOOST
+	:POSITION_START 						-1.0 0.69375
+	:POSITION_END 							-0.47813 0.69375
+	:TEXT_JUSTIFY							2
+	:FONT 									2
+	:FONT_COLOUR							50 50 50 255
+	:HIGHLIGHTED_FONT 					2
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:TIME_LENGTH							0.16667
+	:OFFSET_TIME							0.9
+
+	//////////////////////////////////////////////////////
+	// KEY CHANGE VALUES/AREAS
+	//////////////////////////////////////////////////////
+
+	:TYPE 									UI_TYPE_AREA
+	:OBJECT_ID 								BRAKEVALUE
+	:CLEAR									1
+	:FONT 									2
+	:FONT_COLOUR 							0 0 0 255
+	:HIGHLIGHTED_FONT 					1
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:POSITION_END 							0.52344 0.18958
+	:POSITION_START 						0.52344 0.18958
+	:SIZE 									1.0 0.06
+	:TEXT_JUSTIFY 							1
+
+	:TYPE 									UI_TYPE_AREA
+	:OBJECT_ID 								ACCELERATEVALUE
+	:CLEAR									1
+	:FONT 									2
+	:FONT_COLOUR 							0 0 0 255
+	:HIGHLIGHTED_FONT 					1
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:POSITION_END 							0.52344 0.24583
+	:POSITION_START 						0.52344 0.24583
+	:SIZE 									1.0 0.06
+	:TEXT_JUSTIFY 							1
+	
+	:TYPE 									UI_TYPE_AREA
+	:OBJECT_ID 								STEERLEFTVALUE
+	:CLEAR									1
+	:FONT 									2
+	:FONT_COLOUR 							0 0 0 255
+	:HIGHLIGHTED_FONT 					1
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:POSITION_END 							0.52344 0.30417
+	:POSITION_START 						0.52344 0.30417
+	:SIZE 									1.0 0.06
+	:TEXT_JUSTIFY 							1
+
+	:TYPE 									UI_TYPE_AREA
+	:OBJECT_ID 								STEERRIGHTVALUE
+	:CLEAR									1
+	:FONT 									2
+	:FONT_COLOUR 							0 0 0 255
+	:HIGHLIGHTED_FONT 					1
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:POSITION_END 							0.52344 0.36042
+	:POSITION_START 						0.52344 0.36042
+	:SIZE 									1.0 0.06
+	:TEXT_JUSTIFY 							1
+
+	:TYPE 									UI_TYPE_AREA
+	:OBJECT_ID 								GEARUPVALUE
+	:CLEAR									1
+	:FONT 									2
+	:FONT_COLOUR 							0 0 0 255
+	:HIGHLIGHTED_FONT 					1
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:POSITION_END 							0.52344 0.41458
+	:POSITION_START 						0.52344 0.41458
+	:SIZE 									1.0 0.06
+	:TEXT_JUSTIFY 							1
+
+	:TYPE 									UI_TYPE_AREA
+	:OBJECT_ID 								GEARDOWNVALUE
+	:CLEAR									1
+	:FONT 									2
+	:FONT_COLOUR 							0 0 0 255
+	:HIGHLIGHTED_FONT 					1
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:POSITION_END 							0.52344 0.46875
+	:POSITION_START 						0.52344 0.46875
+	:SIZE 									1.0 0.06
+	:TEXT_JUSTIFY 							1
+
+	:TYPE 									UI_TYPE_AREA
+	:OBJECT_ID 								HANDBRAKEVALUE
+	:CLEAR									1
+	:FONT 									2
+	:FONT_COLOUR 							0 0 0 255
+	:HIGHLIGHTED_FONT 					1
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:POSITION_END 							0.52344 0.525
+	:POSITION_START 						0.52344 0.525
+	:SIZE 									1.0 0.06
+	:TEXT_JUSTIFY 							1
+
+	:TYPE 									UI_TYPE_AREA
+	:OBJECT_ID 								CHANGECAMERAVALUE
+	:CLEAR									1
+	:FONT 									2
+	:FONT_COLOUR 							0 0 0 255
+	:HIGHLIGHTED_FONT 					1
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:POSITION_END 							0.52344 0.58125
+	:POSITION_START 						0.52344 0.58125
+	:SIZE 									1.0 0.06
+	:TEXT_JUSTIFY 							1
+
+	:TYPE 									UI_TYPE_AREA
+	:OBJECT_ID 								REVERSECAMERAVALUE
+	:CLEAR									1
+	:FONT 									2
+	:FONT_COLOUR 							0 0 0 255
+	:HIGHLIGHTED_FONT 					1
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:POSITION_END 							0.52344 0.6375
+	:POSITION_START 						0.52344 0.6375
+	:SIZE 									1.0 0.06
+	:TEXT_JUSTIFY 							1
+	
+	:TYPE 									UI_TYPE_AREA
+	:OBJECT_ID 								BOOSTVALUE
+	:CLEAR									1
+	:FONT 									2
+	:FONT_COLOUR 							0 0 0 255
+	:HIGHLIGHTED_FONT 					1
+	:HIGHLIGHTED_FONT_COLOUR 			0 0 0 255
+	:POSITION_START 						0.52344 0.69375
+	:POSITION_END 							0.52344 0.69375
+	:SIZE 									1.0 0.06
+	:TEXT_JUSTIFY 							1
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+:CONNECTION "BRAKE"				"BOOST"				"ACCELERATE"		"none" "none"
+:CONNECTION "ACCELERATE"		"BRAKE"				"STEERLEFT"			"none" "none"
+:CONNECTION "STEERLEFT"			"ACCELERATE"		"STEERRIGHT"		"none" "none"
+:CONNECTION "STEERRIGHT"		"STEERLEFT"			"GEARUP"				"none" "none"
+:CONNECTION "GEARUP"				"STEERRIGHT"		"GEARDOWN"			"none" "none"
+:CONNECTION "GEARDOWN"			"GEARUP"				"HANDBRAKE"			"none" "none"
+:CONNECTION "HANDBRAKE"			"GEARDOWN"			"CHANGECAMERA"		"none" "none"
+:CONNECTION "CHANGECAMERA"		"HANDBRAKE"			"REVERSECAMERA"	"none" "none"
+:CONNECTION "REVERSECAMERA"	"CHANGECAMERA"		"BOOST"				"none" "none"
+:CONNECTION "BOOST"				"REVERSECAMERA"	"BRAKE"				"none" "none"
+
+:E}*****<<<
+
+//////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////

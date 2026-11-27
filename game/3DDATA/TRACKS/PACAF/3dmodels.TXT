@@ -1,0 +1,344 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"PARTICLE_EFFECTS"                     	scenes\particles\track_particles.ma
+	"PACAF_CUT_UP"                         	
+	"STARTY"                               	scenes\buildings\start_finish.ma
+	"GATES_SHUT"                           	scenes\buildings\gates_shut.ma
+	"RIVER2"                               	scenes\buildings\river2.ma
+	"WATERFALL"                            	scenes\buildings\waterfall.ma
+	"PALMTRUNKS"                           	scenes\buildings\palmtrunks.ma
+	"BRIDGE_DOWN"                          	scenes\buildings\bridge_down.ma
+	"RIVER_DAM"                            	scenes\buildings\river_dam.ma
+	"OLD_TRUCK"                            	scenes\buildings\old_truck.ma
+	"BRIDGE_UP"                            	scenes\buildings\bridge_up.ma
+	"PALMTRUNKS_SML"                       	scenes\buildings\palmtrunks_sm_l.ma
+	"OUTERHILLS"                           	scenes\buildings\outerhills.ma
+	"FARM03"                               	scenes\buildings\farm03.ma
+	"FARM02"                               	scenes\buildings\farm02.ma
+	"FARM01"                               	scenes\buildings\farm01.ma
+	"FARM_ALL3"                            	scenes\buildings\farm_all3.ma
+	"SEA2"                                 	scenes\buildings\sea2.ma
+	"SEA1"                                 	scenes\buildings\sea1.ma
+	"SEA"                                  	scenes\buildings\sea.ma
+	"BUSH_L"                               	scenes\buildings\bush_l.ma
+	"HEDGE19"                              	scenes\buildings\hedge19.ma
+	"COCONUTPALMTALL_FAR"                  	scenes\buildings\coconutpalmtall_far.ma
+	"TREEWALL10"                           	scenes\buildings\treewall10.ma
+	"BANANA"                               	scenes\buildings\banana.ma
+	"SABAL500"                             	scenes\buildings\sabal500.ma
+	"COCONUTPALM"                          	scenes\buildings\coconutpalm.ma
+	"COCONUTPALM500"                       	scenes\buildings\coconutpalm500.ma
+	"COCONUTPALMTALLFAR"                   	scenes\buildings\coconutpalmtallfar.ma
+	"SABAL"                                	scenes\buildings\sabal.ma
+	"COCONUTPALMTALL"                      	scenes\buildings\coconutpalmtall.ma
+	"HOTEL_SMALL_FLEFT"                    	scenes\buildings\hotel_small_fleft.ma
+	"HOTEL_SMALL_FRIGHT"                   	scenes\buildings\hotel_small_fright.ma
+	"FOUNTAIN"                             	scenes\buildings\fountain.ma
+	"ROPE_FENCE_PT3"                       	scenes\buildings\rope_fence_pt3.ma
+	"ROPE_FENCE_PT2"                       	scenes\buildings\rope_fence_pt2.ma
+	"ROPE_FENCE_PT1"                       	scenes\buildings\rope_fence_pt1.ma
+	"HOTEL_LARGE"                          	scenes\buildings\hotel_large.ma
+	"GATES_SHUT_SHADOW"                    	scenes\buildings\gates_shut_shadow.ma
+	"BEACH_HEADLAND"                       	scenes\buildings\beach_headland.ma
+	"SINGLE_SURFBOARD02"                   	scenes\buildings\beach\single_surfboard02.ma
+	"SINGLE_SURFBOARD"                     	scenes\buildings\beach\single_surfboard.ma
+	"JETTY_SHORTCUT"                       	scenes\buildings\jetty_shortcut.ma
+	"BEACH_HEADLAND1"                      	scenes\buildings\beach_headland1.ma
+	"HUT07"                                	scenes\buildings\hut07.ma
+	"CATAMARANHUT"                         	scenes\buildings\beach\catamaranhut.ma
+	"BEACH_WALKWAY2"                       	scenes\buildings\beach_walkway2.ma
+	"SINGLEBOAT01"                         	scenes\buildings\beach\singleboat01.ma
+	"05"                                   	scenes\buildings\hut05.ma
+	"HUT08"                                	scenes\buildings\hut08.ma
+	"HUT02"                                	scenes\buildings\hut02.ma
+	"SURFBOARDS"                           	scenes\buildings\beach\surfboards.ma
+	"WHEEL"                                	scenes\buildings\fragments\wheel.ma
+	"BREAKABLE_BOX"                        	scenes\buildings\fragments\breakable_box.ma
+	"CATAMARAN"                            	scenes\buildings\catamaran.ma
+	"BREAKABLE_PLANKS2"                    	scenes\buildings\fragments\breakablewood2.ma
+	"SINGLEBOAT02"                         	scenes\buildings\beach\singleboat02.ma
+	"NEW_BUSHYTREE250"                     	scenes\buildings\new_bushytree250.ma
+	"NEW_BUSHYTREE500"                     	scenes\buildings\new_bushytree500.ma
+	"NEW_BUSHYTREE150"                     	scenes\buildings\new_bushytree150.ma
+	"NEW_BUSHYTREE"                        	scenes\buildings\new_bushytree.ma
+	"PACAF_OBJECTS"                        	
+	"PACAF_FAST_STREAM_MIST"               	
+	"PACAF_PARTICLES"                      	
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"SKYDOME"                              	scenes\environment\paca_skydome.ma
+	"FLAG"                                 	scenes\buildings\animated\flag.ma
+	"SPEEDBOAT"                            	scenes\buildings\animated\speedboat.ma
+	"BREAKABLE_PLANKS2_FRAG0000"           	scenes\buildings\fragments\breakablewood2.ma
+	"BREAKABLE_PLANKS2_FRAG0001"           	scenes\buildings\fragments\breakablewood2.ma
+	"BREAKABLE_PLANKS2_FRAG0002"           	scenes\buildings\fragments\breakablewood2.ma
+	"BREAKABLE_PLANKS2_FRAG0003"           	scenes\buildings\fragments\breakablewood2.ma
+	"DAVEBARREL"                           	scenes\buildings\fragments\dave_barrel.ma
+	"DAVEBARREL_FRAG0000"                  	scenes\buildings\fragments\dave_barrel.ma
+	"DAVEBARREL_FRAG0001"                  	scenes\buildings\fragments\dave_barrel.ma
+	"DAVEBARREL_FRAG0002"                  	scenes\buildings\fragments\dave_barrel.ma
+	"POST"                                 	scenes\buildings\fragments\post.ma
+	"POST_FRAG0000"                        	scenes\buildings\fragments\post.ma
+	"POST_FRAG0001"                        	scenes\buildings\fragments\post.ma
+	"POST_FRAG0002"                        	scenes\buildings\fragments\post.ma
+	"BREAK_SURFBOARDS"                     	scenes\buildings\fragments\breakable_surfboards.ma
+	"BREAK_SURFBOARDS_FRAG0000"            	scenes\buildings\fragments\breakable_surfboards.ma
+	"BREAK_SURFBOARDS_FRAG0001"            	scenes\buildings\fragments\breakable_surfboards.ma
+	"BREAK_SURFBOARDS_FRAG0002"            	scenes\buildings\fragments\breakable_surfboards.ma
+	"BREAK_SURFBOARDS_FRAG0003"            	scenes\buildings\fragments\breakable_surfboards.ma
+	"BREAK_SURFBOARDS_FRAG0004"            	scenes\buildings\fragments\breakable_surfboards.ma
+	"BREAK_SURFBOARDS_FRAG0005"            	scenes\buildings\fragments\breakable_surfboards.ma
+	"BREAK_SURFBOARDS_FRAG0006"            	scenes\buildings\fragments\breakable_surfboards.ma
+	"BREAK_SURFBOARDS_FRAG0007"            	scenes\buildings\fragments\breakable_surfboards.ma
+	"BREAKABLE_PLANKS"                     	scenes\buildings\fragments\breakablewood.ma
+	"BREAKABLE_PLANKS_FRAG0000"            	scenes\buildings\fragments\breakablewood.ma
+	"BREAKABLE_PLANKS_FRAG0001"            	scenes\buildings\fragments\breakablewood.ma
+	"BREAKABLE_PLANKS_FRAG0002"            	scenes\buildings\fragments\breakablewood.ma
+	"BREAKABLE_PLANKS_FRAG0003"            	scenes\buildings\fragments\breakablewood.ma
+	"BREAKABLE_BOX_FRAG0000"               	scenes\buildings\fragments\breakable_box.ma
+	"BREAKABLE_BOX_FRAG0001"               	scenes\buildings\fragments\breakable_box.ma
+	"BREAKABLE_BOX_FRAG0002"               	scenes\buildings\fragments\breakable_box.ma
+	"BREAKABLE_BOX_FRAG0003"               	scenes\buildings\fragments\breakable_box.ma
+	"BREAKABLE_BOX_FRAG0004"               	scenes\buildings\fragments\breakable_box.ma
+	"BREAKABLE_BOX_FRAG0005"               	scenes\buildings\fragments\breakable_box.ma
+	"SINGLE_SURFBOARD03"                   	scenes\buildings\beach\single_surfboard03.ma
+	"FARMALL2"                             	scenes\buildings\farmall2.ma
+	"FARM09"                               	scenes\buildings\farm09.ma
+	"FARM08"                               	scenes\buildings\farm08.ma
+	"FARM07"                               	scenes\buildings\farm07.ma
+	"OBJECT_HOTEL_SMALL_FLEFT"             	scenes\buildings\object_hotel_small_fleft.ma
+	"MOUNTS_02"                            	scenes\buildings\mounts_02.ma
+	"STARTFINISH"                          	scenes\buildings\startfinish.ma
+	"MOUNTS1"                              	scenes\buildings\mounts_01.ma
+	"HAZARD"                               	scenes\buildings\hazard_barrier.ma
+	"SM_PALMGROUP"                         	scenes\buildings\palmgroup_sm.ma
+	"PALMTRUNKS_D"                         	scenes\buildings\palmtrunks_d.ma
+	"WAVE_8"                               	scenes\buildings\wave_8.ma
+	"WAVE_7"                               	scenes\buildings\wave_7.ma
+	"WAVE_6"                               	scenes\buildings\wave_6.ma
+	"WAVE_5"                               	scenes\buildings\wave_5.ma
+	"WAVE_4"                               	scenes\buildings\wave_4.ma
+	"WAVE_2"                               	scenes\buildings\wave_2.ma
+	"WAVE_3"                               	scenes\buildings\wave_3.ma
+	"WAVE_1"                               	scenes\buildings\wave_1.ma
+	"05B"                                  	scenes\buildings\hut05b.ma
+	"BUSHY"                                	scenes\buildings\bushygrass.ma
+	"HUT8B"                                	scenes\buildings\hut08b.ma
+	"BUSHA"                                	scenes\buildings\bushy.ma
+	"GRASSSTRIP"                           	scenes\buildings\grassstrip.ma
+	"PALMTRUNKS_SM"                        	scenes\buildings\palmtrunks_sm.ma
+	"PALMGROUP"                            	scenes\buildings\palmgroup.ma
+	"HUT04"                                	scenes\buildings\hut04.ma
+	"HUT03"                                	scenes\buildings\hut03.ma
+	"INLANDHILL3"                          	scenes\buildings\inlandhill3.ma
+	"DISTANT_MOUNTAIN2"                    	scenes\buildings\distant_mountain2.ma
+	"GRASS"                                	scenes\buildings\grass.ma
+	"BUSH"                                 	scenes\buildings\bush.ma
+	"HUT06"                                	scenes\buildings\hut06.ma
+	"HUT01"                                	scenes\buildings\hut01.ma
+	"RIVER"                                	scenes\buildings\river.ma
+	"DISTANT_MOUNTAIN1"                    	scenes\buildings\distant_mountain1.ma
+	"GATES_OPENED"                         	scenes\buildings\gates_opened.ma
+	"CUBES"                                	scenes\buildings\cubes.ma
+	"EFFECTS"                              	scenes\effects\effects.ma
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid skeletal animation names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+	"RUBBER"
+	"WOOD"
+	"FAST_STREAM_MIST"
+	"FRAGMENT"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"CAMERA"
+	"CAR_FRONT"
+	"CAR_GAMEBONNET"
+	"CAR_BACK_BOUNCE"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"SUNLIGHT"
+	"AMBIENT"
+	"SHADOWS"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+	"SURF"
+	"WAVES2"
+	"WATERFALL"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	128x128 	-	[  fM       ]	"FIRE"                                  	52:52:52:00	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"GRASS"                                 	14:14:14:22	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SMOKEANDDUST"                          	ff:ff:ff:5f	 (World size: 1.310660)
+	128x128 	-	[ASfM   !   ]	"SPARK"                                 	f5:0c:0c:ff	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SPRAY"                                 	ef:ef:ef:39	 (World size: 1.310660)
+	64x64   	-	[A fM    $  ]	"STREAM"                                	fe:fe:fe:6a	 (World size: 1.310660)
+	256x128 	-	[A fM  X!   ]	"RIVERSHADOWS"                          	00:00:00:58	 (World size: 150.949661)
+	256x128 	-	[A fM  X!   ]	"TWOROUTESSHADOWS"                      	00:00:00:60	 (World size: 146.798370)
+	256x128 	-	[A fM  X    ]	"BEACH2"                                	00:00:00:30	 (World size: 133.832764)
+	256x128 	-	[A fM  X    ]	"HOTEL"                                 	00:00:00:21	 (World size: 107.153786)
+	128x128 	-	[A fM  X!   ]	"BEACH1"                                	00:00:00:2e	 (World size: 183.766266)
+	128x128 	-	[  fM       ]	"SEAWATER"                              	56:6c:81:00	 (World size: 179.997299)
+	128x64  	-	[  fM       ]	"FO_RGB"                                	93:9a:a4:00	 (World size: 5.975946)
+	128x64  	-	[ASfM       ]	"SPEEDBOAT"                             	bd:b8:b7:e2	 (World size: 15.487090)
+	32x32   	-	[A fM       ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"HEADLIGHT_FLARE"                       	07:07:07:08	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"SPECULAR_SPRITE"                       	44:43:43:44	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"REARLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"SUN_FLARE"                             	15:10:10:12	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"TRACK_REFLECTION"                      	00:00:00:88	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM    $  ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	256x256 	-	[  f        ]	"BUILDING_REFLECTION"                   	6d:6d:7b:00	 (World size: 20000.000000)
+	128x128 	-	[A fM       ]	"LENSE_REFLECTION"                      	39:39:39:39	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"LENSE_REFLECTION2"                     	20:20:20:35	 (World size: 1.310660)
+	64x64   	-	[  f        ]	"MINISKY"                               	b2:c0:b4:00	 (World size: 3427.191406)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD002"               	c4:c4:c4:10	 (World size: 1873.588501)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD001"               	c4:c4:c4:1a	 (World size: 1873.590088)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD003"               	c4:c4:c4:0a	 (World size: 1873.588257)
+	256x64  	-	[  fM       ]	"DIRT_PACIFIC_GRASS"                    	64:58:3a:00	 (World size: 9.875449)
+	256x256 	-	[  fM   !   ]	"GRASS_PACIFIC"                         	4f:57:32:00	 (World size: 25.623304)
+	256x256 	-	[  fM   !   ]	"DIRT_PACIFIC"                          	95:88:6a:00	 (World size: 10.729964)
+	256x64  	-	[  fM   !   ]	"STREAM_FAST_PACIFIC_EDGE"              	65:5f:58:00	 (World size: 14.209721)
+	256x128 	-	[  fM   !   ]	"GRASS_SHORT_PACIFIC_SAND"              	87:82:5f:00	 (World size: 10.733268)
+	256x128 	-	[  fM       ]	"ROCK_GRAVEL"                           	a3:9d:94:00	 (World size: 12.991332)
+	256x64  	-	[  fM       ]	"DIRT_PACIFIC_GRAVELEDGE"               	52:4a:37:00	 (World size: 9.765800)
+	128x128 	-	[  fM   !   ]	"STREAM_FAST_PACIFIC"                   	7b:72:6b:00	 (World size: 17.362583)
+	256x256 	-	[  fM   !   ]	"TARMAC_PACIFIC"                        	6b:67:5f:00	 (World size: 10.960667)
+	128x128 	-	[  fM   !   ]	"HOTELPAVING"                           	68:5c:57:00	 (World size: 7.232182)
+	128x128 	-	[  fM       ]	"GRASS_PACIFIC_SANDDIRT"                	7a:72:51:00	 (World size: 5.630328)
+	256x128 	-	[  fM       ]	"DIRT_PACIFIC_SAND"                     	a7:9b:7b:00	 (World size: 8.270077)
+	128x64  	-	[ASfM   !   ]	"BUSH"                                  	27:31:1e:cd	 (World size: 12.725147)
+	128x128 	-	[ASf    !   ]	"SABAL"                                 	38:3b:25:71	 (World size: 15.153082)
+	128x128 	-	[ASfM   !   ]	"TREEWALL"                              	31:38:25:ec	 (World size: 18.292324)
+	128x128 	-	[ASfM   !   ]	"GRASSYBUSH3"                           	5a:5c:31:9d	 (World size: 3.923799)
+	128x128 	-	[ASfM       ]	"COCONUTPALM"                           	51:4e:35:8f	 (World size: 14.673108)
+	128x128 	-	[ASfM   !   ]	"BANANAPALM"                            	41:4b:31:6b	 (World size: 16.487595)
+	256x256 	-	[ASfM   !   ]	"HILLSIDE"                              	42:4d:32:e8	 (World size: 75.689400)
+	128x128 	-	[ASfM   !   ]	"FLOWERBUSH"                            	4c:52:4a:b4	 (World size: 3.956941)
+	128x128 	-	[ASfM       ]	"TREESBUSHY"                            	27:2b:1d:7e	 (World size: 20.162554)
+	128x128 	-	[ASfM   !   ]	"LONGRASS"                              	34:3e:24:9b	 (World size: 4.226589)
+	128x128 	-	[ASfM   !   ]	"GRASSY"                                	36:3c:23:4c	 (World size: 3.957783)
+	128x128 	-	[ASf        ]	"TREE_3"                                	13:1a:0a:74	 (World size: 18.273296)
+	128x128 	-	[ASfM       ]	"BRANCH"                                	09:0a:09:29	 (World size: 19.774250)
+	128x64  	-	[ASfM   !   ]	"HOTELHEDGE"                            	41:48:23:e8	 (World size: 5.350523)
+	256x128 	-	[ASfM   !   ]	"GRASSYHEDGE"                           	38:3c:25:cd	 (World size: 9.995977)
+	128x128 	-	[ASfM   !   ]	"LARGE_SHRUB"                           	20:21:15:3f	 (World size: 6.414565)
+	128x128 	-	[ASfM   !   ]	"GRASSYBUSH2"                           	3f:3f:1c:b9	 (World size: 9.385757)
+	256x256 	-	[  fM   !   ]	"SAND_PACIFIC"                          	b7:ac:8a:00	 (World size: 13.550093)
+	128x128 	-	[  fM       ]	"ROCK_GRAVEL_CORNER"                    	8f:8a:82:00	 (World size: 8.193790)
+	256x256 	-	[  fM       ]	"ROCK_LG_PACA"                          	b0:a8:9c:00	 (World size: 20.937431)
+	256x128 	-	[  fM   !   ]	"SAND_WET_PACIFIC"                      	9b:8b:63:00	 (World size: 19.312515)
+	256x128 	-	[  fM       ]	"ROCK_SAND_EDGE"                        	c2:bb:ae:00	 (World size: 11.010514)
+	256x128 	-	[  fM       ]	"ROCK_LG_GRASS"                         	7a:79:5f:00	 (World size: 14.400098)
+	64x64   	-	[A fM       ]	"WATERFADE"                             	29:7f:a7:10	 (World size: 15.953959)
+	256x128 	-	[  fM   !   ]	"WOOD_PACIFIC"                          	6b:65:61:00	 (World size: 10.668133)
+	128x128 	-	[A fM    $  ]	"FOAM"                                  	be:be:be:2b	 (World size: 35.103149)
+	128x128 	-	[  fM   !   ]	"SEA_BED_PACIFIC"                       	9a:8a:62:00	 (World size: 12.664453)
+	128x128 	-	[  fM       ]	"SEA_SHORE_PACIFIC"                     	82:7f:6b:00	 (World size: 13.264218)
+	256x128 	-	[  fM   !   ]	"SAND_PACIFIC_EDGE"                     	aa:9d:78:00	 (World size: 11.529689)
+	64x64   	-	[  fM   !   ]	"POST"                                  	9e:7e:54:00	 (World size: 1.110886)
+	64x64   	-	[  fM       ]	"SINGLEBOAT02"                          	49:60:6b:00	 (World size: 3.781273)
+	256x32  	-	[  fM   !   ]	"BARRIER_BARK"                          	58:57:53:00	 (World size: 7.409348)
+	256x256 	-	[ASfM       ]	"VILLAGE"                               	6f:6a:61:fb	 (World size: 26.644693)
+	256x128 	-	[ASfM   !   ]	"DISTANTMOUNTAINS01"                    	7a:80:76:b7	 (World size: 601.725708)
+	256x32  	-	[  fM       ]	"BAMBOO"                                	3b:35:28:00	 (World size: 4.332423)
+	128x128 	-	[  fM   !   ]	"MOUNTAIN"                              	32:3f:24:00	 (World size: 320.570618)
+	256x64  	-	[  fM   !   ]	"WOODPOSTS"                             	72:6d:69:00	 (World size: 16.969637)
+	256x128 	-	[  fM       ]	"STONEWALL"                             	6f:65:4e:00	 (World size: 11.351549)
+	128x128 	-	[  fM       ]	"CATAMARAN128X128"                      	7e:5d:51:00	 (World size: 4.607655)
+	128x64  	-	[  fM   !   ]	"HAZZARD"                               	a5:7e:72:00	 (World size: 3.480307)
+	256x64  	-	[  fM   !   ]	"STARTFINISHFLAG"                       	6b:6b:6b:00	 (World size: 35.842384)
+	256x256 	-	[  fM       ]	"SURFBOARDS"                            	7f:6d:6f:00	 (World size: 6.415701)
+	256x256 	-	[ASfM       ]	"HOTEL04"                               	8e:89:81:fc	 (World size: 25.279757)
+	256x256 	-	[  fM       ]	"OLDTRUCK"                              	59:30:24:00	 (World size: 11.523971)
+	256x128 	-	[ASfM       ]	"CATAMARANHUT"                          	90:87:7a:fb	 (World size: 14.206164)
+	256x128 	-	[ASfM   !   ]	"DISTANTMOUNTAINS02"                    	6a:6f:6c:d7	 (World size: 501.655457)
+	32x32   	-	[  fM   !   ]	"BREAKABLEBOX"                          	79:64:52:00	 (World size: 2.156498)
+	64x64   	-	[  fM       ]	"WHEEL"                                 	30:2e:2c:00	 (World size: 2.330476)
+	64x64   	-	[  fM       ]	"FOUNTAINSTRUCTURE"                     	a9:a6:96:00	 (World size: 6.410800)
+	128x128 	-	[  fM       ]	"MOVEABLE_SURFBOARDS"                   	7e:71:6f:00	 (World size: 4.395877)
+	128x128 	-	[A fM    $  ]	"WATER_FALLING"                         	88:8c:8e:2c	 (World size: 16.751070)
+	256x64  	-	[ASfM       ]	"ROPE"                                  	85:6e:4d:df	 (World size: 1.069460)
+	32x32   	-	[  fM   !   ]	"ROPESF"                                	7e:79:55:00	 (World size: 1.541159)
+	256x64  	-	[  fM   !   ]	"BRIDGEDOWN_WOOD"                       	7c:71:67:00	 (World size: 6.518341)
+	256x128 	-	[A f     $  ]	"GATES_NEW"                             	25:27:21:72	 (World size: 12.475394)
+	256x64  	-	[ASfM       ]	"NEWCHECKER_2"                          	9a:98:98:eb	 (World size: 26.508331)
+	256x256 	-	[ASfM       ]	"VILLAGE_HIGH_RES"                      	84:7e:73:fb	 (World size: 17.890060)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

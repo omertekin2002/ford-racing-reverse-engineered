@@ -1,0 +1,189 @@
+:TYPE				UI_TYPE_SCREEN
+:OBJECT_ID		INSTR
+:CLEAR			0
+//:TEXTURE_ENUM	"GRAPHICS\GAME\COMMON\GREYFADE.PSD"
+:TEXTURE_ENUM	"GRAPHICS\GAME\COMMON\GRADB.PSD"
+:TIME_LENGTH	1.000000
+
+:S{*****>>>
+
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			IN_GAME_DARK_STRIP
+	:CLEAR				0
+	:AUTOSIZE			0
+	:SIZE_START			1.000000 0.568717
+	:SIZE_END			1.000000 0.568717
+	:COLOUR_START		0 0 0 0
+	:COLOUR				0 0 0 128
+	:POSITION_START	0.001465 0.127083
+	:POSITION_END		0.001465 0.127083
+	:TIME_LENGTH		0.166667
+
+	///////NEEDED FOR INIT FUNC//////////////
+	:INHERIT				TITLE
+	:POSITION_START	-0.406250 0.087565	//0.170833
+	:POSITION_END		-0.406250 0.087565	//0.170833
+	:TEXT_JUSTIFY		5						//TEXT_JUSTIFY_RIGHT_TOP
+
+	// DONE	
+	:INHERIT				BACK_ICON
+	:POSITION_START	0.503125 0.85208
+	:POSITION_END		0.503125 0.85208
+	
+	:INHERIT				BACK_TEXT
+	:POSITION_START	0.407813 0.833333
+	:POSITION_END		0.407813 0.833333
+	/////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	//MENU BAR
+	/////////////////////////////////////////////////////
+	
+	:INHERIT		MENUBAR
+	:OBJECT_ID	MENUBAR
+	
+	//////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////
+	
+	
+	///////////////////////////////////////////////////////////
+	///ADD ARROWS
+	//////////////////////////////////////////////////////////
+	
+	:INHERIT		LEFTARROW
+	:OBJECT_ID	LEFTARROW
+	
+	:INHERIT		RIGHTARROW
+	:OBJECT_ID	RIGHTARROW
+	
+	//////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			MODEICON
+	:CLEAR				0
+	:AUTOSIZE			0
+	:SIZE					0.096875 0.129167
+	:COLOUR				255 249 135 255
+	:POSITION_START	0.453125 0.152051 //0.227083
+	:POSITION_END		0.453125 0.152051 //0.227083
+	:STRETCH_GRAPHIC	1
+	:TIME_LENGTH		2.000000
+		
+	:TYPE								UI_TYPE_TEXT
+	:OBJECT_ID						MODETITLE
+	:AUTOSIZE						0
+	:SIZE								0.715527 0.100098
+	:CLEAR							1
+	:COLOUR							255 255 255 0
+	:FONT								2
+	:FONT_COLOUR					0 0 0 255
+	:TEXT_JUSTIFY					0								//TEXT_JUSTIFY_CENTRE
+	:WORD_WRAP						0
+	:POSITION_START				-1.134375 0.275000 //0.343750
+	:POSITION_END					0.134375 0.275000  //0.343750
+	:ITEM_NUMBER					2
+	:TIME_LENGTH					0.133333
+	:OFFSET_TIME					0.000000
+	
+	:TYPE								UI_TYPE_TEXT
+	:OBJECT_ID						INSTRUCTIONS
+	:CLEAR							1
+	:AUTOSIZE						0
+	:SIZE								0.715527 0.218750
+	:COLOUR							255 255 255 0
+	:FONT								2
+	:FONT_COLOUR					51 51 51 255			//GREY
+	:TEXT_JUSTIFY					3								//TEXT_JUSTIFY_CENTRE_TOP
+	:WORD_WRAP						1
+	:POSITION_START				-1.134375 0.362484 //0.441667
+	:POSITION_END					0.134375 0.362484  //0.441667
+	:TIME_LENGTH					0.133333
+	:ITEM_NUMBER					2
+	:OFFSET_TIME					0.0333333
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			DIFF
+	:TEXT					TXT_RACE_OPTIONS_DIFFICULTY
+	:POSITION_START	-1.407813 0.691667
+	:POSITION_END		-0.407813 0.691667
+	:TEXT_JUSTIFY		2							//TEXT_JUSTIFY_RIGHT_CENTRE
+	:TIME_LENGTH		0.133333
+	:OFFSET_TIME		0.066667
+
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			DIFFNUMBER
+	:TEXT					0
+	:POSITION_START	-1.548437 0.691667
+	:POSITION_END		0.560000 0.691667
+	:TEXT_JUSTIFY		1							//TEXT_JUSTIFY_LEFT_CENTRE
+	:TIME_LENGTH		0.133333
+	:OFFSET_TIME		0.066667
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			RACE
+	:TEXT					TXT_CHALLENGE_OPTIONS_LETS_RACE
+	:POSITION_START	-1.407813 0.754167
+	:POSITION_END		-0.407813 0.754167
+	:TEXT_JUSTIFY		2							//TEXT_JUSTIFY_RIGHT_CENTRE
+	:TIME_LENGTH		0.133333
+	:OFFSET_TIME		0.099999
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////
+	// Car 3d scene object
+	///////////////////////////////////////////////////
+	
+	:TYPE								UI_TYPE_AREA
+	:OBJECT_ID						CAR_SCENE_AREA
+	:CLEAR							1
+	
+	////////////////////////////////////////////////////
+	// 
+	///////////////////////////////////////////////////
+	
+	////////////////////////////////////////////////////
+	// Spray can 3d scene
+	///////////////////////////////////////////////////
+	
+	:TYPE								UI_TYPE_AREA
+	:OBJECT_ID						SPRAY_CAN_SCENE_AREA
+	:CLEAR							1
+	
+	////////////////////////////////////////////////////
+	// 
+	///////////////////////////////////////////////////
+	
+	
+	////////////////////////////////////////////////////
+	// Token 3d scene
+	///////////////////////////////////////////////////
+	
+	:TYPE								UI_TYPE_AREA
+	:OBJECT_ID						TOKEN_SCENE_AREA
+	:CLEAR							1
+	
+	////////////////////////////////////////////////////
+	// 
+	///////////////////////////////////////////////////
+	
+
+:E}*****<<<
+
+:CONNECTION "DIFF" "RACE" "RACE" "none" "none"
+:CONNECTION "RACE" "DIFF" "DIFF" "none" "none"

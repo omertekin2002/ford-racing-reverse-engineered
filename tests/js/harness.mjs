@@ -64,11 +64,9 @@ const jsonResponse = (body, status = 200) => ({
 const launcherElements = () => {
   const elements = {
     screen: new FakeElement("div", "screen"),
-    status: new FakeElement("p", "status", {textContent: "The first download is about 133 MB."}),
+    status: new FakeElement("p", "status", {textContent: "Ready to stream assets on demand."}),
     progress: new FakeElement("progress", "progress", {hidden: true}),
     "play-native": new FakeElement("button", "play-native"),
-    play: new FakeElement("button", "play"),
-    configure: new FakeElement("button", "configure"),
     restart: new FakeElement("button", "restart", {disabled: true}),
     fullscreen: new FakeElement("button", "fullscreen", {disabled: true}),
     sound: new FakeElement("input", "sound"),
@@ -80,16 +78,17 @@ const launcherElements = () => {
 
 /**
  * Run web/site.js. Options:
- *   isolated        window.crossOriginIsolated (default true)
- *   secure          window.isSecureContext (default true)
- *   serviceWorker   false to omit navigator.serviceWorker; otherwise an object
- *                   overriding the fake's {controller}
- *   reloadFlag      initial sessionStorage "fr3-isolation-reload" value
  *   build           build.json body, or a number for an HTTP error status
  */
 export function loadSite(options = {}) {
+  const build = options.build ?? {
+    original_game_files: 4446,
+    assets: {
+      "fr3-engine.js": {path: "native/fr3-engine.js", bytes: 360_000},
+      "game-manifest.json": {path: "runtime/game-manifest.json", bytes: 180_000},
+    },
+  };
   const {isolated = true, secure = true, reloadFlag, serviceWorker = {}} = options;
-  const build = options.build ?? {assets: {"fr3.zip": {bytes: 98_000_000}, "wine11.zip": {bytes: 34_200_001}}};
   const elements = launcherElements();
   const created = [];
   const windowListeners = new Listeners();

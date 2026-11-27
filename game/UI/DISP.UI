@@ -1,0 +1,399 @@
+
+:TYPE UI_TYPE_SCREEN
+:AUTOSIZE 0
+:CLEAR 0
+:COLOUR 255 255 255 255
+//:DRAWABLE 1
+//:FLIP_GRAPHIC 0 0
+//:FONT 0
+:FONT_COLOUR 0 0 0 0
+:HIGHLIGHTED_COLOUR 0 0 0 102
+//:HIGHLIGHTED_FONT 0
+:HIGHLIGHTED_FONT_COLOUR 0 0 0 0
+:ITEM_NUMBER -1
+//:JUSTIFY_OFFSET 0.000000 0.000000
+:OBJECT_ID DISP
+//:OFFSET_TIME 0.000000
+:POSITION_END 0.000000 0.000000
+:POSITION_START 0.000000 0.000000
+:SIZE 1.000000 1.000000
+:STRETCH_GRAPHIC 1
+//:TEXT 0
+:TEXTURE_ENUM GRAPHICS\GAME\BKGNDS\350.PSD
+:TEXT_JUSTIFY 0
+:TIME_LENGTH 1.000000
+:WORD_WRAP 0
+
+:S{*****>>>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	:TYPE UI_TYPE_BASIC
+	:AUTOSIZE 0
+	:CLEAR 1
+	:COLOUR 0 0 0 0
+	//:DRAWABLE 1
+	//:FLIP_GRAPHIC 0 0
+	:FONT 2
+	:FONT_COLOUR 216 234 242 255
+	:HIGHLIGHTED_COLOUR 0 0 0 102
+	:HIGHLIGHTED_FONT 3
+	:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+	:ITEM_NUMBER 1
+	:JUSTIFY_OFFSET 0.500000 0.000000
+	:OBJECT_ID MOVINGWINDOW
+	//:OFFSET_TIME 0.000000
+	:POSITION_END 0.000000 0.00000
+	:POSITION_START 0.000000 0.00000
+	:SIZE 1.000000 1.00000
+	:STRETCH_GRAPHIC 1
+	//:TEXT 0
+	//:TEXTURE_ENUM none
+	:TEXT_JUSTIFY 0
+	:TIME_LENGTH 1.000000
+	:WORD_WRAP 0
+	
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	:S{*****>>>
+
+		:TYPE					UI_TYPE_GRAPHIC
+		:OBJECT_ID			IN_GAME_DARK_STRIP
+		:CLEAR				0
+		:AUTOSIZE			0
+		:SIZE_START			1.000000 0.316650
+		:SIZE_END			1.000000 0.316650
+		:COLOUR_START		0 0 0 0
+		:COLOUR				0 0 0 128
+		:POSITION_START	0.000000 0.035433
+		:POSITION_END		0.000000 0.035433
+		:TIME_LENGTH		0.166667
+	
+		:READ_SCRIPT_FILE UI\MENUBAR.UI
+		
+		:TYPE UI_TYPE_BUTTON
+		:OBJECT_ID SPEEDO
+		:ITEM_NUMBER 2
+		:AUTOSIZE 0
+		:CLEAR 1
+		:COLOUR 0 0 0 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 1
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:HIGHLIGHTED_FONT_COLOUR_START 255 249 135 255		
+		:JUSTIFY_OFFSET 0.045352 0.0		
+		:OFFSET_TIME 0.000000
+		:POSITION_END -0.479688 0.141667
+		:POSITION_START -1.479688 0.141667
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1		
+		:TEXT TXT_OPTIONS_DISPLAY_SPEEDO_UNITS
+		//:TEXTURE_ENUM none
+		:TEXT_JUSTIFY 2
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+		:TYPE UI_TYPE_TEXT
+		:OBJECT_ID SPEEDONUMBER
+		:ITEM_NUMBER 2
+		:AUTOSIZE 0
+		:CLEAR 1
+		:COLOUR 255 255 255 0
+		//:DRAWABLE 1
+		//:FLIP_GRAPHIC 0 0
+		:FONT 1				
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 102
+		:HIGHLIGHTED_FONT 1
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		//:JUSTIFY_OFFSET 0.000000 0.000000
+		:OFFSET_TIME 0.000000
+		:POSITION_END 0.542188 0.141667
+		:POSITION_START 1.542188 0.141667
+		:SIZE 0.220000 0.060000
+		:STRETCH_GRAPHIC 1
+		//:TEXT 0
+		//:TEXTURE_ENUM none
+		:TEXT_JUSTIFY 1
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		:TYPE UI_TYPE_BUTTON
+		:OBJECT_ID TRACKMAP
+		:ITEM_NUMBER 2
+		:AUTOSIZE 0
+		:CLEAR 1
+		:COLOUR 0 0 0 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 1
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:HIGHLIGHTED_FONT_COLOUR_START 255 249 135 255		
+		:JUSTIFY_OFFSET 0.045352 0.0		
+		:OFFSET_TIME 0.200000
+		:POSITION_END -0.479688 0.197917
+		:POSITION_START -1.479688 0.197917
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1		
+		:TEXT TXT_OPTIONS_DISPLAY_TRACK_MAP_2
+		//:TEXTURE_ENUM none
+		:TEXT_JUSTIFY 2
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+		:TYPE UI_TYPE_TEXT
+		:OBJECT_ID TRACKMAPNUMBER
+		:ITEM_NUMBER 2
+		:AUTOSIZE 0
+		:CLEAR 1
+		:COLOUR 255 255 255 0
+		//:DRAWABLE 1
+		//:FLIP_GRAPHIC 0 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 102
+		:HIGHLIGHTED_FONT 1
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		//:JUSTIFY_OFFSET 0.000000 0.000000
+		:OFFSET_TIME 0.200000
+		:POSITION_END 0.542188 0.197917
+		:POSITION_START 1.542188 0.197917
+		:SIZE 0.220000 0.060000
+		:STRETCH_GRAPHIC 1
+		//:TEXT 0
+		//:TEXTURE_ENUM none
+		:TEXT_JUSTIFY 1
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		//:TYPE UI_TYPE_TEXT
+		//:OBJECT_ID POSICONSNUMBER
+		//:ITEM_NUMBER 2
+		//:AUTOSIZE 0
+		//:CLEAR 1
+		//:COLOUR 255 255 255 0
+		////:DRAWABLE 1
+		////:FLIP_GRAPHIC 0 0
+		//:FONT 1
+		//:FONT_COLOUR 216 234 242 255
+		//:HIGHLIGHTED_COLOUR 0 0 0 102
+		//:HIGHLIGHTED_FONT 1
+		//:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		////:JUSTIFY_OFFSET 0.000000 0.000000
+		//:OFFSET_TIME 0.300000
+		//:POSITION_END 0.542188 0.243750
+		//:POSITION_START 1.542188 0.243750
+		//:SIZE 0.220000 0.060000
+		//:STRETCH_GRAPHIC 1
+		////:TEXT 0
+		////:TEXTURE_ENUM none
+		//:TEXT_JUSTIFY 1
+		//:TIME_LENGTH 0.166667
+		//:WORD_WRAP 0
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		:TYPE UI_TYPE_BUTTON
+		:OBJECT_ID SCREEN
+		:ITEM_NUMBER 2
+		:AUTOSIZE 0
+		:CLEAR 1
+		:COLOUR 0 0 0 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 1
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:HIGHLIGHTED_FONT_COLOUR_START 255 249 135 255		
+		:JUSTIFY_OFFSET 0.045352 0.0		
+		:OFFSET_TIME 0.400000
+		:POSITION_END -0.479688 0.254167
+		:POSITION_START -1.479688 0.254167
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1		
+		:TEXT TXT_OPTIONS_DISPLAY_SCREEN_MODE_2
+		//:TEXTURE_ENUM none
+		:TEXT_JUSTIFY 2
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+		:TYPE UI_TYPE_TEXT
+		:OBJECT_ID SCREENNUMBER
+		:ITEM_NUMBER 2
+		:AUTOSIZE 0
+		:CLEAR 1
+		:COLOUR 255 255 255 0
+		//:DRAWABLE 1
+		//:FLIP_GRAPHIC 0 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 102
+		:HIGHLIGHTED_FONT 1
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		//:JUSTIFY_OFFSET 0.000000 0.000000
+		:OFFSET_TIME 0.400000
+		:POSITION_END 0.542188 0.254167
+		:POSITION_START 1.542188 0.254167
+		:SIZE 0.220000 0.060000
+		:STRETCH_GRAPHIC 1
+		//:TEXT 0
+		//:TEXTURE_ENUM none
+		:TEXT_JUSTIFY 1
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		:TYPE UI_TYPE_BUTTON
+		:OBJECT_ID POSSCREEN
+		:ITEM_NUMBER 2
+		:AUTOSIZE 0
+		:CLEAR 1
+		:COLOUR 0 0 0 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 0
+		:HIGHLIGHTED_FONT 1
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:HIGHLIGHTED_FONT_COLOUR_START 255 249 135 255		
+		:JUSTIFY_OFFSET 0.045352 0.0		
+		:OFFSET_TIME 0.500000
+		:POSITION_END -0.479688 0.310417
+		:POSITION_START -1.479688 0.310417
+		:SIZE 1.000000 0.060000
+		:STRETCH_GRAPHIC 1		
+		:TEXT TXT_OPTIONS_DISPLAY_POSITION_SCREEN
+		//:TEXTURE_ENUM none
+		:TEXT_JUSTIFY 2
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+		:TYPE UI_TYPE_GRAPHIC
+		:OBJECT_ID LEFTARROW
+		:AUTOSIZE 1
+		:CLEAR 0
+		:COLOUR 255 255 255 255
+		:COLOUR_START 255 255 255 0
+		//:DRAWABLE 1
+		//:FLIP_GRAPHIC 0 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 102
+		:HIGHLIGHTED_FONT 1
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 0
+		//:JUSTIFY_OFFSET 0.000000 0.000000
+		//:OFFSET_TIME 0.000000		
+		//NOTE: x pos is derived from number text position
+		:POSITION_END 0.5 0.443750
+		:POSITION_START 0.5 0.443750
+		:SIZE 0.000000 0.000000
+		:STRETCH_GRAPHIC 1
+		//:TEXT 0
+		:TEXTURE_ENUM GRAPHICS\GAME\COMMON\SMARROW.PSD
+		:TEXT_JUSTIFY 0
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+		:TYPE UI_TYPE_GRAPHIC
+		:OBJECT_ID RIGHTARROW
+		:AUTOSIZE 1
+		:CLEAR 0
+		:COLOUR 255 255 255 255
+		:COLOUR_START 255 255 255 0
+		//:DRAWABLE 1
+		:FLIP_GRAPHIC 1 0
+		:FONT 1
+		:FONT_COLOUR 216 234 242 255
+		:HIGHLIGHTED_COLOUR 0 0 0 102
+		:HIGHLIGHTED_FONT 1
+		:HIGHLIGHTED_FONT_COLOUR 255 249 135 255
+		:ITEM_NUMBER 0
+		//:JUSTIFY_OFFSET 0.000000 0.000000
+		//:OFFSET_TIME 0.000000
+		:POSITION_END 0.63125 0.443750
+		:POSITION_START 0.63125 0.443750
+		:SIZE 0.000000 0.000000
+		:STRETCH_GRAPHIC 1
+		//:TEXT 0
+		:TEXTURE_ENUM GRAPHICS\GAME\COMMON\SMARROW.PSD
+		:TEXT_JUSTIFY 0
+		:TIME_LENGTH 0.166667
+		:WORD_WRAP 0
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	:E}*****<<<
+	
+	//:READ_SCRIPT_FILE UI\FORDBAR.UI
+
+	//:TYPE UI_TYPE_AREA
+	//:OBJECT_ID TITLE
+	//:COLOUR 0 0 0 76
+	//:COLOUR_START 0 0 0 0
+	//:FONT 2
+	//:FONT_COLOUR 206 206 206 255
+	//:FONT_COLOUR_START 206 206 206 0
+	//:JUSTIFY_OFFSET 0.045352 0.110000
+	//:POSITION_END -0.475000 0.083333
+	//:POSITION_START -0.475000 0.083333
+	//:SIZE 1.000000 0.037500
+	//:TEXT_JUSTIFY 5
+	//:TEXTURE_ENUM GRAPHICS\GAME\COMMON\TITLEBAR.PSD
+	//:TIME_LENGTH 0.166667
+	
+	:INHERIT					TITLE
+	:TEXT_JUSTIFY			5
+	:POSITION_START		-0.475000 0.083333
+	:POSITION_END			-0.475000 0.083333
+	
+
+	// DONE
+	:INHERIT					BACK_ICON
+	:POSITION_END 			0.43750 0.51666
+	:POSITION_START 		0.43750 0.51666
+
+	:TYPE UI_TYPE_TEXT
+	:FONT 2
+	:FONT_COLOUR 0 0 0 255
+	:FONT_COLOUR_START 0 0 0 0
+	:OBJECT_ID BACK_TEXT
+	:POSITION_END 0.331250 0.495833
+	:POSITION_START 0.331250 0.495833
+	:SIZE 0.100000 0.100000
+	:TEXT TXT_GENERAL_BACK
+	:TEXT_JUSTIFY 2
+	:TIME_LENGTH 0.166667	
+
+:E}*****<<<
+
+:CONNECTION "SPEEDO"		"POSSCREEN" "TRACKMAP"	"none" "none"
+:CONNECTION "TRACKMAP"	"SPEEDO"		"SCREEN"		"none" "none"
+:CONNECTION "SCREEN"		"TRACKMAP"	"POSSCREEN" "none" "none"
+:CONNECTION "POSSCREEN"	"SCREEN"		"SPEEDO"		"none" "none"

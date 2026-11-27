@@ -1,0 +1,182 @@
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			XBFRN
+:CLEAR				0
+//:COLOUR				157 157 157 255
+:COLOUR				255 255 255 255
+:POSITION_START	0.000000 0.000000
+:POSITION_END		0.000000 0.000000
+:TIME_LENGTH		0.166667
+//:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\GREYFADE.PSD
+:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\GRADB.PSD
+
+:S{*****>>>
+
+	///////////////////////////////////////////////////////////
+	///TITLE
+	//////////////////////////////////////////////////////////
+	
+	:INHERIT				TITLE
+	:POSITION_START	0.131250 0.095833
+	:POSITION_END		0.131250 0.095833
+	
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+	
+	///////////////////////////////////////////////////////////
+	///BACK ICON AND TEXT
+	//////////////////////////////////////////////////////////
+	
+	:INHERIT		BACK_ICON
+	
+	:INHERIT		BACK_TEXT
+	
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	//MENU BAR
+	/////////////////////////////////////////////////////
+	
+	:INHERIT		MENUBAR
+
+	//////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	//HELBER BUTTON Helps plot the bar in a constant area
+	/////////////////////////////////////////////////////
+	
+	:INHERIT		FR3_DEFAULT_BUTTON
+	:OBJECT_ID	HELPER_BUTTON
+	:TEXT			0
+
+	//////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////
+	
+	
+	///////////////////////////////////////////////////////////
+	///FRIENDS LIST PARENT WINDOW AND FRIENDS LIST
+	//////////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			FRIENDS_LIST_WINDOW
+	:CLEAR				1
+	:AUTOSIZE			0
+	:SIZE					0.768799 0.514583
+	:POSITION_START	0.181250 0.310417
+	:POSITION_END		0.181250 0.310417
+	
+	:S{*****>>>
+			
+		:TYPE					UI_TYPE_LIST_BOX
+		:OBJECT_ID			FRIENDS_GAMERTAG_LIST
+		:CLEAR				1
+		:AUTOSIZE			0
+		//:SIZE					0.451318 1.0
+		:SIZE					0.636265 1.000000
+		:TEXT_JUSTIFY		4							//TEXT_JUSTIFY_LEFT_TOP
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_LIST_BOX
+		:OBJECT_ID			FRIENDS_COMMUNICATOR_ICON_LIST
+		:CLEAR				1
+		:AUTOSIZE			0
+		:SIZE					1.0 1.0
+		:POSITION_START	0.807466 0.000000
+		:POSITION_END		0.807466 0.000000
+		:TEXT_JUSTIFY		4							//TEXT_JUSTIFY_LEFT_TOP
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_LIST_BOX
+		:OBJECT_ID			FRIENDS_INFO_ICON_LIST
+		:CLEAR				1
+		:AUTOSIZE			0
+		:SIZE					1.0 1.0
+		//:POSITION_START	0.613909 0.000000
+		//:POSITION_END		0.613909 0.000000
+		:POSITION_START	0.653418 0.000000
+		:POSITION_END		0.653418 0.000000
+		:TEXT_JUSTIFY		4							//TEXT_JUSTIFY_LEFT_TOP
+		:TIME_LENGTH		0.166667
+		
+		
+		:TYPE					UI_TYPE_GRAPHIC
+		:OBJECT_ID			TOP_FADE_BAR
+		:AUTOSIZE			0
+		:SIZE					1.0 0.107692
+		:COLOUR				157 157 157 255
+		:STRETCH_GRAPHIC	1
+		:TEXTURE_ENUM		GRAPHICS\GAME\ACCFADE.PSD
+		
+		:TYPE					UI_TYPE_GRAPHIC
+		:OBJECT_ID			BOTTOM_FADE_BAR
+		:AUTOSIZE			0
+		:SIZE					1.0 0.107692
+		:COLOUR				157 157 157 255
+		:STRETCH_GRAPHIC	1
+		:TEXTURE_ENUM		GRAPHICS\GAME\ACCFADE.PSD
+		:POSITION_START	0.0 0.810000
+		:POSITION_END		0.0 0.810000
+		
+	:E}*****<<<
+	
+	//////////////////////////////////////
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				INFO_BAR_BACKGROUND
+	:CLEAR					0
+	:COLOUR					95 95 90 255
+	:AUTOSIZE				0
+	:SIZE						0.500000 0.500000
+	:POSITION_START		0.000000 0.000000
+	:POSITION_END			0.000000 0.000000
+	//The position and size of the above object is set in the code
+	////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				INFO_BAR
+	:CLEAR					1
+	:AUTOSIZE				0
+	:SIZE						1.000000 0.045833
+	:COLOUR					0 0 0 77
+	:HIGHLIGHTED_COLOUR	0 0 0 77
+	:FONT						2
+	:FONT_COLOUR			206 206 206 255
+	:HIGHLIGHTED_FONT		2
+	:HIGHLIGHTED_FONT_COLOUR			206 206 206 255
+	:TEXT_JUSTIFY			1							//TEXT_JUSTIFY_LEFT_CENTRE
+	:JUSTIFY_OFFSET		0.120000 0.000000
+	:TEXT						0
+	:POSITION_START		0.000000 0.172917
+	:POSITION_END			0.000000 0.172917
+	:TIME_LENGTH			0.166667
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				FRIEND_STATUS
+	:POSITION_START		0.000000 0.212500
+	:POSITION_END			0.000000 0.212500
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				FRIEND_TITLE
+	:POSITION_START		0.000000 0.212500
+	:POSITION_END			0.000000 0.212500
+	
+	//////////////////////////////////////////////////////////
+	// LINE PLOTER
+	/////////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				LINE_PLOTER
+	:CLEAR					1
+	:AUTOSIZE				0
+	:SIZE						1.0 1.0
+	
+	//////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////
+	
+		
+:E}*****<<<

@@ -1,5 +1,6 @@
 import { FordRacing3App, type EngineSnapshot } from "./app.js";
 import { DemoAssets } from "./demoAssets.js";
+import { HttpVfs } from "./vfs/httpVfs.js";
 import type { VirtualFileSystem } from "./vfs/types.js";
 import { ZipVfs } from "./vfs/zipVfs.js";
 
@@ -9,7 +10,11 @@ export type NativeEngineOptions = {
   onProgress?: (fraction: number, status: string) => void;
   onStatus?: (status: string) => void;
   onError?: (err: Error) => void;
-} & ({ zipUrl: string; vfs?: never } | { zipUrl?: never; vfs: VirtualFileSystem });
+} & (
+  | { manifestUrl: string; zipUrl?: never; vfs?: never }
+  | { zipUrl: string; manifestUrl?: never; vfs?: never }
+  | { vfs: VirtualFileSystem; manifestUrl?: never; zipUrl?: never }
+);
 
 export interface NativeEngineController {
   dispose(): void;
@@ -128,13 +133,18 @@ export async function mountNativeEngine(options: NativeEngineOptions): Promise<N
     const view = canvas.ownerDocument.defaultView;
     if (!view) throw new Error("The canvas requires a browser window");
     let vfs: VirtualFileSystem;
-    if (options.zipUrl !== undefined) {
+    if (options.manifestUrl !== undefined) {
+      progress(0, "Loading game manifest");
+      vfs = await HttpVfs.open(options.manifestUrl, {
+        onProgress: (fraction, status) => progress(fraction * 0.6, status),
+      });
+    } else if (options.zipUrl !== undefined) {
       progress(0, "Downloading asset archive");
       vfs = new ZipVfs(await downloadZip(options.zipUrl, (fraction, status) => onProgress?.(fraction, status)));
     } else {
       vfs = options.vfs;
     }
-    progress(0.82, "Parsing demo databases & UI scripts");
+    progress(0.75, "Parsing game databases & UI scripts");
     const assets = await DemoAssets.load(vfs);
     progress(0.94, "Initializing WebGL2 engine");
     cleanupSize = observeCanvasSize(canvas, view);

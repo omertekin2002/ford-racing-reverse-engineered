@@ -1,0 +1,262 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"FLARE_GREEN"                          	scenes\accessories\detail_proxies\flare_green.ma
+	"FLARE_RED"                            	scenes\accessories\detail_proxies\flare_red.ma
+	"SHRUBF"                               	scenes\accessories\foiliage_proxies\shrub_facing.ma
+	"REFB_004"                             	scenes\accessories\building_proxies\refb_004.ma
+	"REFB_003"                             	scenes\accessories\building_proxies\refb_003.ma
+	"REFB_002"                             	scenes\accessories\building_proxies\refb_002.ma
+	"REFB_001"                             	scenes\accessories\building_proxies\refb_001.ma
+	"GSTAND_006"                           	scenes\accessories\building_proxies\gstand_006.ma
+	"GSTAND_005"                           	scenes\accessories\building_proxies\gstand_005.ma
+	"GSTAND_004"                           	scenes\accessories\building_proxies\gstand_004.ma
+	"GSTAND_003"                           	scenes\accessories\building_proxies\gstand_003.ma
+	"GSTAND_002"                           	scenes\accessories\building_proxies\gstand_002.ma
+	"NBUILD002"                            	scenes\accessories\building_proxies\nbuild002.ma
+	"GSTAND_001"                           	scenes\accessories\building_proxies\gstand_001.ma
+	"REFB002"                              	scenes\accessories\building_proxies\refb002.ma
+	"REFB001"                              	scenes\accessories\building_proxies\refb001.ma
+	"TEST_CUBE"                            	scenes\accessories\building_proxies\test_cube.ma
+	"NBUILD001"                            	scenes\accessories\building_proxies\nbuild001.ma
+	"REFBUILDNEW001"                       	scenes\accessories\building_proxies\refbuildnew001.ma
+	"BUILD_REF_001_1300"                   	scenes\accessories\building_proxies\build_ref_001_1300.ma
+	"BUILD_REF_004_1500"                   	scenes\accessories\building_proxies\build_ref_004_1500.ma
+	"BUILD_REF_003_1500"                   	scenes\accessories\building_proxies\build_ref_003_1500.ma
+	"BUILD_REF_002_1300"                   	scenes\accessories\building_proxies\build_ref_002_1300.ma
+	"BUILD_REF_005_1500"                   	scenes\accessories\building_proxies\build_ref_005_1500.ma
+	"PITBUILD004_BACK"                     	scenes\accessories\building_proxies\pitbuild004b.ma
+	"PITBUILD003_BACK"                     	scenes\accessories\building_proxies\pitbuild003b.ma
+	"PITBUILD002_BACK"                     	scenes\accessories\building_proxies\pitbuild002b.ma
+	"PITBUILD001_BACK"                     	scenes\accessories\building_proxies\pitbuild001b.ma
+	"CAMERA"                               	scenes\accessories\building_proxies\camera.ma
+	"PITBUILD004"                          	scenes\accessories\building_proxies\pitbuild004.ma
+	"PITBUILD003"                          	scenes\accessories\building_proxies\pitbuild003.ma
+	"PITBUILD002"                          	scenes\accessories\building_proxies\pitbuild002.ma
+	"PITBUILD001"                          	scenes\accessories\building_proxies\pitbuild001.ma
+	"CONTAINER_BLUE_DOUBLE"                	scenes\accessories\vehicle_proxies\container_blue_double.ma
+	"CONTAINER_WHITE_PAT_SINGLE"           	scenes\accessories\vehicle_proxies\container_white_pat_single.ma
+	"CONTAINER_WHITE_PAT_DOUBLE"           	scenes\accessories\vehicle_proxies\container_white_pat_double.ma
+	"CONTAINER_WHITE_DOUBLE"               	scenes\accessories\vehicle_proxies\container_white_double.ma
+	"CONTAINER_RED_SINGLE"                 	scenes\accessories\vehicle_proxies\container_red_single.ma
+	"CONTAINER_BLUE_SINGLES"               	scenes\accessories\vehicle_proxies\container_blue_singles.ma
+	"CONTAINER_WHITE_SINGLE"               	scenes\accessories\vehicle_proxies\container_white_single.ma
+	"SAFETYTRUCK"                          	scenes\accessories\vehicle_proxies\safety_truck.ma
+	"TRUCK_005"                            	scenes\accessories\vehicle_proxies\truck_005.ma
+	"TRUCK_004"                            	scenes\accessories\vehicle_proxies\truck_004.ma
+	"TRUCK_003"                            	scenes\accessories\vehicle_proxies\truck_003.ma
+	"TRUCK_002"                            	scenes\accessories\vehicle_proxies\truck_002.ma
+	"TRUCK_001"                            	scenes\accessories\vehicle_proxies\truck_001.ma
+	"AMBULANCE"                            	scenes\accessories\vehicle_proxies\ambulance_proxie.ma
+	"AD_T_EMP2_FORD"                       	scenes\accessories\ad_proxies\ad_t_empmod_ford.ma
+	"AD_S_EMPIRE2"                         	scenes\accessories\ad_proxies\ad_s_empmod.ma
+	"AD_T_FORD_RAZOR"                      	scenes\accessories\ad_proxies\ad_t_ford_razor.ma
+	"AD_T_FORD_EMP"                        	scenes\accessories\ad_proxies\ad_t_ford_emp.ma
+	"AD_T_RAZOR_EMP2"                      	scenes\accessories\ad_proxies\ad_t_razor_empmod.ma
+	"AD_T_EMP_FORD"                        	scenes\accessories\ad_proxies\ad_t_emp_ford.ma
+	"AD_S_RAZOR"                           	scenes\accessories\ad_proxies\ad_s_razor.ma
+	"AD_S_FORD"                            	scenes\accessories\ad_proxies\ad_s_ford.ma
+	"AD_S_EMP"                             	scenes\accessories\ad_proxies\ad_s_emp.ma
+	"MARQUEE_002"                          	scenes\accessories\tent_proxies\tent_002.ma
+	"MARQUEE_001"                          	scenes\accessories\tent_proxies\tent_001.ma
+	"STARTLIGHTS"                          	scenes\accessories\misc_ proxies\start_lights.ma
+	"CROWD_MIDDLE_OUTER"                   	scenes\accessories\misc_ proxies\crowd_middle_outer.ma
+	"TIRE_CLUMP_EXIT"                      	scenes\accessories\misc_ proxies\tire_clump_exit.ma
+	"TIRE_WALL_EXIT"                       	scenes\accessories\misc_ proxies\tire_wall_exit.ma
+	"CROWD_RIGHT_OUTER"                    	scenes\accessories\misc_ proxies\crowd_right_outer.ma
+	"TIRE_ENTRANCE_NEW"                    	scenes\accessories\misc_ proxies\tire_entrance_new.ma
+	"TIRE_CLUMP_ENT"                       	scenes\accessories\misc_ proxies\tire_clump_ent.ma
+	"CROWD_LEFT_OUTER"                     	scenes\accessories\misc_ proxies\crowd_left_outer.ma
+	"M300"                                 	scenes\accessories\moveable\meterb_300.ma
+	"M200"                                 	scenes\accessories\moveable\meterb_200.ma
+	"M150"                                 	scenes\accessories\moveable\meterb_150.ma
+	"M100"                                 	scenes\accessories\moveable\meterb_100.ma
+	"CONE"                                 	scenes\accessories\moveable\oval_cone002.ma
+	"M50"                                  	scenes\accessories\moveable\meterb_50.ma
+	"EFFECTS"                              	scenes\effects\effects.ma
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"SKYDOME"                              	scenes\environment\oval1_skydome.ma
+	"OVAL1F_CUT_UP"                        	
+	"OVAL1F_OBJECTS"                       	
+	"PARTICLE_EFFECTS"                     	scenes\particles\track_particles.ma
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid skeletal animation names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"CAR_GAMEBONNET"
+	"CAMERA"
+	"CAR_SCREENSHOT_FRONTRIGHT"
+	"OUTRO_CAMERA"
+	"INTRO_CAMERA"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"AMBIENT"
+	"SUNLIGHT"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+	"STONE"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	256x256 	-	[A fM  X    ]	"SHADOWS"                               	00:00:00:3a	 (World size: 130.368759)
+	128x128 	-	[  fM       ]	"FIRE"                                  	52:52:52:00	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"GRASS"                                 	14:14:14:22	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SMOKEANDDUST"                          	ff:ff:ff:5f	 (World size: 1.310660)
+	128x128 	-	[ASfM   !   ]	"SPARK"                                 	f5:0c:0c:ff	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SPRAY"                                 	ef:ef:ef:39	 (World size: 1.310660)
+	64x64   	-	[A fM    $  ]	"STREAM"                                	fe:fe:fe:6a	 (World size: 1.310660)
+	64x64   	-	[  fM   !   ]	"CONE"                                  	8f:43:43:00	 (World size: 0.993127)
+	256x256 	-	[  fM   !   ]	"CON_BARRIER"                           	7b:7d:7b:00	 (World size: 4.111643)
+	256x256 	-	[  fM   !   ]	"CON001"                                	9c:97:97:00	 (World size: 22.424540)
+	128x128 	-	[  fM   !   ]	"CON005"                                	a0:9c:9c:00	 (World size: 12.069240)
+	256x256 	-	[  fM   !   ]	"CON003"                                	6f:74:74:00	 (World size: 6.004257)
+	128x128 	-	[ASfM   !   ]	"FENCE_2B"                              	82:85:8e:4c	 (World size: 8.905757)
+	128x128 	-	[ASfM   !   ]	"SAFETY_TRUCK"                          	75:37:3e:f6	 (World size: 6.823380)
+	256x256 	-	[  fM   !   ]	"SEMICLIFF16"                           	62:62:4d:00	 (World size: 15.358674)
+	128x128 	-	[  fM       ]	"CAMERA_PLATFORM"                       	53:59:62:00	 (World size: 7.357350)
+	128x128 	-	[  fM   !   ]	"METERBOARDS"                           	ce:ce:ce:00	 (World size: 2.893308)
+	256x128 	-	[  fM   !   ]	"TIRE_WALL6_V2"                         	88:5b:5d:00	 (World size: 7.258692)
+	256x256 	-	[A fM    $  ]	"FENCE002"                              	64:64:65:7c	 (World size: 5.110153)
+	64x64   	-	[  fM   !   ]	"PYLONS"                                	9e:9e:9d:00	 (World size: 10.720782)
+	64x32   	-	[ASfM   !   ]	"BRIDGE_STAIRS"                         	54:54:54:cf	 (World size: 5.346081)
+	64x64   	-	[  fM   !   ]	"BRIDGE_BASE"                           	6a:6a:6b:00	 (World size: 5.446794)
+	256x128 	-	[ASfM   !   ]	"BRIDGE_GIRD001"                        	6b:6a:6b:60	 (World size: 5.985960)
+	256x128 	-	[ASfM   !   ]	"BRIDGE_GIRD002"                        	6a:6a:6b:75	 (World size: 3.519118)
+	64x32   	-	[  fM       ]	"START_LIGHTS"                          	22:24:21:00	 (World size: 4.433336)
+	256x256 	-	[  fM   !   ]	"SEMICLIFF16_2"                         	60:60:47:00	 (World size: 23.503912)
+	256x64  	-	[  fM   !   ]	"RACEBARRIER"                           	b0:ac:a4:00	 (World size: 7.179647)
+	128x32  	-	[  fM   !   ]	"AMCOTEST001"                           	50:56:55:00	 (World size: 6.465703)
+	256x256 	-	[  fM       ]	"AD_BOARDS"                             	9a:8c:7c:00	 (World size: 19.779560)
+	256x256 	-	[A fM    $  ]	"FENCE001"                              	54:54:54:6f	 (World size: 5.762783)
+	256x256 	-	[  fM   !   ]	"CON_BARRIER002"                        	84:80:7d:00	 (World size: 6.053337)
+	128x128 	-	[ASfM       ]	"NEW_ARMCO_004"                         	4b:51:53:9a	 (World size: 4.967136)
+	128x128 	-	[ASfM       ]	"NEW_ARMCO_004A"                        	46:42:41:9a	 (World size: 3.167114)
+	256x256 	-	[ASfM   !   ]	"TREE_1"                                	46:53:31:6a	 (World size: 36.186268)
+	256x128 	-	[A fM       ]	"SHRUB_F"                               	58:62:28:62	 (World size: 4.610598)
+	256x256 	-	[ASfM   !   ]	"TREE_3"                                	13:1a:0a:78	 (World size: 44.397469)
+	256x128 	-	[ASfM       ]	"TREEWALL10"                            	24:2e:19:d0	 (World size: 61.584793)
+	256x128 	-	[ASfM   !   ]	"TREE_4A"                               	10:13:08:75	 (World size: 45.429901)
+	256x256 	-	[ASfM   !   ]	"TREE_2_V2"                             	13:1b:0d:7d	 (World size: 32.119286)
+	256x128 	-	[  fM   !   ]	"PANELS003"                             	79:78:78:00	 (World size: 27.017914)
+	32x16   	-	[  fM   !   ]	"SEATING"                               	3a:33:2a:00	 (World size: 1.987538)
+	256x128 	-	[  fM   !   ]	"PANELS004"                             	74:80:84:00	 (World size: 22.550133)
+	128x128 	-	[ASfM       ]	"CROWDTEST"                             	a2:95:94:a5	 (World size: 28.859259)
+	128x128 	-	[  fM   !   ]	"PIT_BRICKS"                            	8c:8c:89:00	 (World size: 6.556766)
+	128x128 	-	[  fM   !   ]	"PIT_SHUTTER"                           	a0:a7:aa:00	 (World size: 18.796133)
+	64x64   	-	[  fM   !   ]	"PIT_COVERS"                            	5f:74:83:00	 (World size: 7.749222)
+	256x256 	-	[  fM       ]	"TRUCKS24"                              	7f:7a:7c:00	 (World size: 27.976530)
+	128x128 	-	[ASfM       ]	"SPAMBULANCE128"                        	c4:bc:bd:fc	 (World size: 11.168067)
+	256x256 	-	[  fM       ]	"MARQUEE14_FLAT"                        	af:ad:ab:00	 (World size: 45.126339)
+	256x128 	-	[ASfM   !   ]	"B_PAGE1_6_16"                          	68:70:7b:8d	 (World size: 162.328873)
+	256x128 	-	[ASf        ]	"BUILD001"                              	6c:6f:67:a3	 (World size: 93.596565)
+	256x256 	-	[  fM   !   ]	"MOUNTAIN"                              	44:4c:58:00	 (World size: 718.036621)
+	256x64  	-	[ASfM       ]	"NEWCHECKER_3"                          	a7:a3:a5:fc	 (World size: 20.099672)
+	16x16   	-	[A fM    $  ]	"NEWCHECKER_3_ROPE"                     	81:81:81:60	 (World size: 2.333470)
+	256x128 	-	[  fM       ]	"GRASS_OVAL_BLEND_TARMAC"               	54:56:2f:00	 (World size: 4.580176)
+	256x256 	-	[  fM   !   ]	"CONCRETE_OVAL_005A"                    	78:79:6f:00	 (World size: 5.510880)
+	128x128 	-	[  fM   !   ]	"CONCRETE_OVAL_004"                     	87:89:85:00	 (World size: 31.376043)
+	256x128 	-	[  fM       ]	"SAND_OVAL_CBLEND"                      	8c:86:6c:00	 (World size: 6.344951)
+	128x128 	-	[  fM       ]	"KERB_OVAL_BLUE2"                       	58:6c:66:00	 (World size: 4.950865)
+	256x256 	-	[  fM   !   ]	"CONCRETE_OVAL_001"                     	74:79:71:00	 (World size: 7.320728)
+	128x128 	-	[  fM       ]	"KERB_OVAL_RED2"                        	7f:5f:48:00	 (World size: 5.296543)
+	256x128 	-	[  fM       ]	"GRASS_OVAL_BLEND_CONCRETE"             	61:62:45:00	 (World size: 5.442048)
+	256x256 	-	[  fM   !   ]	"GRASS_OVAL_DIFF3"                      	4d:52:25:00	 (World size: 14.319518)
+	128x128 	-	[  fM   !   ]	"SAND_OVAL_1A"                          	a0:93:65:00	 (World size: 5.894540)
+	256x128 	-	[  fM       ]	"SAND_OVAL_GBLEND001"                   	76:72:44:00	 (World size: 5.292361)
+	256x256 	-	[  fM   !   ]	"TARMAC_OVAL_VER2"                      	64:64:64:00	 (World size: 14.765816)
+	256x128 	-	[  fM       ]	"SAND_OVAL_TBLEND001"                   	8e:85:63:00	 (World size: 4.333220)
+	256x256 	-	[  fM   !   ]	"TARMAC_OVAL_YELL"                      	69:65:5c:00	 (World size: 19.897011)
+	64x64   	-	[  f        ]	"MINISKY"                               	aa:b9:bc:00	 (World size: 3427.191406)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD002"               	c4:c4:c4:14	 (World size: 1873.588623)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD001"               	c4:c4:c4:23	 (World size: 1873.590210)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD003"               	c4:c4:c4:0e	 (World size: 1873.588257)
+	32x32   	-	[A fM       ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"HEADLIGHT_FLARE"                       	07:07:07:08	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"SPECULAR_SPRITE"                       	44:43:43:44	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"REARLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"SUN_FLARE"                             	15:10:10:12	 (World size: 1.310660)
+	128x128 	-	[  fM   !   ]	"TRACK_SPECULAR"                        	2e:2e:2e:00	 (World size: 15.000000)
+	32x32   	-	[ASfM   !   ]	"TRACK_REFLECTION"                      	00:00:00:00	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"LENSE_REFLECTION"                      	39:39:39:39	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM    $  ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"LENSE_REFLECTION2"                     	20:20:20:35	 (World size: 1.310660)
+	128x128 	-	[  f        ]	"BUILDING_REFLECTION"                   	84:93:a3:00	 (World size: 20000.000000)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

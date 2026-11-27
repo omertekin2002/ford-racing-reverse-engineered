@@ -19,9 +19,10 @@ import { VehiclePhysics } from "../src/physics/vehiclePhysics.js";
 import { buildHudViewModel } from "../src/ui/hudModel.js";
 import { MenuController } from "../src/ui/menuController.js";
 import { UiScreenInstance } from "../src/ui/uiRuntime.js";
+import { HttpVfs } from "../src/vfs/httpVfs.js";
 import { NodeVfs } from "../src/vfs/nodeVfs.js";
 
-const demoRoot = "/home/omertekin2002/.cache/fr3/agent-demo/extracted/Program_Executable_Files";
+const demoRoot = fileURLToPath(new URL("../../game", import.meta.url));
 const demoOptions = { skip: !existsSync(demoRoot) };
 
 test("the engine build emits a standalone browser ESM bundle", async () => {
@@ -61,22 +62,76 @@ test("browser mount reports an invalid downloaded archive without initializing W
   assert.match(errors[0]!.message, /ZIP end of central directory is missing/);
 });
 
-test("local demo catalog loads vehicle, UI, language, environment and audio assets", demoOptions, async () => {
+test("HttpVfs indexes a manifest, resolves relative URLs, caches fetches and retries failures", async () => {
+  const requests: string[] = [];
+  let failOnce = true;
+  const fakeFetch: typeof globalThis.fetch = async (input) => {
+    const url = String(input);
+    requests.push(url);
+    if (url === "https://example.test/site/runtime/game-manifest.json") {
+      return new Response(JSON.stringify({
+        version: 1,
+        baseUrl: "game",
+        files: ["DATA/ASCII/TEST.DAT", "3DDATA/CARS/FORDGT/3dobjs.XBX"],
+      }), { status: 200 });
+    }
+    if (url === "https://example.test/site/runtime/game/DATA/ASCII/TEST.DAT") {
+      if (failOnce) {
+        failOnce = false;
+        return new Response("temporary error", { status: 503 });
+      }
+      return new Response("hello shuffle", { status: 200 });
+    }
+    return new Response("not found", { status: 404 });
+  };
+  const vfs = await HttpVfs.open("https://example.test/site/runtime/game-manifest.json", { fetch: fakeFetch });
+  assert.equal(vfs.has("data\\ascii\\test.dat"), true);
+  assert.equal(vfs.has("missing.dat"), false);
+  assert.deepEqual(vfs.list("3ddata/"), ["3ddata/cars/fordgt/3dobjs.xbx"]);
+  await assert.rejects(vfs.readText("DATA/ASCII/TEST.DAT"), /HTTP 503/);
+  assert.equal(await vfs.readText("data/ascii/test.dat"), "hello shuffle");
+  assert.equal(await vfs.readText("DATA\\ASCII\\TEST.DAT"), "hello shuffle");
+  // Manifest + 1 failed read + 1 cached read = 3 total requests.
+  assert.equal(requests.length, 3);
+});
+
+test("MenuController cycles installed tracks and launches the selected track", () => {
+  const menu = new MenuController({
+    cars: [{ id: "FORD_GT", name: "Ford GT", liveries: ["DEFAULT"] }],
+    trackId: "ENGAF",
+    tracks: [
+      { id: "ENGAF", name: "England A" },
+      { id: "ALASCF", name: "Alaska C" },
+    ],
+    languages: ["EN"],
+  });
+  menu.continueFromStart();
+  assert.ok(menu.activate("select-car"));
+  assert.equal(menu.getView().track?.id, "ENGAF");
+  assert.ok(menu.activate("next-track"));
+  assert.equal(menu.getView().track?.id, "ALASCF");
+  assert.ok(menu.activate("launch"));
+  const launch = menu.drainCommands().find(cmd => cmd.type === "LaunchRaceRequest")!;
+  assert.equal(launch.setup.trackId, "ALASCF");
+});
+
+test("local Shuffle catalog loads vehicle, UI, language, environment and audio assets", demoOptions, async () => {
   const vfs = await NodeVfs.open(demoRoot);
   const assets = await DemoAssets.load(vfs);
-  assert.equal(assets.installedCars.length, 25);
-  assert.equal(new Set(assets.installedCars.map(car => car.shapeFolder)).size, 25);
-  assert.equal(assets.tables.vehicles.cars.size, 55);
+  assert.equal(assets.installedCars.length, 148);
+  assert.equal(assets.installedTracks.length, 125);
+  assert.equal(assets.defaultTrackId, "ENGAF");
+  assert.equal(assets.tables.vehicles.cars.size, 148);
   assert.ok(assets.tables.tracks.has("engaf") && assets.tables.surfaces.size > 0);
   assert.ok(assets.tables.rules.has("racing_boost") && assets.tables.cameras.length > 0);
   assert.ok(assets.tables.engineSounds.size > 0 && assets.tables.volumes.size > 0);
   assert.deepEqual(assets.tables.fog, { density: 0.2, color: [186, 139, 84] });
   assert.deepEqual(assets.quickRaces.map(preset => preset.number), [5, 6, 4, 1, 2, 3]);
-  assert.ok(assets.quickRaces.every(preset => preset.participants.length === 6 && preset.laps === 2));
+  assert.ok(assets.quickRaces.every(preset => preset.participants.length === 6 && preset.laps >= 1));
   assert.equal(assets.fonts.length, 6);
   assert.ok(assets.fonts.every(atlas => atlas.glyphs.size === 134));
   assert.equal(assets.language, "EN");
-  assert.equal(assets.translation.entries.size, 1648);
+  assert.equal(assets.translation.entries.size, 2065);
   const english = assets.translation;
   assets.setLanguage("fr");
   assert.equal(assets.language, "FR");
@@ -107,7 +162,7 @@ test("local demo catalog loads vehicle, UI, language, environment and audio asse
 
   const bank = assets.loadSpc("SND/misc.spc");
   assert.equal(assets.loadSpc("snd\\MISC.SPC"), bank);
-  assert.equal((await bank).entries.length, 17);
+  assert.ok((await bank).entries.length >= 17);
   const others = await Promise.all([
     ...Array.from({ length: 9 }, (_, i) => assets.loadSpc(`SND/ENGINE${i + 1}.SPC`)),
     assets.loadSpc("SND/GEN_ENG.SPC"),

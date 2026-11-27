@@ -1,0 +1,4730 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Model T
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MODEL_T
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 4
+	-1, -5.00
+	0, 2.70
+	1, 3.54
+	2, 1.45
+
+:BRAKE_PAD_FRICTION 0.5, 0.5
+:BRAKE_DISTRIBUTION 0.80
+
+:MASS BALLAST, 50.00, 0.00, 0.4, 1.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 30.00, 30.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 35000.00, 35000.00
+:SUSPENSION_DAMPING 3900.00, 3900.00
+:SUSPENSION_NATURAL_LENGTH 0.8199, 0.7899
+:SUSPENSION_MIN_EXTENSION -0.675, -0.68
+:SUSPENSION_MAX_EXTENSION -2.5, -2.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Model A
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MODEL_A
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 4
+	-1, -5.00
+	0, 2.70
+	1, 2.94
+	2, 1.30
+
+:BRAKE_PAD_FRICTION 0.5, 0.5
+:BRAKE_DISTRIBUTION 0.80
+
+:MASS BALLAST, 25.00, 0.00, 0.45, 0.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 0.00, 0.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 30000.00, 31000.00
+:SUSPENSION_DAMPING 3200.00, 3200.00
+:SUSPENSION_NATURAL_LENGTH 0.829, 0.78
+:SUSPENSION_MIN_EXTENSION -0.55, -0.569
+:SUSPENSION_MAX_EXTENSION -2.5, -2.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 46 Convertible
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE 46_CONVERTIBLE
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 5
+	-1, -5.00
+	0, 2.5726
+	1, 3.5
+	2, 2.1
+	3, 1.0
+
+:BRAKE_PAD_FRICTION 0.5, 0.5
+:BRAKE_DISTRIBUTION 0.60
+
+:MASS BALLAST, 75.00, 0.00, 0.4, 2.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 50.00, 50.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 38000.00, 38000.00
+:SUSPENSION_DAMPING 4500.00, 4500.00
+:SUSPENSION_NATURAL_LENGTH 0.75, 0.75
+:SUSPENSION_MIN_EXTENSION -0.52, -0.41
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 46 Convertible Vintage
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE 46_CONVERTIBLE_NEW
+
+:INHERIT_TYPE 46_CONVERTIBLE
+
+:GEARING_ARRAY 5
+	-1, -5.00
+	0, 2.5726
+	1, 3.0
+	2, 2.1
+	3, 1.45
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 49 Standard Coupe
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE 49_COUPE
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 5
+	-1, -5.00
+	0, 2.25
+	1, 3.50
+	2, 2.00
+	3, 1.00
+
+:BRAKE_PAD_FRICTION 0.5, 0.5
+:BRAKE_DISTRIBUTION 0.60
+
+:MASS BALLAST, 75.00, 0.00, 0.4, 0.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 50.00, 50.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 35000.00, 35000.00
+:SUSPENSION_DAMPING 4900.00, 4900.00
+:SUSPENSION_NATURAL_LENGTH 0.74, 0.74
+:SUSPENSION_MIN_EXTENSION -0.369, -0.465
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 49 Standard Coupe Vintage
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE 49_COUPE_NEW
+
+:INHERIT_TYPE 49_COUPE
+
+:GEARING_ARRAY 5
+	-1, -5.00
+	0, 2.25
+	1, 3.20
+	2, 2.20
+	3, 1.55
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 49 Eight Coupe Movie
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE 49_COUPE_MOVIE
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 5
+	-1, -5.00
+	0, 2.319
+	1, 3.5
+	2, 2.3
+	3, 1.00
+
+:BRAKE_PAD_FRICTION 0.6, 0.6
+:BRAKE_DISTRIBUTION 0.60
+
+:MASS BALLAST, 75.00, 0.00, 0.4, 2.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 50.00, 50.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 39000.00, 39000.00
+:SUSPENSION_DAMPING 4600.00, 4600.00
+:SUSPENSION_NATURAL_LENGTH 0.68, 0.80
+:SUSPENSION_MIN_EXTENSION -0.425, -0.575
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.37, 0.34
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 49 Eight Coupe Vintage
+// menu_title
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE 49_COUPE_MOVIE_NEW
+
+:INHERIT_TYPE 49_COUPE_MOVIE
+
+:GEARING_ARRAY 5
+	-1, -5.00
+	0, 2.319
+	1, 3.0
+	2, 2.1
+	3, 1.7
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Capri 70
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE CAPRI_RS2600_70
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 2.5
+	1, 3.70
+	2, 2.03
+	3, 1.39
+	4, 0.90
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 85.00, 0.00, 0.3, 0.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 320.00, 320.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 54000.00, 54000.00
+:SUSPENSION_DAMPING 6600.00, 6600.00
+:SUSPENSION_NATURAL_LENGTH 0.65, 0.63
+:SUSPENSION_MIN_EXTENSION -0.40, -0.37
+:SUSPENSION_MAX_EXTENSION -0.85, -0.85
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.68, 0.685
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Capri EV
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE CAPRI_RS2600_EV
+
+:INHERIT_TYPE CAPRI_RS2600_70
+
+:GEARING_ARRAY 3
+-1, -5.00
+0, 1.0
+1, 4.5
+
+:SUSPENSION_DAMPING 6800.00, 6800.00
+:SUSPENSION_NATURAL_LENGTH 0.64, 0.62
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Fairlane 66
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FAIRLANE_66
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 2.85
+	1, 3.50
+	2, 1.94
+	3, 1.35
+	4, 1.00
+
+:BRAKE_PAD_FRICTION 0.7, 0.7
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 185.00, 0.00, 0.3, 1.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 50.00, 50.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 40000.00, 40000.00
+:SUSPENSION_DAMPING 5000.00, 5000.00
+:SUSPENSION_NATURAL_LENGTH 0.81, 0.85
+:SUSPENSION_MIN_EXTENSION -0.384, -0.605
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+//
+
+:CAR_TYPE FAIRLANE_500
+
+:INHERIT_TYPE FAIRLANE_66
+
+:GEARING_ARRAY 5
+	-1,		-2.18
+	0,		2.86
+	1,		2.200
+	2,		1.470
+	3,		1.215
+
+:MASS BALLAST, 150.00, 0.00, 0.3, 1.05
+
+:SUSPENSION_DAMPING 4750.00, 4750.00
+
+//
+
+:CAR_TYPE RCODE
+
+:INHERIT_TYPE FAIRLANE_66
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 3.05
+	1, 3.50
+	2, 1.94
+	3, 1.35
+	4, 1.00
+
+:MASS BALLAST, 110.00, 0.00, 0.3, 0.75
+
+:AEROFOIL_ANGLES -9.0, -13.5
+
+:SUSPENSION_DAMPING 5500.00, 8500.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 1973 Falcon XB GT
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FALCON_XB_GT
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 3.00
+	1, 3.50
+	2, 2.27
+	3, 1.675
+	4, 1.00
+
+:BRAKE_PAD_FRICTION 0.7, 0.7
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 145.00, 0.00, 0.3, -0.5
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 50.00, 50.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 45000.00, 45000.00
+:SUSPENSION_DAMPING 5500.00, 5500.00
+:SUSPENSION_NATURAL_LENGTH 0.80, 0.84
+:SUSPENSION_MIN_EXTENSION -0.384, -0.605
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Galaxie 64
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE GALAXY_64
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 5
+	-1, -5.00
+	0, 3.1056
+	1, 2.5
+	2, 1.6
+	3, 1.0
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 145.00, 0.00, 0.3, 1.5
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 200.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 43000.00, 43000.00
+:SUSPENSION_DAMPING 4850.00, 4850.00
+:SUSPENSION_NATURAL_LENGTH 0.8, 0.86
+:SUSPENSION_MIN_EXTENSION -0.485, -0.40
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.36, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Gran Torino
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE GRAN_TORINO
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 3.06
+	1, 3.70
+	2, 2.09
+	3, 1.45
+	4, 1.00
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 150.00, 0.00, 0.3, 2.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 250.00, 250.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 44500.00, 44500.00
+:SUSPENSION_DAMPING 3750.00, 5000.00
+:SUSPENSION_NATURAL_LENGTH 0.70, 0.70
+:SUSPENSION_MIN_EXTENSION -0.35, -0.31
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.365, 0.365
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Mach1 (Agent) 71
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MACH1_AGENT
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 2.714
+	1, 3.53
+	2, 2.29
+	3, 1.52
+	4, 1.11
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.55
+
+:MASS BALLAST, 145.00, 0.00, 0.3, 2.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 50.00, 50.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 42000.00, 42000.00
+:SUSPENSION_DAMPING 4500.00, 4500.00
+:SUSPENSION_NATURAL_LENGTH 0.67, 0.67
+:SUSPENSION_MIN_EXTENSION -0.375, -0.355
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.37, 0.36
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.28, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Mach1 (Sixty) 73
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MACH1_SIXTY
+
+:INHERIT_TYPE MACH1_AGENT
+
+:MASS BALLAST, 165.00, 0.00, 0.3, 1.75
+
+:AEROFOIL_ANGLES -11.0, -8.75
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Boss 351
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE BOSS_351
+
+:INHERIT_TYPE MACH1_SIXTY
+
+:MASS BALLAST, 139.00, 0.00, 0.3, 1.95
+
+:SUSPENSION_DAMPING 4600.00, 4600.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Mustang 68' Coupe
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MUSTANG_68
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 2.815
+	1, 3.48
+	2, 2.15
+	3, 1.53
+	4, 1.1
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.52
+
+:MASS BALLAST, 140.00, 0.00, 0.3, 1.7
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 150.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 60000.00, 60000.00
+:SUSPENSION_DAMPING 4750.00, 4750.00
+:SUSPENSION_NATURAL_LENGTH 0.71, 0.725
+:SUSPENSION_MIN_EXTENSION -0.51, -0.45
+:SUSPENSION_MAX_EXTENSION -0.8, -0.8
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.36, 0.365
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.28, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.724, 0.725
+
+// Mustang 68B' GT
+
+:CAR_TYPE MUSTANG_68B
+
+:INHERIT_TYPE MUSTANG_68
+
+:ANTI_ROLLBAR_STIFFNESS 225.00, 175.00
+:SUSPENSION_MIN_EXTENSION -0.52, -0.46
+:WHEEL_SPACING 0.7245, 0.7255
+
+// Mustang 68' Rally
+
+:CAR_TYPE MUSTANG_RALLY
+
+:INHERIT_TYPE MUSTANG_68
+
+:MASS BALLAST, 77.00, 0.00, 0.3, 0.75
+
+:ANTI_ROLLBAR_STIFFNESS 75.00, 75.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 40000.00, 40000.00
+:SUSPENSION_DAMPING 6600.00, 6600.00
+:SUSPENSION_NATURAL_LENGTH 0.81, 0.825
+:SUSPENSION_MIN_EXTENSION -0.58, -0.49
+:SUSPENSION_MAX_EXTENSION -0.83, -0.83
+:WHEEL_SPACING 0.725, 0.726
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Shelby GT500
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE SHELBY_GT500
+
+:INHERIT_TYPE MUSTANG_68
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 2.915
+	1, 3.48
+	2, 2.15
+	3, 1.53
+	4, 1.05
+
+:MASS BALLAST, 22.00, 0.00, 0.3, 1.7
+
+:AEROFOIL_ANGLES -12.0, -9.4
+
+:ANTI_ROLLBAR_STIFFNESS 300.00, 300.00
+:SUSPENSION_DAMPING 5050.00, 5050.00
+:SUSPENSION_MIN_EXTENSION -0.53, -0.47
+:WHEEL_SPACING 0.723, 0.724
+
+// SUPER SNAKE
+
+:CAR_TYPE SHELBY_GT500_2
+
+:INHERIT_TYPE SHELBY_GT500
+
+:GEARING_ARRAY 6
+-1, -5.00
+0, 2.965
+1, 3.48
+2, 2.15
+3, 1.53
+4, 1.00
+
+:AEROFOIL_ANGLES -13.1, -11.8
+
+:SUSPENSION_DAMPING 6050.00, 6050.00
+:WHEEL_SPACING 0.725, 0.726
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Ranch 1972
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE RANCH_1972
+
+:RELAXATION_LENGTH 0.80
+
+:GEARING_ARRAY 6
+	-1,		-2.18
+	0,		3.25
+	1,		2.460
+	2,		1.750
+	3,		1.340
+	4,		1.090
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.60
+
+:MASS BALLAST, 0.00, 0.00, 0.00, 0.00
+
+:AEROFOIL_ANGLES 0.0, 0.0
+:CAR_GROUND_CLEARANCE 0.00, 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 150.00, 100.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 50000.00, 50000.00
+:SUSPENSION_DAMPING 5500.00, 5500.00
+:SUSPENSION_NATURAL_LENGTH 0.72, 0.73
+:SUSPENSION_MIN_EXTENSION -0.395, -0.574
+:SUSPENSION_MAX_EXTENSION -1.6, -1.6
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.0, 0.0
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Ranch 1975
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE RANCH_1975
+
+:INHERIT_TYPE RANCH_1972
+
+:RELAXATION_LENGTH 0.85
+
+:GEARING_ARRAY 5
+	-1,		-2.18
+	0,		2.75
+	1,		2.200
+	2,		1.470
+	3,		1.215
+
+:SUSPENSION_DAMPING 5700.00, 5700.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Thunderbird 55
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE THUNDERBIRD
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 5
+	-1, -5.00
+	0, 3.02
+	1, 3.03
+	2, 1.88
+	3, 1.00
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.60
+
+:MASS BALLAST, 100.00, 0.00, 0.3, 1.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 300.00, 300.00
+:ANTI_DIVE_STIFFNESS 100.00, 100.00
+:SUSPENSION_MOE 47500.00, 47500.00
+:SUSPENSION_DAMPING 3450.00, 4500.00
+:SUSPENSION_NATURAL_LENGTH 0.735, 0.735
+:SUSPENSION_MIN_EXTENSION -0.485, -0.44
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.37, 0.375
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Tbird 62
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE TBIRD_62
+
+:RELAXATION_LENGTH 50.75
+
+:GEARING_ARRAY 5
+-1, -5.00
+0, 3.23
+1, 3.01
+2, 1.71
+3, 1.02
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 91.00, 0.00, 0.3, 1.3
+
+:AEROFOIL_ANGLES -10.5, -8.2
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 50.00, 50.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 46500.00, 46500.00
+:SUSPENSION_DAMPING 3950.00, 4700.00
+:SUSPENSION_NATURAL_LENGTH 0.71, 0.79
+:SUSPENSION_MIN_EXTENSION -0.35, -0.31
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.365, 0.365
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Thunderbird 66
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE THUNDERBIRD_66
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 5
+	-1, -5.00
+	0, 3.20
+	1, 3.03
+	2, 1.70
+	3, 1.00
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.60
+
+:MASS BALLAST, 100.00, 0.00, 0.3, 0.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 100.00, 100.00
+:ANTI_DIVE_STIFFNESS 100.00, 100.00
+:SUSPENSION_MOE 38000.00, 38000.00
+:SUSPENSION_DAMPING 4150.00, 4900.00
+:SUSPENSION_NATURAL_LENGTH 0.78, 0.85
+:SUSPENSION_MIN_EXTENSION -0.572, -0.53
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.365, 0.36
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.775, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Capri '78 3.0s
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE CAPRI_78
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 6
+-1, -5.00
+0, 2.8
+1, 3.45
+2, 1.95
+3, 1.35
+4, 0.92
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 105.00, 0.00, 0.3, 0.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 280.00, 260.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 54000.00, 54000.00
+:SUSPENSION_DAMPING 6000.00, 6000.00
+:SUSPENSION_NATURAL_LENGTH 0.665, 0.66
+:SUSPENSION_MIN_EXTENSION -0.51, -0.47
+:SUSPENSION_MAX_EXTENSION -0.8, -0.8
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.0, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Capri '85 2.8 injection
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE CAPRI_85
+
+:INHERIT_TYPE CAPRI_78
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.8
+	1, 3.70
+	2, 2.15
+	3, 1.48
+	4, 1.12
+	5, 0.89
+
+:MASS BALLAST, 102.50, 0.00, 0.3, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 320.00, 320.00
+:SUSPENSION_DAMPING 7000.00, 7000.00
+
+//
+
+:CAR_TYPE CAPRI_87
+
+:INHERIT_TYPE CAPRI_78
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.8
+	1, 3.70
+	2, 2.15
+	3, 1.48
+	4, 1.12
+	5, 0.89
+
+:MASS BALLAST, 103.50, 0.00, 0.3, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 320.00, 320.00
+:SUSPENSION_DAMPING 7000.00, 7000.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2000 Mustang SVT Cobra R
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE COBRA
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 8
+	-1, -3.6
+	0, 2.95
+	1, 3.339
+	2, 2.119
+	3, 1.649
+	4, 1.300
+	5, 1.169
+	6, 1.000
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.5
+
+:MASS BALLAST, 132.00, 0.00, 0.3, 1.25
+
+:AEROFOIL_ANGLES -11.0, -11.0
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 100.00, 150.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 37500.00, 37500.00
+:SUSPENSION_DAMPING 6000.00, 6000.00
+:SUSPENSION_NATURAL_LENGTH 0.73, 0.71
+:SUSPENSION_MIN_EXTENSION -0.525, -0.51
+:SUSPENSION_MAX_EXTENSION -0.85, -0.85
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.345, 0.355
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Crown-Victoria LX Sport
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE CROWN_VICTORIA
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 3.52
+	1, 2.819
+	2, 1.739
+	3, 1.299
+	4, 0.990
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.65
+
+:MASS BALLAST, 115.00, 0.00, 0.3, 1.95
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 150.00, 150.00
+:ANTI_DIVE_STIFFNESS 100.00, 100.00
+:SUSPENSION_MOE 48000.00, 48000.00
+:SUSPENSION_DAMPING 6500.00, 6500.00
+:SUSPENSION_NATURAL_LENGTH 0.70, 0.70
+:SUSPENSION_MIN_EXTENSION -0.525, -0.395
+:SUSPENSION_MAX_EXTENSION -1.6, -1.6
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.355, 0.36
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.28, 0.25
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Taurus SHO
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE TAURUS_SHO
+
+:INHERIT_TYPE CROWN_VICTORIA
+
+:GEARING_ARRAY 6
+-1, -5.00
+0, 3.62
+1, 2.819
+2, 1.719
+3, 1.299
+4, 0.999
+
+:BRAKE_DISTRIBUTION 0.6
+
+:MASS BALLAST, 93.00, 0.00, 0.29, 1.89
+
+:ANTI_DIVE_STIFFNESS 10.00, 10.00
+:SUSPENSION_NATURAL_LENGTH 0.75, 0.73
+:SUSPENSION_MIN_EXTENSION -0.675, -0.595
+:SUSPENSION_MAX_EXTENSION -1.6, -1.6
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// BA Falcon XR8
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FALCON_XR8
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 3.0
+	1, 3.329
+	2, 2.119
+	3, 1.599
+	4, 1.259
+	5, 1.040
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.60
+
+:MASS BALLAST, 170.00, 0.00, 0.3, 2.0
+
+:AEROFOIL_ANGLES -11.0, -9.2
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 200.00
+:ANTI_DIVE_STIFFNESS 100.00, 100.00
+:SUSPENSION_MOE 51000.00, 51000.00
+:SUSPENSION_DAMPING 5500.00, 5500.00
+:SUSPENSION_NATURAL_LENGTH 0.72, 0.72
+:SUSPENSION_MIN_EXTENSION -0.58, -0.505
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.34
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+// BA
+
+:CAR_TYPE FALCON_XR6
+
+:INHERIT_TYPE FALCON_XR8
+
+:MASS BALLAST, 155.00, 0.00, 0.3, 1.9
+
+:SUSPENSION_DAMPING 5250.00, 5250.00
+
+// AU Falcon Tickford
+
+:CAR_TYPE TICKFORD_TS50
+
+:INHERIT_TYPE FALCON_XR8
+
+:MASS BALLAST, 160.00, 0.00, 0.3, 1.75
+
+:AEROFOIL_ANGLES -11.0, -10.6
+
+:SUSPENSION_DAMPING 5600.00, 5655.00
+
+// FPV BA GT Boss 290
+
+:CAR_TYPE FPV_BOSS_290
+
+:INHERIT_TYPE FALCON_XR8
+
+:MASS BALLAST, 162.00, 0.00, 0.3, 1.70
+
+:AEROFOIL_ANGLES -12.7, -13.6
+
+:SUSPENSION_DAMPING 6400.00, 6455.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Focus SVT
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FOCUS_SVT
+
+:RELAXATION_LENGTH 0.575
+
+:GEARING_ARRAY 8
+	-1, -5.00
+	0, 2.755
+	1, 4.229
+	2, 2.459
+	3, 1.759
+	4, 1.377
+	5, 1.153
+	6, 1.010
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.65
+
+:MASS BALLAST, 100.00, 0.00, 0.3, 1.8
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 200.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 45000.00, 45000.00
+:SUSPENSION_DAMPING 5400.00, 5400.00
+:SUSPENSION_NATURAL_LENGTH 0.69, 0.685
+:SUSPENSION_MIN_EXTENSION -0.52, -0.395
+:SUSPENSION_MAX_EXTENSION -1.2, -1.2
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.36, 0.34
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.28, 0.22
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Fortynine
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FORTYNINE
+
+:RELAXATION_LENGTH 0.80
+
+:GEARING_ARRAY 7
+	-1,		-3.17
+	0,		3.58
+	1,		3.250
+	2,		2.440
+	3,		1.550
+	4,		1.000
+	5,		0.750
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.55
+
+:MASS BALLAST, 0.00, 0.00, 0.00, 0.00
+
+:AEROFOIL_ANGLES 0.0, 0.0
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 200.00
+:ANTI_DIVE_STIFFNESS 100.00, 100.00
+:SUSPENSION_MOE 47500.00, 47500.00
+:SUSPENSION_DAMPING 4500.00, 4500.00
+:SUSPENSION_NATURAL_LENGTH 0.79, 0.78
+:SUSPENSION_MIN_EXTENSION -0.58, -0.505
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Lightning SVT
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE LIGHTNING_SVT
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 2.225
+	1, 5.26
+	2, 3.17
+	3, 1.99
+	4, 1.37
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST, 110.00, 0.00, 0.40, 1.0
+
+:AEROFOIL_ANGLES -11.1, -7.97
+:CAR_GROUND_CLEARANCE 0.00, 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 500.00, 500.00
+:ANTI_DIVE_STIFFNESS 200.00, 200.00
+:SUSPENSION_MOE 55000.00, 55000.00
+:SUSPENSION_DAMPING 7500.00, 7500.00
+:SUSPENSION_NATURAL_LENGTH 0.78, 0.77
+:SUSPENSION_MIN_EXTENSION -0.685, -0.72
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Lightning SVT 2004
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE LIGHTNING_SVT_2004
+
+:INHERIT_TYPE LIGHTNING_SVT
+
+:GEARING_ARRAY 8
+	-1, -5.00
+	0, 2.255
+	1, 5.26
+	2, 3.17
+	3, 2.23
+	4, 1.68
+	5, 1.37
+	6, 1.00
+
+:MASS BALLAST, 105.00, 0.00, 0.40, 0.6
+
+:AEROFOIL_ANGLES -12.1, -8.97
+
+:SUSPENSION_DAMPING 7750.00, 7750.00
+:SUSPENSION_NATURAL_LENGTH 0.83, 0.82
+:SUSPENSION_MIN_EXTENSION -0.728, -0.675
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.415, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:WHEEL_SPACING 0.775, 0.805
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SVT Adrenalin Concept
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE ADREN
+
+:INHERIT_TYPE LIGHTNING_SVT_2004
+
+:GEARING_ARRAY 8
+-1, -5.00
+0, 2.265
+1, 5.26
+2, 3.17
+3, 2.23
+4, 1.68
+5, 1.37
+6, 1.00
+
+:MASS BALLAST, 65.00, 0.00, 0.40, 0.5
+
+:AEROFOIL_ANGLES -13.1, -9.97
+
+:ANTI_DIVE_STIFFNESS 200.00, 100.00
+:SUSPENSION_MOE 56000.00, 56000.00
+:SUSPENSION_DAMPING 8750.00, 8750.00
+:SUSPENSION_NATURAL_LENGTH 0.83, 0.82
+:SUSPENSION_MIN_EXTENSION -0.728, -0.675
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.415, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.0, 0.0
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Mondeo ST220
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MONDEO_ST220
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 8
+	-1,		-3.73
+	0,		3.56
+	1,		3.230
+	2,		2.100
+	3,		1.690
+	4,		1.460
+	5,		1.210
+	6,		1.000
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.62
+
+:MASS BALLAST, 0.00, 0.00, 0.00, 0.00
+
+:AEROFOIL_ANGLES -2.0, -4.0
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 200.00
+:ANTI_DIVE_STIFFNESS 100.00, 100.00
+:SUSPENSION_MOE 47500.00, 47500.00
+:SUSPENSION_DAMPING 5000.00, 5000.00
+:SUSPENSION_NATURAL_LENGTH 0.74, 0.73
+:SUSPENSION_MIN_EXTENSION -0.65, -0.65
+:SUSPENSION_MAX_EXTENSION -0.9, -0.9
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Mondeo ST TDCi
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MONDEO_TDCI
+
+:INHERIT_TYPE MONDEO_ST220
+
+:RELAXATION_LENGTH 0.72
+
+:GEARING_ARRAY 8
+	-1,		-3.73
+	0,		3.41
+	1,		3.500
+	2,		1.910
+	3,		1.260
+	4,		1.050
+	5,		0.860
+	6,		0.710
+
+:BRAKE_DISTRIBUTION 0.60
+
+:AEROFOIL_ANGLES 0.0, 0.0
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Puma
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE PUMA
+
+:RELAXATION_LENGTH 0.70
+
+:GEARING_ARRAY 7
+	-1,		-3.15
+	0,		3.82
+	1,		3.154
+	2,		1.926
+	3,		1.433
+	4,		1.088
+	5,		0.886
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.62
+
+:MASS BALLAST, 0.00, 0.00, 0.00, 0.0
+
+:AEROFOIL_ANGLES -1.0, -4.0
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 300.00, 300.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 40000.00, 40000.00
+:SUSPENSION_DAMPING 5750.00, 5750.00
+:SUSPENSION_NATURAL_LENGTH 0.685, 0.685
+:SUSPENSION_MIN_EXTENSION -0.50, -0.48
+:SUSPENSION_MAX_EXTENSION -0.8, -0.8
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.36, 0.34
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.28, 0.22
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// puma SRP
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE PUMA_RALLY
+
+:INHERIT_TYPE PUMA
+
+:GEARING_ARRAY 7
+	-1,		-3.15
+	0,		3.62
+	1,		3.154
+	2,		1.926
+	3,		1.433
+	4,		1.088
+	5,		0.886
+
+:BRAKE_DISTRIBUTION 0.55
+
+:AEROFOIL_ANGLES -1.2, -8.3
+
+:ANTI_ROLLBAR_STIFFNESS 350.00, 300.00
+:SUSPENSION_MOE 39000.00, 39000.00
+:SUSPENSION_DAMPING 5500.00, 5500.00
+:SUSPENSION_NATURAL_LENGTH 0.685, 0.685
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Powerstroke
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE POWERSTROKE
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.685
+	1, 4.14
+	2, 2.86
+	3, 2.09
+	4, 1.62
+	5, 1.29
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.55
+
+:MASS BALLAST, 200.00, 0.00, 0.40, 0.0
+
+:AEROFOIL_ANGLES -13.1, -7.97
+:CAR_GROUND_CLEARANCE 0.00, 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 600.00, 600.00
+:ANTI_DIVE_STIFFNESS 250.00, 250.00
+:SUSPENSION_MOE 60000.00, 60000.00
+:SUSPENSION_DAMPING 5500.00, 5500.00
+:SUSPENSION_NATURAL_LENGTH 0.93, 0.905
+:SUSPENSION_MIN_EXTENSION -0.61, -0.72
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.39, 0.39
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Thunderbird 2003
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE THUNDERBIRD_MOVIE
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.600
+	1, 5.109
+	2, 2.779
+	3, 1.859
+	4, 1.429
+	5, 1.120
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 100.00, 0.00, 0.3, 1.5
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 250.00, 250.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 50000.00, 50000.00
+:SUSPENSION_DAMPING 5400.00, 5400.00
+:SUSPENSION_NATURAL_LENGTH 0.69, 0.69
+:SUSPENSION_MIN_EXTENSION -0.495, -0.475
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Thunderbird 2002
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE THUNDERBIRD_2002
+
+:INHERIT_TYPE THUNDERBIRD_MOVIE
+
+:MASS BALLAST, 175.00, 0.00, 0.35, 1.55
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RS200 (SRP)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE RS200
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.74
+	1, 3.23
+	2, 2.14
+	3, 1.63
+	4, 1.26
+	5, 1.06
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST, 115.00, 0.00, 0.3, 1.0
+
+:AEROFOIL_ANGLES -10.0, -14.0
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 250.00, 220.00
+:ANTI_DIVE_STIFFNESS 25.00, 25.00
+:SUSPENSION_MOE 49000.00, 49000.00
+:SUSPENSION_DAMPING 6200.00, 6200.00
+:SUSPENSION_NATURAL_LENGTH 0.7235, 0.724
+:SUSPENSION_MIN_EXTENSION -0.6075, -0.5875
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.34, 0.335
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.27, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.719, 0.72
+
+// '85 RS200 (road car)
+
+:CAR_TYPE RS200_PERFORMANCE
+
+:INHERIT_TYPE RS200
+
+:GEARING_ARRAY 7
+-1, -5.00
+0, 2.58
+1, 3.23
+2, 2.14
+3, 1.63
+4, 1.26
+5, 1.06
+
+:AEROFOIL_ANGLES -11.0, -14.0
+
+:SUSPENSION_MOE 49500.00, 49500.00
+:SUSPENSION_NATURAL_LENGTH 0.7225, 0.723
+
+// '86 RS200 evolution
+
+:CAR_TYPE RS200_EVOLUTION
+
+:INHERIT_TYPE RS200
+
+:GEARING_ARRAY 7
+-1, -5.00
+0, 2.44
+1, 3.23
+2, 2.14
+3, 1.63
+4, 1.25
+5, 1.00
+
+:MASS BALLAST, 110.00, 0.00, 0.3, 1.0
+
+:AEROFOIL_ANGLES -11.25, -14.25
+
+:SUSPENSION_MOE 50000.00, 50000.00
+:ANTI_ROLLBAR_STIFFNESS 300.00, 275.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_NATURAL_LENGTH 0.7215, 0.722
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Escort RS2000
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE ESCORT_RS2000_73
+
+:RELAXATION_LENGTH 0.65
+
+:GEARING_ARRAY 6
+	-1,		-3.66
+	0,		3.25
+	1,		3.65
+	2,		1.97
+	3,		1.37
+	4,		1.00
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.55
+
+:MASS BALLAST, 100.00, 0.00, 0.3, 1.25
+
+:AEROFOIL_ANGLES -1.0, -1.0
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 151.87, 101.87
+:ANTI_DIVE_STIFFNESS 31.64, 31.64
+:SUSPENSION_MOE 30374.40, 30374.40
+:SUSPENSION_DAMPING 4746.00, 4746.00
+:SUSPENSION_NATURAL_LENGTH 0.75, 0.75
+:SUSPENSION_MIN_EXTENSION -0.6, -0.6
+:SUSPENSION_MAX_EXTENSION -0.80, -0.80
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.34, 0.335
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.27, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.0, 0.0
+
+// Escort DeLuxe
+
+:CAR_TYPE ESCORT_DX
+
+:INHERIT_TYPE ESCORT_RS2000_73
+
+:GEARING_ARRAY 6
+-1, -5.00
+0, 2.551
+1, 3.51
+2, 2.25
+3, 1.60
+4, 1.25
+
+:MASS BALLAST, 105.00, 0.00, 0.3, 1.25
+
+:ANTI_ROLLBAR_STIFFNESS 90.00, 80.00
+:SUSPENSION_MOE 29374.00, 29374.00
+:SUSPENSION_DAMPING 4400.00, 4400.00
+:SUSPENSION_NATURAL_LENGTH 0.7525, 0.7525
+
+// RS2000 SRP
+
+:CAR_TYPE ESCORT_RS2000_73_R
+
+:INHERIT_TYPE ESCORT_RS2000_73
+
+:GEARING_ARRAY 6
+-1, -5.00
+0, 2.475
+1, 3.51
+2, 2.05
+3, 1.35
+4, 1.06
+
+:MASS BALLAST, 80.00, 0.00, 0.3, 1.15
+
+:AEROFOIL_ANGLES -12.0, -9.4
+
+:SUSPENSION_MOE 49000.00, 49000.00
+:SUSPENSION_DAMPING 7200.00, 7200.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// EX Concept
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE EX
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 3.643
+	1, 3.90
+	2, 2.54
+	3, 1.88
+	4, 1.28
+	5, 0.93
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.60
+
+:MASS BALLAST, 75.00, 0.00, 0.60, 1.45
+
+:AEROFOIL_ANGLES -13.10, -8.84
+:CAR_GROUND_CLEARANCE 0.00, 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 190.00, 170.00
+:ANTI_DIVE_STIFFNESS 100.00, 100.00
+:SUSPENSION_MOE 37000.00, 37000.00
+:SUSPENSION_DAMPING 5000.00, 5000.00
+:SUSPENSION_NATURAL_LENGTH 0.77, 0.77
+:SUSPENSION_MIN_EXTENSION -0.629, -0.529
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2002 Explorer Sport Trac
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE EXPLORER
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.65
+	1, 3.90
+	2, 2.60
+	3, 1.89
+	4, 1.52
+	5, 1.26
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.55
+
+:MASS BALLAST, 90.00, 0.00, 0.30, 0.0
+
+:AEROFOIL_ANGLES -13.1, -7.97
+:CAR_GROUND_CLEARANCE 0.00, 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 200.00
+:ANTI_DIVE_STIFFNESS 100.00, 100.00
+:SUSPENSION_MOE 46000.00, 46000.00
+:SUSPENSION_DAMPING 6500.00, 6500.00
+:SUSPENSION_NATURAL_LENGTH 0.76, 0.76
+:SUSPENSION_MIN_EXTENSION -0.469, -0.595
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.0, 0.0s
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// F1 Pickup 1948
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE F1_1948
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 2.770
+	1, 3.128
+	2, 2.091
+	3, 1.214
+	4, 1.020
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.55
+
+:MASS BALLAST, 115.00, 0.00, 0.40, 0.5
+
+:AEROFOIL_ANGLES -13.1, -7.97
+:CAR_GROUND_CLEARANCE 0.00, 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 50.00, 50.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 40000.00, 40000.00
+:SUSPENSION_DAMPING 4500.00, 4500.00
+:SUSPENSION_NATURAL_LENGTH 0.82, 0.79
+:SUSPENSION_MIN_EXTENSION -0.45, -0.515
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// F100 1956
+// menu_title
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE F100_1956
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 2.700
+	1, 3.179
+	2, 1.999
+	3, 1.389
+	4, 1.020
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.55
+
+:MASS BALLAST, 110.00, 0.00, 0.40, 0.5
+
+:AEROFOIL_ANGLES -13.1, -7.97
+:CAR_GROUND_CLEARANCE 0.00, 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 300.00, 300.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 43000.00, 43000.00
+:SUSPENSION_DAMPING 6500.00, 6500.00
+:SUSPENSION_NATURAL_LENGTH 0.80, 0.77
+:SUSPENSION_MIN_EXTENSION -0.45, -0.485
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// F100 1965
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE F100_1965
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 2.300
+	1, 3.150
+	2, 2.050
+	3, 1.370
+	4, 1.010
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.55
+
+:MASS BALLAST, 110.00, 0.00, 0.40, -0.5
+
+:AEROFOIL_ANGLES -13.1, -7.97
+:CAR_GROUND_CLEARANCE 0.00, 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 300.00, 300.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 44000.00, 44000.00
+:SUSPENSION_DAMPING 6000.00, 6000.00
+:SUSPENSION_NATURAL_LENGTH 0.77, 0.78
+:SUSPENSION_MIN_EXTENSION -0.28, -0.54
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// F150 1998
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE F150
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.540
+	1, 4.758
+	2, 3.449
+	3, 2.409
+	4, 1.559
+	5, 1.110
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.55
+
+:MASS BALLAST, 95.00, 0.00, 0.40, 2.0
+
+:AEROFOIL_ANGLES -12.1, -6.97
+:CAR_GROUND_CLEARANCE 0.00, 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 300.00, 300.00
+:ANTI_DIVE_STIFFNESS 100.00, 100.00
+:SUSPENSION_MOE 43000.00, 43000.00
+:SUSPENSION_DAMPING 8000.00, 8000.00
+:SUSPENSION_NATURAL_LENGTH 0.77, 0.77
+:SUSPENSION_MIN_EXTENSION -0.41, -0.619
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.635, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// EXPEDITION 1998
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE EXPEDITION_98
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+-1, -5.00
+0, 2.440
+1, 4.758
+2, 3.449
+3, 2.409
+4, 1.559
+5, 1.110
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.55
+
+:MASS BALLAST, 99.50, 0.00, 0.40, 1.85
+
+:AEROFOIL_ANGLES -12.1, -6.97
+:CAR_GROUND_CLEARANCE 0.00, 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 300.00, 300.00
+:ANTI_DIVE_STIFFNESS 100.00, 100.00
+:SUSPENSION_MOE 43000.00, 43000.00
+:SUSPENSION_DAMPING 8100.00, 8100.00
+:SUSPENSION_NATURAL_LENGTH 0.775, 0.775
+:SUSPENSION_MIN_EXTENSION -0.40, -0.609
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// F150 2004 FX4
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE F150_2004
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.73
+	1, 3.70
+	2, 2.55
+	3, 1.95
+	4, 1.56
+	5, 1.16
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.55
+
+:MASS BALLAST, 100.00, 0.00, 0.40, 0.5
+
+:AEROFOIL_ANGLES -10.1, -6.97
+:CAR_GROUND_CLEARANCE 0.00, 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 100.00, 100.00
+:ANTI_DIVE_STIFFNESS 100.00, 100.00
+:SUSPENSION_MOE 45000.00, 45000.00
+:SUSPENSION_DAMPING 8400.00, 8400.00
+:SUSPENSION_NATURAL_LENGTH 0.765, 0.765
+:SUSPENSION_MIN_EXTENSION -0.63, -0.61
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.0, 0.0
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// F150 2004 FX4
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE F150_STX
+
+:INHERIT_TYPE F150_2004
+
+:GEARING_ARRAY 6
+-1, -5.00
+0, 2.63
+1, 3.00
+2, 2.44
+3, 1.59
+4, 1.14
+
+:BRAKE_DISTRIBUTION 0.6
+
+:MASS BALLAST, 25.00, 0.00, 0.40, 0.495
+
+:ANTI_ROLLBAR_STIFFNESS 100.00, 50.00
+:SUSPENSION_MOE 43800.00, 43800.00
+:SUSPENSION_DAMPING 7000.00, 7000.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// F350
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE F350
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.860
+	1, 4.819
+	2, 2.869
+	3, 2.059
+	4, 1.620
+	5, 1.300
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.5
+
+:MASS BALLAST, 230.00, 0.00, 0.60, -0.5
+
+:AEROFOIL_ANGLES -13.1, -7.97
+:CAR_GROUND_CLEARANCE 0.00, 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 450.00, 450.00
+:ANTI_DIVE_STIFFNESS 200.00, 200.00
+:SUSPENSION_MOE 60000.00, 60000.00
+:SUSPENSION_DAMPING 8500.00, 8500.00
+:SUSPENSION_NATURAL_LENGTH 0.84, 0.84
+:SUSPENSION_MIN_EXTENSION -0.248, -0.515
+:SUSPENSION_MAX_EXTENSION -1.6, -1.6
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.38, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.41, 0.41
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.0, 0.0
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Focus Air Force
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FOCUS_AIR_FORCE
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.74
+	1, 3.26
+	2, 2.10
+	3, 1.69
+	4, 1.30
+	5, 1.00
+
+:BRAKE_PAD_FRICTION 1.2, 1.2
+:BRAKE_DISTRIBUTION 0.40
+
+:MASS BALLAST, 140.00, 0.00, 0.3, 0.2
+
+:AEROFOIL_ANGLES -14.35, -16.3
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 150.00
+:ANTI_DIVE_STIFFNESS 15.00, 5.00
+:SUSPENSION_MOE 44500.00, 44500.00
+:SUSPENSION_DAMPING 6100.00, 6100.00
+:SUSPENSION_NATURAL_LENGTH 0.761, 0.741
+:SUSPENSION_MIN_EXTENSION -0.525, -0.43
+:SUSPENSION_MAX_EXTENSION -1.2, -1.2
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.34, 0.335
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.27, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.0, 0.0
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Focus WRC
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FOCUS_WRC
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 3.25
+	1, 3.53
+	2, 2.30
+	3, 1.72
+	4, 1.33
+	5, 1.10
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST, 146.00, 0.00, 0.3, -0.0
+
+:AEROFOIL_ANGLES -6.05, -9.2
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 240.00, 240.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 39000.00, 39000.00
+:SUSPENSION_DAMPING 6000.00, 6000.00
+:SUSPENSION_NATURAL_LENGTH 0.775, 0.755
+:SUSPENSION_MIN_EXTENSION -0.625, -0.63
+:SUSPENSION_MAX_EXTENSION -1.2, -1.2
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.34, 0.335
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.27, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.0, 0.0
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Escort RS Cosworth
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE ESCORT_RS
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.75
+	1, 3.329
+	2, 2.179
+	3, 1.609
+	4, 1.249
+	5, 1.000
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 100.00, 0.00, 0.2, 2.0
+
+:AEROFOIL_ANGLES -11.0, -15.0
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 150.00, 100.00
+:ANTI_DIVE_STIFFNESS 50.0, 50.0
+:SUSPENSION_MOE 48500.00, 48500.00
+:SUSPENSION_DAMPING 5800.00, 5800.00
+:SUSPENSION_NATURAL_LENGTH 0.70, 0.69
+:SUSPENSION_MIN_EXTENSION -0.525, -0.45
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.36
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.715, 0.70
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FR100
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FR100
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 8
+	-1, -5.00
+	0, 2.420
+	1, 3.049
+	2, 2.509
+	3, 1.959
+	4, 1.561
+	5, 1.249
+	6, 0.940
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.65
+
+:MASS BALLAST, 115.00, 0.00, 0.3, 1.5
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 150.00, 150.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 52000.00, 52000.00
+:SUSPENSION_DAMPING 5700.00, 5700.00
+:SUSPENSION_NATURAL_LENGTH 0.765, 0.785
+:SUSPENSION_MIN_EXTENSION -0.59, -0.614
+:SUSPENSION_MAX_EXTENSION -1.2, -1.2
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.36, 0.355
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.28, 0.22
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.765, 0.769
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FR200
+// menu_title
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FOCUS_FR200
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.420
+	1, 3.449
+	2, 2.109
+	3, 1.459
+	4, 1.149
+	5, 0.933
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.65
+
+:MASS BALLAST, 90.00, 0.00, 0.3, 1.3
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 150.00, 150.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 40000.00, 40000.00
+:SUSPENSION_DAMPING 5800.00, 5800.00
+:SUSPENSION_NATURAL_LENGTH 0.70, 0.71
+:SUSPENSION_MIN_EXTENSION -0.485, -0.479
+:SUSPENSION_MAX_EXTENSION -1.2, -1.2
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.36, 0.355
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.28, 0.22
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.771, 0.786
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FR500
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FR500
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.87
+	1, 3.299
+	2, 1.969
+	3, 1.389
+	4, 1.049
+	5, 0.830
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.65
+
+:MASS BALLAST, 97.00, 0.00, 0.3, -0.3
+
+:AEROFOIL_ANGLES -12.25, -8.6
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 200.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 54000.00, 54000.00
+:SUSPENSION_DAMPING 5600.00, 6100.00
+:SUSPENSION_NATURAL_LENGTH 0.67, 0.67
+:SUSPENSION_MIN_EXTENSION -0.52, -0.54
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+:SUSPENSION_UPPER_TIE_LENGTH 0.355, 0.355
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.28, 0.25
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.735, 0.755
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Ford GT
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FORD_GT
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 8
+	-1, -5.0000
+	0, 2.88
+	1, 3.609
+	2, 2.519
+	3, 1.869
+	4, 1.479
+	5, 1.199
+	6, 1.020
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.65
+
+:MASS BALLAST, 115.00, 0.00, 0.15, 2.0
+
+:AEROFOIL_ANGLES -18.00, -24.0
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 0.00, 0.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 40000.00, 45000.00
+:SUSPENSION_DAMPING 7000.00, 8000.00
+:SUSPENSION_NATURAL_LENGTH 0.73, 0.74
+:SUSPENSION_MIN_EXTENSION -0.60, -0.62
+:SUSPENSION_MAX_EXTENSION -0.85, -0.85
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.335, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.35, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.24
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.0, 0.0
+:WHEEL_SPACING 0.799, 0.820
+
+// 2006 Ford GT
+
+:CAR_TYPE 2006_FORD_GT
+
+:INHERIT_TYPE FORD_GT
+
+:RELAXATION_LENGTH 50.0
+
+:GEARING_ARRAY 8
+	-1, -5.0000
+	0, 2.88
+	1, 3.609
+	2, 2.519
+	3, 1.869
+	4, 1.479
+	5, 1.159
+	6, 0.98
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.65
+
+:MASS BALLAST, 125.00, 0.00, 0.15, 1.82
+
+:AEROFOIL_ANGLES -13.00, -25.5
+
+:SUSPENSION_MOE 47000.00, 55000.00
+:SUSPENSION_DAMPING 5000.00, 7000.00
+:SUSPENSION_NATURAL_LENGTH 0.735, 0.745
+:SUSPENSION_MIN_EXTENSION -0.60, -0.60
+:SUSPENSION_MAX_EXTENSION -0.85, -0.85
+
+// GT40 Mk1
+
+:CAR_TYPE 66_GT40
+
+:INHERIT_TYPE FORD_GT
+
+:GEARING_ARRAY 7
+-1, -5.0000
+0, 2.88
+1, 3.049
+2, 2.452
+3, 1.849
+4, 1.289
+5, 1.030
+
+:MASS BALLAST, 143.00, 0.00, 0.15, 1.8
+
+:AEROFOIL_ANGLES -17.00, -22.1
+
+:SUSPENSION_DAMPING 4500.00, 6000.00
+
+:WHEEL_SPACING 0.0, 0.0
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GT70
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE GT70
+
+:RELAXATION_LENGTH 0.65
+
+:GEARING_ARRAY 7
+	-1,		-3.16
+	0,		2.940
+	1,		3.160
+	2,		1.940
+	3,		1.410
+	4,		1.140
+	5,		1.065
+
+:BRAKE_PAD_FRICTION 1.00, 1.00
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST, 0.00, 0.00, 0.00, 0.00
+
+:AEROFOIL_ANGLES -2.0, -4.0
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 105.6, 105.3
+:ANTI_DIVE_STIFFNESS 70.2, 70.2
+:SUSPENSION_MOE 28100.00, 28100.00
+:SUSPENSION_DAMPING 4621.50, 4621.50
+:SUSPENSION_NATURAL_LENGTH 0.65, 0.685
+:SUSPENSION_MIN_EXTENSION -0.5834, -0.495
+:SUSPENSION_MAX_EXTENSION -0.8, -0.8
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.34, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.35, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.24
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.0, 0.0
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GT70 rally
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE GT70_OFFROAD
+
+:INHERIT_TYPE GT70
+
+:GEARING_ARRAY 7
+-1, -5.0000
+0, 2.6
+1, 3.709
+2, 2.559
+3, 1.959
+4, 1.449
+5, 1.130
+
+:MASS BALLAST, 150.00, 0.00, 0.15, -0.45
+
+:AEROFOIL_ANGLES -3.5, -4.4
+
+:ANTI_ROLLBAR_STIFFNESS 100.00, 50.00
+:ANTI_DIVE_STIFFNESS 0.00, 5.00
+:SUSPENSION_DAMPING 4590.00, 4690.00
+
+:SUSPENSION_MIN_EXTENSION -0.5634, -0.485
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GT90
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE GT90
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.0000
+	0, 2.6
+	1, 3.809
+	2, 2.399
+	3, 1.629
+	4, 1.269
+	5, 0.995
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 150.00, 0.00, 0.20, 0.0
+
+:AEROFOIL_ANGLES -2.75, -10.25
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 200.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 50000.00, 50000.00
+:SUSPENSION_DAMPING 5500.00, 6500.00
+:SUSPENSION_NATURAL_LENGTH 0.68, 0.70
+:SUSPENSION_MIN_EXTENSION -0.535, -0.53
+:SUSPENSION_MAX_EXTENSION -1.4, -1.4
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.355
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.0, 0.0
+:WHEEL_SPACING 0.78, 0.78
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Indigo
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE INDIGO
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 8
+	-1, -5.00
+	0, 2.35
+	1, 4.00
+	2, 2.67
+	3, 2.01
+	4, 1.53
+	5, 1.26
+	6, 1.05
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 105.00, 0.00, 0.20, 0.0
+
+:AEROFOIL_ANGLES -0.00, -8.36
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 300.00, 300.00
+:ANTI_DIVE_STIFFNESS 150.00, 150.00
+:SUSPENSION_MOE 54000.00, 54000.00
+:SUSPENSION_DAMPING 6500.00, 6500.00
+:SUSPENSION_NATURAL_LENGTH 0.72, 0.75
+:SUSPENSION_MIN_EXTENSION -0.55, -0.535
+:SUSPENSION_MAX_EXTENSION -1.6, -1.6
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.40, 0.40
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.0, 0.0
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Mustang Mach III
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MACH3
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 8
+	-1, -5.00
+	0, 2.87
+	1, 3.50
+	2, 2.299
+	3, 1.769
+	4, 1.359
+	5, 1.121
+	6, 1.000
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.60
+
+:MASS BALLAST, 100.00, 0.00, 0.3, 0.0
+
+:AEROFOIL_ANGLES -11.2, -9.0
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 200.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 55000.00, 55000.00
+:SUSPENSION_DAMPING 6400.00, 6400.00
+:SUSPENSION_NATURAL_LENGTH 0.695, 0.70
+:SUSPENSION_MIN_EXTENSION -0.48, -0.515
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Mustang 2005
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MUSTANG_2005
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 3.55
+	1, 3.029
+	2, 2.039
+	3, 1.429
+	4, 1.049
+	5, 0.810
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 100.00, 0.00, 0.3, 1.5
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 100.00, 50.00
+:ANTI_DIVE_STIFFNESS 0.0, 0.0
+:SUSPENSION_MOE 49000.00, 55000.00
+:SUSPENSION_DAMPING 6900.00, 7100.00
+:SUSPENSION_NATURAL_LENGTH 0.715, 0.715
+:SUSPENSION_MIN_EXTENSION -0.629, -0.60
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.798, 0.8
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Mustang GTR
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MUSTANG_GTR
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.75
+	1, 3.329
+	2, 2.179
+	3, 1.609
+	4, 1.249
+	5, 1.000
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 100.00, 0.00, 0.2, 2.0
+
+:AEROFOIL_ANGLES -13.9, -17.2
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 150.00, 100.00
+:ANTI_DIVE_STIFFNESS 0.0, 0.0
+:SUSPENSION_MOE 50000.00, 55000.00
+:SUSPENSION_DAMPING 6000.00, 7500.00
+:SUSPENSION_NATURAL_LENGTH 0.73, 0.73
+:SUSPENSION_MIN_EXTENSION -0.62, -0.515
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.36
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.839, 0.835
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RS500
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE RS500
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.90
+	1, 3.299
+	2, 1.969
+	3, 1.389
+	4, 1.039
+	5, 0.830
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.65
+
+:MASS BALLAST, 100.00, 0.00, 0.3, 2.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 200.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 54000.00, 54000.00
+:SUSPENSION_DAMPING 8000.00, 8000.00
+:SUSPENSION_NATURAL_LENGTH 0.67, 0.67
+:SUSPENSION_MIN_EXTENSION -0.575, -0.56
+:SUSPENSION_MAX_EXTENSION -0.8, -0.8
+:SUSPENSION_UPPER_TIE_LENGTH 0.355, 0.355
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.28, 0.25
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.665, 0.71
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Visos
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE VISOS
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 8
+	-1, -5.00
+	0, 2.75
+	1, 3.329
+	2, 2.549
+	3, 1.854
+	4, 1.428
+	5, 1.079
+	6, 0.905
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 140.00, 0.00, 0.3, 0.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 100.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 49000.00, 49000.00
+:SUSPENSION_DAMPING 5000.00, 5000.00
+:SUSPENSION_NATURAL_LENGTH 0.745, 0.75
+:SUSPENSION_MIN_EXTENSION -0.62, -0.515
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.36
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.734, 0.71
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Taurus Stock A
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE TAURUS_STOCK_A
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 8
+	-1, -5.0000
+	0, 2.0600
+	1, 3.2000
+	2, 2.6599
+	3, 2.0100
+	4, 1.4799
+	5, 1.2100
+	6, 0.9199
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.5
+
+:MASS BALLAST, 210.00, 0.00, 0.25, 1.0
+
+:AEROFOIL_ANGLES -1.00, -9.0
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 200.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 50000.00, 50000.00
+:SUSPENSION_DAMPING 6500.00, 7000.00
+:SUSPENSION_NATURAL_LENGTH 0.72, 0.70
+:SUSPENSION_MIN_EXTENSION -0.585, -0.53
+:SUSPENSION_MAX_EXTENSION -1.4, -1.4
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.40, 0.40
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.0, 0.0
+:WHEEL_SPACING 0.765, 0.799
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Shuffle cars
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2004 Fiesta ST
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FIESTA_ST
+
+:RELAXATION_LENGTH 50.0
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 3.2
+	1, 2.929
+	2, 2.059
+	3, 1.519
+	4, 1.119
+	5, 0.840
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.65
+
+:MASS BALLAST, 105.00, 0.00, 0.305, 1.8
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 180.00, 150.00
+:ANTI_DIVE_STIFFNESS 100.00, 100.00
+:SUSPENSION_MOE 45500.00, 45500.00
+:SUSPENSION_DAMPING 5650.00, 5650.00
+:SUSPENSION_NATURAL_LENGTH 0.68, 0.66
+:SUSPENSION_MIN_EXTENSION -0.515, -0.515
+:SUSPENSION_MAX_EXTENSION -1.2, -1.2
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Focus RS
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FOCUS_RS
+
+:RELAXATION_LENGTH 50.0
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.755
+	1, 4.229
+	2, 2.459
+	3, 1.759
+	4, 1.369
+	5, 1.110
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.65
+
+:MASS BALLAST, 100.00, 0.00, 0.3, 1.8
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 100.00, 100.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 47500.00, 47500.00
+:SUSPENSION_DAMPING 5400.00, 5400.00
+:SUSPENSION_NATURAL_LENGTH 0.69, 0.685
+:SUSPENSION_MIN_EXTENSION -0.52, -0.395
+:SUSPENSION_MAX_EXTENSION -1.2, -1.2
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.36, 0.34
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.28, 0.22
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2005 Mustang V6 (roofed)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MUSTANG_2005_V6_R
+
+:INHERIT_TYPE MUSTANG_2005
+
+:GEARING_ARRAY 7
+-1, -5.00
+0, 2.755
+1, 4.229
+2, 2.459
+3, 1.759
+4, 1.369
+5, 1.110
+
+:MASS BALLAST, 115.00, 0.00, 0.00, 1.2
+
+:SUSPENSION_DAMPING 5000.00, 5500.00
+:SUSPENSION_NATURAL_LENGTH 0.765, 0.765
+:WHEEL_SPACING 0.768, 0.77
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2005 Mustang V6 Convertible
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MUSTANG_2005_V6
+
+:INHERIT_TYPE MUSTANG_2005_V6_R
+
+:MASS BALLAST, 190.00, 0.00, 0.10, 1.3
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2004 Mustang Concept
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MUSTANG_CON
+
+:RELAXATION_LENGTH 1.00
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.75
+	1, 3.53
+	2, 2.49
+	3, 1.76
+	4, 1.35
+	5, 1.0
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.60
+
+:MASS BALLAST, 100.00, 0.00, 0.3, 0.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 300.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 45000.00, 45000.00
+:SUSPENSION_DAMPING 6500.00, 6750.00
+:SUSPENSION_NATURAL_LENGTH 0.695, 0.695
+:SUSPENSION_MIN_EXTENSION -0.62, -0.515
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Boss 302
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE BOSS_302
+
+:RELAXATION_LENGTH 43.75
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 2.85
+	1, 2.80
+	2, 1.89
+	3, 1.20
+	4, 1.00
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.60
+
+:MASS BALLAST, 100.00, 0.00, 0.3, 0.0
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 100.00, 100.00
+:ANTI_DIVE_STIFFNESS 140.00, 140.00
+:SUSPENSION_MOE 52000.00, 52000.00
+:SUSPENSION_DAMPING 5800.00, 5800.0
+:SUSPENSION_NATURAL_LENGTH 0.725, 0.72
+:SUSPENSION_MIN_EXTENSION -0.58, -0.58
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+/////////////////////////////////////////////////////////////////////
+// Boss 429
+/////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE BOSS_429
+
+:RELAXATION_LENGTH 43.75
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 2.85
+	1, 2.80
+	2, 1.76
+	3, 1.15
+	4, 0.85
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.60
+
+:MASS BALLAST, 100.00, 0.00, 0.3, 0.75
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 160.00, 160.00
+:ANTI_DIVE_STIFFNESS 120.00, 120.00
+:SUSPENSION_MOE 51000.00, 51000.00
+:SUSPENSION_DAMPING 6800.00, 6800.00
+:SUSPENSION_NATURAL_LENGTH 0.72, 0.72
+:SUSPENSION_MIN_EXTENSION -0.545, -0.54
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RS500 Rally
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE RS500_RALLY
+
+:INHERIT_TYPE RS500
+
+:ANTI_ROLLBAR_STIFFNESS 150.00, 150.00
+:ANTI_DIVE_STIFFNESS 25.00, 25.00
+:SUSPENSION_MOE 54000.00, 54000.00
+:SUSPENSION_DAMPING 7500.00, 7500.00
+:SUSPENSION_NATURAL_LENGTH 0.74, 0.74
+:SUSPENSION_MIN_EXTENSION -0.575, -0.56
+:SUSPENSION_MAX_EXTENSION -0.8, -0.8
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.355, 0.355
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.28, 0.25
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Escort RS Cosworth Rally
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE ESCORT_RS_RALLY
+
+:INHERIT_TYPE ESCORT_RS
+
+:ANTI_ROLLBAR_STIFFNESS 150.00, 100.00
+:ANTI_DIVE_STIFFNESS 50.0, 50.0
+:SUSPENSION_MOE 48500.00, 48500.00
+:SUSPENSION_DAMPING 7800.00, 7800.00
+:SUSPENSION_NATURAL_LENGTH 0.75, 0.74
+:SUSPENSION_MIN_EXTENSION -0.525, -0.45
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.36
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// '66 Bronco Wagon
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE BRONCO_66
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 5
+-1, -5.00
+0, 2.700
+1, 3.889
+2, 2.019
+3, 1.210
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.55
+
+:MASS BALLAST, 115.00, 0.00, 0.40, 0.5
+
+:AEROFOIL_ANGLES -13.1, -7.97
+:CAR_GROUND_CLEARANCE 0.00, 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 275.00, 275.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 50000.00, 50000.00
+:SUSPENSION_DAMPING 6400.00, 6400.00
+:SUSPENSION_NATURAL_LENGTH 0.80, 0.77
+:SUSPENSION_MIN_EXTENSION -0.4, -0.48
+:SUSPENSION_MAX_EXTENSION -1.7, -1.7
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// '66 Bronco Wagon SRP
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE SRP_BRONCO_66
+
+:INHERIT_TYPE BRONCO_66
+
+:GEARING_ARRAY 6
+-1, -5.00
+0, 3.060
+1, 3.089
+2, 2.619
+3, 1.981
+4, 0.960
+
+:MASS BALLAST, 40.00, 0.00, 0.35, -0.05
+
+:SUSPENSION_MOE 52000.00, 52000.00
+:SUSPENSION_DAMPING 6700.00, 6700.00
+:SUSPENSION_NATURAL_LENGTH 0.76, 0.73
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// bmw m3 GTR
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE BMW_M3_GTR
+
+:RELAXATION_LENGTH 1.00
+
+:GEARING_ARRAY 8
+	-1	-5.00
+	0	3.1
+	1	3.53
+	2	2.49
+	3	1.81
+	4	1.39
+	5	1.2
+	6	1.0
+
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST 200.00 0.00 0.7 0.15
+
+:AEROFOIL_ANGLES -5.0 -12.0
+:CAR_GROUND_CLEARANCE 0.12 0.12
+
+:ANTI_ROLLBAR_STIFFNESS 250.00 250.00
+:ANTI_DIVE_STIFFNESS 0.0, 0.0
+:SUSPENSION_MOE 32500.00 32500.00
+:SUSPENSION_DAMPING 3500.00 3500.00
+:SUSPENSION_NATURAL_LENGTH 0.67 0.67
+:SUSPENSION_MIN_EXTENSION -0.550 -0.550
+:SUSPENSION_MAX_EXTENSION -0.870 -0.870
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.0, 0.0
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Shelby GR-1
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE SHELBY_GR1
+
+:INHERIT_TYPE FORD_GT
+
+:ANTI_ROLLBAR_STIFFNESS 200.00, 150.00
+:ANTI_DIVE_STIFFNESS 0.0, 0.0
+:SUSPENSION_MOE 45000.00, 40500.00
+:SUSPENSION_DAMPING 7000.00, 6500.00
+:SUSPENSION_NATURAL_LENGTH 0.75, 0.75
+:SUSPENSION_MIN_EXTENSION -0.725, -0.710
+:SUSPENSION_MAX_EXTENSION -0.95, -0.95
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.335, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.35, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.24
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_SPACING 0.0, 0.0
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 1993 Mustang GT 5.0
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MUSTANG_1993
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+-1, -3.6
+0, 2.95
+1, 3.339
+2, 2.119
+3, 1.519
+4, 1.169
+5, 1.000
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.5
+
+:MASS BALLAST, 210.00, 0.00, 0.3, 1.25
+
+:AEROFOIL_ANGLES -11.0, -11.0
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 100.00, 150.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 38000.00, 38000.00
+:SUSPENSION_DAMPING 5000.00, 5000.00
+:SUSPENSION_NATURAL_LENGTH 0.77, 0.76
+:SUSPENSION_MIN_EXTENSION -0.60, -0.58
+:SUSPENSION_MAX_EXTENSION -0.86, -0.86
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.345, 0.355
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 1970 XY Falcon GT-HO
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FALCON_XY_HO
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 6
+-1, -5.00
+0, 3.00
+1, 3.50
+2, 2.27
+3, 1.675
+4, 1.00
+
+:BRAKE_PAD_FRICTION 0.7, 0.7
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST, 139.00, 0.00, 0.3, -0.5
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 60.00, 50.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 46000.00, 46000.00
+:SUSPENSION_DAMPING 5800.00, 5800.00
+:SUSPENSION_NATURAL_LENGTH 0.75, 0.75
+:SUSPENSION_MIN_EXTENSION -0.390, -0.390
+:SUSPENSION_MAX_EXTENSION -1.0, -1.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35, 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20, 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Capri 1600 GT 72
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE CAPRI_1600_GT
+
+:INHERIT_TYPE CAPRI_RS2600_70
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 2.5
+	1, 3.40
+	2, 2.44
+	3, 1.38
+	4, 1.03
+
+:MASS BALLAST, 65.00, 0.00, 0.3, 0.0
+
+:SUSPENSION_MOE 56000.00, 56000.00
+:SUSPENSION_DAMPING 6700.00, 6700.00
+
+// srp version
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE CAPRI_1600_GT_RALLY
+
+:INHERIT_TYPE CAPRI_1600_GT
+
+:GEARING_ARRAY 6
+	-1, -5.00
+	0, 2.5
+	1, 3.30
+	2, 2.51
+	3, 1.59
+	4, 1.15
+
+:MASS BALLAST, 47.50, 0.00, 0.3, 0.0
+
+:SUSPENSION_MOE 47000.00, 47000.00
+:SUSPENSION_DAMPING 7000.00, 7000.00
+:SUSPENSION_NATURAL_LENGTH 0.67, 0.67
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2006 Shelby GT500 Concept
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE GT500_CONCEPT
+
+:RELAXATION_LENGTH 50.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 3.30
+	1, 3.329
+	2, 2.179
+	3, 1.609
+	4, 1.249
+	5, 1.000
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.65
+
+:MASS BALLAST, 100.00, 0.00, 0.3, 1.6
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 180.00, 180.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 54000.00, 54000.00
+:SUSPENSION_DAMPING 8000.00, 8000.00
+:SUSPENSION_NATURAL_LENGTH 0.68, 0.67
+:SUSPENSION_MIN_EXTENSION -0.535, -0.57
+:SUSPENSION_MAX_EXTENSION -0.8, -0.8
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.355, 0.355
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.28, 0.25
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.785, 0.81
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2001 Escape
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE 2001_ESCAPE
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+-1, -5.00
+0, 2.90
+1, 3.90
+2, 2.60
+3, 1.89
+4, 1.52
+5, 1.26
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.65
+
+:MASS BALLAST, 80.00, 0.00, 0.30, 0.0
+
+:AEROFOIL_ANGLES -13.1, -7.97
+:CAR_GROUND_CLEARANCE 0.00, 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 150.00, 100.00
+:ANTI_DIVE_STIFFNESS 100.00, 100.00
+:SUSPENSION_MOE 44000.00, 44000.00
+:SUSPENSION_DAMPING 5000.00, 5000.00
+:SUSPENSION_NATURAL_LENGTH 0.76, 0.76
+:SUSPENSION_MIN_EXTENSION -0.469, -0.595
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+////
+// Focus RS8
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FOCUS_RS8
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+-1, -5.00
+0, 3.5
+1, 3.449
+2, 2.109
+3, 1.459
+4, 1.149
+5, 0.930
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.65
+
+:MASS BALLAST, 100.00, 0.00, 0.3, 1.3
+
+:AEROFOIL_ANGLES -11.0, -8.4
+:CAR_GROUND_CLEARANCE 0.0, 0.0
+
+:ANTI_ROLLBAR_STIFFNESS 150.00, 150.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 48000.00, 48000.00
+:SUSPENSION_DAMPING 5750.00, 5750.00
+:SUSPENSION_NATURAL_LENGTH 0.70, 0.69
+:SUSPENSION_MIN_EXTENSION -0.605, -0.479
+:SUSPENSION_MAX_EXTENSION -1.2, -1.2
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.36, 0.355
+:SUSPENSION_LOWER_TIE_LENGTH 0.36, 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.28, 0.22
+:SUSPENSION_OUTER_TIE_SPACING 0.30, 0.30
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.74, 0.769
+
+// FROR ports by tatara_hisoka (TODO: refine the rest)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE BRONCO
+
+:RELAXATION_LENGTH 30.0
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	3.27
+	1	5.26
+	2	3.17
+	3	2.23
+	4	1.70
+	5	1.25
+
+:BRAKE_PAD_FRICTION 0.9 0.9
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 300.00 300.00
+:ANTI_DIVE_STIFFNESS 500.00 500.00
+:SUSPENSION_MOE 30000.00 30000.00
+:SUSPENSION_DAMPING 8000.00 8000.00
+:SUSPENSION_NATURAL_LENGTH 0.84 0.845
+:SUSPENSION_MIN_EXTENSION 0.0 0.0
+:SUSPENSION_MAX_EXTENSION -1.5 -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE CHIEF250
+
+:RELAXATION_LENGTH 3000
+
+:GEARING_ARRAY 8
+	-1	-5.0000
+	0	2.88
+	1	3.609
+	2	2.519
+	3	1.869
+	4	1.479
+	5	1.159
+	6	0.98
+
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.5
+
+:MASS BALLAST 100.00 0.00 0.60 -0.5
+
+:AEROFOIL_ANGLES -13.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 100.00 100.00
+:ANTI_DIVE_STIFFNESS 100.00 100.00
+:SUSPENSION_MOE 50000.00 50000.00
+:SUSPENSION_DAMPING 10000.00 10000.00
+:SUSPENSION_NATURAL_LENGTH 0.885 0.87
+:SUSPENSION_MIN_EXTENSION -0.5 -0.5
+:SUSPENSION_MAX_EXTENSION -2.0 -2.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE DEFEND
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	3.27
+	1	5.26
+	2	3.17
+	3	2.23
+	4	1.70
+	5	1.30
+
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.60
+
+:MASS BALLAST 100.00 0.00 0.60 1.5
+
+:AEROFOIL_ANGLES -8.84 -8.84
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 400.00 400.00
+:ANTI_DIVE_STIFFNESS 600.00 130.00
+:SUSPENSION_MOE 50000.00 50000.00
+:SUSPENSION_DAMPING 9600.00 9600.00
+:SUSPENSION_NATURAL_LENGTH 0.80 0.80
+:SUSPENSION_MIN_EXTENSION -0.7 -0.7
+:SUSPENSION_MAX_EXTENSION -0.9 -0.9
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE DISCO3
+
+:RELAXATION_LENGTH 30.0
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	2.95
+	1	4.14
+	2	2.86
+	3	2.09
+	4	1.62
+	5	1.29
+
+:BRAKE_PAD_FRICTION 1.3 1.3
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 400.00 400.00
+:ANTI_DIVE_STIFFNESS 400.00 400.00
+:SUSPENSION_MOE 30000.00 30000.00
+:SUSPENSION_DAMPING 10000.00 10000.00
+:SUSPENSION_NATURAL_LENGTH 0.9 0.885
+:SUSPENSION_MIN_EXTENSION -0.5 -0.5
+:SUSPENSION_MAX_EXTENSION -2.0 -2.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.38 0.38
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE EQUATOR
+
+:RELAXATION_LENGTH 30.0
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	2.95
+	1	4.14
+	2	2.86
+	3	2.09
+	4	1.62
+	5	1.29
+
+:BRAKE_PAD_FRICTION 1.3 1.3
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 500.00 500.00
+:ANTI_DIVE_STIFFNESS 400.00 400.00
+:SUSPENSION_MOE 55000.00 55000.00
+:SUSPENSION_DAMPING 6500.00 6500.00
+:SUSPENSION_NATURAL_LENGTH 0.885 0.87
+:SUSPENSION_MIN_EXTENSION -0.5 -0.5
+:SUSPENSION_MAX_EXTENSION -2.0 -2.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.39 0.39
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.0, 0.0
+
+// 2008 escape zolton
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE ESCAPE
+
+:RELAXATION_LENGTH 0.75
+
+:GEARING_ARRAY 7
+	-1, -5.00
+	0, 2.86
+	1, 3.86
+	2, 2.60
+	3, 1.89
+	4, 1.60
+	5, 1.31
+
+:BRAKE_PAD_FRICTION 1.0, 1.0
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST, 84.00, 0.00, 0.30, 1.3
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 150.00, 300.00
+:ANTI_DIVE_STIFFNESS 100.00, 100.00
+:SUSPENSION_MOE 46000.00, 46000.00
+:SUSPENSION_DAMPING 6400.00, 6500.00
+:SUSPENSION_NATURAL_LENGTH 0.763, 0.763
+:SUSPENSION_MIN_EXTENSION -0.629, -0.635
+:SUSPENSION_MAX_EXTENSION -1.5, -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_LOWER_TIE_LENGTH 0.40, 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30, 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45, 0.45
+:WHEEL_TOE_IN 0.00, 0.00
+:WHEEL_SPACING 0.0, 0.0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE EXPED
+
+:RELAXATION_LENGTH 30.0
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	2.95
+	1	4.14
+	2	2.86
+	3	2.09
+	4	1.62
+	5	1.29
+
+:BRAKE_PAD_FRICTION 0.9 0.9
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 150.00 300.00
+:ANTI_DIVE_STIFFNESS 300.00 200.00
+:SUSPENSION_MOE 55000.00 55000.00
+:SUSPENSION_DAMPING 7000.00 7000.00
+:SUSPENSION_NATURAL_LENGTH 0.9 0.88
+:SUSPENSION_MIN_EXTENSION -0.7 -0.7
+:SUSPENSION_MAX_EXTENSION -0.95 -0.93
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.37 0.37
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.0 0.0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE F150FX4
+
+:RELAXATION_LENGTH 30.0
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	2.95
+	1	4.14
+	2	2.86
+	3	2.09
+	4	1.62
+	5	1.29
+
+:BRAKE_PAD_FRICTION 0.9 0.9
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 150.00 300.00
+:ANTI_DIVE_STIFFNESS 300.00 200.00
+:SUSPENSION_MOE 55000.00 55000.00
+:SUSPENSION_DAMPING 7000.00 7000.00
+:SUSPENSION_NATURAL_LENGTH 0.9 0.88
+:SUSPENSION_MIN_EXTENSION -0.7 -0.7
+:SUSPENSION_MAX_EXTENSION -0.95 -0.93
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.37 0.37
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.0 0.0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE F150_09
+
+:RELAXATION_LENGTH 30.0
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	2.95
+	1	4.14
+	2	2.86
+	3	2.09
+	4	1.62
+	5	1.29
+
+:BRAKE_PAD_FRICTION 0.9 0.9
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 150.00 300.00
+:ANTI_DIVE_STIFFNESS 300.00 200.00
+:SUSPENSION_MOE 55000.00 55000.00
+:SUSPENSION_DAMPING 7000.00 7000.00
+:SUSPENSION_NATURAL_LENGTH 0.9 0.88
+:SUSPENSION_MIN_EXTENSION -0.7 -0.7
+:SUSPENSION_MAX_EXTENSION -0.95 -0.93
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.37 0.37
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.0 0.0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE F250SD
+
+:RELAXATION_LENGTH 30.0
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	2.95
+	1	4.14
+	2	2.86
+	3	2.09
+	4	1.62
+	5	1.29
+
+:BRAKE_PAD_FRICTION 1.3 1.3
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 300.00 250.00
+:ANTI_DIVE_STIFFNESS 100.00 100.00
+:SUSPENSION_MOE 50000.00 50000.00
+:SUSPENSION_DAMPING 10000.00 10000.00
+:SUSPENSION_NATURAL_LENGTH 0.830 0.87
+:SUSPENSION_MIN_EXTENSION -0.7 -0.7
+:SUSPENSION_MAX_EXTENSION -2.0 -2.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.38 0.38
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE F350SD
+
+:RELAXATION_LENGTH 30.0
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	2.95
+	1	4.14
+	2	2.86
+	3	2.09
+	4	1.62
+	5	1.29
+
+:BRAKE_PAD_FRICTION 1.3 1.3
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 300.00 300.00
+:ANTI_DIVE_STIFFNESS 100.00 100.00
+:SUSPENSION_MOE 50000.00 50000.00
+:SUSPENSION_DAMPING 10000.00 10000.00
+:SUSPENSION_NATURAL_LENGTH 0.885 0.87
+:SUSPENSION_MIN_EXTENSION -0.7 -0.7
+:SUSPENSION_MAX_EXTENSION -2.0 -2.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.38 0.38
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE FREEL2
+
+:RELAXATION_LENGTH 30.0
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	2.95
+	1	4.14
+	2	2.86
+	3	2.09
+	4	1.62
+	5	1.29
+
+:BRAKE_PAD_FRICTION 1.3 1.3
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 400.00 400.00
+:ANTI_DIVE_STIFFNESS 100.00 100.00
+:SUSPENSION_MOE 80000.00 80000.00
+:SUSPENSION_DAMPING 12000.00 12000.00
+:SUSPENSION_NATURAL_LENGTH 0.74 0.7
+:SUSPENSION_MIN_EXTENSION -0.6 -0.6
+:SUSPENSION_MAX_EXTENSION -0.9 -0.92
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.375 0.375
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MIGHT350
+
+:RELAXATION_LENGTH 30000.0
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	2.95
+	1	4.14
+	2	2.86
+	3	2.09
+	4	1.62
+	5	1.29
+
+:BRAKE_PAD_FRICTION 1.3 1.3
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 300.00 300.00
+:ANTI_DIVE_STIFFNESS 100.00 100.00
+:SUSPENSION_MOE 50000.00 50000.00
+:SUSPENSION_DAMPING 10000.00 10000.00
+:SUSPENSION_NATURAL_LENGTH 0.885 0.87
+:SUSPENSION_MIN_EXTENSION -0.7 -0.7
+:SUSPENSION_MAX_EXTENSION -2.0 -2.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.38 0.38
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE RANGER
+
+:RELAXATION_LENGTH 30.0
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	3.27
+	1	5.26
+	2	3.17
+	3	2.23
+	4	1.70
+	5	1.30
+
+:BRAKE_PAD_FRICTION 0.9 0.9
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 300.00 300.00
+:ANTI_DIVE_STIFFNESS 400.00 400.00
+:SUSPENSION_MOE 50000.00 50000.00
+:SUSPENSION_DAMPING 8000.00 8000.00
+:SUSPENSION_NATURAL_LENGTH 0.90 0.80
+:SUSPENSION_MIN_EXTENSION 0.0 0.0
+:SUSPENSION_MAX_EXTENSION -1.5 -1.5
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.37 0.37
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE RRSPORT
+
+:RELAXATION_LENGTH 30.0
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	2.95
+	1	4.14
+	2	2.86
+	3	2.09
+	4	1.62
+	5	1.29
+
+:BRAKE_PAD_FRICTION 1.3 1.3
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 500.00 500.00
+:ANTI_DIVE_STIFFNESS 400.00 400.00
+:SUSPENSION_MOE 45000.00 45000.00
+:SUSPENSION_DAMPING 10000.00 10000.00
+:SUSPENSION_NATURAL_LENGTH 0.885 0.87
+:SUSPENSION_MIN_EXTENSION -0.5 -0.5
+:SUSPENSION_MAX_EXTENSION -2.0 -2.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.38 0.38
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE SPORTRAC
+
+:RELAXATION_LENGTH 30.0
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	2.95
+	1	4.14
+	2	2.86
+	3	2.09
+	4	1.62
+	5	1.29
+
+:BRAKE_PAD_FRICTION 0.9 0.9
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 150.00 300.00
+:ANTI_DIVE_STIFFNESS 300.00 200.00
+:SUSPENSION_MOE 55000.00 55000.00
+:SUSPENSION_DAMPING 7000.00 7000.00
+:SUSPENSION_NATURAL_LENGTH 0.9 0.88
+:SUSPENSION_MIN_EXTENSION -0.7 -0.7
+:SUSPENSION_MAX_EXTENSION -0.95 -0.93
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.37 0.37
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.0 0.0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE EXPLORER_2008
+
+:INHERIT_TYPE SPORTRAC
+
+:RELAXATION_LENGTH 30.0
+
+:GEARING_ARRAY 7
+-1	-5.00
+0	2.95
+1	4.14
+2	2.86
+3	2.09
+4	1.62
+5	1.29
+
+:BRAKE_PAD_FRICTION 0.9 0.9
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 150.00 300.00
+:ANTI_DIVE_STIFFNESS 300.00 200.00
+:SUSPENSION_MOE 55000.00 55000.00
+:SUSPENSION_DAMPING 7000.00 7000.00
+:SUSPENSION_NATURAL_LENGTH 0.9 0.88
+:SUSPENSION_MIN_EXTENSION -0.7 -0.7
+:SUSPENSION_MAX_EXTENSION -0.95 -0.93
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.37 0.37
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.0 0.0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE STORMER
+
+:RELAXATION_LENGTH 20.75
+
+:GEARING_ARRAY 8
+	-1	-5.0000
+	0	2.88
+	1	3.609
+	2	2.519
+	3	1.869
+	4	1.479
+	5	1.159
+	6	0.98
+
+:BRAKE_PAD_FRICTION 1.3 1.3
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 300.00 300.00
+:ANTI_DIVE_STIFFNESS 400.00 400.00
+:SUSPENSION_MOE 40000.00 40000.00
+:SUSPENSION_DAMPING 8500.00 8500.00
+:SUSPENSION_NATURAL_LENGTH 0.885 0.87
+:SUSPENSION_MIN_EXTENSION -0.7 -0.7
+:SUSPENSION_MAX_EXTENSION -2.0 -2.0
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.38 0.38
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE SVX
+
+:RELAXATION_LENGTH 30.0
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	2.95
+	1	4.14
+	2	2.86
+	3	2.09
+	4	1.62
+	5	1.29
+
+:BRAKE_PAD_FRICTION 1.3 1.3
+:BRAKE_DISTRIBUTION 0.45
+
+:MASS BALLAST 100.00 0.00 0.40 1.7
+
+:AEROFOIL_ANGLES -10.1 -7.97
+:CAR_GROUND_CLEARANCE 0.00 0.00
+
+:ANTI_ROLLBAR_STIFFNESS 400.00 400.00
+:ANTI_DIVE_STIFFNESS 100.00 100.00
+:SUSPENSION_MOE 80000.00 80000.00
+:SUSPENSION_DAMPING 12000.00 12000.00
+:SUSPENSION_NATURAL_LENGTH 0.74 0.7
+:SUSPENSION_MIN_EXTENSION -0.6 -0.6
+:SUSPENSION_MAX_EXTENSION -0.9 -0.92
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.375 0.375
+:SUSPENSION_LOWER_TIE_LENGTH 0.40 0.40
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.45 0.45
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.00 0.00
+
+// TIR ports by tatara_hisoka
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE AUDI_R8
+
+:INHERIT_TYPE FORD_GT
+
+:GEARING_ARRAY 8
+	-1	-5.00
+	0	3.45
+	1	3.23
+	2	2.29
+	3	1.81
+	4	1.49
+	5	1.26
+	6	1.06
+
+:MASS BALLAST 100.00 0.00 0.60 2.0
+
+:AEROFOIL_ANGLES -30.00 -40.00
+
+:SUSPENSION_DAMPING 4500.00 4500.00
+
+:WHEEL_SPACING 0.0, 0.0
+:RELAXATION_LENGTH 2.00
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.50
+:CAR_GROUND_CLEARANCE 0.12 0.12
+:ANTI_ROLLBAR_STIFFNESS 300.00 300.00
+:SUSPENSION_MOE 45000.00 45000.00
+:SUSPENSION_NATURAL_LENGTH 0.68 0.68
+:SUSPENSION_MIN_EXTENSION -0.560 -0.560
+:SUSPENSION_MAX_EXTENSION -0.880 -0.880
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.40 0.40
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.00 0.00
+:ANTI_DIVE_STIFFNESS 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE BENTLEY_SPEED_EIGHT
+
+:RELAXATION_LENGTH 2.00
+
+:GEARING_ARRAY 8
+	-1	-5.00
+	0	1.72
+	1	4.23
+	2	2.79
+	3	2.01
+	4	1.59
+	5	1.30
+	6	1.16
+
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST 110.00 0.00 0.50 2.0
+
+:AEROFOIL_ANGLES -30.00 -40.00
+:CAR_GROUND_CLEARANCE 0.12 0.12
+
+:ANTI_ROLLBAR_STIFFNESS 300.00 300.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 45000.00 45000.00
+:SUSPENSION_DAMPING 4500.00 4500.00
+:SUSPENSION_NATURAL_LENGTH 0.64 0.64
+:SUSPENSION_MIN_EXTENSION -0.520 -0.520
+:SUSPENSION_MAX_EXTENSION -0.840 -0.840
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.40 0.40
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.0, 0.0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE BMW_LMR
+
+:RELAXATION_LENGTH 2.00
+
+:GEARING_ARRAY 8
+	-1	-5.00
+	0	3.8
+	1	3.77
+	2	2.52
+	3	1.86
+	4	1.48
+	5	1.23
+	6	1.02
+
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST 90.00 0.00 0.80 1.00
+
+:AEROFOIL_ANGLES -15.00 -30.00
+:CAR_GROUND_CLEARANCE 0.12 0.12
+
+:ANTI_ROLLBAR_STIFFNESS 300.00 300.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 45000.00 45000.00
+:SUSPENSION_DAMPING 4500.00 4500.00
+:SUSPENSION_NATURAL_LENGTH 0.69 0.69
+:SUSPENSION_MIN_EXTENSION -0.570 -0.570
+:SUSPENSION_MAX_EXTENSION -0.890 -0.890
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.40 0.40
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.00, 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE DOME_S101
+
+:INHERIT_TYPE FORD_GT
+
+:GEARING_ARRAY 8
+	-1	-4.00
+	0	3.69
+	1	3.93
+	2	2.49
+	3	1.91
+	4	1.49
+	5	1.16
+	6	0.93
+
+:MASS BALLAST 90.00 0.00 0.80 2.0
+
+:AEROFOIL_ANGLES -15.0 -35.0
+
+:SUSPENSION_DAMPING 4500.00 4500.00
+
+:WHEEL_SPACING 0.0, 0.0
+:RELAXATION_LENGTH 2.00
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.50
+:CAR_GROUND_CLEARANCE 0.12 0.12
+:ANTI_ROLLBAR_STIFFNESS 400.00 400.00
+:SUSPENSION_MOE 45000.00 45000.00
+:SUSPENSION_NATURAL_LENGTH 0.67 0.67
+:SUSPENSION_MIN_EXTENSION -0.550 -0.550
+:SUSPENSION_MAX_EXTENSION -0.870 -0.870
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.40 0.40
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.00 0.00
+:ANTI_DIVE_STIFFNESS 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE LISTER_LMP
+
+:INHERIT_TYPE FORD_GT
+
+:GEARING_ARRAY 8
+	-1	-4.00
+	0	3.19
+	1	4.03
+	2	2.59
+	3	1.91
+	4	1.49
+	5	1.22
+	6	1.08
+
+:MASS BALLAST 60.00 0.00 1.0 1.3
+
+:AEROFOIL_ANGLES -25.0 -30.0
+
+:SUSPENSION_DAMPING 4000.00 4000.00
+
+:WHEEL_SPACING 0.0, 0.0
+:RELAXATION_LENGTH 2.00
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.50
+:CAR_GROUND_CLEARANCE 0.12 0.12
+:ANTI_ROLLBAR_STIFFNESS 300.00 300.00
+:SUSPENSION_MOE 45000.00 45000.00
+:SUSPENSION_NATURAL_LENGTH 0.68 0.68
+:SUSPENSION_MIN_EXTENSION -0.560 -0.560
+:SUSPENSION_MAX_EXTENSION -0.880 -0.880
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.40 0.40
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.00 0.00
+:ANTI_DIVE_STIFFNESS 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE PANOZ_LMP_SPIDER
+
+:INHERIT_TYPE FORD_GT
+
+:GEARING_ARRAY 8
+	-1	-5.0000
+	0	3.1500
+	1	4.8600
+	2	2.9900
+	3	2.2299
+	4	1.6900
+	5	1.3600
+	6	1.1400
+
+:MASS BALLAST 110.00 0.00 0.45 0.60
+
+:AEROFOIL_ANGLES -20.00 -30.00
+
+:SUSPENSION_DAMPING 4500.00 4500.00
+
+:WHEEL_SPACING 0.0, 0.0
+:RELAXATION_LENGTH 2.00
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.50
+:CAR_GROUND_CLEARANCE 0.12 0.12
+:ANTI_ROLLBAR_STIFFNESS 300.00 300.00
+:SUSPENSION_MOE 45000.00 45000.00
+:SUSPENSION_NATURAL_LENGTH 0.68 0.68
+:SUSPENSION_MIN_EXTENSION -0.560 -0.560
+:SUSPENSION_MAX_EXTENSION -0.880 -0.880
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.40 0.40
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.0 0.0
+:ANTI_DIVE_STIFFNESS 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE PILBEAM_MP84
+
+:INHERIT_TYPE RS200
+
+:GEARING_ARRAY 8
+	-1	-5.0000
+	0	3.3700
+	1	4.89
+	2	3.10
+	3	2.23
+	4	1.69
+	5	1.36
+	6	1.06
+
+:AEROFOIL_ANGLES -25.00 -35.00
+
+:SUSPENSION_MOE 45000.00 45000.00
+:SUSPENSION_NATURAL_LENGTH 0.67 0.67
+:RELAXATION_LENGTH 2.00
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.50
+:MASS BALLAST 70.00 0.00 1.00 1.5
+:CAR_GROUND_CLEARANCE 0.12 0.12
+:ANTI_ROLLBAR_STIFFNESS 300.00 300.00
+:SUSPENSION_DAMPING 4000.00 4000.00
+:SUSPENSION_MIN_EXTENSION -0.550 -0.550
+:SUSPENSION_MAX_EXTENSION -0.870 -0.870
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.40 0.40
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.0 0.0
+:ANTI_DIVE_STIFFNESS 0.00 0.00
+:WHEEL_SPACING 0.0, 0.0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE CHAMP_CAR
+
+:RELAXATION_LENGTH 2.00
+
+:GEARING_ARRAY 8
+	-1	-5.0000
+	0	3.9000
+	1	4.0000
+	2	2.6700
+	3	2.0100
+	4	1.5300
+	5	1.2600
+	6	1.0700
+
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST 60.00 0.00 0.20 0.50
+
+:AEROFOIL_ANGLES -25.00 -30.0
+:CAR_GROUND_CLEARANCE 0.12 0.12
+
+:ANTI_ROLLBAR_STIFFNESS 300.00 300.00
+:ANTI_DIVE_STIFFNESS 0.00, 0.00
+:SUSPENSION_MOE 45000.00 45000.00
+:SUSPENSION_DAMPING 4500.00 4500.00
+:SUSPENSION_NATURAL_LENGTH 0.69 0.69
+:SUSPENSION_MIN_EXTENSION -0.570 -0.570
+:SUSPENSION_MAX_EXTENSION -0.890 -0.890
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.40 0.40
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.0 0.0
+:WHEEL_SPACING 0.00, 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE VEMAC_320R
+
+:RELAXATION_LENGTH 1.50
+
+:GEARING_ARRAY 8
+	-1	-4.90
+	0	4.40
+	1	2.66
+	2	1.78
+	3	1.30
+	4	1.00
+	5	0.84
+	6	0.70
+
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST 100.00 0.00 0.60 -0.75
+
+:AEROFOIL_ANGLES -12.00 -17.23
+:CAR_GROUND_CLEARANCE 0.12 0.12
+
+:ANTI_ROLLBAR_STIFFNESS 200.00 200.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 44000.00 43000.00
+:SUSPENSION_DAMPING 4000.00 4000.00
+:SUSPENSION_NATURAL_LENGTH 0.69 0.69
+:SUSPENSION_MIN_EXTENSION -0.570 -0.570
+:SUSPENSION_MAX_EXTENSION -0.890 -0.890
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.40 0.40
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.0, 0.0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE MCLAREN_F1_GTR
+
+:INHERIT_TYPE FORD_GT
+
+:GEARING_ARRAY 8
+	-1	-5.00
+	0	3.05
+	1	3.93
+	2	2.59
+	3	1.81
+	4	1.43
+	5	1.15
+	6	0.93
+
+:MASS BALLAST 70.00 0.00 0.50 1.50
+
+:AEROFOIL_ANGLES -20.00 -25.00
+
+:SUSPENSION_DAMPING 4000.00 4500.00
+
+:WHEEL_SPACING 0.0, 0.0
+:RELAXATION_LENGTH 1.50
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.50
+:CAR_GROUND_CLEARANCE 0.12 0.12
+:ANTI_ROLLBAR_STIFFNESS 200.00 500.00
+:SUSPENSION_MOE 40000.00 40000.00
+:SUSPENSION_NATURAL_LENGTH 0.69 0.69
+:SUSPENSION_MIN_EXTENSION -0.570 -0.570
+:SUSPENSION_MAX_EXTENSION -0.890 -0.890
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.30 0.30
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.00 0.00
+:ANTI_DIVE_STIFFNESS 0.00 0.00
+
+:CAR_TYPE PANOZ_GTR1
+
+:RELAXATION_LENGTH 2.00
+
+:GEARING_ARRAY 8
+	-1	-5.0000
+	0	3.1500
+	1	4.8600
+	2	2.9900
+	3	2.2299
+	4	1.6900
+	5	1.3600
+	6	1.1400
+
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.50
+
+:MASS BALLAST 110.00 0.00 0.45 0.60
+
+:AEROFOIL_ANGLES -20.00 -30.00
+:CAR_GROUND_CLEARANCE 0.12 0.12
+
+:ANTI_ROLLBAR_STIFFNESS 300.00 300.00
+:ANTI_DIVE_STIFFNESS 0.0, 0.0
+:SUSPENSION_MOE 45000.00 45000.00
+:SUSPENSION_DAMPING 4500.00 4500.00
+:SUSPENSION_NATURAL_LENGTH 0.68 0.68
+:SUSPENSION_MIN_EXTENSION -0.560 -0.560
+:SUSPENSION_MAX_EXTENSION -0.880 -0.880
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.40 0.40
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.0 0.0
+:WHEEL_SPACING 0.0, 0.0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE SINTURA_GTS
+
+:INHERIT_TYPE FORD_GT
+
+:GEARING_ARRAY 8
+	-1	-4.90
+	0	5.20
+	1	2.73
+	2	1.85
+	3	1.37
+	4	1.08
+	5	0.85
+	6	0.70
+
+:MASS BALLAST 100.00 0.00 0.50 2.0
+
+:AEROFOIL_ANGLES -14.00 -25.0
+
+:SUSPENSION_DAMPING 4000.00 4000.00
+
+:WHEEL_SPACING 0.0, 0.0
+:RELAXATION_LENGTH 1.50
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.60
+:CAR_GROUND_CLEARANCE 0.12 0.12
+:ANTI_ROLLBAR_STIFFNESS 400.00 400.00
+:SUSPENSION_MOE 40000.00 40000.00
+:SUSPENSION_NATURAL_LENGTH 0.66 0.66
+:SUSPENSION_MIN_EXTENSION -0.540 -0.540
+:SUSPENSION_MAX_EXTENSION -0.860 -0.860
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.40 0.40
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.00 0.00
+:ANTI_DIVE_STIFFNESS 0.00 0.00
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE AUDI_TT
+
+:RELAXATION_LENGTH 1.00
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	2.7
+	1	4.13
+	2	2.79
+	3	2.08
+	4	1.6
+	5	1.2
+
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.65
+
+:MASS BALLAST 180.00 0.00 0.75 -0.2
+
+:AEROFOIL_ANGLES -12.0 -15.0
+:CAR_GROUND_CLEARANCE 0.12 0.12
+
+:ANTI_ROLLBAR_STIFFNESS 250.00 250.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 39000.00 37500.00
+:SUSPENSION_DAMPING 4000.00 4000.00
+:SUSPENSION_NATURAL_LENGTH 0.69 0.69
+:SUSPENSION_MIN_EXTENSION -0.570 -0.570
+:SUSPENSION_MAX_EXTENSION -0.890 -0.890
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.00 0.00
+:WHEEL_SPACING 0.0, 0.0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE NOBLE_M12_GTO
+
+:RELAXATION_LENGTH 1.00
+
+:GEARING_ARRAY 7
+	-1	-5.00
+	0	2.70
+	1	4.13
+	2	2.95
+	3	2.07
+	4	1.58
+	5	1.22
+
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.60
+
+:MASS BALLAST 230.00 0.00 0.7 0.9
+
+:AEROFOIL_ANGLES -7.00 -12.0
+:CAR_GROUND_CLEARANCE 0.12 0.12
+
+:ANTI_ROLLBAR_STIFFNESS 250.00 250.00
+:ANTI_DIVE_STIFFNESS 50.00, 50.00
+:SUSPENSION_MOE 30000.00 30000.00
+:SUSPENSION_DAMPING 3500.00 3500.00
+:SUSPENSION_NATURAL_LENGTH 0.64 0.64
+:SUSPENSION_MIN_EXTENSION -0.520 -0.520
+:SUSPENSION_MAX_EXTENSION -0.840 -0.840
+
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.35 0.35
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.0 0.0
+:WHEEL_SPACING 0.0, 0.0
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAR_TYPE QUAIFE_GT1
+
+:INHERIT_TYPE FORD_GT
+
+:GEARING_ARRAY 8
+	-1	-5.00
+	0	3.70
+	1	3.73
+	2	2.59
+	3	1.91
+	4	1.47
+	5	1.20
+	6	1.00
+
+:MASS BALLAST 200.00 0.00 0.54 1.50
+
+:AEROFOIL_ANGLES -11.0 -12.0
+
+:SUSPENSION_DAMPING 3500.00 3500.00
+
+:WHEEL_SPACING 0.0, 0.0
+:RELAXATION_LENGTH 1.00
+:BRAKE_PAD_FRICTION 1.0 1.0
+:BRAKE_DISTRIBUTION 0.50
+:CAR_GROUND_CLEARANCE 0.12 0.12
+:ANTI_ROLLBAR_STIFFNESS 500.00 500.00
+:SUSPENSION_MOE 37500.00 37500.00
+:SUSPENSION_NATURAL_LENGTH 0.71 0.71
+:SUSPENSION_MIN_EXTENSION -0.590 -0.590
+:SUSPENSION_MAX_EXTENSION -0.910 -0.910
+:SUSPENSION_UPPER_TIE_LENGTH 0.35 0.35
+:SUSPENSION_LOWER_TIE_LENGTH 0.36 0.36
+:SUSPENSION_INNER_TIE_SPACING 0.20 0.20
+:SUSPENSION_OUTER_TIE_SPACING 0.30 0.30
+:WHEEL_TOE_IN 0.00 0.00
+:ANTI_DIVE_STIFFNESS 0.00 0.00
+
+:END
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

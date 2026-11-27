@@ -1,0 +1,358 @@
+
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			DHSC
+:CLEAR				0
+:COLOUR				255 255 255 255
+:POSITION_START	0.000000 0.000000
+:POSITION_END		0.000000 0.000000
+//:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\GREYFADE.PSD
+:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\GRADY.PSD
+:TIME_LENGTH		1.000000
+
+:S{*****>>>
+	
+	/////////////////////////////////////////////////
+	// TITLE
+	////////////////////////////////////////////////
+	
+	:INHERIT					TITLE
+	:TEXT_JUSTIFY			2
+	:POSITION_START		-0.493750 0.104167
+	:POSITION_END			-0.493750 0.104167
+	
+	/////////////////////////////////////////////////
+	// TITLE
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// BACK ICON AND TEXT
+	////////////////////////////////////////////////
+	
+	// DONE
+	:INHERIT					BACK_ICON
+	:POSITION_START		0.426563 0.860416
+	:POSITION_END			0.426563 0.860416
+	
+	:INHERIT					BACK_TEXT
+	:POSITION_START		0.328125 0.839583
+	:POSITION_END			0.328125 0.839583
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	//  TOP BARS
+	////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				INFO_BAR_TYPE_1
+	:AUTOSIZE				0
+	:SIZE						1.000000 0.037500
+	:COLOUR					95 95 90 255
+	//:TEXTURE_ENUM			GRAPHICS\GAME\COMMON\TITLEBAR.PSD
+	:POSITION_START		-0.493750 0.154167
+	:POSITION_END			-0.493750 0.154167
+	:TIME_LENGTH			0.166667
+	
+	:S{*****>>>
+	
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			RECORD_NAME
+		:AUTOSIZE			0 
+		:SIZE					0.300000 1.000000
+		:CLEAR				1
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		1						//TEXT_JUSTIFY_LEFT_CENTRE
+		:TEXT					0
+		:POSITION_START	0.548437 0.000000
+		:POSITION_END		0.548437 0.000000
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			RECORD_VALUE
+		:AUTOSIZE			0 
+		:SIZE					0.151563 1.000000
+		:CLEAR				1
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		2						//TEXT_JUSTIFY_RIGHT_CENTRE
+		:TEXT					0
+		:POSITION_START	0.842000 0.000000
+		:POSITION_END		0.842000 0.000000
+		:TIME_LENGTH		0.166667
+		
+		
+	:E}*****<<<
+	
+	/////////////////////////////////////////////////
+	// SKILL BG PANEL
+	////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				SKILL_BAR_BACKGROUND
+	:CLEAR					0
+	:COLOUR					95 95 90 255
+	:AUTOSIZE				0
+	:SIZE						0.500000 0.500000
+	:POSITION_START		0.000000 0.000000
+	:POSITION_END			0.000000 0.000000
+	//The position and size of the above object is set in the code
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	:INHERIT					INFO_BAR_TYPE_1
+	:OBJECT_ID				BIG_AIR_INFO
+	:CLEAR					1
+	:POSITION_START		-0.493750 0.204167
+	:POSITION_END			-0.493750 0.204167
+	
+	:INHERIT					INFO_BAR_TYPE_1
+	:CLEAR					1
+	:OBJECT_ID				DRIFT_INFO
+	:POSITION_START		-0.493750 0.0
+	:POSITION_END			-0.493750 0.0
+	
+	:INHERIT					INFO_BAR_TYPE_1
+	:CLEAR					1
+	:OBJECT_ID				WHEEL_SPIN_INFO
+	:POSITION_START		-0.493750 0.0
+	:POSITION_END			-0.493750 0.0
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// LAP RECORDS TITLE
+	////////////////////////////////////////////////
+	
+	:INHERIT					TITLE
+	:OBJECT_ID				LAP_RECORDS_TITLE
+	:TEXT						TXT_DRIVER_DETAILS_RECORDS_LAP_RECORDS
+	:TEXT_JUSTIFY			5
+	:POSITION_START		-0.493750 0.372917
+	:POSITION_END			-0.493750 0.372917
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	//  H_SCORE TABLE BARS
+	////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				INFO_BAR_TYPE_2
+	:AUTOSIZE				0
+	:SIZE						1.000000 0.037500
+	//:SIZE_START				0.000000 0.032500
+	//:SIZE_END				1.000000 0.032500
+	:COLOUR					95 95 90 255
+	:POSITION_START		0.500000 0.552084
+	:POSITION_END			0.000000 0.552084
+	:TIME_LENGTH			0.166667
+	
+	:S{*****>>>
+	
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			NUMBER
+		:CLEAR				1
+		:AUTOSIZE			0
+		:SIZE					0.060938 1.000000
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		2						//TEXT_JUSTIFY_RIGHT_CENTRE
+		:TEXT					0
+		:POSITION_START	0.012343 0.000000
+		:POSITION_END		0.012343 0.000000
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			DRIVER_NAME
+		:AUTOSIZE			0
+		:SIZE					0.250000 1.000000
+		:CLEAR				1
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		1						//TEXT_JUSTIFY_LEFT_CENTRE
+		:TEXT					0
+		:POSITION_START	0.097011 0.000000
+		:POSITION_END		0.097011 0.000000
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			VEHICLE_NAME
+		:AUTOSIZE			0
+		:SIZE					0.368750 1.000000
+		:CLEAR				1
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		1						//TEXT_JUSTIFY_LEFT_CENTRE
+		:TEXT					0
+		:POSITION_START	0.357812 0.000000
+		:POSITION_END		0.357812 0.000000
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			RECORD_VALUE
+		:AUTOSIZE			0
+		:SIZE					0.164065 1.000000
+		:CLEAR				1
+		:FONT					2
+		:FONT_COLOUR		206 206 206 255
+		:TEXT_JUSTIFY		2						//TEXT_JUSTIFY_RIGHT_CENTRE
+		:TEXT					0
+		:POSITION_START	0.78 0.000000
+		:POSITION_END		0.78 0.000000
+		:TIME_LENGTH		0.166667
+		
+	:E}*****<<<
+	
+	
+	/////////////////////////////////////////////////
+	// HSC_TABLE BG PANEL
+	////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				HSC_TABLE_BACKGROUND
+	:CLEAR					0
+	:COLOUR					95 95 90 255
+	:AUTOSIZE				0
+	:SIZE						0.500000 0.500000
+	:POSITION_START		0.000000 0.000000
+	:POSITION_END			0.000000 0.000000
+	//The position and size of the above object is set in the code
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	:INHERIT					INFO_BAR_TYPE_2
+	:CLEAR					1
+	:OBJECT_ID				HSCORE_POS_1
+	:POSITION_START		0.500000 0.604168
+	:POSITION_END			0.000000 0.604168
+	
+	:INHERIT					INFO_BAR_TYPE_2
+	:CLEAR					1
+	:OBJECT_ID				HSCORE_POS_2
+	:POSITION_START		0.000000 0.0
+	:POSITION_END			0.000000 0.0
+	
+	:INHERIT					INFO_BAR_TYPE_2
+	:CLEAR					1
+	:OBJECT_ID				HSCORE_POS_3
+	:POSITION_START		0.000000 0.0
+	:POSITION_END			0.000000 0.0
+	
+	:INHERIT					INFO_BAR_TYPE_2
+	:CLEAR					1
+	:OBJECT_ID				HSCORE_POS_4
+	:POSITION_START		0.000000 0.0
+	:POSITION_END			0.000000 0.0
+	
+	:INHERIT					INFO_BAR_TYPE_2
+	:CLEAR					1
+	:OBJECT_ID				HSCORE_POS_5
+	:POSITION_START		0.000000 0.0
+	:POSITION_END			0.000000 0.0
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////////////
+	// MENU BAR
+	/////////////////////////////////////////////////////////////
+	
+	:INHERIT				MENUBAR
+	
+	//////////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////////
+	
+	///////////////////////////////////////////////////////////
+	/// ARROWS
+	//////////////////////////////////////////////////////////
+	
+	:INHERIT				LEFTARROW
+	
+	:INHERIT				RIGHTARROW
+	
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// BUTTONS
+	////////////////////////////////////////////////
+	
+	:INHERIT							FR3_DEFAULT_BUTTON
+	:OBJECT_ID						TRACK_TYPE_BUTTON
+	:TEXT_JUSTIFY					2
+	:TEXT								TXT_CHALLENGE_DETAILS_TRACK
+	:POSITION_START				-1.546875 0.429167
+	:POSITION_END					-0.546875 0.429167
+	:OFFSET_TIME					0.000000
+	
+	:TYPE								UI_TYPE_TEXT
+	:OBJECT_ID						TRACK_TYPE_VALUE
+	:CLEAR							16
+	:AUTOSIZE						0
+	:SIZE								1.000000 0.060000
+	:FONT								1									//FONT_NORMAL
+	:HIGHLIGHTED_FONT				1									//FONT_NORMAL
+	:FONT_COLOUR					50 50 50 255
+	:HIGHLIGHTED_FONT_COLOUR	0 0 0 255
+	:TEXT_JUSTIFY					1
+	:JUSTIFY_OFFSET				0.045352 0.000000
+	:POSITION_START				1.442187 0.429167
+	:POSITION_END					0.442187 0.429167
+	:TIME_LENGTH					0.166667
+	:OFFSET_TIME					0.000000
+	
+	:INHERIT							FR3_DEFAULT_BUTTON
+	:OBJECT_ID						CAR_TYPE_BUTTON
+	:TEXT_JUSTIFY					2
+	:TEXT								TXT_XBOX_LIVE_CAR_TYPE
+	:POSITION_START				-1.546875 0.489583
+	:POSITION_END					-0.546875 0.489583
+	:OFFSET_TIME					0.100000
+	
+	:INHERIT							TRACK_TYPE_VALUE
+	:OBJECT_ID						CAR_TYPE_VALUE
+	:POSITION_START				1.442187 0.485417
+	:POSITION_END					0.442187 0.485417
+	:OFFSET_TIME					0.100000
+	
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////////
+	// LINE PLOTER
+	/////////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				LINE_PLOTER
+	:CLEAR					1
+	:AUTOSIZE				0
+	:SIZE						1.0 1.0
+	
+	//////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////
+	
+	
+:E}*****<<<
+
+
+:CONNECTION	"TRACK_TYPE_BUTTON"	"CAR_TYPE_BUTTON"		"CAR_TYPE_BUTTON"		""	""
+:CONNECTION	"CAR_TYPE_BUTTON"		"TRACK_TYPE_BUTTON"	"TRACK_TYPE_BUTTON"	""	""
+
+

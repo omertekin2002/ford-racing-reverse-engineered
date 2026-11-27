@@ -1,0 +1,208 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"PAINT_CAN"                            	scenes\ui\can.ma
+	"DAVELS_MAP_TEXTURES"                  	scenes\ui\davelsmp.ma
+	"STARTLIGHTS"                          	scenes\ui\startlites.ma
+	"PITBOARD"                             	scenes\ui\pitboard.ma
+	"TEST_FENCE_HORIZONTAL"                	scenes\tech\test_fence_horizontal.ma
+	"TEST_FENCE_VERTICAL"                  	scenes\tech\test_fence_vertical.ma
+	"TEST_TYRE_STACK"                      	scenes\tech\test_tyre_stack.ma
+	"TEST_TYRE_SINGLE"                     	scenes\tech\test_tyre_single.ma
+	"TEST_TOWER_LEG_4"                     	scenes\tech\test_tower_leg_4.ma
+	"TEST_TOWER_LEG_3"                     	scenes\tech\test_tower_leg_3.ma
+	"TEST_TOWER_LEG_2"                     	scenes\tech\test_tower_leg_2.ma
+	"TEST_TOWER_LEG_1"                     	scenes\tech\test_tower_leg_1.ma
+	"TEST_TOWER_LEG_0"                     	scenes\tech\test_tower_leg_0.ma
+	"TEST_TOWER_TOP"                       	scenes\tech\test_tower_top.ma
+	"DOMINO"                               	scenes\tech\domino.ma
+	"OVERLAY"                              	scenes\tech\overlay.ma
+	"ENVIRO_16BIT_TAGGER"                  	scenes\tech\enviro_tagger.ma
+	"GENERIC_CAR"                          	scenes\tech\generic car cams.ma
+	"LEADERCONE"                           	scenes\gameplay\simple_cone.ma
+	"TIMER5"                               	scenes\gameplay\timer5.ma
+	"MARKER_CONE"                          	scenes\gameplay\marker_cone.ma
+	"EXTRA_CRATE_LARGE"                    	scenes\gameplay\extra_crate_large.ma
+	"EXTRA_CRATE_MEDIUM"                   	scenes\gameplay\extra_crate_medium.ma
+	"EXTRA_CRATE_SMALL"                    	scenes\gameplay\extra_crate.ma
+	"EFFECTS"                              	scenes\misc_particles.ma
+	"ROPE"                                 	scenes\rope.ma
+	"TOWBAR"                               	scenes\towbar.ma
+	"BLURMASK"                             	scenes\blur_mask.ma
+	"SPEED_STREAK"                         	scenes\speed_streak.ma
+	"SHADOW"                               	scenes\shadow.ma
+	"RACELINE"                             	scenes\raceline.ma
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+	"REDLIGHT2"
+	"REDLIGHT3"
+	"REDLIGHT1"
+	"GREENLIGHTS"
+	"SPEEDO_NEEDLE"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid skeletal animation names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"FRONT_HIGH_ALT"
+	"FRONT_HIGH"
+	"LEFT_HIGH"
+	"RIGHT_HIGH"
+	"ROOF_FORWARD"
+	"ROOF_REVERSE"
+	"RIGHT_CLIPSAFE"
+	"LEFT_CLIPSAFE"
+	"STARTC"
+	"STARTB_OLD"
+	"STARTB"
+	"STARTA"
+	"ROOF"
+	"BONNET"
+	"BUMPER_RIGHT"
+	"BUMPER_LEFT"
+	"BUMPER"
+	"COCKPIT"
+	"CHASE"
+	"PAUSE"
+	"LEFT_TO_RIGHT"
+	"RIGHT_TO_LEFT"
+	"SCREENSHOT_CLOSEUP_FRONTRIGHT"
+	"SCREENSHOT_CLOSEUP_BACKRIGHT"
+	"SCREENSHOT_CLOSEUP_FRONTLEFT"
+	"SCREENSHOT_CLOSEUP_BACKLEFT"
+	"SCREENSHOT_TOP"
+	"SCREENSHOT_LEFT"
+	"SCREENSHOT_RIGHT"
+	"SCREENSHOT_BACKRIGHT"
+	"SCREENSHOT_FRONT"
+	"SCREENSHOT_BACKLEFT"
+	"SCREENSHOT_FRONTRIGHT"
+	"SCREENSHOT_FRONTLEFT"
+	"BACK_BOUNCE"
+	"BACK_UP"
+	"WHEEL_LEFT"
+	"WHEEL_RIGHT"
+	"BACK"
+	"LEFT_OLD"
+	"LEFT"
+	"RIGHT_BACK"
+	"RIGHT_OLD"
+	"RIGHT"
+	"FRONT"
+	"FB_RIGHT"
+	"FB_LEFT"
+	"START"
+	"FINISH"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	64x64   	-	[  fM       ]	"CRATE"                                 	9b:71:43:00	 (World size: 1.420213)
+	64x64   	-	[  f        ]	"SKILLSCONE"                            	f4:b6:36:00	 (World size: 5.740840)
+	32x32   	-	[  fM       ]	"RACELINE"                              	6e:6e:6e:00	 (World size: 1.310660)
+	64x32   	-	[A fM     # ]	"SPEED_STREAK"                          	1d:1d:1f:1e	 (World size: 1.276142)
+	64x64   	-	[  fM       ]	"UI_LIGHTS"                             	47:45:3b:00	 (World size: 10.063682)
+	32x16   	-	[  fM       ]	"UI_GLOWS"                              	1e:19:09:00	 (World size: 7.591908)
+	64x16   	-	[  fM       ]	"UI_BOARD"                              	2d:2e:32:00	 (World size: 781.507874)
+	16x16   	-	[A fM    $  ]	"MAP_DOT"                               	6c:6c:6c:98	 (World size: 1.965990)
+	16x16   	-	[A fM    $  ]	"MAP_TRACK"                             	90:90:90:7f	 (World size: 1.965990)
+	64x64   	-	[A fM       ]	"CAR_DRAFT_ICON"                        	47:42:25:64	 (World size: 3.000000)
+	128x128 	-	[  fM       ]	"CANART"                                	c5:bf:b9:00	 (World size: 3.913567)
+	64x64   	-	[A fM       ]	"CAR_PLAYER_ICON"                       	42:3f:32:72	 (World size: 3.000000)
+	128x16  	-	[A fM    $  ]	"NEEDLE"                                	1b:1b:1b:23	 (World size: 129.323044)
+	128x128 	-	[  fM   !   ]	"ENVIRO_3"                              	92:92:99:00	 (World size: 263.940857)
+	64x64   	-	[A f     $  ]	"SHADOW"                                	00:00:00:ea	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"BLURMASK"                              	a3:a3:a3:8e	 (World size: 1.310660)
+	128x128 	-	[  fM       ]	"TEST_TYRE_TOP"                         	26:26:26:00	 (World size: 1.043972)
+	64x64   	-	[  fM       ]	"TEST_TYRE_TREAD"                       	42:42:42:00	 (World size: 0.532559)
+	128x32  	-	[  fM       ]	"TEST_FENCE_VERT"                       	53:4f:31:00	 (World size: 0.519576)
+	128x32  	-	[  fM       ]	"TEST_FENCE_HORIZ"                      	7b:6f:56:00	 (World size: 0.942179)
+	128x128 	-	[A fM    $  ]	"EXHAUST"                               	ef:ef:ef:39	 (World size: 1.310660)
+	128x128 	-	[ASfM   !   ]	"TYRE"                                  	f5:0c:0c:ff	 (World size: 1.310660)
+	64x64   	-	[  f        ]	"SPARK"                                 	3b:34:1c:00	 (World size: 20000.000000)
+	64x64   	-	[A f        ]	"LEAFS"                                 	73:54:13:7e	 (World size: 20000.000000)
+	32x32   	-	[A fM    $  ]	"SNOW_FLAKE"                            	ff:ff:ff:23	 (World size: 4.000000)
+	64x64   	-	[  fM       ]	"BOOST"                                 	1f:1f:1f:00	 (World size: 1.310660)
+	128x64  	-	[  fM       ]	"SPOTTY"                                	b6:b6:b6:00	 (World size: 3.977911)
+	32x32   	-	[  fM   !   ]	"HOOK"                                  	34:38:40:00	 (World size: 0.623554)
+	128x16  	-	[ASfM       ]	"ROPE"                                  	b6:a0:75:ff	 (World size: 0.325372)
+	64x64   	-	[  fM       ]	"CONE"                                  	ae:4c:4c:00	 (World size: 0.993127)
+	128x128 	-	[  fM   !   ]	"TIMER"                                 	78:78:78:00	 (World size: 2.499084)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

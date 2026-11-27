@@ -1,0 +1,172 @@
+
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			NTGSE
+:CLEAR				0
+:AUTOSIZE			0
+:SIZE					1.000000 1.000000
+:COLOUR				255 255 255 255
+:POSITION_START	0.000000 0.000000
+:POSITION_END		0.000000 0.000000
+:TIME_LENGTH		1.000000
+
+:S{*****>>>
+
+	///////////////////////////////////////////////////////////
+	///TITLE
+	//////////////////////////////////////////////////////////
+	
+	:INHERIT				TITLE
+	:TEXT_JUSTIFY		3
+	:POSITION_START	0.0 0.093750
+	:POSITION_END		0.0 0.093750
+	
+	///////////////////////////////////////////////////////////
+	///BACK ICON AND TEXT
+	//////////////////////////////////////////////////////////
+	
+	:INHERIT				BACK_ICON
+	
+	:INHERIT				BACK_TEXT
+	
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+
+	:TYPE					UI_TYPE_BASIC
+	:CLEAR				1
+	:AUTOSIZE			0
+	:SIZE					1.000000 1.00000
+	:OBJECT_ID			MOVINGWINDOW
+	:POSITION_START	0.000000 -0.1420000
+	:POSITION_END		0.000000 -0.1420000
+	:TIME_LENGTH		1.000000
+	
+	:S{*****>>>
+
+		///////////////////////////////////////////////////////////
+		///MENU BAR
+		//////////////////////////////////////////////////////////
+		
+		:INHERIT			MENUBAR
+		
+		///////////////////////////////////////////////////////////
+		///
+		//////////////////////////////////////////////////////////
+		
+		///////////////////////////////////////////////////////////
+		/// ARROWS
+		//////////////////////////////////////////////////////////
+		
+		:INHERIT				LEFTARROW
+		
+		:INHERIT				RIGHTARROW
+		
+		///////////////////////////////////////////////////////////
+		///
+		//////////////////////////////////////////////////////////
+	
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			CARTYPE
+		:TEXT_JUSTIFY		2
+		:TEXT					TXT_XBOX_LIVE_CAR_TYPE
+		:POSITION_START	-1.493750 0.292090
+		:POSITION_END		-0.493750 0.292090
+		
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			CARTYPENUMBER
+		:TEXT_JUSTIFY		1
+		:TEXT					0
+		:POSITION_START	1.468750 0.292090
+		:POSITION_END		0.468750 0.292090
+		
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			TRACKTYPE
+		:TEXT_JUSTIFY		2
+		:TEXT					TXT_XBOX_LIVE_TRACK_TYPE
+		:POSITION_START	-1.493750 0.348340
+		:POSITION_END		-0.493750 0.348340
+		
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			TRACKTYPENUMBER
+		:TEXT_JUSTIFY		1
+		:TEXT					0
+		:POSITION_START	1.468750 0.348340
+		:POSITION_END		0.468750 0.348340
+		
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			COLLISION
+		:TEXT_JUSTIFY		2
+		:TEXT					TXT_XBOX_LIVE_COLLISIONS
+		:POSITION_START	-1.493750 0.410840
+		:POSITION_END		-0.493750 0.410840
+		
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			COLLISIONNUMBER
+		:TEXT_JUSTIFY		1
+		:TEXT					0
+		:POSITION_START	1.468750 0.410840
+		:POSITION_END		0.468750 0.410840
+		
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			LAPS
+		:TEXT_JUSTIFY		2
+		:TEXT					TXT_RACE_OPTIONS_LAPS
+		:POSITION_START	-1.493750 0.462923
+		:POSITION_END		-0.493750 0.462923
+		
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			LAPSNUMBER
+		:TEXT_JUSTIFY		1
+		:TEXT					0
+		:POSITION_START	1.468750 0.462923
+		:POSITION_END		0.468750 0.462923
+		
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			PUBLICSLOTS
+		:TEXT_JUSTIFY		2
+		:TEXT					TXT_XBOX_LIVE_PLAYER_SLOTS
+		:POSITION_START	-1.493750 0.514583
+		:POSITION_END		-0.493750 0.514583
+		
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			PUBLICSLOTSNUMBER
+		:TEXT_JUSTIFY		1
+		:TEXT					0
+		:POSITION_START	1.468750 0.514583
+		:POSITION_END		0.468750 0.514583
+		
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			PRIVATESLOTS
+		:TEXT_JUSTIFY		2
+		:TEXT					TXT_XBOX_LIVE_FRIEND_SLOTS
+		:POSITION_START	-1.493750 0.568750
+		:POSITION_END		-0.493750 0.568750
+		
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			PRIVATESLOTSNUMBER
+		:TEXT_JUSTIFY		1
+		:TEXT					0
+		:POSITION_START	1.468750 0.568750
+		:POSITION_END		0.468750 0.568750
+		
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			START_BUTTON
+		:TEXT_JUSTIFY		2
+		:TEXT					0
+		:POSITION_START	-1.493750 0.542090
+		:POSITION_END		-0.493750 0.542090
+		
+	:E}*****<<<
+	
+:E}*****<<<
+
+											//UP				//DOWN				//LEFT	//RIGHT
+:CONNECTION		"CARTYPE"			"START_BUTTON"	"TRACKTYPE"			"none"	"none"
+:CONNECTION		"TRACKTYPE"			"CARTYPE"		"COLLISION"			"none"	"none"
+:CONNECTION		"COLLISION"			"TRACKTYPE"		"LAPS"				"none"	"none"
+:CONNECTION		"LAPS"				"COLLISION"		"PUBLICSLOTS"		"none"	"none"
+:CONNECTION		"PUBLICSLOTS"		"LAPS"			"PRIVATESLOTS"		"none"	"none"
+:CONNECTION		"PRIVATESLOTS"		"PUBLICSLOTS"	"START_BUTTON"		"none"	"none"
+:CONNECTION		"START_BUTTON"		"PRIVATESLOTS" "CARTYPE"			"none"	"none"
+
+

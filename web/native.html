@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ford Racing 3 — Native WebGL2</title>
+  <title>Ford Racing 3 Shuffle — Native WebGL2</title>
   <style>
     html, body {
       margin: 0;
@@ -89,17 +89,17 @@
 </head>
 <body>
   <div id="stage">
-    <canvas id="fr3-canvas" aria-label="Ford Racing 3 Native WebGL2 canvas"></canvas>
+    <canvas id="fr3-canvas" aria-label="Ford Racing 3 Shuffle Native WebGL2 canvas"></canvas>
     <div id="overlay" role="status" aria-live="polite">
-      <h1>Ford Racing 3</h1>
+      <h1>Ford Racing 3 Shuffle</h1>
       <div id="bar-wrap"><div id="bar"></div></div>
       <p id="msg">Loading native engine…</p>
     </div>
   </div>
   <aside id="rights-notice" aria-label="Rights notice">
-    <p>An independent reimplementation that reads the 2004 demo’s files, not the original executable. Its physics and AI are approximations.</p>
-    <p>Unofficial fan project, not affiliated with the rights holders. Ford Racing 3 demo © 2004 Empire Interactive Europe Ltd.
-    <a href="https://www.moddb.com/games/ford-racing/downloads/ford-racing-3-demo" target="_blank" rel="noopener">Official demo</a> ·
+    <p>An independent reimplementation that reads Ford Racing 3 Shuffle’s files, not the original executable. Its physics and AI are approximations.</p>
+    <p>Unofficial fan project, not affiliated with the rights holders. Ford Racing 3 © 2004 Empire Interactive Europe Ltd.
+    <a href="https://github.com/ZippyZolton/Ford-Racing-3-Shuffle" target="_blank" rel="noopener">Ford Racing 3 Shuffle</a> ·
     <a href="https://github.com/omertekin2002/ford-racing-reverse-engineered/issues" target="_blank" rel="noopener">Request removal</a></p>
   </aside>
   <script type="module">
@@ -107,7 +107,8 @@
 
     const params = new URLSearchParams(location.search);
     const sound = params.get("sound") !== "false";
-    const zipUrl = params.get("zip") || "runtime/fr3.zip";
+    const zipUrl = params.get("zip");
+    const manifestUrl = params.get("manifest") || "runtime/game-manifest.json";
     const canvas = document.getElementById("fr3-canvas");
     const overlay = document.getElementById("overlay");
     const bar = document.getElementById("bar");
@@ -129,7 +130,7 @@
 
     mountNativeEngine({
       canvas,
-      zipUrl,
+      ...(zipUrl ? { zipUrl } : { manifestUrl }),
       sound,
       onProgress(fraction, status) {
         const pct = Math.max(0, Math.min(100, Math.round(fraction * 100)));

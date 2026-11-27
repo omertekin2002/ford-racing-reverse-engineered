@@ -1,0 +1,108 @@
+
+//////////////////////////////////////////////////////
+// UI_SCREEN
+//////////////////////////////////////////////////////
+
+:TYPE 									UI_TYPE_SCREEN
+:OBJECT_ID 								PS_CTRLS
+:AUTOSIZE 								0
+:CLEAR 									0
+:POSITION_START 						0.0 0.0
+:POSITION_END 							0.0 0.0
+:SIZE 									1.0 1.0
+:STRETCH_GRAPHIC 						1
+:TEXTURE_ENUM 							GRAPHICS\GAME\BKGNDS\MUST03.PSD
+:TIME_LENGTH 							0.16667
+
+:S{*****>>>
+
+	//////////////////////////////////////////////////////
+	// TITLE BAR
+	//////////////////////////////////////////////////////
+	
+	:INHERIT									TITLE
+	:POSITION_START						-0.05781 0.14375
+	:POSITION_END							-0.05781 0.14375
+	:SIZE										0.52344 0.03542
+	:TEXT_JUSTIFY							2
+	:JUSTIFY_OFFSET						0.04535 0.0
+	
+	//////////////////////////////////////////////////////
+	// 
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// BACK ICON AND TEXT
+	//////////////////////////////////////////////////////
+	
+	// DONE
+	:INHERIT									BACK_ICON
+	:POSITION_START						0.38438 0.53125
+	:POSITION_END							0.38438 0.53125
+	
+	:INHERIT									BACK_TEXT
+	:POSITION_START						0.32188 0.54167
+	:POSITION_END							0.32188 0.54167
+	:TEXT_JUSTIFY							4
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// BUTTONS
+	//////////////////////////////////////////////////////
+
+	:INHERIT									MENUBAR
+
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID								BUTTON_FORCE_FEEDBACK
+	:TEXT_JUSTIFY							2
+	:TEXT										TXT_OPTIONS_CONTROLS_FORCE_FEEDBACK_ENABLED
+	:POSITION_START						-0.52656 0.21458
+	:POSITION_END							-0.52656 0.21458
+
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID								BUTTON_FORCE_FEEDBACK_STRENGTH
+	:TEXT_JUSTIFY							2
+	:TEXT										TXT_OPTIONS_CONTROLS_FORCE_FEEDBACK_STRENGTH
+	:POSITION_START						-0.52625 0.26875
+	:POSITION_END							-0.52625 0.26875
+		
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID								BUTTON_DEAD_ZONE
+	:TEXT_JUSTIFY							2
+	:TEXT										TXT_OPTIONS_CONTROLS_WHEEL_DEADZONE
+	:POSITION_START						-0.52625 0.32292
+	:POSITION_END							-0.52625 0.32292
+	
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID								BUTTON_LINEARITY
+	:TEXT_JUSTIFY							2
+	:TEXT										TXT_OPTIONS_CONTROLS_WHEEL_LINEARITY
+	:POSITION_START						-0.52625 0.38125
+	:POSITION_END							-0.52625 0.38125
+
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID								BUTTON_CALIBRATE
+	:TEXT_JUSTIFY							2
+	:TEXT										TXT_OPTIONS_CONTROLS_CALIBRATE
+	:POSITION_START						-0.52625 0.43542
+	:POSITION_END							-0.52526 0.43542
+	
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+:E}*****<<<
+
+:CONNECTION "BUTTON_FORCE_FEEDBACK"					"BUTTON_CALIBRATE"					"BUTTON_FORCE_FEEDBACK_STRENGTH"		"none" "none"
+:CONNECTION "BUTTON_FORCE_FEEDBACK_STRENGTH" 	"BUTTON_FORCE_FEEDBACK"				"BUTTON_DEAD_ZONE" 						"none" "none"
+:CONNECTION "BUTTON_DEAD_ZONE" 						"BUTTON_FORCE_FEEDBACK_STRENGTH" "BUTTON_LINEARITY"						"none" "none"
+:CONNECTION "BUTTON_LINEARITY"						"BUTTON_DEAD_ZONE"					"BUTTON_CALIBRATE"						"none" "none"
+:CONNECTION "BUTTON_CALIBRATE"						"BUTTON_LINEARITY"					"BUTTON_FORCE_FEEDBACK"					"none" "none"
+
+//////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////

@@ -3,85 +3,31 @@ const screen = document.getElementById("screen");
 const status = document.getElementById("status");
 const progress = document.getElementById("progress");
 const playNative = document.getElementById("play-native");
-const play = document.getElementById("play");
-const configure = document.getElementById("configure");
 const restart = document.getElementById("restart");
 const fullscreen = document.getElementById("fullscreen");
 const sound = document.getElementById("sound");
 let frame;
-let mode = "play";
 let logs = [];
-let isolationReady = window.crossOriginIsolated;
-if (isolationReady) sessionStorage.removeItem("fr3-isolation-reload");
 
-async function prepareIsolation() {
-  if (isolationReady) return;
-  play.disabled = configure.disabled = true;
-  try {
-    if (!window.isSecureContext || !("serviceWorker" in navigator)) throw new Error("Use HTTPS or localhost in a recent desktop browser.");
-    await navigator.serviceWorker.register("isolation-worker.js", {scope:"./"});
-    await navigator.serviceWorker.ready;
-    if (!navigator.serviceWorker.controller) {
-      await new Promise(resolve => navigator.serviceWorker.addEventListener("controllerchange", resolve, {once:true}));
-    }
-    if (sessionStorage.getItem("fr3-isolation-reload") !== "1") {
-      sessionStorage.setItem("fr3-isolation-reload", "1");
-      location.reload();
-    } else {
-      throw new Error("Browser isolation is unavailable. Close this tab and try a recent desktop Chrome, Edge or Firefox.");
-    }
-  } catch (error) { status.textContent = String(error.message || error); }
-}
-prepareIsolation();
-
-function launch(nextMode = "play") {
-  if (nextMode === "native") {
-    mode = "native";
-    logs = [];
-    frame?.remove();
-    frame = document.createElement("iframe");
-    frame.title = "Ford Racing 3 native WebGL2";
-    frame.allow = "autoplay; fullscreen; gamepad";
-    frame.src = `native.html?sound=${sound.checked}`;
-    screen.replaceChildren(frame);
-    status.textContent = "Loading (about 26 MB)…";
-    progress.hidden = false;
-    progress.removeAttribute("value");
-    if (playNative) playNative.disabled = true;
-    play.disabled = true;
-    configure.disabled = true;
-    restart.disabled = false;
-    fullscreen.disabled = false;
-    frame.addEventListener("load", () => frame.contentWindow.focus());
-    return;
-  }
-  if (!isolationReady || !window.WebAssembly) {
-    status.textContent = "This browser cannot run the game. Try a recent desktop Chrome, Edge or Firefox.";
-    return;
-  }
-  mode = nextMode;
+function launch() {
   logs = [];
   frame?.remove();
   frame = document.createElement("iframe");
-  frame.title = nextMode === "configure" ? "Ford Racing 3 settings" : "Ford Racing 3 demo";
-  frame.allow = "autoplay; fullscreen; cross-origin-isolated";
-  frame.src = `runtime/game.html?mode=${mode}&sound=${sound.checked}`;
+  frame.title = "Ford Racing 3 Shuffle native WebGL2";
+  frame.allow = "autoplay; fullscreen; gamepad";
+  frame.src = `native.html?sound=${sound.checked}`;
   screen.replaceChildren(frame);
-  status.textContent = "Loading. The first launch can take several minutes…";
+  status.textContent = "Loading game manifest…";
   progress.hidden = false;
   progress.removeAttribute("value");
   if (playNative) playNative.disabled = true;
-  play.disabled = true;
-  configure.disabled = true;
   restart.disabled = false;
   fullscreen.disabled = false;
-  // A long first launch should remain recoverable through Restart.
   frame.addEventListener("load", () => frame.contentWindow.focus());
 }
-playNative?.addEventListener("click", () => launch("native"));
-play.addEventListener("click", () => launch());
-configure.addEventListener("click", () => launch("configure"));
-restart.addEventListener("click", () => launch(mode));
+
+playNative?.addEventListener("click", () => launch());
+restart.addEventListener("click", () => launch());
 fullscreen.addEventListener("click", async () => {
   try { await screen.requestFullscreen(); frame?.contentWindow.focus(); }
   catch { status.textContent = "Fullscreen is unavailable. You can still play in the window."; }
@@ -100,13 +46,10 @@ window.addEventListener("message", event => {
   if (typeof data.log === "string") { logs.push(data.log); if (logs.length > 500) logs.shift(); }
   if (typeof data.status === "string") status.textContent = data.status;
   if (typeof data.progress === "number") { progress.hidden = false; progress.value = data.progress; }
-  // Downloads are done; keep Play disabled so it cannot restart a slow first launch.
   if (data.state === "starting") progress.removeAttribute("value");
   if (data.state === "running" || data.state === "error" || data.state === "exited") {
     progress.hidden = true;
     if (playNative) playNative.disabled = false;
-    play.disabled = false;
-    configure.disabled = false;
   }
 });
 document.getElementById("log").addEventListener("click", () => {
@@ -120,6 +63,14 @@ fetch("build.json").then(response => {
   if (!response.ok) throw new Error("missing build");
   return response.json();
 }).then(build => {
-  const mb = Object.values(build.assets).reduce((n, asset) => n + asset.bytes, 0) / 1e6;
-  if (!frame && isolationReady) status.textContent = `The first download is about ${Math.ceil(mb)} MB.`;
-}).catch(() => { status.textContent = "Game assets are missing. Build the site before serving it."; play.disabled = configure.disabled = true; });
+  if (!build || typeof build.assets !== "object" || !build.assets) throw new Error("malformed build");
+  const files = typeof build.original_game_files === "number" ? build.original_game_files : null;
+  if (!frame) {
+    status.textContent = files
+      ? `Ready — streams ${files.toLocaleString()} game files on demand.`
+      : "Ready to stream assets on demand.";
+  }
+}).catch(() => {
+  status.textContent = "Game assets are missing. Build the site before serving it.";
+  if (playNative) playNative.disabled = true;
+});

@@ -1,0 +1,304 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// CAMERAS.DAT  shuffle'd
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Intro Programmed
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA																ENTITY_SUB_TYPE_CAMERA_INTRO_PROGRAMMED
+																							DIRECTOR_CAMERA_GROUP_TYPE_INTRO
+																							"Programmed Intro"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_FOV															70.0
+
+:CAMERA_SYSTEM_CAMERA_TIME															3.0
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 7.0, -5.0
+
+:CAMERA_SYSTEM_CAMERA_TYPE_SPECIFIC												0.099
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													0.0, 10.0, -20.0
+
+:CAMERA_SYSTEM_MOUNTING_TYPE_SPECIFIC											0.099
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Subject Transition
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA																ENTITY_SUB_TYPE_CAMERA_SUBJECT_TRANSITION
+																							DIRECTOR_CAMERA_GROUP_TYPE_SUBJECT_TRANSITION
+                                                                     "Subject Transition"
+                                                                     CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_INITIALISE_BASE_ATTRIBS_ON_SUBJECT_CHANGE		0
+:CAMERA_SYSTEM_CAMERA_INITIALISE_SPECIFIC_ATTRIBS_ON_SUBJECT_CHANGE	0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Hill Climb
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA																ENTITY_SUB_TYPE_CAMERA_HILL_CLIMB
+																							DIRECTOR_CAMERA_GROUP_TYPE_HILL_CLIMB
+                                                                     "Hill Climb"
+                                                                     CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_FOV															70.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													0.0, 5.0, 10.0
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Look Ahead
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA																ENTITY_SUB_TYPE_CAMERA_LOOK_AHEAD
+																							DIRECTOR_CAMERA_GROUP_TYPE_LOOK_AHEAD
+																							"Look Ahead"
+                                                                     CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_FOV															70.0
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 2.0, 10.0
+
+:CAMERA_SYSTEM_CAMERA_TYPE_SPECIFIC												0.5 1.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													0.0, 2.0, 0.0
+
+:CAMERA_SYSTEM_MOUNTING_TYPE_SPECIFIC											200.0, 50.0, 190.0
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Mirror
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA																ENTITY_SUB_TYPE_CAMERA_MIRROR
+																							DIRECTOR_CAMERA_GROUP_TYPE_MIRROR
+																							"Mirror"
+																							CAMERA_LEVEL_TYPE_SECONDARY
+
+:CAMERA_SYSTEM_CAMERA_VIEWPORT_OFFSETS											0.315, 0.075, 0.685, 0.175
+
+:CAMERA_SYSTEM_CAMERA_SUBJECT_VISIBLE											0
+
+:CAMERA_SYSTEM_CAMERA_FOV															70.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													0.0, 1.4, -0.8
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+                                                                                                                                                                                                                                                              
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Reverse Chase
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA																ENTITY_SUB_TYPE_CAMERA_REVERSE_CHASE
+																							DIRECTOR_CAMERA_GROUP_TYPE_REVERSE_CHASE
+																							"Reverse Chase"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 1.6, 0.7
+
+:CAMERA_SYSTEM_CAMERA_FOV															70.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													0.0, 3.1, 5.85
+
+:CAMERA_SYSTEM_MOUNTING_TYPE_SPECIFIC											4.0, 1.7
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Reverse Bonnet
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA																ENTITY_SUB_TYPE_CAMERA_REVERSE_BONNET
+																							DIRECTOR_CAMERA_GROUP_TYPE_REVERSE_BONNET
+																							"Reverse Bonnet"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_SUBJECT_VISIBLE											0
+
+:CAMERA_SYSTEM_CAMERA_FOV															70.0
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 1.4, -10.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													0.0, 1.4, 0.9
+
+:CAMERA_SYSTEM_MOUNTING_TYPE_SPECIFIC											MOUNTING_SUBJECT_BINDING_TYPE_MIN, 0, 2, 6
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Chase 4, stoic
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA																ENTITY_SUB_TYPE_CAMERA_CHASE
+																							DIRECTOR_CAMERA_GROUP_TYPE_CHASE_LOW
+                                                                     "GAMECHASED"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 1.4, 0.0
+
+:CAMERA_SYSTEM_CAMERA_FOV                                            70.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													0.0, 3.0, -5.1
+
+:CAMERA_SYSTEM_MOUNTING_TYPE_SPECIFIC											0.9, 1.0, 0.1, 0.1, 1.0
+//:CAMERA_SYSTEM_MOUNTING_TYPE_SPECIFIC											speed, height_offset_speed, expansion_max_distance, expansion_multiplier, shrink_rate
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Chase 3, far
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA																ENTITY_SUB_TYPE_CAMERA_CHASE
+																							DIRECTOR_CAMERA_GROUP_TYPE_CHASE_LOW
+                                                                     "GAMECHASEC"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 1.5, 0.0
+
+:CAMERA_SYSTEM_CAMERA_FOV                                            70.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													0.0, 3.8, -9.1
+
+:CAMERA_SYSTEM_MOUNTING_TYPE_SPECIFIC											0.6, 2.0, 3.0, 4.0, 1.0
+//:CAMERA_SYSTEM_MOUNTING_TYPE_SPECIFIC											speed, height_offset_speed, expansion_max_distance, expansion_multiplier, shrink_rate
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Chase 2, high
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA																ENTITY_SUB_TYPE_CAMERA_CHASE
+																							DIRECTOR_CAMERA_GROUP_TYPE_CHASE_HIGH
+																							"GAMECHASEB"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 2.3, 0.0
+
+:CAMERA_SYSTEM_CAMERA_FOV															70.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													0.0, 6.3, -8
+
+:CAMERA_SYSTEM_MOUNTING_TYPE_SPECIFIC											0.7, 2.0, 1.25, 5.0, 5.0
+//:CAMERA_SYSTEM_MOUNTING_TYPE_SPECIFIC											speed, height_offset_speed, expansion_max_distance, expansion_multiplier, shrink_rate
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Chase 1, low
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA																ENTITY_SUB_TYPE_CAMERA_CHASE
+																							DIRECTOR_CAMERA_GROUP_TYPE_CHASE_LOW
+                                                                     "GAMECHASEA"
+																							CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 1.4, 0.0
+
+:CAMERA_SYSTEM_CAMERA_FOV                                            70.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													0.0, 3.0, -5.1
+
+:CAMERA_SYSTEM_MOUNTING_TYPE_SPECIFIC											0.3, 2.0, 4.5, 10.0, 5.0
+//:CAMERA_SYSTEM_MOUNTING_TYPE_SPECIFIC											speed, height_offset_speed, expansion_max_distance, expansion_multiplier, shrink_rate
+
+:CAMERA_SYSTEM_MOUNTING_SUBJECT_SCALE_VALUE									34
+																							"49_COUPE" 				1.0
+																							"49_COUPE_MOVIE" 		1.0
+																							"GRAN_TORINO" 			1.0
+																							"MACH1_AGENT" 			1.0
+																							"MACH1_SIXTY" 			1.0
+																							"MUSTANG_68" 			1.0
+																							"MUSTANG_68B" 			1.0
+																							"THUNDERBIRD" 			1.0
+																							"COBRA" 					1.0
+																							"CROWN_VICTORIA" 		1.0
+																							"FOCUS_SVT" 			1.0
+																							"FORTYNINE" 			1.0
+																							"LIGHTNING_SVT" 		1.0
+																							"POWERSTROKE" 			1.0
+																							"THUNDERBIRD_2002" 	1.0
+																							"THUNDERBIRD_MOVIE" 	1.0
+																							"EX" 						1.0
+																							"F100_1956" 			1.0
+																							"F100_1965" 			1.0
+																							"F150" 					1.0
+																							"F150_2004" 			1.0
+																							"F350" 					1.0
+																							"FOCUS_WRC" 			1.0
+																							"FOCUS_FR200" 			1.0
+																							"FR500" 					1.0
+																							"FORD_GT" 				1.0
+																							"GT90" 					1.0
+																							"INDIGO" 				1.0
+																							"MACH3" 					1.0
+																							"MUSTANG_CONCEPT" 	1.0
+																							"TAURUS_STOCK_D" 		1.0
+																							"TAURUS_STOCK_C" 		1.0
+																							"TAURUS_STOCK_B" 		1.0
+																							"TAURUS_STOCK_A" 		1.0
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Bonnet
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:CAMERA_SYSTEM_CAMERA																ENTITY_SUB_TYPE_CAMERA_BONNET
+                                                                     DIRECTOR_CAMERA_GROUP_TYPE_BONNET
+                                                                     "GAMEBONNET",
+                                                                     CAMERA_LEVEL_TYPE_PRIMARY
+
+:CAMERA_SYSTEM_CAMERA_SUBJECT_VISIBLE											0
+
+:CAMERA_SYSTEM_CAMERA_SECONDARY													DIRECTOR_CAMERA_GROUP_TYPE_MIRROR
+
+:CAMERA_SYSTEM_CAMERA_FOV															70.0
+
+:CAMERA_SYSTEM_CAMERA_OFFSET														0.0, 1.5, 10.0
+
+:CAMERA_SYSTEM_CAMERA_CREATE
+
+:CAMERA_SYSTEM_MOUNTING_OFFSET													0.0, 1.5, -1.05
+
+:CAMERA_SYSTEM_MOUNTING_TYPE_SPECIFIC											MOUNTING_SUBJECT_BINDING_TYPE_MAX, 0, 0, 1
+
+:CAMERA_SYSTEM_MOUNTING_SHAKE														1, 0.0, 0.02, 0.8, 1.0
+
+:CAMERA_SYSTEM_MOUNTING_CREATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

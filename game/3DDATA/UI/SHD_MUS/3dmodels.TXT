@@ -1,0 +1,10 @@
+Converted from the Ford Racing 3 PS2 prototype (Aug 19, 2004) by tools/ps2_to_fr3.py.
+
+Valid object shapes' names:
+
+	"SHD_EURO"
+
+Textures:
+
+	"WOOD_2"
+	"EUROPE_SHIELD"

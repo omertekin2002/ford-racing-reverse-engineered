@@ -1,0 +1,421 @@
+//////////////////////////////////////////////////////
+// UI SCREEN
+//////////////////////////////////////////////////////
+
+:TYPE										UI_TYPE_SCREEN
+:OBJECT_ID 								CMPDS
+:POSITION_START 						0.0 0.0
+:POSITION_END 							0.0 0.0
+:SIZE 									1.0 1.0
+:STRETCH_GRAPHIC 						1
+:TEXTURE_ENUM 							GRAPHICS\GAME\COMMON\GRADY.PSD
+
+:S{*****>>>
+
+	:READ_SCRIPT_FILE UI\MENUBAR.UI
+
+	//////////////////////////////////////////////////////
+	// FORD BANNER GRAPHIC
+	//////////////////////////////////////////////////////
+
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			LOGO_BKGND
+	:SIZE					1.0 0.08958
+	:COLOUR				204 204 204 229
+	:POSITION_START	0.0 0.09167
+	:POSITION_END		0.0 0.09167
+
+	:S{*****>>>
+
+		:TYPE					UI_TYPE_GRAPHIC
+		:OBJECT_ID			FORD_RACING_LOGO
+		:SIZE					1.0 1.0
+		:POSITION_START	0.10156 0.0
+		:POSITION_END		0.10156 0.0
+		:STRETCH_GRAPHIC	0
+		:TEXTURE_ENUM		"GRAPHICS\GAME\COMMON\FFLOGO.PSD"
+
+	:E}*****<<<
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// TITLE
+	//////////////////////////////////////////////////////
+
+	:INHERIT									TITLE
+	:POSITION_START 						0.21 0.19583
+	:POSITION_END 							0.21 0.19583	
+		
+	///////////////////////////////////////////////////////
+	//
+	///////////////////////////////////////////////////////
+
+	///////////////////////////////////////////////////////
+	// BUTTONS
+	///////////////////////////////////////////////////////
+
+	:TYPE 									UI_TYPE_BUTTON
+	:OBJECT_ID 								ACCEPT
+	:CLEAR									1
+	:POSITION_START 						1.2 0.23542
+	:POSITION_END 							0.2 0.23542
+	:SIZE 									1.0 0.05833
+	:FONT										2
+	:FONT_COLOUR							0 0 0 255
+	:TEXT_JUSTIFY							1
+	:JUSTIFY_OFFSET						0.04375 0.01458
+	:TIME_LENGTH							0.166667
+
+	///////////////////////////////////////////////////////
+	//
+	///////////////////////////////////////////////////////
+
+	///////////////////////////////////////////////////////
+	// COMPETITION DETAILS TABLE
+	///////////////////////////////////////////////////////
+	
+	:TYPE 									UI_TYPE_AREA
+	:OBJECT_ID 								TABLE_BACKGROUND
+	:CLEAR									1
+	:POSITION_START 						0.5 0.3
+	:POSITION_END 							0.0 0.3
+	:SIZE_START								0.0 0.30833
+	:SIZE_END								1.0 0.30833
+	:TIME_LENGTH							0.166667
+
+	:S{*****>>>
+
+		:TYPE 									UI_TYPE_AREA
+		:OBJECT_ID 								TABLE_HEADER_BACKGROUND
+		:POSITION_START 						0.0 0.0
+		:POSITION_END 							0.0 0.0
+		:SIZE 									1.0 0.10811
+		:COLOUR									96 96 90 255l
+		
+		:S{*****>>>
+
+			:TYPE 									UI_TYPE_AREA
+			:OBJECT_ID 								TABLE_HEADER_TEXT_AREA
+			:CLEAR									1
+			:POSITION_START 						1.24219 0.0
+			:POSITION_END 							0.24219 0.0
+			:SIZE 									0.75625 1.0
+			//:OFFSET_TIME							1.0
+			:TIME_LENGTH							0.166667
+
+			:S{*****>>>
+
+				:TYPE 									UI_TYPE_TEXT
+				:OBJECT_ID 								COMPETITION_TABLE_COLUMN_TYPE_ROUND_NAME_HEADER_TEXT
+				:TEXT 									TXT_COMPETITION_DETAILS_ROUNDS
+				:FONT 									2
+				:FONT_COLOUR 							204 204 204 255
+				:POSITION_START 						0.0 0.0
+				:POSITION_END 							0.0 0.0
+				:SIZE 									0.40909 1.0
+				:TEXT_JUSTIFY							1
+
+				:TYPE 									UI_TYPE_TEXT
+				:OBJECT_ID 								COMPETITION_TABLE_COLUMN_TYPE_PLACE_HEADER_TEXT
+				:TEXT 									TXT_INRACE_POSITION
+				:FONT 									2
+				:FONT_COLOUR 							204 204 204 255
+				:POSITION_START						0.606055 0.0
+				:POSITION_END 							0.606055 0.0
+				:SIZE 									0.34298 1.0
+				:TEXT_JUSTIFY							1
+
+				:TYPE 									UI_TYPE_TEXT
+				:OBJECT_ID 								COMPETITION_TABLE_COLUMN_TYPE_POINTS_HEADER_TEXT
+				:TEXT 									TXT_COMPETITION_DETAILS_POINTS
+				:FONT 									2
+				:FONT_COLOUR 							204 204 204 255
+				:POSITION_START 						0.83437 0.0
+				:POSITION_END 							0.83437 0.0
+				:SIZE 									0.08678 1.0
+				:TEXT_JUSTIFY							2
+
+			:E}*****<<<
+
+		:E}*****<<<
+
+		:TYPE 									UI_TYPE_AREA
+		:OBJECT_ID 								TABLE_BODY_BACKGROUND
+		:POSITION_START 						0.0 0.12838
+		:POSITION_END 							0.0 0.12838
+		:SIZE 									1.0 0.72973
+		:COLOUR									96 96 90 255
+
+		:S{*****>>>
+
+			//////////////////////////////////////////////////////
+			// TABLE LIST BOXES
+			//////////////////////////////////////////////////////
+
+			:TYPE 									UI_TYPE_AREA
+			:OBJECT_ID 								TABLE_LIST_BOX_AREA
+			:POSITION_START 						1.24219 0.0
+			:POSITION_END 							0.24219 0.0
+			:SIZE 									0.75625 1.0
+			:CLEAR									1
+			//:OFFSET_TIME							1.0
+			:TIME_LENGTH							0.166667
+
+			:S{*****>>>
+
+				:TYPE 						UI_TYPE_LIST_BOX
+				:OBJECT_ID 					COMPETITION_TABLE_COLUMN_TYPE_ROUND_NUMBER_LIST_BOX
+				:CLEAR						1
+				:POSITION_START 			0.0 0.0
+				:POSITION_END 				0.0 0.0
+				:SIZE 						0.03719 1.0
+				:TEXT_JUSTIFY 				1
+
+				:TYPE 						UI_TYPE_LIST_BOX
+				:OBJECT_ID 					COMPETITION_TABLE_COLUMN_TYPE_ROUND_NAME_LIST_BOX
+				:CLEAR						1
+				:POSITION_START 			0.03719 0.0
+				:POSITION_END 				0.03719 0.0
+				//:SIZE 						0.37397 1.0
+				:SIZE							0.673543 1.0
+				:TEXT_JUSTIFY 				1
+
+				:TYPE 						UI_TYPE_LIST_BOX
+				:OBJECT_ID 					COMPETITION_TABLE_COLUMN_TYPE_PLACE_LIST_BOX
+				:CLEAR						1
+				:POSITION_START 			0.606055 0.0
+				:POSITION_END 				0.606055 0.0
+				:SIZE 						0.34298 1.0
+				:TEXT_JUSTIFY 				1
+
+				:TYPE 						UI_TYPE_LIST_BOX
+				:OBJECT_ID 					COMPETITION_TABLE_COLUMN_TYPE_POINTS_LIST_BOX
+				:CLEAR						1
+				:POSITION_START 			0.83437 0.0
+				:POSITION_END 				0.83437 0.0
+				:SIZE 						0.08678 1.0
+				:TEXT_JUSTIFY 				2
+
+			:E}*****<<<
+
+			//////////////////////////////////////////////////////
+			//
+			//////////////////////////////////////////////////////
+
+		:E}*****<<<
+
+		:S{*****>>>
+
+			:TYPE 									UI_TYPE_AREA
+			:OBJECT_ID 								TABLE_BODY_GRAPHIC_CENTRE
+			//:POSITION_START 						0.1076 0.16667
+			//:POSITION_END 							0.1076 0.16667
+			:POSITION_START 						0.107813 0.046013
+			:POSITION_END 							0.107813 0.046013
+			:SIZE 									0.07969 0.48148
+			:COLOUR									255 255 124 255
+
+			:TYPE 									UI_TYPE_AREA
+			:OBJECT_ID 								TABLE_BODY_GRAPHIC
+			//:POSITION_START 						0.07969 0.16667
+			//:POSITION_END 							0.07969 0.16667
+			:POSITION_START 						0.079687 0.064530
+			:POSITION_END 							0.079687 0.064530
+			:SIZE 									0.13593 0.71296
+			:TEXTURE_ENUM							GRAPHICS\GAME\COMMON\LAUREL.PSD
+			:COLOUR									255 255 124 255
+			
+			:TYPE										UI_TYPE_TEXT
+			:OBJECT_ID								TABLE_DIFFICULTY
+			:CLEAR									1
+			:AUTOSIZE								0
+			:SIZE										0.234375 0.194432
+			:FONT										2
+			:FONT_COLOUR 							204 204 204 255l
+			:TEXT_JUSTIFY							TEXT_JUSTIFY_CENTRE
+			:POSITION_START						0.032812 0.786708
+			:POSITION_END							0.032812 0.786708
+
+		:E}*****<<<
+
+		:TYPE 									UI_TYPE_AREA
+		:OBJECT_ID 								TABLE_FOOTER_BACKGROUND
+		:POSITION_START 						0.0 0.87838
+		:POSITION_END 							0.0 0.87838
+		:SIZE 									1.0 0.12162
+		:COLOUR									96 96 90 255
+		
+		:S{*****>>>
+
+			:TYPE 									UI_TYPE_AREA
+			:OBJECT_ID 								TABLE_FOOTER_TEXT_BACKGROUND
+			:CLEAR									1
+			:POSITION_START 						0.24219 0.0
+			:POSITION_END 							0.24219 0.0
+			:SIZE 									0.75625 1.0
+			
+			:TYPE 									UI_TYPE_AREA
+			:OBJECT_ID 								TABLE_FOOTER_TEXT_AREA
+			:CLEAR									1
+			:POSITION_START 						1.24219 0.0
+			:POSITION_END 							0.24219 0.0
+			:SIZE 									0.75625 1.0
+			//:OFFSET_TIME							1.0
+			:TIME_LENGTH							0.166667
+
+			:S{*****>>>
+
+				//:TYPE 									UI_TYPE_AREA
+				//:OBJECT_ID 								TABLE_FOOTER_POSITION_TEXT
+				//:FONT 									2
+				//:FONT_COLOUR 							204 204 204 255
+				//:CLEAR									1
+				//:POSITION_START 						0.0 0.0
+				//:POSITION_END 							0.0 0.0
+				//:SIZE 									0.55785 1.0
+				//:TEXT_JUSTIFY							1
+
+				:TYPE 									UI_TYPE_AREA	
+				:OBJECT_ID 								TABLE_FOOTER_TOTAL_POINTS_TEXT
+				:FONT 									2
+				:FONT_COLOUR 							204 204 204 255l
+				:CLEAR									1
+				:POSITION_START 						0.47926 0.0
+				:POSITION_END 							0.47926 0.0
+				:SIZE 									0.44215 1.0
+				:TEXT_JUSTIFY							2
+
+			:E}*****<<<
+
+		:E}*****<<<
+
+		///////////////////////////////////////////////////////
+		// VIEW LEADER BOARD
+		///////////////////////////////////////////////////////
+
+		:TYPE 									UI_TYPE_AREA
+		:OBJECT_ID 								TABLE_FOOTER_LEADER_BOARD_BUTTON_BACKGROUND
+		:CLEAR									1
+		:POSITION_START 						0.06000 0.84794
+		:POSITION_END 							0.06000 0.84794
+		:SIZE 									0.75625 0.18700
+			
+		:S{*****>>>
+			
+			:TYPE 									UI_TYPE_AREA
+			:OBJECT_ID 								VIEW_LEADER_BOARD_ICON
+			:CLEAR									0
+			:COLOUR 									255 255 255 255
+			:POSITION_START 						0.0 0.0
+			:POSITION_END 							0.0 0.0
+			:SIZE 									0.0586 1.0
+	
+			:TYPE 									UI_TYPE_TEXT
+			:OBJECT_ID 								VIEW_LEADER_BOARD_TEXT
+			:TEXT 									TXT_COMPETITION_DETAILS_VIEW_LEADER_BOARD
+			:FONT										2
+			:FONT_COLOUR							204 204 204 255
+			:CLEAR									1
+			:COLOUR 									255 255 255 255
+			:POSITION_START 						0.06684 0.0
+			:POSITION_END 							0.06684 0.0
+			:SIZE 									0.71657 1.0
+			:TEXT_JUSTIFY							1
+			
+		:E}*****<<<
+
+	:E}*****<<<
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// DETAILS
+	//////////////////////////////////////////////////////
+
+	:TYPE 									UI_TYPE_AREA
+	:OBJECT_ID 								COMPETITION_DETAILS
+	:CLEAR									1
+	:POSITION_START 						0.00000 0.69167
+	:POSITION_END 							0.00000 0.69167
+	:SIZE 									0.90313 0.13542
+
+	:S{*****>>>
+		
+		:TYPE 									UI_TYPE_TEXT
+		:OBJECT_ID 								VEHICLE_CLASS_TXT
+		:FONT 									2
+		:POSITION_START 						-0.645418 -0.558397
+		:POSITION_END 							-0.645418 -0.558397
+		:TEXT_JUSTIFY 							5						//TEXT_JUSTIFY_RIGHT_TOP
+		:FONT_COLOUR							0 0 0 255
+
+		:TYPE 									UI_TYPE_TEXT
+		:OBJECT_ID 								COMPETITION_DETAIL_TYPE_VEHICLE_TEXT
+		:FONT 									2
+		:POSITION_START						0.354636	-0.558397
+		:POSITION_END							0.354636	-0.558397
+		:TEXT_JUSTIFY 							4
+		:FONT_COLOUR							0 0 0 255
+		
+		:TYPE										UI_TYPE_TEXT
+		:OBJECT_ID								REWARDS_TITLE_TXT
+		:CLEAR									1
+		:AUTOSIZE								0
+		:SIZE										1.000000 0.500000
+		:FONT										2
+		:FONT_COLOUR							0 0 0 255
+		:TEXT_JUSTIFY 							5
+		:POSITION_START						-0.645418 -0.281678
+		:POSITION_END							-0.645418 -0.281678
+		
+		:TYPE 									UI_TYPE_TEXT
+		:OBJECT_ID 								COMPETITION_DETAIL_TYPE_AVAILABLE_TO_WIN_TEXT
+		:FONT 									2
+		:POSITION_START						0.354636	-0.281678
+		:POSITION_END							0.354636	-0.281678
+		:TEXT_JUSTIFY 							4
+		:FONT_COLOUR							0 0 0 255
+		:WORD_WRAP								1
+
+	:E}*****<<<
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// BACK
+	//////////////////////////////////////////////////////
+
+	// DONE
+	:INHERIT									BACK_ICON
+	:POSITION_START 						0.23594 0.85625
+	:POSITION_END 							0.23594 0.85625
+
+	:TYPE 									UI_TYPE_TEXT
+	:OBJECT_ID 								BACK_TEXT
+	:TEXT 									TXT_GENERAL_BACK
+	:CLEAR									1
+	:FONT 									2
+	:FONT_COLOUR 							0 0 0 255	
+	:POSITION_START 						0.27959 0.8354
+	:POSITION_END 							0.27959 0.8354
+	:SIZE 0.100000 0.100000
+	:TEXT_JUSTIFY 							1
+
+	///////////////////////////////////////////////////////
+	//
+	///////////////////////////////////////////////////////
+
+:E}*****<<<
+
+//////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////
+
+:CONNECTION "ACCEPT" "none" "none" "none" "none"

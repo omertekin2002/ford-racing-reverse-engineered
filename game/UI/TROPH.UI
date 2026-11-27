@@ -1,0 +1,233 @@
+
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			TROPH
+:CLEAR				0
+:COLOUR				255 255 255 255
+:POSITION_START	0.000000 0.000000
+:POSITION_END		0.000000 0.000000
+//:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\GREYFADE.PSD
+:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\GRADY.PSD
+:TIME_LENGTH		1.000000
+
+:S{*****>>>
+	
+	/////////////////////////////////////////////////
+	// TITLE
+	////////////////////////////////////////////////
+	
+	:INHERIT					TITLE
+	:TEXT_JUSTIFY			2
+	:POSITION_START		-0.450000 0.389583
+	:POSITION_END			-0.450000 0.389583
+	
+	/////////////////////////////////////////////////
+	// TITLE
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// BACK ICON AND TEXT
+	////////////////////////////////////////////////
+
+	// DONE	
+	:INHERIT					BACK_ICON
+	//:POSITION_START		0.471875 0.85625
+	//:POSITION_END			0.471875 0.85625
+	:POSITION_START		0.471875 0.866618
+	:POSITION_END			0.471875 0.866618
+	
+	:INHERIT					BACK_TEXT
+	//:POSITION_START		0.375000 0.837500
+	//:POSITION_END			0.375000 0.837500
+	:POSITION_START		0.375000 0.84791
+	:POSITION_END			0.375000 0.84791
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////////////
+	// MENU BAR
+	/////////////////////////////////////////////////////////////
+	
+	:INHERIT				MENUBAR
+	
+	//////////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// BUTTONS
+	////////////////////////////////////////////////
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			CHALLENGE_TOKENS_BUTTON
+	:TEXT_JUSTIFY		2
+	:TEXT					TXT_TROPHY_CHALLENGE_TOKENS
+	:POSITION_START	-1.442187 0.439583
+	:POSITION_END		-0.442187 0.439583
+	:OFFSET_TIME		0.000000
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			CHALLENGE_SHIELDS_BUTTON
+	:TEXT_JUSTIFY		2
+	:TEXT					TXT_TROPHY_COLLECTION_FORD_CHALLENGE
+	:POSITION_START	-1.442187 0.491667
+	:POSITION_END		-0.442187 0.491667
+	:OFFSET_TIME		0.100000
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			COMPETITION_CUPS_BUTTON
+	:TEXT_JUSTIFY		2
+	:TEXT					TXT_REWARDS_COMP_CUPS
+	:POSITION_START	-1.442187 0.541667
+	:POSITION_END		-0.442187 0.541667
+	:OFFSET_TIME		0.200000
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			RACING_TROHIES_BUTTON
+	:TEXT_JUSTIFY		2
+	:TEXT					TXT_TROPHY_COLLECTION_FORD_RACING_TROPHIES
+	:POSITION_START	-1.442187 0.593750
+	:POSITION_END		-0.442187 0.593750
+	:OFFSET_TIME		0.300000
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	//  TROPHY BACKGROUND
+	////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				TROPHY_BKGND
+	:CLEAR					0
+	:AUTOSIZE				0
+	:SIZE						0.879687 0.239583
+	:COLOUR					95 95 90 255
+	:POSITION_START		0.054688 0.112500
+	:POSITION_END			0.054688 0.112500
+	:TIME_LENGTH			0.133333
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	//  TROPHY ICON_HIGHLIGHT
+	////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				ICON_HIGHLIGHT
+	:CLEAR					0
+	:DRAWABLE				0						//changes in code
+	:AUTOSIZE				0
+	:SIZE						0.060938 0.081250
+	:COLOUR					255 255 0 255
+	:POSITION_START		0.000000 0.000000
+	:POSITION_END			0.000000 0.000000
+	:TIME_LENGTH			0.133333
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// CHALLENGE TOKENS Only one is decleared here the rest are created in code 28 in total
+	// X diff : 0.060938
+	//	Y diff : 0.085417
+	////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_BUTTON
+	:OBJECT_ID				TOKEN_ICON_1
+	:AUTOSIZE				0
+	:SIZE						0.053125 0.070833		//0.060938 0.081250
+	:POSITION_START		0.062500 -1.177083
+	:POSITION_END			0.062500 0.177083
+	:TIME_LENGTH			0.166667
+	:OFFSET_TIME			0.000000
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// CHALLENGE SHIELDS Only one is decleared here the rest are created in code 7 in total
+	// X diff : 0.125000
+	//	Y diff : 0.000000
+	////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_BUTTON
+	:OBJECT_ID				SHIELD_ICON_1
+	:AUTOSIZE				0
+	:SIZE						0.114063 0.160417
+	:POSITION_START		0.062500 -1.185417
+	:POSITION_END			0.062500 0.185417
+	:TIME_LENGTH			0.166667
+	:OFFSET_TIME			0.000000
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// COMPETITION CUPS Only one is decleared here the rest are created in code 14 in total
+	// X diff : 0.109375
+	//	Y diff : 0.112500
+	////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_BUTTON
+	:OBJECT_ID				CUP_ICON_1
+	:AUTOSIZE				0
+	:SIZE						0.104687 0.104167
+	:POSITION_START		0.062500 -1.129167
+	:POSITION_END			0.062500 0.129167
+	:TIME_LENGTH			0.166667
+	:OFFSET_TIME			0.000000
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// RACING TROPHIES Only one is decleared here the rest are created in code 3 in total
+	// X diff : 0.226562
+	//	Y diff : 0.000000
+	////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_BUTTON
+	:OBJECT_ID				TROPHY_ICON_1
+	:AUTOSIZE				0
+	:SIZE						0.215625 0.210417
+	//:POSITION_START		0.067188 -1.129167
+	:POSITION_START		0.062500 -1.129167
+	:POSITION_END			0.062500 0.129167
+	:TIME_LENGTH			0.166667
+	:OFFSET_TIME			0.000000
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// 3D SCENE info object
+	////////////////////////////////////////////////
+	
+	:TYPE								UI_TYPE_AREA
+	:OBJECT_ID						3D_SCENE_AREA
+	:CLEAR							1
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	
+:E}*****<<<
+
+:CONNECTION	"CHALLENGE_TOKENS_BUTTON"	"RACING_TROHIES_BUTTON"		"CHALLENGE_SHIELDS_BUTTON"	""	""
+:CONNECTION	"CHALLENGE_SHIELDS_BUTTON"	"CHALLENGE_TOKENS_BUTTON"	"COMPETITION_CUPS_BUTTON"	""	""
+:CONNECTION	"COMPETITION_CUPS_BUTTON"	"CHALLENGE_SHIELDS_BUTTON"	"RACING_TROHIES_BUTTON"		""	""
+:CONNECTION	"RACING_TROHIES_BUTTON"		"COMPETITION_CUPS_BUTTON"	"CHALLENGE_TOKENS_BUTTON"	""	""
+
+
+

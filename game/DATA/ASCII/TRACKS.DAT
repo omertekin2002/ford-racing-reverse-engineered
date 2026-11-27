@@ -1,0 +1,2955 @@
+// FR1 tracks get put up here if created
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Ford Racing 2 tracks
+
+:TRACK "BAYAF"
+:TRACK_GROUP_TYPE ENGLAND
+:ICON_FILENAME BAYAF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_BAYAF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_ROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_PACIFIC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+                -0.3
+
+:TRACK "BAYB"
+:TRACK_GROUP_TYPE ENGLAND
+:ICON_FILENAME BAYB
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_BAYBF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "BAYC"
+:TRACK_GROUP_TYPE ENGLAND
+:ICON_FILENAME BAYC
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_BAYCF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "FLORA"
+:TRACK_GROUP_TYPE ENGLAND
+:ICON_FILENAME FLORA
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_FLORAF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "FLORB"
+:TRACK_GROUP_TYPE ENGLAND
+:ICON_FILENAME FLORB
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_FLORBF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "FLORC"
+:TRACK_GROUP_TYPE ENGLAND
+:ICON_FILENAME FLORC
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_FLORCF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FR2 offroad
+
+:TRACK "JUNGA"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME JUNGA
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_JUNGAF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE DIRT_PACIFIC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.3
+
+:TRACK "JUNGB"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME JUNGB
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_JUNGBF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE DIRT_PACIFIC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.3
+
+:TRACK "JUNGC"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME JUNGC
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_JUNGCF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE DIRT_PACIFIC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.3
+
+:TRACK "DESA"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME DESA
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DESAF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE SAND_PACIFIC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.3
+
+:TRACK "DESB"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME DESB
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DESBF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE SAND_PACIFIC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.3
+
+:TRACK "DESC"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME DESC
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DESCF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE SAND_PACIFIC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.3
+
+// FR2 ovals
+
+:TRACK "OVAL2"
+:TRACK_GROUP_TYPE ENGLAND
+:ICON_FILENAME OVAL2
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_OVAL3F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "OVAL3"
+:TRACK_GROUP_TYPE ENGLAND
+:ICON_FILENAME OVAL3
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_OVAL4F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+// FR2 race tracks
+
+:TRACK "SPRING"
+:TRACK_GROUP_TYPE ENGLAND
+:ICON_FILENAME SPRING
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_SPRING1F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "SPRING2"
+:TRACK_GROUP_TYPE ENGLAND
+:ICON_FILENAME SPRING2
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_SPRING2F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+// Jul 22nd version of Minato City
+
+:TRACK "FUKUOKA"
+:TRACK_GROUP_TYPE ENGLAND
+:ICON_FILENAME FUKUOKA
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_FUKUOKAFR2
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_ROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 1
+:DEFAULT_TRACK_SURFACE TARMAC_JAPAN
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.3
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//FORD RACING 3
+
+:TRACK "ENGAF"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME NEWAF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ENGAF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_ROAD
+:UNLOCKED 0
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.04
+                -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+               -0.04
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.39
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "ENGAR"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME NEWAR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ENGAR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_ROAD
+:UNLOCKED 0
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.04
+                -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+               -0.04
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.39
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "ENGBF"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME NEWBF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ENGBF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_ROAD
+:UNLOCKED 0
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.26
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "ENGBR"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME NEWBR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ENGBR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_ROAD
+:UNLOCKED 0
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.26
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "ENGCF"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME NEWCF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ENGCF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_ROAD
+:UNLOCKED 0
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.28
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "ENGCR"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME NEWCR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ENGCR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_ROAD
+:UNLOCKED 0
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_ENGLAND
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.28
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "JAPAF"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME JAPAF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_JAPAF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_ROAD
+:UNLOCKED 0
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 1
+:DEFAULT_TRACK_SURFACE TARMAC_JAPAN
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.3
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "JAPAR"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME JAPAR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_JAPAR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_ROAD
+:UNLOCKED 0
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 1
+:DEFAULT_TRACK_SURFACE TARMAC_JAPAN
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.3
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "JAPBF"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME JAPBF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_JAPBF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_ROAD
+:UNLOCKED 0
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_JAPAN
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.2
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.2
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.32
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "JAPBR"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME JAPBR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_JAPBR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_ROAD
+:UNLOCKED 0
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_JAPAN
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.2
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.2
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.32
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "JAPCF"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME JAPCF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_JAPCF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_ROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_JAPAN
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.2
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.2
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "JAPCR"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME JAPCR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_JAPCR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_ROAD
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_JAPAN
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.2
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.2
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "PACAF"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME PACAF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_PACAF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 0
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE DIRT_PACIFIC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.3
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "PACAR"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME PACAR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_PACAR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 0
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE DIRT_PACIFIC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.3
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "PACBF"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME PACBF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_PACBF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE DIRT_PACIFIC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.3
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "PACBR"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME PACBR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_PACBR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE DIRT_PACIFIC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.0
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.3
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "PACCF"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME PACCF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_PACCF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 0
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 1
+:DEFAULT_TRACK_SURFACE DIRT_PACIFIC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.08
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.08
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                -0.12
+               -0.28
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "PACCR"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME PACCR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_PACCR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 0
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 1
+:DEFAULT_TRACK_SURFACE DIRT_PACIFIC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.08
+                0.0
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.08
+                0.0
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                -0.12
+               -0.28
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "ALASAF"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME ALASAF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ALASAF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 0
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE SNOW_DRIVEABLE_ALASKA
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "ALASAR"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME ALASAR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ALASAR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 0
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE SNOW_DRIVEABLE_ALASKA
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "ALASBF"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME ALASBF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ALASBF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 0
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 1
+:DEFAULT_TRACK_SURFACE SNOW_DRIVEABLE_ALASKA
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.04
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+               -0.04
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "ALASBR"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME ALASBR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ALASBR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 0
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 1
+:DEFAULT_TRACK_SURFACE SNOW_DRIVEABLE_ALASKA
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.04
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+               -0.04
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "ALASCF"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME ALASCF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ALASCF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 0
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 1
+:DEFAULT_TRACK_SURFACE SNOW_DRIVEABLE_ALASKA
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.04
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+               -0.04
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "ALASCR"
+:TRACK_GROUP_TYPE PACIFIC
+:ICON_FILENAME ALASCR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ALASCR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 0
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 1
+:DEFAULT_TRACK_SURFACE SNOW_DRIVEABLE_ALASKA
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.04
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+               -0.04
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "OVAL1F"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME OVAL1F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_OVAL1F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 0
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:TRACK "OVAL2F"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME OVAL2F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_OVAL2F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 0
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+               -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+// FSR
+
+:TRACK "BEACH1F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME BEACH1F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_BEACH1F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "BEACH1R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME BEACH1R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_BEACH1R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "BEACH2F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME BEACH2F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_BEACH2F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "BEACH2R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME BEACH2R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_BEACH2R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "DTOWN1F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME DTOWN1F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DTOWN1F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "DTOWN1R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME DTOWN1R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DTOWN1R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "DTOWN2F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME DTOWN2F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DTOWN2F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "DTOWN2R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME DTOWN2R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DTOWN2R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "DTOWN3F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME DTOWN3F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DTOWN3F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "DTOWN3R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME DTOWN3R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DTOWN3R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "FWAY1F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME FWAY1F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_FWAY1F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "FWAY1R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME FWAY1R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_FWAY1R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "NTOWN1F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME NTOWN1F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_NTOWN1F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "NTOWN1R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME NTOWN1R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_NTOWN1R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "NTOWN2F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME NTOWN2F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_NTOWN2F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "NTOWN2R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME NTOWN2R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_NTOWN2R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "NTOWN3F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME NTOWN3F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_NTOWN3F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "NTOWN3R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME NTOWN3R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_NTOWN3R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "SANTA1F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME SANTA1F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_SANTA1F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "SANTA1R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME SANTA1R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_SANTA1R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TOPAN1F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME TOPAN1F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_TOPAN1F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TOPAN1R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME TOPAN1R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_TOPAN1R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TOPAN2F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME TOPAN2F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_TOPAN2F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TOPAN2R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME TOPAN2R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_TOPAN2R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+// FSR PSP
+
+:TRACK "BEACH3F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME BEACH3F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_BEACH3F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "BEACH3R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME BEACH3R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_BEACH3R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "HWOOD1F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME HWOOD1F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_HWOOD1F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "HWOOD1R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME HWOOD1R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_HWOOD1R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TOVAL1F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME TOVAL1F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_TOVAL1F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TOVAL1R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME TOVAL1R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_TOVAL1R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "RIVER1F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME RIVER1F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_RIVER1F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "RIVER1R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME RIVER1R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_RIVER1R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "SANTA2F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME SANTA2F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_SANTA2F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "SANTA2R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME SANTA2R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_SANTA2R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "SKID2F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME SKID2F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_SKID2F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "SKID2R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME SKID2R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_SKID2R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "SUN1F"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME SUN1F
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_SUN1F
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "SUN1R"
+:TRACK_GROUP_TYPE OVAL
+:ICON_FILENAME SUN1R
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_SUN1R
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+// FROR
+
+:TRACK "ICEAF"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME ICEAF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ICEAF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "ICEAR"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME ICEAR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ICEAR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "ICEBF"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME ICEBF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ICEBF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "ICEBR"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME ICEBR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ICEBR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "ICECF"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME ICECF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ICECF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "ICECR"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME ICECR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ICECR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "ICEDF"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME ICEDF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ICEDF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "ICEDR"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME ICEDR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_ICEDR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "DESAF"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME DESAF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DESDF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "DESAR"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME DESAR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DESDR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "DESBF"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME DESBF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DESEF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "DESBR"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME DESBR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DESER
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "DESCF"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME DESCF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DESFF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "DESCR"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME DESCR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DESFR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "DESDF"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME DESDF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DESGF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "DESDR"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME DESDR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_DESGR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "WATAF"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME WATAF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_WATAF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "WATAR"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME WATAR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_WATAR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "WATBF"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME WATBF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_WATBF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "WATBR"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME WATBR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_WATBR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "WATCF"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME WATCF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_WATCF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "WATCR"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME WATCR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_WATCR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "WATDF"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME WATDF
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_WATDF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+:TRACK "WATDR"
+:TRACK_GROUP_TYPE ALASKA
+:ICON_FILENAME WATDR
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_WATDR
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OFFROAD
+:UNLOCKED 1
+:REVERSE 1
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE GRAVEL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                0.0
+               -0.15
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                0.01
+               -0.15
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.4
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// TIR
+
+:TRACK "TFUKUOKA"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME FUKUOKA1
+:INGAME_TEXT_ENUM TXT_TRACKS_TFUKUOKA
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TFUKUOKA2"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TFUKUOKA
+:INGAME_TEXT_ENUM TXT_TRACKS_TFUKUOKA2
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "THOCKEN"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME THOCKEN
+:INGAME_TEXT_ENUM TXT_TRACKS_THOCKEN
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "THOCKEN2"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME THOCKEN2
+:INGAME_TEXT_ENUM TXT_TRACKS_THOCKEN2
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "THOCKEN3"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME THOCKEN3
+:INGAME_TEXT_ENUM TXT_TRACKS_THOCKEN3
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TMONZA"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TMONZA
+:INGAME_TEXT_ENUM TXT_TRACKS_TMONZA
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TMONZA2"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TMONZA2
+:INGAME_TEXT_ENUM TXT_TRACKS_TMONZA2
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TROCK"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TROCK
+:INGAME_TEXT_ENUM TXT_TRACKS_TROCK
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TROCK2"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TROCK2
+:INGAME_TEXT_ENUM TXT_TRACKS_TROCK2
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TSCHILT"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TSCHILT
+:INGAME_TEXT_ENUM TXT_TRACKS_TSCHILT
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TSCHILT2"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TSCHILT2
+:INGAME_TEXT_ENUM TXT_TRACKS_TSCHILT2
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TSEBRING"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TSEBRING
+:INGAME_TEXT_ENUM TXT_TRACKS_TSEBRING
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TSEBRING2"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TSEBRING
+:INGAME_TEXT_ENUM TXT_TRACKS_TSEBRING2
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TSILVER"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TSILVER
+:INGAME_TEXT_ENUM TXT_TRACKS_TSILVER
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TSILVER2"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TSILVER2
+:INGAME_TEXT_ENUM TXT_TRACKS_TSILVER2
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TSILVER3"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TSILVER3
+:INGAME_TEXT_ENUM TXT_TRACKS_TSILVER3
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TSPRING"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TSPRING
+:INGAME_TEXT_ENUM TXT_TRACKS_TSPRING
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TSPRING2"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TSPRING2
+:INGAME_TEXT_ENUM TXT_TRACKS_TSPRING2
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:TRACK "TSPRING3"
+:TRACK_GROUP_TYPE ARENA
+:ICON_FILENAME TSPRING3
+:INGAME_TEXT_ENUM TXT_TRACKS_TSPRING3
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FR3 Track Plugin blank-track test shell
+
+:TRACK "FR3TPF"
+:TRACK_GROUP_TYPE JAPAN
+:ICON_FILENAME OVALB
+:INGAME_TEXT_ENUM TXT_TRACK_SHUFFLE_FR3TPF
+:TRACK_TERRAIN_TYPE TRACK_TERRAIN_TYPE_OVAL
+:UNLOCKED 1
+:REVERSE 0
+:CAR_HEADLIGHTS_REQUIRED_FLAG 0
+:DEFAULT_TRACK_SURFACE TARMAC_OVAL
+:DIFFICULTY_DATA
+        :DIFFICULTY_LEVEL EASY
+                0.0
+                -0.06
+               -0.1
+        :DIFFICULTY_LEVEL MEDIUM
+                0.0
+               -0.06
+               -0.1
+        :DIFFICULTY_LEVEL HARD
+                0.0
+                0.0
+               -0.35
+
+:END
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

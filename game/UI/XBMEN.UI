@@ -1,0 +1,129 @@
+
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			XBMEN
+:CLEAR				0
+:COLOUR				255 255 255 255
+:POSITION_START	0.000000 0.000000
+:POSITION_END		0.000000 0.000000
+:TEXTURE_ENUM		GRAPHICS\GAME\BKGNDS\NET\VISIOSBG.PSD
+:TIME_LENGTH		1.000000
+
+
+:S{*****>>>
+	
+	//////////////////////////////////////////////////////////////
+	// TITLE
+	/////////////////////////////////////////////////////////////
+	
+	:INHERIT				TITLE
+	:TEXT_JUSTIFY		5								//TEXT_JUSTIFY_RIGHT_TOP
+	:POSITION_START	-0.498437 0.422917
+	:POSITION_END		-0.498437 0.422917
+	
+	//////////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////////////
+	//BACK ICON AND BACK TEXT
+	/////////////////////////////////////////////////////////////
+	
+	// DONE
+	:INHERIT				BACK_ICON
+	:POSITION_START	0.4375 0.85416
+	:POSITION_END		0.4375 0.85416
+	
+	:INHERIT				BACK_TEXT
+	:POSITION_START	0.337500 0.835417
+	:POSITION_END		0.337500 0.835417
+	
+	//////////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////////////
+	// MENU BAR
+	/////////////////////////////////////////////////////////////
+	
+	:INHERIT				MENUBAR
+	
+	//////////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////////
+	
+	///////////////////////////////////////////////////////////
+	/// ARROWS
+	//////////////////////////////////////////////////////////
+	
+	:INHERIT				LEFTARROW
+	
+	:INHERIT				RIGHTARROW
+	
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			SCORE_TYPE
+	:TEXT_JUSTIFY		2
+	:TEXT					TXT_OPTIONS_CONTROLS_CONTROLLER_TYPE
+	:POSITION_START	-0.476563 0.493750
+	:POSITION_END		-0.476563 0.493750
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			SCORE_TYPE_VALUE
+	:POSITION_START	0.495313 0.493750
+	:POSITION_END		0.495313 0.493750
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			SCORE_MODE
+	:TEXT_JUSTIFY		2
+	:TEXT					TXT_XBOX_LIVE_SCOREBOARDS_MODE
+	:POSITION_START	-0.476563 0.547917
+	:POSITION_END		-0.476563 0.547917
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			SCORE_MODE_VALUE
+	:POSITION_START	0.495313 0.547917
+	:POSITION_END		0.495313 0.547917
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			TRACK
+	:TEXT_JUSTIFY		2
+	:TEXT					TXT_CHALLENGE_DETAILS_TRACK
+	:POSITION_START	-0.476563 0.602083
+	:POSITION_END		-0.476563 0.602083
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			TRACK_VALUE
+	:POSITION_START	0.495313 0.602083
+	:POSITION_END		0.495313 0.602083
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			VEHICLE_CLASS
+	:TEXT					TXT_XBOX_LIVE_CAR_TYPE
+	:TEXT_JUSTIFY		2
+	:POSITION_START	-0.476563 0.660417
+	:POSITION_END		-0.476563 0.660417
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			VEHICLE_CLASS_VALUE
+	:POSITION_START	0.495313 0.660417
+	:POSITION_END		0.495313 0.660417
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			SEARCH
+	:TEXT_JUSTIFY		2
+	:TEXT					TXT_XBOX_LIVE_BUTTON_SEARCH
+	:POSITION_START	-0.476563 0.741667
+	:POSITION_END		-0.476563 0.741667
+	
+:E}*****<<<
+
+
+:CONNECTION	"SCORE_TYPE_VALUE"			"SEARCH"							"SCORE_MODE_VALUE"			""	""
+:CONNECTION "SCORE_MODE_VALUE"			"SCORE_TYPE_VALUE"			"TRACK_VALUE"					""	""
+:CONNECTION	"TRACK_VALUE"					"SCORE_MODE_VALUE"			"VEHICLE_CLASS_VALUE"		""	""
+:CONNECTION "VEHICLE_CLASS_VALUE"		"TRACK_VALUE"					"SEARCH"							""	""
+:CONNECTION	"SEARCH"							"VEHICLE_CLASS_VALUE"		"SCORE_TYPE_VALUE"			""	""
+

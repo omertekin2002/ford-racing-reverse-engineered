@@ -1,0 +1,636 @@
+
+//////////////////////////////////////////////////////
+// UI_SCREEN
+//////////////////////////////////////////////////////
+
+:TYPE								UI_TYPE_SCREEN
+:OBJECT_ID 						CALIB
+:TEXTURE_ENUM 					GRAPHICS\GAME\BKGNDS\FOCUSGB.PSD
+:POSITION_END 					0.0 0.0
+:POSITION_START 				0.0 0.0
+:SIZE 							1.0 1.0
+
+:S{*****>>>
+
+	//////////////////////////////////////////////////////
+	// TITLE BAR
+	//////////////////////////////////////////////////////
+
+	:INHERIT							TITLE
+	:POSITION_START				-0.14219 0.125
+	:POSITION_END					-0.14219 0.125
+	:SIZE								0.52344 0.03542
+	:TEXT_JUSTIFY					2
+	:JUSTIFY_OFFSET				0.04535 0.0
+
+	//////////////////////////////////////////////////////
+	// 
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// BACK ICON AND TEXT
+	//////////////////////////////////////////////////////
+
+	// DONE
+	:INHERIT							BACK_ICON
+	:POSITION_START				0.3125 0.7083
+	:POSITION_END					0.3125 0.7083
+	
+	:INHERIT							BACK_TEXT
+	:POSITION_START				0.24844 0.72083
+	:POSITION_END					0.24844 0.72083
+	:TEXT_JUSTIFY					4
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// MOVING WINDOW	
+	//////////////////////////////////////////////////////
+
+	:TYPE								UI_TYPE_BASIC
+	:OBJECT_ID 						MOVINGWINDOW
+	:CLEAR 							1
+	:POSITION_START 				0.0 0.0
+	:POSITION_END 					0.0 0.0
+	:SIZE 							1.0 1.0
+	
+	:S{*****>>>
+	
+		//////////////////////////////////////////////////////
+		// CALIBRATE AXIS 1
+		//////////////////////////////////////////////////////
+
+		:TYPE								UI_TYPE_AREA
+		:OBJECT_ID						AXIS1_AREA_TEXT
+		:CLEAR							1
+		:POSITION_START				-1.0 0.19583
+		:POSITION_END					0.0 0.19583
+		:SIZE								1.0 0.06
+		:TIME_LENGTH					0.16667
+		:OFFSET_TIME					0.0
+
+		:S{*****>>>
+
+			:TYPE								UI_TYPE_BUTTON
+			:OBJECT_ID						AXIS1
+			:TEXT 							TXT_OPTIONS_CONTROLS_CALIBRATE_AXIS_1
+			:CLEAR							1
+			:POSITION_START 				0.0 0.0
+			:POSITION_END 					0.0 0.0
+			:SIZE 							0.29156 1.0
+			:FONT 							2
+			:FONT_COLOUR 					0 0 0 255
+			:TEXT_JUSTIFY 					2
+			
+		:E}*****<<<
+			
+		:TYPE								UI_TYPE_AREA
+		:OBJECT_ID						AXIS1_AREA_SLIDER
+		:CLEAR							1
+		:POSITION_START				1.0 0.19583
+		:POSITION_END					0.0 0.19583
+		:SIZE								1.0 0.06
+		:TIME_LENGTH					0.16667
+		:OFFSET_TIME					0.0
+
+		:S{*****>>>
+
+			:TYPE 							UI_TYPE_TEXT
+			:OBJECT_ID						AXIS1MINVAL
+			:POSITION_START 				0.30572 0.0
+			:POSITION_END 					0.30572 0.0
+			:SIZE 							0.10791 1.0
+			:FONT 							1
+			:FONT_COLOUR 					0 0 0 255
+			:TEXT_JUSTIFY 					2
+
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_HIGHLIGHT_AXIS1
+			:CLEAR							1
+			:COLOUR							255 255 255 255
+
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_BACKGROUND_AXIS1
+			:CLEAR							1	
+			:POSITION_START				0.42438 0.20867
+			:POSITION_END					0.42438 0.20867
+			:COLOUR							150 150 150 255
+			:AUTOSIZE						1
+
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_LEVEL_BACKGROUND_AXIS1
+			:CLEAR							1	
+			:POSITION_START				0.42438 0.20867
+			:POSITION_END					0.42438 0.20867
+			:COLOUR							0 0 0 255
+			:AUTOSIZE						1
+
+			:TYPE 							UI_TYPE_GRAPHIC
+			:OBJECT_ID 						SLIDER_MARKER_AXIS1
+			:TEXTURE_ENUM 					GRAPHICS\GAME\OPTIONS\VOLSLIDE.PSD
+			:POSITION_START 				0.42438 0.06992
+			:POSITION_END					0.42438 0.06992
+			:AUTOSIZE						1
+			:FLIP_GRAPHIC 					1 0
+			:STRETCH_GRAPHIC 				1
+
+			:TYPE 							UI_TYPE_TEXT
+			:OBJECT_ID						AXIS1MAXVAL
+			:POSITION_START 				0.70341 0.0
+			:POSITION_END					0.70341 0.0
+			:SIZE 							0.10791 1.0
+			:FONT								1
+			:FONT_COLOUR					0 0 0 255
+			:TEXT_JUSTIFY 					1
+
+		:E}*****<<<
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////////
+		// CALIBRATE AXIS 2
+		//////////////////////////////////////////////////////
+
+		:TYPE									UI_TYPE_BUTTON
+		:OBJECT_ID 							AXIS2_AREA_TEXT
+		:CLEAR 								1
+		:POSITION_START 					-1.0 0.25
+		:POSITION_END 						0.0 0.25
+		:SIZE									1.0 0.06
+		:TIME_LENGTH						0.16667
+		:OFFSET_TIME						0.1
+
+		:S{*****>>>
+
+			:TYPE								UI_TYPE_BUTTON
+			:OBJECT_ID						AXIS2
+			:TEXT 							TXT_OPTIONS_CONTROLS_CALIBRATE_AXIS_2
+			:CLEAR							1
+			:POSITION_START 				0.0 0.0
+			:POSITION_END 					0.0 0.0
+			:SIZE 							0.29156 1.0
+			:FONT 							2
+			:FONT_COLOUR 					0 0 0 255
+			:TEXT_JUSTIFY 					2
+
+		:E}*****<<<
+		
+		:TYPE									UI_TYPE_BUTTON
+		:OBJECT_ID 							AXIS2_AREA_SLIDER
+		:CLEAR 								1
+		:POSITION_START 					1.0 0.25
+		:POSITION_END 						0.0 0.25
+		:SIZE									1.0 0.06
+		:TIME_LENGTH						0.16667
+		:OFFSET_TIME						0.1
+
+		:S{*****>>>
+
+			:TYPE 							UI_TYPE_TEXT
+			:OBJECT_ID						AXIS2MINVAL
+			:POSITION_START 				0.30572 0.0
+			:POSITION_END 					0.30572 0.0
+			:SIZE 							0.10791 1.0
+			:FONT 							1
+			:FONT_COLOUR 					0 0 0 255
+			:TEXT_JUSTIFY 					2
+					
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_HIGHLIGHT_AXIS2
+			:CLEAR							1
+			:COLOUR							255 255 255 255
+			
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_BACKGROUND_AXIS2
+			:CLEAR							1	
+			:POSITION_START				0.42438 0.20867
+			:POSITION_END					0.42438 0.20867
+			:COLOUR							150 150 150 255
+			:AUTOSIZE						1
+	
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_LEVEL_BACKGROUND_AXIS2
+			:CLEAR							1	
+			:POSITION_START				0.42438 0.20867
+			:POSITION_END					0.42438 0.20867
+			:COLOUR							0 0 0 255
+			:AUTOSIZE						1
+			
+			:TYPE 							UI_TYPE_GRAPHIC
+			:OBJECT_ID 						SLIDER_MARKER_AXIS2
+			:TEXTURE_ENUM 					GRAPHICS\GAME\OPTIONS\VOLSLIDE.PSD
+			:POSITION_START 				0.42438 0.06992
+			:POSITION_END					0.42438 0.06992
+			:AUTOSIZE 						1
+			:FLIP_GRAPHIC 					1 0
+			:STRETCH_GRAPHIC 				1
+			
+			:TYPE 							UI_TYPE_TEXT
+			:OBJECT_ID						AXIS2MAXVAL
+			:POSITION_START 				0.70341 0.0
+			:POSITION_END					0.70341 0.0
+			:SIZE 							0.10791 1.0
+			:FONT								1
+			:FONT_COLOUR					0 0 0 255
+			:TEXT_JUSTIFY 					1
+
+		:E}*****<<<
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+		
+		//////////////////////////////////////////////////////
+		// CALIBRATE AXIS 3
+		//////////////////////////////////////////////////////
+
+		:TYPE									UI_TYPE_BUTTON
+		:OBJECT_ID 							AXIS3_AREA_TEXT
+		:CLEAR 								1
+		:POSITION_START 					-1.0 0.30417
+		:POSITION_END 						0.0 0.30417
+		:SIZE									1.0 0.06
+		:TIME_LENGTH						0.16667
+		:OFFSET_TIME						0.2
+
+		:S{*****>>>
+		
+			:TYPE								UI_TYPE_BUTTON
+			:OBJECT_ID						AXIS3
+			:TEXT 							TXT_OPTIONS_CONTROLS_CALIBRATE_AXIS_1
+			:CLEAR							1
+			:POSITION_START 				0.0 0.0
+			:POSITION_END 					0.0 0.0
+			:SIZE 							0.29156 1.0
+			:FONT 							2
+			:FONT_COLOUR 					0 0 0 255
+			:TEXT_JUSTIFY 					2
+			
+		:E}*****<<<
+			
+		:TYPE									UI_TYPE_BUTTON
+		:OBJECT_ID 							AXIS3_AREA_SLIDER
+		:CLEAR 								1
+		:POSITION_START 					1.0 0.30417
+		:POSITION_END 						0.0 0.30417
+		:SIZE									1.0 0.06
+		:TIME_LENGTH						0.16667
+		:OFFSET_TIME						0.2
+		
+		:S{*****>>>
+	
+			:TYPE 							UI_TYPE_TEXT
+			:OBJECT_ID						AXIS3MINVAL
+			:POSITION_START 				0.30572 0.0
+			:POSITION_END 					0.30572 0.0
+			:SIZE 							0.10791 1.0
+			:FONT 							1
+			:FONT_COLOUR 					0 0 0 255
+			:TEXT_JUSTIFY 					2
+				
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_HIGHLIGHT_AXIS3
+			:CLEAR							1
+			:COLOUR							255 255 255 255
+			
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_BACKGROUND_AXIS3
+			:CLEAR							1	
+			:POSITION_START				0.42438 0.20867
+			:POSITION_END					0.42438 0.20867
+			:COLOUR							150 150 150 255
+			:AUTOSIZE						1
+	
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_LEVEL_BACKGROUND_AXIS3
+			:CLEAR							1	
+			:POSITION_START				0.42438 0.20867
+			:POSITION_END					0.42438 0.20867
+			:COLOUR							0 0 0 255
+			:AUTOSIZE						1
+
+			:TYPE 							UI_TYPE_GRAPHIC
+			:OBJECT_ID 						SLIDER_MARKER_AXIS3
+			:TEXTURE_ENUM 					GRAPHICS\GAME\OPTIONS\VOLSLIDE.PSD
+			:POSITION_START 				0.42438 0.06992
+			:POSITION_END					0.42438 0.06992
+			:AUTOSIZE 						1
+			:FLIP_GRAPHIC 					1 0
+			:STRETCH_GRAPHIC 				1
+
+			:TYPE 							UI_TYPE_TEXT
+			:OBJECT_ID						AXIS3MAXVAL
+			:POSITION_START 				0.70341 0.0
+			:POSITION_END					0.70341 0.0
+			:SIZE 							0.10791 1.0
+			:FONT								1
+			:FONT_COLOUR					0 0 0 255
+			:TEXT_JUSTIFY 					1
+
+		:E}*****<<<
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+		
+		//////////////////////////////////////////////////////
+		// CALIBRATE AXIS 4
+		//////////////////////////////////////////////////////
+
+		:TYPE									UI_TYPE_BUTTON
+		:OBJECT_ID 							AXIS4_AREA_TEXT
+		:CLEAR 								1
+		:POSITION_START 					-1.0 0.35834
+		:POSITION_END 						0.0 0.35834
+		:SIZE									1.0 0.06
+		:TIME_LENGTH						0.16667
+		:OFFSET_TIME						0.3
+		
+		:S{*****>>>
+		
+			:TYPE								UI_TYPE_BUTTON
+			:OBJECT_ID						AXIS4
+			:TEXT 							TXT_OPTIONS_CONTROLS_CALIBRATE_AXIS_4
+			:CLEAR							1
+			:POSITION_START 				0.0 0.0
+			:POSITION_END 					0.0 0.0
+			:SIZE 							0.29156 1.0
+			:FONT 							2
+			:FONT_COLOUR 					0 0 0 255
+			:TEXT_JUSTIFY 					2
+
+		:E}*****<<<
+	
+		:TYPE									UI_TYPE_BUTTON
+		:OBJECT_ID 							AXIS4_AREA_SLIDER
+		:CLEAR 								1
+		:POSITION_START 					1.0 0.35834
+		:POSITION_END 						0.0 0.35834
+		:SIZE									1.0 0.06
+		:TIME_LENGTH						0.16667
+		:OFFSET_TIME						0.3
+	
+		:S{*****>>>
+	
+			:TYPE 							UI_TYPE_TEXT
+			:OBJECT_ID						AXIS4MINVAL
+			:POSITION_START 				0.30572 0.0
+			:POSITION_END 					0.30572 0.0
+			:SIZE 							0.10791 1.0
+			:FONT 							1
+			:FONT_COLOUR 					0 0 0 255
+			:TEXT_JUSTIFY 					2
+					
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_HIGHLIGHT_AXIS4
+			:CLEAR							1
+			:COLOUR							255 255 255 255
+			
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_BACKGROUND_AXIS4
+			:CLEAR							1	
+			:POSITION_START				0.42438 0.20867
+			:POSITION_END					0.42438 0.20867
+			:COLOUR							150 150 150 255
+			:AUTOSIZE						1
+	
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_LEVEL_BACKGROUND_AXIS4
+			:CLEAR							1	
+			:POSITION_START				0.42438 0.20867
+			:POSITION_END					0.42438 0.20867
+			:COLOUR							0 0 0 255
+			:AUTOSIZE						1
+
+			:TYPE 							UI_TYPE_GRAPHIC
+			:OBJECT_ID 						SLIDER_MARKER_AXIS4
+			:TEXTURE_ENUM 					GRAPHICS\GAME\OPTIONS\VOLSLIDE.PSD
+			:POSITION_START 				0.42438 0.06992
+			:POSITION_END					0.42438 0.06992
+			:AUTOSIZE 						1
+			:FLIP_GRAPHIC 					1 0
+			:STRETCH_GRAPHIC 				1
+	
+			:TYPE 							UI_TYPE_TEXT
+			:OBJECT_ID						AXIS4MAXVAL
+			:POSITION_START 				0.70341 0.0
+			:POSITION_END					0.70341 0.0
+			:SIZE 							0.10791 1.0
+			:FONT								1
+			:FONT_COLOUR					0 0 0 255
+			:TEXT_JUSTIFY 					1
+
+		:E}*****<<<
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+		
+		//////////////////////////////////////////////////////
+		// CALIBRATE AXIS 5
+		//////////////////////////////////////////////////////
+
+		:TYPE									UI_TYPE_BUTTON
+		:OBJECT_ID 							AXIS5_AREA
+		:CLEAR 								1
+		:POSITION_START 					-1.0 0.41251
+		:POSITION_END 						0.0 0.41251
+		:SIZE									1.0 0.06
+		:TIME_LENGTH						0.16667
+		:OFFSET_TIME						0.4
+
+		:S{*****>>>
+		
+			:TYPE								UI_TYPE_BUTTON
+			:OBJECT_ID						AXIS5
+			:TEXT 							TXT_OPTIONS_CONTROLS_CALIBRATE_AXIS_5
+			:CLEAR							1
+			:POSITION_START 				0.0 0.0
+			:POSITION_END 					0.0 0.0
+			:SIZE 							0.29156 1.0
+			:FONT 							2
+			:FONT_COLOUR 					0 0 0 255
+			:TEXT_JUSTIFY 					2
+			
+		:E}*****<<<
+			
+		:TYPE									UI_TYPE_BUTTON
+		:OBJECT_ID 							AXIS5_AREA
+		:CLEAR 								1
+		:POSITION_START 					1.0 0.41251
+		:POSITION_END 						0.0 0.41251
+		:SIZE									1.0 0.06
+		:TIME_LENGTH						0.16667
+		:OFFSET_TIME						0.4
+		
+		:S{*****>>>
+	
+			:TYPE 							UI_TYPE_TEXT
+			:OBJECT_ID						AXIS5MINVAL
+			:POSITION_START 				0.30572 0.0
+			:POSITION_END 					0.30572 0.0
+			:SIZE 							0.10791 1.0
+			:FONT 							1
+			:FONT_COLOUR 					0 0 0 255
+			:TEXT_JUSTIFY 					2
+					
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_HIGHLIGHT_AXIS5
+			:CLEAR							1
+			:COLOUR							255 255 255 255
+			
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_BACKGROUND_AXIS5
+			:CLEAR							1	
+			:POSITION_START				0.42438 0.20867
+			:POSITION_END					0.42438 0.20867
+			:COLOUR							150 150 150 255
+			:AUTOSIZE						1
+	
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_LEVEL_BACKGROUND_AXIS5
+			:CLEAR							1	
+			:POSITION_START				0.42438 0.20867
+			:POSITION_END					0.42438 0.20867
+			:COLOUR							0 0 0 255
+			:AUTOSIZE						1
+	
+			:TYPE 							UI_TYPE_GRAPHIC
+			:OBJECT_ID 						SLIDER_MARKER_AXIS5
+			:TEXTURE_ENUM 					GRAPHICS\GAME\OPTIONS\VOLSLIDE.PSD
+			:POSITION_START 				0.42438 0.06992
+			:POSITION_END					0.42438 0.06992
+			:AUTOSIZE 						1
+			:FLIP_GRAPHIC 					1 0
+			:STRETCH_GRAPHIC 				1
+
+			:TYPE 							UI_TYPE_TEXT
+			:OBJECT_ID						AXIS5MAXVAL
+			:POSITION_START 				0.70341 0.0
+			:POSITION_END					0.70341 0.0
+			:SIZE 							0.10791 1.0
+			:FONT								1
+			:FONT_COLOUR					0 0 0 255
+			:TEXT_JUSTIFY 					1
+
+		:E}*****<<<
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+
+		//////////////////////////////////////////////////////
+		// CALIBRATE AXIS 6
+		//////////////////////////////////////////////////////
+
+		:TYPE									UI_TYPE_BUTTON
+		:OBJECT_ID 							AXIS6_AREA
+		:CLEAR 								1
+		:POSITION_START 					-1.0 0.46668
+		:POSITION_END 						0.0 0.46668
+		:SIZE									1.0 0.06
+		:TIME_LENGTH						0.16667
+		:OFFSET_TIME						0.5
+
+		:S{*****>>>
+
+			:TYPE								UI_TYPE_BUTTON
+			:OBJECT_ID						AXIS6
+			:TEXT 							TXT_OPTIONS_CONTROLS_CALIBRATE_AXIS_6
+			:CLEAR							1
+			:POSITION_START 				0.0 0.0
+			:POSITION_END 					0.0 0.0
+			:SIZE 							0.29156 1.0
+			:FONT 							2
+			:FONT_COLOUR 					0 0 0 255
+			:TEXT_JUSTIFY 					2
+
+		:E}*****<<<
+
+		:TYPE									UI_TYPE_BUTTON
+		:OBJECT_ID 							AXIS6_AREA
+		:CLEAR 								1
+		:POSITION_START 					1.0 0.46668
+		:POSITION_END 						0.0 0.46668
+		:SIZE									1.0 0.06
+		:TIME_LENGTH						0.16667
+		:OFFSET_TIME						0.5
+
+		:S{*****>>>
+
+			:TYPE 							UI_TYPE_TEXT
+			:OBJECT_ID						AXIS6MINVAL
+			:POSITION_START 				0.30572 0.0
+			:POSITION_END 					0.30572 0.0
+			:SIZE 							0.10791 1.0
+			:FONT 							1
+			:FONT_COLOUR 					0 0 0 255
+			:TEXT_JUSTIFY 					2
+
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_HIGHLIGHT_AXIS6
+			:CLEAR							1
+			:COLOUR							255 255 255 255
+
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_BACKGROUND_AXIS6
+			:CLEAR							1	
+			:POSITION_START				0.42438 0.20867
+			:POSITION_END					0.42438 0.20867
+			:COLOUR							150 150 150 255
+			:AUTOSIZE						1
+
+			:TYPE								UI_TYPE_AREA
+			:OBJECT_ID						SLIDER_LEVEL_BACKGROUND_AXIS6
+			:CLEAR							1	
+			:POSITION_START				0.42438 0.20867
+			:POSITION_END					0.42438 0.20867
+			:COLOUR							0 0 0 255
+			:AUTOSIZE						1
+
+			:TYPE 							UI_TYPE_GRAPHIC
+			:OBJECT_ID 						SLIDER_MARKER_AXIS6
+			:TEXTURE_ENUM 					GRAPHICS\GAME\OPTIONS\VOLSLIDE.PSD
+			:POSITION_START 				0.42438 0.06992
+			:POSITION_END					0.42438 0.06992
+			:AUTOSIZE 						1
+			:FLIP_GRAPHIC 					1 0
+			:STRETCH_GRAPHIC 				1
+
+			:TYPE 							UI_TYPE_TEXT
+			:OBJECT_ID						AXIS6MAXVAL
+			:POSITION_START 				0.70341 0.0
+			:POSITION_END					0.70341 0.0
+			:SIZE 							0.10791 1.0
+			:FONT								1
+			:FONT_COLOUR					0 0 0 255
+			:TEXT_JUSTIFY 					1
+
+		:E}*****<<<
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+
+	:E}*****<<<
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+:E}*****<<<
+
+//////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////
+
+:CONNECTION "AXIS1" 	"AXIS6" 	"AXIS2" 	"none" "none"
+:CONNECTION "AXIS2" 	"AXIS1"	"AXIS3" 	"none" "none"
+:CONNECTION "AXIS3" 	"AXIS2"	"AXIS4"	"none" "none"
+:CONNECTION "AXIS4"	"AXIS3"	"AXIS5"	"none" "none"
+:CONNECTION "AXIS5"	"AXIS4"	"AXIS6"	"none" "none"
+:CONNECTION "AXIS6"	"AXIS5"	"AXIS1"	"none" "none"

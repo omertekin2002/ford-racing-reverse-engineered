@@ -1,0 +1,1 @@
+OVAL3: ported from Ford Racing 2 by convert_track.py (FR3AddOns [FR2Tracks] reads this file)

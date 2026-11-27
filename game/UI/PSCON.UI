@@ -1,0 +1,376 @@
+//////////////////////////////////////////////////////
+// UI SCREEN
+//////////////////////////////////////////////////////
+
+:TYPE										UI_TYPE_SCREEN
+:OBJECT_ID 								UI\PSCON.UI
+:POSITION_START 						0.0 0.0
+:POSITION_END 							0.0 0.0
+:SIZE 									1.0 1.0
+:TEXTURE_ENUM 							GRAPHICS\GAME\BKGNDS\MACH3BG.PSD
+
+:S{*****>>>
+
+	//////////////////////////////////////////////////////
+	// TITLE BAR
+	//////////////////////////////////////////////////////
+
+	:INHERIT								TITLE
+	:POSITION_START 					0.0 0.07917
+	:POSITION_END 						0.0 0.07917
+	:SIZE									1.0 0.03125
+	:TEXT_JUSTIFY						0
+
+	// DONE
+	:INHERIT								BACK_ICON
+	:POSITION_START					0.46 0.87
+	:POSITION_END						0.46 0.87
+
+	:INHERIT								BACK_TEXT
+	:POSITION_START 					0.06718 0.88
+	:POSITION_END 						0.06718 0.88
+	:SIZE									0.39000 0.100000
+	:TEXT_JUSTIFY						5
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// MAPPING
+	//////////////////////////////////////////////////////
+
+	:TYPE									UI_TYPE_GRAPHIC
+	:OBJECT_ID							MAPPING_HIGHLIGHT_BAR
+	:SIZE									1.0 0.05625
+	:COLOUR								255, 255, 0, 76
+	:COLOUR_START						255, 255, 0, 0
+	:POSITION_START					-0.35781 0.12042
+	:POSITION_END						-0.35781 0.12042
+	:TEXTURE_ENUM						GRAPHICS\GAME\COMMON\MENU_HI.PSD
+
+	:S{*****>>>
+
+		//////////////////////////////////////////////////////
+		// ARROWS
+		//////////////////////////////////////////////////////
+
+		:TYPE									UI_TYPE_GRAPHIC
+		:OBJECT_ID							MAPPING_HIGHLIGHT_BAR_LEFT_ARROW
+		:AUTOSIZE							1
+		:POSITION_START					0.0 0.12963
+		:POSITION_END						0.0 0.12963
+		:STRETCH_GRAPHIC					1
+		:TEXTURE_ENUM						GRAPHICS\GAME\COMMON\SMARROW.PSD
+		:TIME_LENGTH						0.166667
+
+		:TYPE 								UI_TYPE_GRAPHIC
+		:OBJECT_ID 							MAPPING_HIGHLIGHT_BAR_RIGHT_ARROW
+		:AUTOSIZE 							1
+		:FLIP_GRAPHIC						1 0
+		:POSITION_START 					0.95417 0.12963
+		:POSITION_END 						0.95417 0.12963
+		:STRETCH_GRAPHIC					1
+		:TEXTURE_ENUM 						GRAPHICS\GAME\COMMON\SMARROW.PSD
+		:TIME_LENGTH						0.166667
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+
+		:TYPE									UI_TYPE_BUTTON
+		:OBJECT_ID							MAPPING
+		:CLEAR								1
+		:FONT 								2
+		:FONT_COLOUR 						216 234 242 255
+		:HIGHLIGHTED_FONT					3
+		:HIGHLIGHTED_FONT_COLOUR		255 249 135 255
+		:POSITION_START					-1.0 0.0
+		:POSITION_END						0.0 0.0
+		:SIZE									1.0 1.0
+		:TEXT_JUSTIFY						2
+		:JUSTIFY_OFFSET					0.05625 0.0
+		:TIME_LENGTH						0.166667
+		:OFFSET_TIME						0.0
+
+	:E}*****<<<
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+		
+	//////////////////////////////////////////////////////
+	// BUTTON
+	//////////////////////////////////////////////////////
+
+	:INHERIT								FR3_DEFAULT_BUTTON
+	:OBJECT_ID 							BRAKE
+	:TEXT 								TXT_OPTIONS_CONTROLS_INPUT_BRAKE
+	:POSITION_START 					-1.0 0.187
+	:POSITION_END 						-0.47813 0.187
+	:TEXT_JUSTIFY						2
+	:FONT_COLOUR						204 204 204 255
+	:TIME_LENGTH						0.16667
+	:OFFSET_TIME						0.1
+
+	:INHERIT								FR3_DEFAULT_BUTTON
+	:OBJECT_ID 							ACCELERATE
+	:TEXT 								TXT_OPTIONS_CONTROLS_INPUT_ACCELERATE
+	:POSITION_START 					-1.0 0.252
+	:POSITION_END 						-0.47813 0.252
+	:TEXT_JUSTIFY						2
+	:FONT_COLOUR						204 204 204 255
+	:TIME_LENGTH						0.16667
+	:OFFSET_TIME						0.2
+		
+	:INHERIT								FR3_DEFAULT_BUTTON
+	:OBJECT_ID 							STEERLEFT
+	:TEXT 								TXT_OPTIONS_CONTROLS_INPUT_STEER_LEFT
+	:POSITION_START 					-1.0 0.317
+	:POSITION_END 						-0.47813 0.317
+	:TEXT_JUSTIFY						2
+	:FONT_COLOUR						204 204 204 255
+	:TIME_LENGTH						0.16667
+	:OFFSET_TIME						0.3
+		
+	:INHERIT								FR3_DEFAULT_BUTTON
+	:OBJECT_ID 							STEERRIGHT
+	:TEXT 								TXT_OPTIONS_CONTROLS_INPUT_STEER_RIGHT
+	:POSITION_START 					-1.0 0.382
+	:POSITION_END 						-0.47813 0.382
+	:TEXT_JUSTIFY						2
+	:FONT_COLOUR						204 204 204 255
+	:TIME_LENGTH						0.16667
+	:OFFSET_TIME						0.4
+
+	:INHERIT								FR3_DEFAULT_BUTTON
+	:OBJECT_ID 							GEARUP
+	:TEXT 								TXT_OPTIONS_CONTROLS_INPUT_GEAR_UP
+	:POSITION_START 					-1.0 0.447
+	:POSITION_END 						-0.47813 0.447
+	:TEXT_JUSTIFY						2
+	:FONT_COLOUR						204 204 204 255
+	:TIME_LENGTH						0.16667
+	:OFFSET_TIME						0.5
+
+	:INHERIT								FR3_DEFAULT_BUTTON
+	:OBJECT_ID 							GEARDOWN
+	:TEXT 								TXT_OPTIONS_CONTROLS_INPUT_GEAR_DOWN
+	:POSITION_START 					-1.0 0.512
+	:POSITION_END 						-0.47813 0.512
+	:TEXT_JUSTIFY						2
+	:FONT_COLOUR						204 204 204 255
+	:TIME_LENGTH						0.16667
+	:OFFSET_TIME						0.6
+
+	:INHERIT								FR3_DEFAULT_BUTTON
+	:OBJECT_ID 							HANDBRAKE
+	:TEXT 								TXT_OPTIONS_CONTROLS_INPUT_HAND_BRAKE
+	:POSITION_START 					-1.0 0.577
+	:POSITION_END 						-0.47813 0.577
+	:TEXT_JUSTIFY						2
+	:FONT_COLOUR						204 204 204 255
+	:TIME_LENGTH						0.16667
+	:OFFSET_TIME						0.7
+
+	:INHERIT								FR3_DEFAULT_BUTTON
+	:OBJECT_ID 							CHANGECAMERA
+	:TEXT 								TXT_OPTIONS_CONTROLS_INPUT_CHANGE_DRIVING_VIEW
+	:POSITION_START 					-1.0 0.642
+	:POSITION_END 						-0.47813 0.642
+	:TEXT_JUSTIFY						2
+	:FONT_COLOUR						204 204 204 255
+	:TIME_LENGTH						0.16667
+	:OFFSET_TIME						0.8
+
+	:INHERIT								FR3_DEFAULT_BUTTON
+	:OBJECT_ID 							REVERSECAMERA
+	:TEXT 								TXT_OPTIONS_CONTROLS_INPUT_REVERSE_VIEW
+	:POSITION_START 					-1.0 0.707
+	:POSITION_END 						-0.47813 0.707
+	:TEXT_JUSTIFY						2
+	:FONT_COLOUR						204 204 204 255
+	:TIME_LENGTH						0.16667
+	:OFFSET_TIME						0.9
+	
+	:INHERIT								FR3_DEFAULT_BUTTON
+	:OBJECT_ID 							BOOST
+	:TEXT 								TXT_GAMEMODE_BOOST
+	:POSITION_START 					-1.0 0.772
+	:POSITION_END 						-0.47813 0.772
+	:TEXT_JUSTIFY						2
+	:FONT_COLOUR						204 204 204 255
+	:TIME_LENGTH						0.16667
+	:OFFSET_TIME						1.0
+	
+	//
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+		
+	//////////////////////////////////////////////////////
+	// KEY CHANGE AREAS
+	//////////////////////////////////////////////////////
+
+	:INHERIT								MENUBAR
+		
+	:TYPE 								UI_TYPE_AREA
+	:OBJECT_ID 							BRAKEBUTTON
+	:CLEAR								1
+	:COLOUR								204 204 204 255
+	:FONT									1
+	:FONT_COLOUR						204 204 204 255
+	:POSITION_START 					0.52344 0.187
+	:POSITION_END 						0.52344 0.187
+	:AUTOSIZE							1
+	:TEXT_JUSTIFY 						1
+	
+	:TYPE									UI_TYPE_AREA
+	:OBJECT_ID 							BRAKEANALOG
+	:AUTOSIZE							1
+	:CLEAR								1
+	:COLOUR								204 204 204 255
+	:FONT									1
+	:FONT_COLOUR						204 204 204 255
+	:POSITION_START					0.62 0.187
+	:POSITION_END						0.62 0.187
+	:STRETCH_GRAPHIC 					1
+	
+	:TYPE 								UI_TYPE_AREA
+	:OBJECT_ID 							ACCELERATEBUTTON
+	:CLEAR								1
+	:COLOUR								204 204 204 255
+	:FONT 								1
+	:FONT_COLOUR 						204 204 204 255
+	:POSITION_START 					0.52344 0.252
+	:POSITION_END 						0.52344 0.252
+	:AUTOSIZE							1
+	:TEXT_JUSTIFY 						1
+	
+	:TYPE									UI_TYPE_AREA	
+	:OBJECT_ID 							ACCELERATEANALOG
+	:CLEAR								1
+	:COLOUR								204 204 204 255
+	:FONT									1
+	:FONT_COLOUR						204 204 204 255
+	:POSITION_START					0.62 0.252
+	:POSITION_END						0.62 0.252
+	:AUTOSIZE							1
+	:STRETCH_GRAPHIC					1
+
+	:TYPE 								UI_TYPE_AREA
+	:OBJECT_ID 							STEERLEFTBUTTON
+	:CLEAR								1
+	:COLOUR								204 204 204 255
+	:FONT									1
+	:FONT_COLOUR						204 204 204 255
+	:POSITION_START 					0.52344 0.317
+	:POSITION_END 						0.52344 0.317
+	:AUTOSIZE							1
+	
+	:TYPE									UI_TYPE_AREA
+	:OBJECT_ID 							STEERLEFTANALOG
+	:CLEAR								1
+	:COLOUR								204 204 204 255
+	:FONT									1
+	:FONT_COLOUR						204 204 204 255
+	:POSITION_START 					0.62 0.317
+	:POSITION_END 						0.62 0.317
+	:AUTOSIZE							1
+	:STRETCH_GRAPHIC 					1
+
+	:TYPE 								UI_TYPE_AREA
+	:OBJECT_ID 							STEERRIGHTBUTTON
+	:CLEAR								1
+	:COLOUR								204 204 204 255
+	:FONT									1
+	:FONT_COLOUR						204 204 204 255
+	:POSITION_START 					0.52344 0.382
+	:POSITION_END 						0.52344 0.382
+	:AUTOSIZE							1
+	
+	:TYPE									UI_TYPE_AREA
+	:OBJECT_ID 							STEERRIGHTANALOG
+	:CLEAR								1
+	:COLOUR								204 204 204 255
+	:POSITION_START 					0.62 0.382
+	:POSITION_END 						0.62 0.382
+	:FONT									1
+	:FONT_COLOUR						0 0 0 255
+	:AUTOSIZE							1
+	:STRETCH_GRAPHIC 					1
+
+	:TYPE 								UI_TYPE_AREA
+	:OBJECT_ID 							GEARUPBUTTON
+	:CLEAR								1	
+	:POSITION_START 					0.52344 0.447
+	:POSITION_END 						0.52344 0.447
+	:FONT									1
+	:FONT_COLOUR						204 204 204 255
+	:COLOUR								204 204 204 255
+	:AUTOSIZE							1
+	:TEXT_JUSTIFY 						1
+
+	:TYPE 								UI_TYPE_AREA
+	:OBJECT_ID 							GEARDOWNBUTTON
+	:CLEAR								1
+	:POSITION_START 					0.52344 0.512
+	:POSITION_END 						0.52344 0.512
+	:COLOUR								204 204 204 255
+	:FONT									1
+	:FONT_COLOUR						204 204 204 255
+	:AUTOSIZE							1
+	:TEXT_JUSTIFY 						1
+
+	:TYPE 								UI_TYPE_AREA
+	:OBJECT_ID 							HANDBRAKEBUTTON
+	:CLEAR								1
+	:POSITION_START 					0.52344 0.577
+	:POSITION_END 						0.52344 0.577
+	:COLOUR								204 204 204 255
+	:FONT									1
+	:FONT_COLOUR						204 204 204 255
+	:AUTOSIZE							1
+	:TEXT_JUSTIFY 						1
+
+	:TYPE 								UI_TYPE_AREA
+	:OBJECT_ID 							CHANGECAMERABUTTON
+	:CLEAR								1
+	:POSITION_START 					0.52344 0.642
+	:POSITION_END 						0.52344 0.642
+	:COLOUR								204 204 204 255
+	:AUTOSIZE							1
+	:FONT									1
+	:FONT_COLOUR						204 204 204 255
+	:TEXT_JUSTIFY 						1
+
+	:TYPE 								UI_TYPE_AREA
+	:OBJECT_ID 							REVERSECAMERABUTTON
+	:CLEAR								1
+	:POSITION_END 						0.52344 0.707
+	:POSITION_START 					0.52344 0.707
+	:COLOUR								204 204 204 255
+	:FONT									1
+	:FONT_COLOUR						204 204 204 255
+	:AUTOSIZE							1
+	
+	:TYPE 								UI_TYPE_AREA
+	:OBJECT_ID 							BOOSTBUTTON
+	:CLEAR								1
+	:POSITION_END 						0.52344 0.772
+	:POSITION_START 					0.52344 0.772
+	:COLOUR								204 204 204 255
+	:FONT									1
+	:FONT_COLOUR						204 204 204 255
+	:AUTOSIZE							1
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+		
+:E}*****<<<
+
+//////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////

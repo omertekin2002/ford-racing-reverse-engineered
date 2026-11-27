@@ -1,0 +1,289 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"PARTICLE_EFFECTS"                     	scenes\particles\track_particles.ma
+	"ENGBF_CUT_UP"                         	
+	"RAILSIGN"                             	scenes\buildings\barriers\railsign.ma
+	"FARMHOUSE"                            	scenes\buildings\accessories\farmhouse.ma
+	"MOTORWAY_BARRIER_01"                  	scenes\buildings\barriers\motorway_barrier_01.ma
+	"LAMPOST"                              	scenes\buildings\tgraph_poles\lampost.ma
+	"TELEGRAPHPOLES15"                     	scenes\buildings\tgraph_poles\telegraphpoles15.ma
+	"TELEGRAPHPOLES14"                     	scenes\buildings\tgraph_poles\telegraphpoles14.ma
+	"TELEGRAPHPOLES13"                     	scenes\buildings\tgraph_poles\telegraphpoles13.ma
+	"TELEGRAPHPOLES12"                     	scenes\buildings\tgraph_poles\telegraphpoles12.ma
+	"TELEGRAPHPOLES11"                     	scenes\buildings\tgraph_poles\telegraphpoles11.ma
+	"TELEGRAPHPOLES06"                     	scenes\buildings\tgraph_poles\telegraphpoles06.ma
+	"TELEGRAPHPOLES07"                     	scenes\buildings\tgraph_poles\telegraphpoles07.ma
+	"TELEGRAPHPOLES08"                     	scenes\buildings\tgraph_poles\telegraphpoles08.ma
+	"TELEGRAPHPOLES09"                     	scenes\buildings\tgraph_poles\telegraphpoles09.ma
+	"TELEGRAPHPOLES10"                     	scenes\buildings\tgraph_poles\telegraphpoles10.ma
+	"TELEGRAPHPOLES05"                     	scenes\buildings\tgraph_poles\telegraphpoles05.ma
+	"TELEGRAPHPOLES04"                     	scenes\buildings\tgraph_poles\telegraphpoles04.ma
+	"TELEGRAPHPOLES03"                     	scenes\buildings\tgraph_poles\telegraphpoles03.ma
+	"TELEGRAPHPOLES02"                     	scenes\buildings\tgraph_poles\telegraphpoles02.ma
+	"TELEGRAPHPOLES01"                     	scenes\buildings\tgraph_poles\telegraphpoles01.ma
+	"RAILBOOM"                             	scenes\buildings\barriers\railboom.ma
+	"ENGCONEHIGH"                          	scenes\buildings\barriers\engcone.ma
+	"SLEEPRII"                             	scenes\buildings\barriers\motorway_barrier.ma
+	"SLEEPRLEFT"                           	scenes\buildings\barriers\motorway_barrier_left.ma
+	"ENGBF_OBJECTS"                        	
+	"ENGBF_ANIMATIONS"                     	
+	"ENGBF_FALLING_LEAVES"                 	
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"SKYDOME"                              	scenes\environment\oval2_skydome.ma
+	"SILOFENCE3"                           	scenes\buildings\fences\silofence3.ma
+	"SILOFENCE1"                           	scenes\buildings\fences\silofence1.ma
+	"SILOFENCE2"                           	scenes\buildings\fences\silofence2.ma
+	"ROADWORK_BARRIERS"                    	scenes\buildings\barriers\roadworksbarrier.ma
+	"TRAIN"                                	scenes\buildings\accessories\train\train.ma
+	"CARH"                                 	scenes\buildings\accessories\train\carh.ma
+	"CARJ"                                 	scenes\buildings\accessories\train\carj.ma
+	"CARE"                                 	scenes\buildings\accessories\train\care.ma
+	"CARD"                                 	scenes\buildings\accessories\train\card.ma
+	"CARC"                                 	scenes\buildings\accessories\train\carc.ma
+	"CARA"                                 	scenes\buildings\accessories\train\cara.ma
+	"REDTREELG_X"                          	scenes\buildings\accessories\trees\redtreelg_x.ma
+	"REDTREELG"                            	scenes\buildings\accessories\trees\redtreelg.ma
+	"REDTREE_X"                            	scenes\buildings\accessories\trees\redtree_x.ma
+	"TREE3D2"                              	scenes\buildings\accessories\trees\3dtree2.ma
+	"TREE3D"                               	scenes\buildings\accessories\trees\3dtree1.ma
+	"ENGGRASS"                             	scenes\buildings\accessories\enggrass.ma
+	"OLDBRIDGEPILLARLEFT"                  	scenes\buildings\accessories\oldbridgepillarleft.ma
+	"OLDBRIDGEPILLARRIGHT"                 	scenes\buildings\accessories\oldbridgepillarright.ma
+	"LARGESILO"                            	scenes\buildings\accessories\largesilo.ma
+	"OLDBRIDGE"                            	scenes\buildings\accessories\oldbridge.ma
+	"BRIDGEII"                             	scenes\buildings\accessories\oldbridge_partii.ma
+	"BRIDGEPARTI"                          	scenes\buildings\accessories\oldbridge_parti.ma
+	"BRIDGEIII"                            	scenes\buildings\accessories\oldbridge_partiii.ma
+	"WIEK"                                 	scenes\buildings\accessories\wiek.ma
+	"TRUCKII"                              	scenes\buildings\vehicles\truckii.ma
+	"TRUCKI"                               	scenes\buildings\vehicles\trucki.ma
+	"RAILSIGN_ANIM"                        	scenes\buildings\railsign_anim.ma
+	"EFFECTS"                              	scenes\effects\effects.ma
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid skeletal animation names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+	"RUBBER"
+	"FALLING_LEAVES"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"CAR_FRONT"
+	"CAMERA"
+	"CAR_GAMEBONNET"
+	"CAR_BACK_UP"
+	"CAR_SCREENSHOT_FRONTRIGHT"
+	"CAR_BACK"
+	"TRUCKI"
+	"TRUCKII"
+	"WIEK"
+	"RAILSIGN_ANIM"
+	"CARJ"
+	"CARH"
+	"CARE"
+	"CARD"
+	"CARC"
+	"CARA"
+	"TRAIN"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"SUNLIGHT"
+	"AMBIENT"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+	"HEDGE"
+	"METAL"
+	"STONE"
+	"WOOD"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	32x32   	-	[A f     $  ]	"ANIMATED1_2"                           	5d:01:00:cc	 (World size: 1.063654)
+	32x32   	-	[A f     $  ]	"ANIMATED1_3"                           	3e:01:00:cc	 (World size: 1.063654)
+	32x32   	-	[A f     $  ]	"ANIMATED1"                             	16:00:00:cc	 (World size: 1.063654)
+	32x32   	-	[A f     $  ]	"ANIMATED1_1"                           	3e:01:00:cc	 (World size: 1.063654)
+	32x32   	-	[A fM       ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"HEADLIGHT_FLARE"                       	07:07:07:08	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"SPECULAR_SPRITE"                       	44:43:43:44	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"REARLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"SUN_FLARE"                             	15:10:10:12	 (World size: 1.310660)
+	128x128 	-	[  fM   !   ]	"TRACK_SPECULAR"                        	21:21:21:00	 (World size: 10.000000)
+	32x32   	-	[ASfM   !   ]	"TRACK_REFLECTION"                      	00:00:00:00	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM    $  ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	128x128 	-	[  fM   !   ]	"FIELD-GRASS"                           	7a:6c:4f:00	 (World size: 51.755909)
+	128x128 	-	[  fM       ]	"WALL-TUNNEL"                           	45:3f:36:00	 (World size: 10.644862)
+	128x128 	-	[  fM   !   ]	"CONCRETE1"                             	aa:a4:a0:00	 (World size: 13.247985)
+	256x128 	-	[  fM   !   ]	"RAILROAD-GRASS"                        	82:6e:48:00	 (World size: 35.033791)
+	128x128 	-	[  fM   !   ]	"WALL-TUNNELFRONT"                      	63:65:5f:00	 (World size: 3.313786)
+	128x128 	-	[  fM       ]	"WALL-TRAINTUNNEL"                      	78:73:64:00	 (World size: 23.202196)
+	64x64   	-	[  f        ]	"MINISKY"                               	aa:b9:bc:00	 (World size: 3427.191406)
+	128x128 	-	[A fM    $  ]	"TARMAC_PACIFIC_CLOUD001"               	c4:c4:c4:1a	 (World size: 1873.590088)
+	128x128 	-	[A fM    $  ]	"TARMAC_PACIFIC_CLOUD002"               	c4:c4:c4:10	 (World size: 1873.588623)
+	128x128 	-	[A fM    $  ]	"TARMAC_PACIFIC_CLOUD003"               	c4:c4:c4:0a	 (World size: 1873.588135)
+	128x64  	-	[  fM   !   ]	"CONCRETE_ENGLAND"                      	8a:85:74:00	 (World size: 5.835501)
+	128x128 	-	[  fM   !   ]	"GRASS_ENGLAND_AREA_DARK"               	4c:48:1d:00	 (World size: 18.210844)
+	128x128 	-	[  fM       ]	"ROCK1"                                 	53:4e:26:00	 (World size: 40.167759)
+	128x128 	-	[  fM       ]	"ROCKGRASS-2"                           	54:50:28:00	 (World size: 48.852150)
+	256x128 	-	[  fM   !   ]	"GRASS-ENGLAND_ROAD"                    	4e:4a:22:00	 (World size: 10.933729)
+	256x128 	-	[  fM   !   ]	"TARMAC_MOTORWAY_ENGLAND"               	5b:5a:59:00	 (World size: 18.043743)
+	128x128 	-	[  fM       ]	"GRAVEL_ENGLAND_CLIFF"                  	8d:84:6c:00	 (World size: 12.749396)
+	128x128 	-	[  fM   !   ]	"DIRT_ENGLAND"                          	33:27:1c:00	 (World size: 8.281150)
+	128x128 	-	[  fM   !   ]	"LEAVES_ENGLAND_GRASS"                  	59:4b:21:00	 (World size: 11.248647)
+	256x64  	-	[  fM       ]	"DIRT_ENGLAND_RAILROAD"                 	7d:69:4f:00	 (World size: 17.572943)
+	256x256 	-	[  fM   !   ]	"TARMAC_ENGLAND_ROAD"                   	6c:69:5e:00	 (World size: 8.706379)
+	256x256 	-	[  fM   !   ]	"ROCKGRASS"                             	50:4b:25:00	 (World size: 34.749603)
+	256x128 	-	[  fM   !   ]	"GRAVEL_ENGLAND_TARMAC"                 	85:7c:66:00	 (World size: 7.399032)
+	256x256 	-	[  fM   !   ]	"LEAVES_ENGLAND_ROAD"                   	6b:63:55:00	 (World size: 8.213888)
+	128x128 	-	[  fM   !   ]	"DIRT_ENGLAND_FARM"                     	3d:39:38:00	 (World size: 17.373753)
+	256x128 	-	[  fM       ]	"DIRT_ENGLAND_RUBBLE"                   	56:4d:44:00	 (World size: 6.886369)
+	256x256 	-	[  fM   !   ]	"TARMAC_ENGLAND_ROAD_DUST2"             	6a:66:59:00	 (World size: 8.771403)
+	128x128 	-	[  fM   !   ]	"DIRT_ENGLAND_FARM_GRASS"               	43:3e:32:00	 (World size: 12.432762)
+	256x128 	-	[  fM   !   ]	"LEAVES_ENGLAND_GRASS_TARMAC"           	58:48:20:00	 (World size: 7.326782)
+	256x256 	-	[  fM   !   ]	"LEAVES_ENGLAND_ROAD_ORANGE_LEAVES"     	6a:66:5a:00	 (World size: 8.418764)
+	256x128 	-	[  fM   !   ]	"DIRT_ENGLAND_RUBBLE_GRASS"             	53:4c:38:00	 (World size: 7.318811)
+	256x128 	-	[  fM   !   ]	"GRAVEL_ENGLAND_TARMAC_GRASS"           	68:63:46:00	 (World size: 7.296153)
+	128x64  	-	[  fM   !   ]	"DIRT_ENGLAND_FARM_GRASS_TRANSITION"    	44:3b:29:00	 (World size: 7.251574)
+	128x64  	-	[  fM   !   ]	"GRASS-ENGLAND_ROAD_DIRT"               	39:33:20:00	 (World size: 7.549896)
+	128x64  	-	[  fM       ]	"CONCRETE_ENGLAND_GRAVEL"               	8c:89:7b:00	 (World size: 8.442737)
+	256x128 	-	[  fM   !   ]	"GRASS_GRIPPY_ENGLAND_ROAD"             	4e:4a:22:00	 (World size: 7.841683)
+	256x256 	-	[  fM   !   ]	"TARMAC_DIRT_ENGLAND_ROAD_DUST"         	69:64:54:00	 (World size: 7.897305)
+	256x128 	-	[  fM   !   ]	"TARMAC_ENGLAND_ROAD_FINISHLINE"        	73:70:65:00	 (World size: 5.937958)
+	128x64  	-	[  fM   !   ]	"CON_BARRIER002"                        	92:8d:8c:00	 (World size: 6.363396)
+	16x16   	-	[  fM   !   ]	"BAR_1"                                 	85:85:85:00	 (World size: 11.532574)
+	64x64   	-	[  fM       ]	"BARRIER"                               	c9:bb:bb:00	 (World size: 4.858979)
+	64x64   	-	[A fM       ]	"GRID_1"                                	6a:6a:6a:64	 (World size: 3.687319)
+	256x64  	-	[ASfM       ]	"NEWCHECKER_3"                          	a7:a3:a5:fc	 (World size: 17.243908)
+	16x16   	-	[A fM       ]	"NEWCHECKER_3_ROPE"                     	81:81:81:60	 (World size: 2.001929)
+	128x128 	-	[ASfM   !   ]	"BUSH"                                  	50:4d:25:3f	 (World size: 2.241312)
+	128x32  	-	[A fM    $  ]	"GRASS-VARIATIONS-2"                    	4e:45:18:37	 (World size: 5.377887)
+	128x64  	-	[ASfM   !   ]	"WALL_TOP"                              	3d:3a:16:aa	 (World size: 14.007114)
+	256x256 	-	[ASfM   !   ]	"BUSH2"                                 	51:49:25:3d	 (World size: 2.138971)
+	256x64  	-	[  fM   !   ]	"RAILSIGN2"                             	61:56:53:00	 (World size: 9.829095)
+	256x128 	-	[  fM       ]	"FARM_01"                               	86:7c:68:00	 (World size: 50.638138)
+	128x128 	-	[A fM    $  ]	"FENCING_01"                            	25:24:24:2d	 (World size: 3.495426)
+	256x128 	-	[ASfM   !   ]	"FENCING7_ALPHA128X256"                 	b3:b1:ad:91	 (World size: 60.863304)
+	128x64  	-	[  fM   !   ]	"VEHICLES_N_ANIMALS2"                   	71:76:75:00	 (World size: 21.791660)
+	16x16   	-	[A fM    $  ]	"GREY_A"                                	73:73:73:d7	 (World size: 10.164200)
+	16x16   	-	[  fM   !   ]	"GREY"                                  	73:73:73:00	 (World size: 3.415968)
+	256x128 	-	[ASfM       ]	"TREEWALL"                              	2d:19:0e:cc	 (World size: 103.927185)
+	256x128 	-	[ASfM       ]	"TREEWALL2"                             	43:28:18:a4	 (World size: 89.207542)
+	128x128 	-	[ASfM   !   ]	"TREE_07"                               	50:47:1c:5b	 (World size: 8.214322)
+	128x32  	-	[  fM   !   ]	"TREE_07BARK"                           	29:26:22:00	 (World size: 2.888072)
+	128x64  	-	[A fM       ]	"TREE_07_LOD"                           	33:23:0f:6a	 (World size: 17.081957)
+	128x128 	-	[ASfM   !   ]	"TREE_08"                               	62:2b:1a:5b	 (World size: 8.092594)
+	256x128 	-	[ASfM   !   ]	"TREE_08_X"                             	47:27:10:77	 (World size: 22.545090)
+	128x128 	-	[ASfM   !   ]	"TREE_09"                               	67:49:11:5b	 (World size: 8.296354)
+	256x256 	-	[A fM  X!   ]	"NEWENGLANDSHADOW"                      	00:00:00:46	 (World size: 144.370300)
+	256x256 	-	[ASfM   !   ]	"TRAINS13FLAT"                          	7c:5f:48:fb	 (World size: 48.769295)
+	64x32   	-	[A fM    $  ]	"WIRE1"                                 	00:00:00:1a	 (World size: 22.062513)
+	128x128 	-	[  fM   !   ]	"MOUNTAIN"                              	43:4c:58:00	 (World size: 949.197205)
+	256x128 	-	[  fM   !   ]	"BARN_01"                               	85:73:68:00	 (World size: 9.746254)
+	256x128 	-	[ASfM   !   ]	"HEDGE"                                 	2c:2c:12:f3	 (World size: 9.331285)
+	256x128 	-	[  f        ]	"OLDBUILDING5"                          	55:55:50:00	 (World size: 16.943014)
+	256x256 	-	[  fM   !   ]	"TRUCKS24"                              	7f:7a:7c:00	 (World size: 28.788855)
+	256x128 	-	[  fM   !   ]	"HIRES_BARNS15"                         	63:58:51:00	 (World size: 82.466599)
+	256x256 	-	[ASfM   !   ]	"CORNFIELD"                             	3e:3c:1c:d0	 (World size: 18.117229)
+	256x256 	-	[ASfM   !   ]	"CORNFIELD-ALPHA"                       	3e:3c:1c:a6	 (World size: 13.307609)
+	256x64  	-	[ASf    !   ]	"CORNFIELDDETAIL"                       	3e:3e:1f:7a	 (World size: 5.428964)
+	128x128 	-	[  fM   !   ]	"ROCKS"                                 	4b:41:26:00	 (World size: 5.873975)
+	128x128 	-	[  fM   !   ]	"BRICKS2"                               	7f:74:6c:00	 (World size: 6.231520)
+	128x128 	-	[  fM   !   ]	"OLDBRIDGE_NEW3"                        	60:59:4e:00	 (World size: 16.973001)
+	128x64  	-	[  fM   !   ]	"JUTEZAK"                               	93:7c:5d:00	 (World size: 1.704350)
+	128x128 	-	[  fM   !   ]	"ROOFTOP"                               	92:85:6f:00	 (World size: 45.463505)
+	128x128 	-	[  fM   !   ]	"CONCRETE"                              	65:68:66:00	 (World size: 5.749836)
+	256x32  	-	[  fM   !   ]	"WOODFENCE"                             	34:2d:22:00	 (World size: 4.161250)
+	128x64  	-	[  fM   !   ]	"ARMCO4"                                	bc:74:71:00	 (World size: 3.926982)
+	128x64  	-	[  fM   !   ]	"ARMCO"                                 	5a:5a:5a:00	 (World size: 20.119579)
+	256x128 	-	[  fM   !   ]	"CONCRETE_SLEEPER02"                    	6f:71:66:00	 (World size: 7.052772)
+	128x128 	-	[  fM   !   ]	"CONE001"                               	c2:4a:37:00	 (World size: 3.582806)
+	256x128 	-	[  fM       ]	"CORNSILOS"                             	86:8a:89:00	 (World size: 312.650513)
+	256x256 	-	[  fM   !   ]	"BARN_BIG2"                             	6d:66:65:00	 (World size: 35.186493)
+	256x128 	-	[  fM   !   ]	"BRICKSWALL"                            	86:86:7e:00	 (World size: 6.571706)
+	256x128 	-	[A fM    $  ]	"BRIDGE_FENCE"                          	2d:2f:2b:91	 (World size: 10.457670)
+	128x64  	-	[  fM   !   ]	"CONCRETE_ENGLAND2"                     	9a:96:96:00	 (World size: 8.174725)
+	128x64  	-	[  fM   !   ]	"ROADSIGNS"                             	ae:84:10:00	 (World size: 2.604303)
+	128x64  	-	[A fM    $  ]	"SIGNTEXT"                              	b9:bb:ad:1f	 (World size: 8.742793)
+	256x128 	-	[ASfM   !   ]	"FREESIGNS3_1_3"                        	35:56:4d:d5	 (World size: 11.328495)
+	128x128 	-	[  fM       ]	"FIRE"                                  	52:52:52:00	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"GRASS"                                 	14:14:14:22	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SMOKEANDDUST"                          	ff:ff:ff:5f	 (World size: 1.310660)
+	128x128 	-	[ASfM   !   ]	"SPARK"                                 	f5:0c:0c:ff	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SPRAY"                                 	ef:ef:ef:39	 (World size: 1.310660)
+	64x64   	-	[A fM    $  ]	"STREAM"                                	fe:fe:fe:6a	 (World size: 1.310660)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,376 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"PARTICLE_EFFECTS"                     	scenes\particles\track_particles.ma
+	"SPEEDBOAT"                            	scenes\buildings\animated\speedboat.ma
+	"HELICOPTER"                           	scenes\buildings\animated\helicopter.ma
+	"TRIFLAG"                              	scenes\buildings\animated\triflag.ma
+	"POSTWHOLE"                            	scenes\buildings\fragments\postwhole.ma
+	"MANSIONGATE"                          	scenes\buildings\fragments\mansiongate.ma
+	"MANSIONGATE_FRAG0000"                 	scenes\buildings\fragments\mansiongate.ma
+	"MANSIONGATE_FRAG0001"                 	scenes\buildings\fragments\mansiongate.ma
+	"MANSIONGATE_FRAG0002"                 	scenes\buildings\fragments\mansiongate.ma
+	"POST"                                 	scenes\buildings\fragments\post.ma
+	"POST_FRAG0000"                        	scenes\buildings\fragments\post.ma
+	"POST_FRAG0001"                        	scenes\buildings\fragments\post.ma
+	"POST_FRAG0002"                        	scenes\buildings\fragments\post.ma
+	"FENCE2"                               	scenes\buildings\fragments\fence2.ma
+	"FENCE2_FRAG0000"                      	scenes\buildings\fragments\fence2.ma
+	"FENCE2_FRAG0001"                      	scenes\buildings\fragments\fence2.ma
+	"FENCE2_FRAG0002"                      	scenes\buildings\fragments\fence2.ma
+	"BARREL_FRAGMENT_03"                   	scenes\buildings\fragments\barrel_fragment_03.ma
+	"BARREL_FRAGMENT_02"                   	scenes\buildings\fragments\barrel_fragment_02.ma
+	"BARREL_FRAGMENT_01"                   	scenes\buildings\fragments\barrel_fragment_01.ma
+	"NEWWALL01"                            	scenes\buildings\colonial_house\newwall01.ma
+	"BUILDING"                             	scenes\buildings\colonial_house\building.ma
+	"GATE_02"                              	scenes\buildings\colonial_house\gate_02.ma
+	"WALL1"                                	scenes\buildings\colonial_house\wall01.ma
+	"WALLARCH01"                           	scenes\buildings\colonial_house\wallarch01.ma
+	"WALL9"                                	scenes\buildings\colonial_house\wall09.ma
+	"WALL8"                                	scenes\buildings\colonial_house\wall08.ma
+	"WALL7"                                	scenes\buildings\colonial_house\wall07.ma
+	"WALL6"                                	scenes\buildings\colonial_house\wall06.ma
+	"WALL5"                                	scenes\buildings\colonial_house\wall05.ma
+	"WALL4"                                	scenes\buildings\colonial_house\wall04.ma
+	"WALL3"                                	scenes\buildings\colonial_house\wall03.ma
+	"WALL2"                                	scenes\buildings\colonial_house\wall02.ma
+	"WALLARCH02"                           	scenes\buildings\colonial_house\wallarch02.ma
+	"GATEHOUSE_BUILDING"                   	scenes\buildings\colonial_house\gatehouse_building.ma
+	"MANSION"                              	scenes\buildings\colonial_house\mansion.ma
+	"GATE_01"                              	scenes\buildings\colonial_house\gate_01.ma
+	"OUTHOUSE_01"                          	scenes\buildings\colonial_house\outhouse_01.ma
+	"BOULDERS02"                           	scenes\buildings\boulders02.ma
+	"BOULDER01"                            	scenes\buildings\boulder01.ma
+	"FLAG"                                 	scenes\buildings\flag01.ma
+	"FLAG02"                               	scenes\buildings\flag02.ma
+	"ROCK"                                 	scenes\buildings\rock.ma
+	"FORTMAIN2"                            	scenes\buildings\fortmain2.ma
+	"FORTMAIN"                             	scenes\buildings\fortmain.ma
+	"HAZARD2"                              	scenes\buildings\hazard_barrier2.ma
+	"EMPIREARCH"                           	scenes\buildings\empirearch.ma
+	"EMPIRETOWER"                          	scenes\buildings\empiretower.ma
+	"FORTWALL01"                           	scenes\buildings\fortwall01.ma
+	"ARCHWAY"                              	scenes\buildings\archway.ma
+	"ARCHESBROKEN"                         	scenes\buildings\archesbroken.ma
+	"TOWER05"                              	scenes\buildings\tower05.ma
+	"TOWER03"                              	scenes\buildings\tower03.ma
+	"TOWER01"                              	scenes\buildings\tower01.ma
+	"FORT01"                               	scenes\buildings\fort01.ma
+	"FORT02"                               	scenes\buildings\fort02.ma
+	"FORT03"                               	scenes\buildings\fort03.ma
+	"BIGM2"                                	scenes\buildings\bigm2.ma
+	"WATERFALLSMALL"                       	scenes\buildings\waterfallsmall.ma
+	"BIGM1"                                	scenes\buildings\bigm1.ma
+	"TOWER02"                              	scenes\buildings\tower02.ma
+	"FORT04"                               	scenes\buildings\fort04.ma
+	"FORT05"                               	scenes\buildings\fort05.ma
+	"TOWER04"                              	scenes\buildings\tower04.ma
+	"SUNSHINE"                             	scenes\buildings\sunshine.ma
+	"MFAR03"                               	scenes\buildings\mfar03.ma
+	"MFAR02"                               	scenes\buildings\mfar02.ma
+	"MFAR01"                               	scenes\buildings\mfar01.ma
+	"M17"                                  	scenes\buildings\m17.ma
+	"LOWTREE350"                           	scenes\buildings\lowtreex350.ma
+	"LOWTREE300"                           	scenes\buildings\lowtreex300.ma
+	"GRASSWALL"                            	scenes\buildings\grasswall.ma
+	"M16"                                  	scenes\buildings\m16.ma
+	"LOWTREEXDK"                           	scenes\buildings\lowtreexdk.ma
+	"BUSHLOW03"                            	scenes\buildings\bushlow03.ma
+	"BUSHLOW02"                            	scenes\buildings\bushlow02.ma
+	"BUSHLOW01"                            	scenes\buildings\bushlow01.ma
+	"BUSHLOW00"                            	scenes\buildings\bushlow00.ma
+	"WATERSEDGE"                           	scenes\buildings\watersedge.ma
+	"BOATDARK"                             	scenes\buildings\boatdark.ma
+	"STREAM"                               	scenes\buildings\stream.ma
+	"ARROW"                                	scenes\buildings\arrow.ma
+	"M15"                                  	scenes\buildings\m15.ma
+	"HAZARD"                               	scenes\buildings\hazard_barrier.ma
+	"HAZARD_FRAG0000"                      	scenes\buildings\hazard_barrier.ma
+	"HAZARD_FRAG0001"                      	scenes\buildings\hazard_barrier.ma
+	"HAZARD_FRAG0002"                      	scenes\buildings\hazard_barrier.ma
+	"HAZARD_FRAG0003"                      	scenes\buildings\hazard_barrier.ma
+	"DISTANCEMOUNTAINS"                    	scenes\buildings\distancemountains.ma
+	"DISTANT_MOUNTAINS"                    	scenes\buildings\distant_mountains.ma
+	"DAVEBARREL"                           	scenes\buildings\dave_barrel.ma
+	"DAVEBARREL_FRAG0000"                  	scenes\buildings\dave_barrel.ma
+	"DAVEBARREL_FRAG0001"                  	scenes\buildings\dave_barrel.ma
+	"DAVEBARREL_FRAG0002"                  	scenes\buildings\dave_barrel.ma
+	"TREEBUSHY"                            	scenes\buildings\treebushy.ma
+	"LOWTREEPALM"                          	scenes\buildings\lowtreepalm.ma
+	"GRASSLARGE"                           	scenes\buildings\grasslarge.ma
+	"ALPHAGRASS04"                         	scenes\buildings\alphagrass04.ma
+	"ALPHAGRASS03"                         	scenes\buildings\alphagrass03.ma
+	"ALPHAGRASS02"                         	scenes\buildings\alphagrass02.ma
+	"ALPHAGRASS01"                         	scenes\buildings\alphagrass01.ma
+	"MOUNTS_04"                            	scenes\buildings\mounts_04.ma
+	"MOUNTS_03"                            	scenes\buildings\mounts_03.ma
+	"MOUNTS_02"                            	scenes\buildings\mounts_02.ma
+	"MOUNTS1"                              	scenes\buildings\mounts_01.ma
+	"GRASS"                                	scenes\buildings\grass.ma
+	"SABALCRUX"                            	scenes\buildings\sabalcrux.ma
+	"CHEST"                                	scenes\buildings\chest.ma
+	"SHIPWRECK"                            	scenes\buildings\shipwreck.ma
+	"ISLAND03"                             	scenes\buildings\island03.ma
+	"ISLAND02"                             	scenes\buildings\island02.ma
+	"BACKMOUNTAIN06"                       	scenes\buildings\backmountain06.ma
+	"BACKMOUNTAIN05"                       	scenes\buildings\backmountain05.ma
+	"BACKMOUNTAIN04"                       	scenes\buildings\backmountain04.ma
+	"BACKMOUNTAIN03"                       	scenes\buildings\backmountain03.ma
+	"BACKMOUNTAIN02"                       	scenes\buildings\backmountain02.ma
+	"BACKMOUNTAIN01"                       	scenes\buildings\backmountain01.ma
+	"LAGOON"                               	scenes\buildings\lagoon.ma
+	"M14"                                  	scenes\buildings\m14.ma
+	"M13"                                  	scenes\buildings\m13.ma
+	"M12"                                  	scenes\buildings\m12.ma
+	"M11"                                  	scenes\buildings\m11.ma
+	"M10"                                  	scenes\buildings\m10.ma
+	"M09"                                  	scenes\buildings\m09.ma
+	"M08"                                  	scenes\buildings\m08.ma
+	"M07"                                  	scenes\buildings\m07.ma
+	"M05"                                  	scenes\buildings\m05.ma
+	"M04"                                  	scenes\buildings\m04.ma
+	"M03"                                  	scenes\buildings\m03.ma
+	"M02"                                  	scenes\buildings\m02.ma
+	"M01"                                  	scenes\buildings\m01.ma
+	"M06"                                  	scenes\buildings\m06.ma
+	"WATERFALL02"                          	scenes\buildings\waterfall02.ma
+	"WATERFALL01"                          	scenes\buildings\waterfall01.ma
+	"ISLAND01"                             	scenes\buildings\island01.ma
+	"BUSHLINE02"                           	scenes\buildings\bushline02.ma
+	"STARTFINISH"                          	scenes\buildings\startfinish.ma
+	"FANPALM"                              	scenes\buildings\fanpalm.ma
+	"BANANA"                               	scenes\buildings\banana.ma
+	"SABAL"                                	scenes\buildings\sabal.ma
+	"COCONUTPALM"                          	scenes\buildings\coconutpalm.ma
+	"DATEDETAILED"                         	scenes\buildings\datedetailed.ma
+	"BUSHLINE01"                           	scenes\buildings\bushline01.ma
+	"LOWTREEX"                             	scenes\buildings\lowtreex.ma
+	"RIVER"                                	scenes\buildings\river.ma
+	"LIGHTHAZE03"                          	scenes\buildings\lighthaze03.ma
+	"LIGHTHAZE02"                          	scenes\buildings\lighthaze02.ma
+	"LIGHTHAZE01"                          	scenes\buildings\lighthaze01.ma
+	"SEA"                                  	scenes\buildings\sea.ma
+	"CUBES"                                	scenes\buildings\cubes.ma
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"SKYDOME"                              	scenes\environment\baya_skydome.ma
+	"PACCR_CUT_UP"                         	
+	"PACCR_OBJECTS"                        	
+	"EFFECTS"                              	scenes\effects\effects.ma
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid skeletal animation names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+	"FRAGMENT"
+	"WOOD"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"CAMERA"
+	"CAR_GAMEBONNET"
+	"CAR_BACK_BOUNCE"
+	"CAR_FRONT"
+	"CAR_ROOF_FORWARD"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"AMBIENT"
+	"SUNLIGHT"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+	"HEDGE"
+	"METAL"
+	"STONE"
+	"WOOD"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+	"ROTOR"
+	"WATERFALL"
+	"WAVES"
+	"WATER"
+	"WAVES2"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	256x256 	-	[A fM  X!   ]	"SHADOW_BUILD"                          	00:00:00:4d	 (World size: 141.900848)
+	128x64  	-	[A fM  X    ]	"SHADOWFORT"                            	00:00:00:85	 (World size: 19999.998047)
+	128x128 	-	[A fM  X!   ]	"BOATSHADOW"                            	00:00:00:1d	 (World size: 126.525146)
+	128x128 	-	[A fM  X!   ]	"STARTSHAD"                             	00:00:00:09	 (World size: 62.756721)
+	256x256 	-	[  fM   !   ]	"DEFAULT_DIRT"                          	99:8a:68:00	 (World size: 10.733297)
+	256x128 	-	[  fM       ]	"GRASS_SHORT_PACIFIC_SAND"              	96:91:6b:00	 (World size: 10.210592)
+	256x256 	-	[  fM   !   ]	"SAND_PACIFIC"                          	d9:d1:ae:00	 (World size: 15.910494)
+	128x128 	-	[  fM   !   ]	"STREAM_PACIFIC"                        	33:27:1c:00	 (World size: 15.529996)
+	256x256 	-	[  fM       ]	"ROCK_LG"                               	ae:a5:97:00	 (World size: 19.665884)
+	128x128 	-	[A fM    $  ]	"RIVER"                                 	63:63:63:89	 (World size: 46.209862)
+	256x128 	-	[  fM       ]	"ROCK_LG_02"                            	b1:aa:9b:00	 (World size: 11.795195)
+	256x128 	-	[  fM       ]	"DISTANCE_ROCK"                         	2c:37:1d:00	 (World size: 100.623215)
+	256x128 	-	[  fM       ]	"ROCK_BLEND"                            	bc:b4:a6:00	 (World size: 14.960934)
+	128x128 	-	[  fM       ]	"MOUNTAIN"                              	2c:3b:1d:00	 (World size: 284.538879)
+	256x256 	-	[  fM   !   ]	"GRASS_LONG_PACIFIC"                    	50:59:30:00	 (World size: 17.938841)
+	128x128 	-	[A fM       ]	"WATER_FALLING"                         	9d:a2:a5:ac	 (World size: 59.885372)
+	64x64   	-	[  fM   !   ]	"SAND_WET_PACIFIC"                      	ca:bf:a6:00	 (World size: 32.478817)
+	64x64   	-	[A fM       ]	"WATERSEDGE"                            	e5:e9:ea:2e	 (World size: 48.011967)
+	32x32   	-	[  fM       ]	"GRASS_LONG_SMALL"                      	2c:32:13:00	 (World size: 19.091816)
+	256x128 	-	[  fM   !   ]	"GRASS2FALL"                            	41:3c:26:00	 (World size: 11.424915)
+	256x128 	-	[  fM   !   ]	"DIRT_BLEND_01"                         	b9:ae:8c:00	 (World size: 7.727766)
+	128x128 	-	[  fM       ]	"GRASS_SHORT_PACIFIC_BLEND_SDG"         	86:7f:59:00	 (World size: 6.702177)
+	128x64  	-	[  fM       ]	"GRASS_2_GRASSY_ROCK"                   	74:75:4d:00	 (World size: 17.730438)
+	256x256 	-	[  fM       ]	"ROCK_GRASSY"                           	9b:98:8d:00	 (World size: 20.429831)
+	256x128 	-	[  fM       ]	"ROCK_GRAVEL"                           	9a:8f:76:00	 (World size: 13.120918)
+	256x64  	-	[  fM       ]	"GRASS_LONG_PACIFIC_ROCKY_SMALL"        	60:64:3f:00	 (World size: 6.321020)
+	256x256 	-	[  fM       ]	"GRASS_LONG_PACIFIC_ROCKY_256"          	61:64:41:00	 (World size: 10.178730)
+	256x128 	-	[  fM   !   ]	"DIRT_PACIFIC_BLEND"                    	74:6b:45:00	 (World size: 9.301128)
+	128x128 	-	[ASfM       ]	"BUSH"                                  	30:2b:14:77	 (World size: 7.770329)
+	128x128 	-	[ASfM   !   ]	"TREE_WALL_BACK"                        	28:25:11:ed	 (World size: 23.355438)
+	128x128 	-	[ASfM       ]	"SABAL"                                 	3b:3f:29:71	 (World size: 13.028271)
+	256x128 	-	[A fM    $  ]	"ALPHA_GRASS"                           	22:2a:1b:20	 (World size: 4.289854)
+	256x128 	-	[ASfM   !   ]	"PALM_DETAILED"                         	53:53:2f:91	 (World size: 9.651861)
+	128x64  	-	[ASfM       ]	"BUSHSEETHROUGH"                        	25:2f:1d:b7	 (World size: 8.801414)
+	256x256 	-	[ASfM       ]	"MOUNTAINBOTTOM"                        	30:37:1e:e0	 (World size: 98.657112)
+	128x128 	-	[ASfM       ]	"COCONUTPALM"                           	52:59:30:8f	 (World size: 18.448673)
+	128x128 	-	[ASfM       ]	"BANANAPALM"                            	46:50:37:6c	 (World size: 16.487595)
+	128x128 	-	[ASfM       ]	"TREECRUXPALM"                          	4f:4b:26:7d	 (World size: 14.024146)
+	128x128 	-	[ASfM       ]	"TREE_3"                                	19:18:07:74	 (World size: 29.506382)
+	128x128 	-	[ASfM   !   ]	"TREECLUMP"                             	25:30:1a:96	 (World size: 7.741683)
+	256x256 	-	[ASfM       ]	"FRONT_TREE_WALL"                       	2d:28:11:b0	 (World size: 27.536472)
+	128x64  	-	[ASfM       ]	"BUSHARCH"                              	27:31:1d:cd	 (World size: 8.702231)
+	256x32  	-	[ASfM       ]	"TRUNK"                                 	59:44:2f:af	 (World size: 17.290695)
+	256x64  	-	[ASfM       ]	"HEDGE"                                 	26:23:0d:b7	 (World size: 9.429743)
+	128x128 	-	[ASfM       ]	"BUSHYGRASSFLOWERS"                     	51:56:2e:45	 (World size: 3.610320)
+	256x256 	-	[ASfM   !   ]	"BUSHYGRASS"                            	4f:55:2c:3c	 (World size: 4.006003)
+	128x128 	-	[ASfM       ]	"BRANCH"                                	09:0a:09:2d	 (World size: 23.190098)
+	128x128 	-	[A fM    $  ]	"DRY_GRASS"                             	2f:25:09:22	 (World size: 3.019915)
+	256x32  	-	[ASfM       ]	"TRUNK2"                                	5e:54:43:af	 (World size: 20.662069)
+	64x64   	-	[  fM   !   ]	"POST"                                  	9e:7e:54:00	 (World size: 1.171888)
+	128x128 	-	[  fM   !   ]	"WALL"                                  	b9:a1:93:00	 (World size: 6.456332)
+	128x128 	-	[  fM       ]	"BOULDERBOTTOM001"                      	5d:4e:38:00	 (World size: 3.082038)
+	256x256 	-	[  fM       ]	"BUILDING"                              	63:5f:54:00	 (World size: 21.999191)
+	128x128 	-	[  fM       ]	"BOULDERTOP001"                         	80:74:58:00	 (World size: 2.780677)
+	256x64  	-	[A fM    $  ]	"WIRE_FENCE"                            	3a:36:36:71	 (World size: 10.097023)
+	32x32   	-	[  fM   !   ]	"ROPE"                                  	7e:79:55:00	 (World size: 1.323005)
+	256x32  	-	[  fM       ]	"BAMBOO"                                	3b:35:28:00	 (World size: 5.248742)
+	256x64  	-	[A fM       ]	"NEWCHECKER_2"                          	9a:98:98:ec	 (World size: 29.159191)
+	128x128 	-	[ASfM       ]	"DISTANTMOUNTAINS02"                    	85:84:59:d6	 (World size: 407.815460)
+	128x128 	-	[ASfM       ]	"DISTANTMOUNTAINS01"                    	98:96:63:b6	 (World size: 467.531219)
+	128x128 	-	[  fM       ]	"MOUNTAINDISTANT"                       	2e:43:24:00	 (World size: 284.538879)
+	64x64   	-	[A fM       ]	"SEA"                                   	31:4a:50:bb	 (World size: 257.453461)
+	128x128 	-	[A fM    $  ]	"WATER"                                 	a1:a5:b6:6f	 (World size: 23.821455)
+	128x128 	-	[ASfM   !   ]	"MIDMOUNT"                              	5d:61:47:e5	 (World size: 119.495483)
+	128x128 	-	[  fM       ]	"FORT_BOTTOM"                           	6c:65:40:00	 (World size: 14.273908)
+	128x128 	-	[  fM       ]	"FORT_MIDDLE"                           	72:6a:47:00	 (World size: 13.835742)
+	128x128 	-	[  fM       ]	"FORT_TOP"                              	82:7a:5c:00	 (World size: 14.863253)
+	256x64  	-	[  fM   !   ]	"STARTFINISHFLAG"                       	6b:6b:6b:00	 (World size: 45.223377)
+	64x64   	-	[  fM   !   ]	"TILES_1"                               	7f:58:47:00	 (World size: 1.818652)
+	64x32   	-	[A fM    $  ]	"TILES_2"                               	43:2e:26:83	 (World size: 1.769380)
+	128x64  	-	[  fM       ]	"PLANKS_1"                              	5c:5a:40:00	 (World size: 9.623379)
+	128x64  	-	[ASfM       ]	"PLANKS_2"                              	2c:2c:20:65	 (World size: 9.785827)
+	128x64  	-	[  fM       ]	"PLANKS_3"                              	5d:5b:3e:00	 (World size: 10.629322)
+	128x64  	-	[ASfM       ]	"PLANKS_4"                              	6d:6b:52:92	 (World size: 10.871470)
+	128x64  	-	[  fM       ]	"PLANKS_5"                              	59:58:3c:00	 (World size: 9.200881)
+	128x64  	-	[ASfM       ]	"PLANKS_6"                              	6b:6a:53:85	 (World size: 8.970078)
+	64x64   	-	[ASfM       ]	"RIB_1"                                 	4a:49:34:ff	 (World size: 5.114595)
+	64x64   	-	[  fM       ]	"RIB_2"                                 	4f:4e:35:00	 (World size: 3.446050)
+	64x64   	-	[  fM       ]	"RIB_3"                                 	51:51:38:00	 (World size: 4.061937)
+	256x128 	-	[  fM   !   ]	"LIGHTHAZE"                             	06:06:06:00	 (World size: 11.317721)
+	64x64   	-	[A fM       ]	"1"                                     	4b:74:72:87	 (World size: 16.829496)
+	64x64   	-	[A fM       ]	"2"                                     	4d:81:85:54	 (World size: 16.829496)
+	128x128 	-	[  fM       ]	"FIRE"                                  	52:52:52:00	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"GRASS"                                 	14:14:14:22	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SMOKEANDDUST"                          	ff:ff:ff:5f	 (World size: 1.310660)
+	128x128 	-	[ASfM   !   ]	"SPARK"                                 	f5:0c:0c:ff	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SPRAY"                                 	ef:ef:ef:39	 (World size: 1.310660)
+	64x64   	-	[A fM    $  ]	"STREAM"                                	fe:fe:fe:6a	 (World size: 1.310660)
+	128x64  	-	[ASfM       ]	"SPEEDBOAT"                             	bd:b8:b7:e2	 (World size: 27.876762)
+	256x128 	-	[  fM       ]	"FO_RGB"                                	93:9a:a4:00	 (World size: 4.534385)
+	64x64   	-	[  fM   !   ]	"TRIFLAGS"                              	8b:59:35:00	 (World size: 68.096245)
+	64x64   	-	[  fM       ]	"HELICOPTER"                            	85:61:66:00	 (World size: 8.336941)
+	64x64   	-	[A fM       ]	"ROTOR_I"                               	e7:e7:e7:18	 (World size: 8.518868)
+	256x256 	-	[  fM       ]	"ARROW"                                 	ef:ef:ef:00	 (World size: 10.918183)
+	256x128 	-	[ASfM   ! # ]	"TARMAC_ISLAND1"                        	7e:94:7f:60	 (World size: 1531.860474)
+	256x128 	-	[ASfM   ! # ]	"TARMAC_ISLAND2"                        	82:98:83:3f	 (World size: 1441.658569)
+	256x128 	-	[ASfM   ! # ]	"TARMAC_ISLAND3"                        	80:97:80:26	 (World size: 2034.020020)
+	256x128 	-	[ASfM   ! # ]	"TARMAC_ISLAND4"                        	84:9d:84:0d	 (World size: 1385.447876)
+	64x64   	-	[  f        ]	"MINISKY"                               	ec:c9:a9:00	 (World size: 3427.191406)
+	128x128 	-	[A f     $# ]	"TARMAC_PACIFIC_CLOUD001"               	89:89:89:1a	 (World size: 1673.210083)
+	128x128 	-	[A f     $# ]	"TARMAC_PACIFIC_CLOUD002"               	89:89:89:10	 (World size: 1673.209229)
+	128x128 	-	[A f     $# ]	"TARMAC_PACIFIC_CLOUD003"               	89:89:89:0a	 (World size: 1673.209351)
+	32x32   	-	[A fM       ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"HEADLIGHT_FLARE"                       	07:07:07:08	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"SPECULAR_SPRITE"                       	44:43:43:44	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"REARLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"SUN_FLARE"                             	05:03:02:04	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"LENSE_REFLECTION"                      	08:08:08:0b	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM    $  ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"LENSE_REFLECTION2"                     	07:07:07:0b	 (World size: 1.310660)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

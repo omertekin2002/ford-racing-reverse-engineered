@@ -1,0 +1,104 @@
+
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			XBACC
+:CLEAR				0
+:POSITION_START	0.000000 0.000000
+:POSITION_END		0.000000 0.000000
+:TIME_LENGTH		0.166667
+:TEXTURE_ENUM		GRAPHICS\GAME\BKGNDS\NET\XBACC.PSD
+
+:S{*****>>>
+
+	///////////////////////////////////////////////////////////
+	///TITLE
+	//////////////////////////////////////////////////////////
+	
+	:INHERIT				TITLE
+	:POSITION_START	0.367000 0.125000
+	:POSITION_END		0.367000 0.125000
+	
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+	
+	///////////////////////////////////////////////////////////
+	///BACK ICON AND TEXT
+	//////////////////////////////////////////////////////////
+	
+	:INHERIT		BACK_ICON
+	
+	:INHERIT		BACK_TEXT
+	
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	//MENU BAR
+	/////////////////////////////////////////////////////
+	
+	:INHERIT		MENUBAR
+
+	//////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	//HELBER BUTTON Helps plot the bar in a constant area
+	/////////////////////////////////////////////////////
+	
+	:INHERIT		FR3_DEFAULT_BUTTON
+	:OBJECT_ID	HELPER_BUTTON
+	:TEXT			0
+
+	//////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////
+	
+	
+	
+	///////////////////////////////////////////////////////////
+	///ACCOUNTS LIST PARENT WINDOW AND ACOUNTS LIST
+	//////////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			ACCOUNT_LIST_WINDOW
+	:CLEAR				1
+	:AUTOSIZE			0
+	:SIZE					0.603125 0.302083
+	:POSITION_START	0.3984375 0.168750
+	:POSITION_END		0.3984375 0.168750
+	
+	:S{*****>>>
+			
+		:TYPE					UI_TYPE_LIST_BOX
+		:OBJECT_ID			ACCOUNTS_LIST
+		:CLEAR				1
+		:AUTOSIZE			0
+		:SIZE					1.0 1.0
+		:TEXT_JUSTIFY		4							//TEXT_JUSTIFY_LEFT_TOP
+		:TIME_LENGTH		0.166667
+		
+		:TYPE					UI_TYPE_GRAPHIC
+		:OBJECT_ID			TOP_FADE_BAR
+		:AUTOSIZE			0
+		:SIZE					1.0 0.193103
+		//:COLOUR				157 157 157 255
+		:COLOUR				200 200 184 255
+		:STRETCH_GRAPHIC	1
+		:TEXTURE_ENUM		GRAPHICS\GAME\ACCFADE.PSD
+		
+		:TYPE					UI_TYPE_GRAPHIC
+		:OBJECT_ID			BOTTOM_FADE_BAR
+		:AUTOSIZE			0
+		:SIZE					1.0 0.193103
+		//:COLOUR				157 157 157 255
+		:COLOUR				216 212 196  255
+		:STRETCH_GRAPHIC	1
+		:TEXTURE_ENUM		GRAPHICS\GAME\ACCFADE.PSD
+		:POSITION_START	0.0 0.810000
+		:POSITION_END		0.0 0.810000
+		
+	:E}*****<<<
+		
+:E}*****<<<

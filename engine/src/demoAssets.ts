@@ -1,7 +1,8 @@
 import {
   loadVehicleDatabases, parseCameraDatabase, parseEngineSoundDatabase, parseGameData,
   parseQuickRace, parseRacingLine, parseRulesDatabase, parseSurfaceDatabase, parseTrackConfig,
-  parseTrackDatabase, parseVolumeDatabase, resolveCarConfig, type ResolvedCarConfig,
+  parseTrackDatabase, parseVolumeDatabase, resolveCarConfig, type RacingLine, type ResolvedCarConfig,
+  type TrackConfig, type TrackRecord,
 } from "./formats/databases.js";
 import { parseTexturesDxt, type TextureArchive } from "./formats/dxt.js";
 import { buildFontAtlas, parseFonts } from "./formats/fonts.js";
@@ -15,6 +16,25 @@ import { normalizeGamePath, type VirtualFileSystem } from "./vfs/types.js";
 const ascii = "DATA/ASCII/";
 const presetNumbers = [5, 6, 4, 1, 2, 3] as const;
 export const demoTrackDirectory = "3DDATA/TRACKS/ENGAF";
+
+export function trackDirectory(trackId: string): string {
+  return `3DDATA/TRACKS/${trackId}`;
+}
+
+export interface TrackRuntimeData {
+  readonly trackId: string;
+  readonly racingLine: RacingLine;
+  readonly trackConfig: TrackConfig;
+  readonly fog: ReturnType<typeof parseFogConfig>;
+}
+
+const DEFAULT_TRACK_CONFIG: TrackConfig = {
+  FOG: { density: 0, colour: [0, 0, 0] },
+  CAR_HEADLIGHT_STRENGTH: 0,
+  TRACK_WETNESS: 0,
+  SUN_FLARE_SIZE: 0,
+  HEAT_HAZE_STRENGTH: 0,
+};
 
 export interface DemoModelBundle {
   xbx: ReturnType<typeof parseXbx>;
@@ -31,10 +51,25 @@ async function readResource<T>(path: string, read: () => Promise<T>): Promise<T>
   }
 }
 
+async function loadTrackRuntimeData(vfs: VirtualFileSystem, trackId: string): Promise<TrackRuntimeData> {
+  const racingLinePath = `${ascii}TRACKS/${trackId}.DAT`;
+  const configPath = `3DDATA/TRACKS/CONFIGS/${trackId}.cfg`;
+  const [racingLine, environment] = await Promise.all([
+    readResource(racingLinePath, async () => parseRacingLine(await vfs.readText(racingLinePath))),
+    vfs.has(configPath)
+      ? readResource(configPath, async () => {
+        const content = await vfs.readText(configPath);
+        return { trackConfig: parseTrackConfig(content), fog: parseFogConfig(content) };
+      })
+      : Promise.resolve({ trackConfig: DEFAULT_TRACK_CONFIG, fog: null }),
+  ]);
+  return { trackId, racingLine, ...environment };
+}
+
 async function loadTables(vfs: VirtualFileSystem) {
   const readText = <T>(path: string, parse: (text: string) => T) =>
     readResource(path, async () => parse(await vfs.readText(path)));
-  const [vehicles, tracks, surfaces, cameras, game, rules, quickRaces, engineSounds, volumes, racingLine, environment] =
+  const [vehicles, tracks, surfaces, cameras, game, rules, quickRaces, engineSounds, volumes] =
     await Promise.all([
       loadVehicleDatabases(vfs),
       readText(ascii + "TRACKS.DAT", parseTrackDatabase),
@@ -48,13 +83,20 @@ async function loadTables(vfs: VirtualFileSystem) {
       }))),
       readText(ascii + "ENGSND.DAT", parseEngineSoundDatabase),
       readText(ascii + "VOLUMES.DAT", parseVolumeDatabase),
-      readText(ascii + "TRACKS/ENGAF.DAT", parseRacingLine),
-      readText("3DDATA/TRACKS/CONFIGS/engaf.cfg", content => ({
-        trackConfig: parseTrackConfig(content),
-        fog: parseFogConfig(content),
-      })),
     ]);
-  return { vehicles, tracks, surfaces, cameras, game, rules, quickRaces, engineSounds, volumes, racingLine, ...environment };
+  const installedTracks = [...tracks.values()].filter(
+    track => vfs.has(`${trackDirectory(track.id)}/3dobjs.xbx`) && vfs.has(`${ascii}TRACKS/${track.id}.DAT`),
+  );
+  const defaultTrackId = installedTracks.find(t => t.id.toUpperCase() === "ENGAF")?.id
+    ?? installedTracks[0]?.id
+    ?? "ENGAF";
+  const defaultTrack = await loadTrackRuntimeData(vfs, defaultTrackId);
+  return {
+    vehicles, tracks, installedTracks, defaultTrackId, surfaces, cameras, game, rules, quickRaces, engineSounds, volumes,
+    racingLine: defaultTrack.racingLine,
+    trackConfig: defaultTrack.trackConfig,
+    fog: defaultTrack.fog,
+  };
 }
 
 async function loadInterfaceAssets(vfs: VirtualFileSystem) {
@@ -94,7 +136,10 @@ function cached<T>(cache: Map<string, Promise<T>>, path: string, load: (path: st
 
 export class DemoAssets {
   readonly installedCars: readonly ResolvedCarConfig[];
+  readonly installedTracks: readonly TrackRecord[];
+  readonly defaultTrackId: string;
   private readonly models = new Map<string, Promise<DemoModelBundle>>();
+  private readonly trackData = new Map<string, Promise<TrackRuntimeData>>();
   private readonly collections = new Map<string, Promise<PcgCollection>>();
   private readonly banks = new Map<string, Promise<SpcBank>>();
   private languageCode: string;
@@ -107,9 +152,24 @@ export class DemoAssets {
     this.installedCars = [...tables.vehicles.cars.values()]
       .map(car => resolveCarConfig(tables.vehicles, car.id))
       .filter(car => vfs.has(`${car.shapeFolder}/3dobjs.xbx`));
+    this.installedTracks = tables.installedTracks;
+    this.defaultTrackId = tables.defaultTrackId;
+    this.trackData.set(
+      normalizeGamePath(tables.defaultTrackId),
+      Promise.resolve({
+        trackId: tables.defaultTrackId,
+        racingLine: tables.racingLine,
+        trackConfig: tables.trackConfig,
+        fog: tables.fog,
+      }),
+    );
     const [firstLanguage] = this.languages;
     if (!firstLanguage) throw new Error("Missing LANGUAGE/TLATE_*.DAT translation tables");
     this.languageCode = interfaceAssets.translations.has("EN") ? "EN" : firstLanguage;
+  }
+
+  loadTrackData(trackId: string): Promise<TrackRuntimeData> {
+    return cached(this.trackData, trackId, () => loadTrackRuntimeData(this.vfs, trackId));
   }
 
   static async load(vfs: VirtualFileSystem): Promise<DemoAssets> {

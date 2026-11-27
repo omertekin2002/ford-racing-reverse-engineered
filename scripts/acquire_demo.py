@@ -12,8 +12,31 @@ import urllib.parse
 import urllib.request
 import zipfile
 
-from fr3_common import ARCHIVE_SHA256, ARCHIVE_SIZE, DEMO_PAGE, verified_bytes, verified_exe
+from fr3_common import ARCHIVE_SHA256, ARCHIVE_SIZE, DEFAULT_GAME_DIR, DEMO_PAGE, verified_bytes, verified_exe
 from setup_tools import HTTPSRedirect
+
+
+def verify_repo_game(game_dir=DEFAULT_GAME_DIR, manifest_path=None):
+    """Verify the in-repository Ford Racing 3 Shuffle game directory against analysis/game-file-manifest.json."""
+    game = Path(game_dir).resolve()
+    manifest_file = Path(manifest_path) if manifest_path is not None else Path(__file__).resolve().parents[1] / "analysis/game-file-manifest.json"
+    if not game.is_dir():
+        raise ValueError(f"Game directory not found: {game}")
+    verified_exe(game / "fr3.exe")
+    recorded = json.loads(manifest_file.read_text(encoding="utf-8"))
+    expected = {entry["path"] for entry in recorded}
+    actual = {p.relative_to(game).as_posix() for p in game.rglob("*") if p.is_file()}
+    if actual != expected:
+        missing = sorted(expected - actual)
+        extra = sorted(actual - expected)
+        raise ValueError(f"Game files differ from manifest (missing: {len(missing)}, extra: {len(extra)})")
+    for entry in recorded:
+        path = game / entry["path"]
+        with path.open("rb") as stream:
+            digest = hashlib.file_digest(stream, "sha256").hexdigest()
+        if path.stat().st_size != entry["size"] or digest != entry["sha256"]:
+            raise ValueError(f"Game file changed: {entry['path']}")
+    return len(recorded)
 
 
 class Links(html.parser.HTMLParser):
@@ -114,12 +137,19 @@ def extract_zip(archive, destination):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("destination", type=Path)
+    parser.add_argument("destination", type=Path, nargs="?", default=DEFAULT_GAME_DIR,
+                        help="Game directory to verify (default: %(default)s) or legacy demo destination")
     parser.add_argument("--url", help="Explicit HTTPS demo mirror; exact archive hash still required")
     parser.add_argument("--archive", type=Path, help="Reuse a locally supplied demo ZIP")
     parser.add_argument("--unshield", default="unshield")
+    parser.add_argument("--legacy-demo", action="store_true",
+                        help="Acquire and extract the legacy 2004 ModDB demo ZIP/CAB instead of verifying game/")
     args = parser.parse_args()
     root = args.destination.resolve()
+    if not args.legacy_demo and not args.url and not args.archive and (root / "fr3.exe").is_file():
+        count = verify_repo_game(root)
+        print(f"Verified Ford Racing 3 Shuffle in {root} ({count} files)")
+        return
     root.mkdir(parents=True, exist_ok=True)
     archive = root / "fordracing3demo.zip"
     if args.archive and args.archive.resolve() != archive:

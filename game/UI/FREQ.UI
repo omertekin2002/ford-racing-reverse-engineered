@@ -1,0 +1,161 @@
+
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			FREQ
+:CLEAR				0
+:AUTOSIZE			0
+:SIZE					1.000000 1.000000
+:COLOUR				255 255 255 255
+:POSITION_END		0.000000 0.000000
+:POSITION_START	0.000000 0.000000
+//:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\GREYFADE.PSD
+:TIME_LENGTH 1.000000
+
+:S{*****>>>
+
+	///////////////////////////////////////////
+	//TITLE
+	///////////////////////////////////////////
+	
+	:INHERIT				TITLE
+	:POSITION_START	0.315625 0.241667
+	:POSITION_END		0.315625 0.241667
+	
+	///////////////////////////////////////////
+	//
+	///////////////////////////////////////////
+	
+	////////////////////////////////////////////
+	// MENUBAR
+	////////////////////////////////////////////
+	
+	:INHERIT				MENUBAR
+	
+	///////////////////////////////////////////
+	//
+	///////////////////////////////////////////
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			BUTTON1
+	:TEXT					TXT_SCREEN_FREQUENCY_50HZ
+	:POSITION_START	1.307813 0.304167
+	:POSITION_END		0.307813 0.304167
+	:ITEM_NUMBER		1
+	:OFFSET_TIME		0.000000
+	
+	:INHERIT				FR3_DEFAULT_BUTTON
+	:OBJECT_ID			BUTTON2
+	:TEXT					TXT_SCREEN_FREQUENCY_60HZ
+	:POSITION_START	1.307813 0.358333
+	:POSITION_END		0.307813 0.358333
+	:ITEM_NUMBER		2
+	:OFFSET_TIME		0.100000
+
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			TESTSCREEN
+	:CLEAR				0
+	:AUTOSIZE			0
+	:SIZE					1.000000 1.000000
+	:COLOUR				255 255 255 255
+	:POSITION_START	0.000000 0.000000
+	:POSITION_END		0.000000 0.000000
+	
+	:S{*****>>>
+	
+		///////////////////////////////////////////////
+		// TITLE
+		///////////////////////////////////////////////
+		
+		:INHERIT				TITLE
+		:OBJECT_ID			TEST_SCREEN_TITLE
+		:POSITION_START	0.315625 0.241667
+		:POSITION_END		0.315625 0.241667
+		
+		////////////////////////////////////////////////
+		//
+		///////////////////////////////////////////////
+		
+		////////////////////////////////////////////
+		// MENUBAR
+		////////////////////////////////////////////
+		
+		:INHERIT				MENUBAR
+		
+		///////////////////////////////////////////
+		//
+		///////////////////////////////////////////
+
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			BUTTON3
+		:TEXT					TXT_GENERAL_YES
+		//:POSITION_START	0.310937 0.652083
+		//:POSITION_END		0.310937 0.652083
+		:POSITION_START	0.310937 0.550000
+		:POSITION_END		0.310937 0.550000
+		:ITEM_NUMBER		3
+
+		:INHERIT				FR3_DEFAULT_BUTTON
+		:OBJECT_ID			BUTTON4
+		:TEXT					TXT_GENERAL_NO
+		:POSITION_START	0.314063 0.600000
+		:POSITION_END		0.314063 0.600000
+		:ITEM_NUMBER		4
+
+		:TYPE					UI_TYPE_TEXT
+		:OBJECT_ID			TESTSCREENTIMER
+		:AUTOSIZE			0
+		:SIZE					0.096875 0.095931
+		:FONT					1
+		:FONT_COLOUR		50 50 50 255
+		:POSITION_START	0.331250 0.135417
+		:POSITION_END		0.331250 0.135417
+	
+		//:TYPE					UI_TYPE_TEXT
+		//:OBJECT_ID			TESTSCREENTITLE
+		//:AUTOSIZE			0
+		//:SIZE					1.000000 0.199951
+		//:FONT					3
+		//:FONT_COLOUR		255 249 135 255
+		//:TEXT					TXT_SCREEN_FREQUENCY_TEST_TITLE
+		//:WORD_WRAP			1
+		//:POSITION_START	0.000000 0.300000
+		//:POSITION_END		0.000000 0.300000
+	
+		//:TYPE UI_TYPE_AREA
+		//:COLOUR 0 0 0 102
+		//:OBJECT_ID TESTSCREENTEXT
+		//:FONT 1
+		//:FONT_COLOUR 216 234 242 255
+		//:JUSTIFY_OFFSET 0.050000 0.000000
+		//:POSITION_END 0.00000 0.450000
+		//:POSITION_START 0.00000 0.450000
+		//:SIZE 1.000000 0.200000
+		//:TEXT TXT_SCREEN_FREQUENCY_TEST_TEXT
+		//:WORD_WRAP 1
+		
+		:TYPE					UI_TYPE_AREA
+		:OBJECT_ID			TESTSCREENTEXT
+		:CLEAR				1
+		:AUTOSIZE			0
+		:SIZE					0.640625 0.308333
+		:FONT					1
+		:FONT_COLOUR		50 50 50 255
+		:TEXT_JUSTIFY		4							//LEFT_TOP
+		:JUSTIFY_OFFSET	0.050000 0.000000
+		:TEXT					TXT_SCREEN_FREQUENCY_TEST_TEXT
+		:WORD_WRAP			1
+		:POSITION_START	0.326562 0.308333
+		:POSITION_END		0.326562 0.308333
+
+		
+	:E}*****<<<
+
+:E}*****<<<
+
+:CONNECTION "BUTTON1" "BUTTON2" "BUTTON2" "none" "none"
+:CONNECTION "BUTTON2" "BUTTON1" "BUTTON1" "none" "none"
+
+//:CONNECTION "BUTTON3" "none" "none" "BUTTON4" "BUTTON4"
+//:CONNECTION "BUTTON4" "none" "none" "BUTTON3" "BUTTON3"
+
+:CONNECTION "BUTTON3" "BUTTON4" "BUTTON4" "none" "none"
+:CONNECTION "BUTTON4" "BUTTON3" "BUTTON3" "none" "none"

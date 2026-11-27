@@ -1,0 +1,221 @@
+
+/////////////////////////////////////////////////
+// SCREEN
+/////////////////////////////////////////////////
+
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			STATS
+:CLEAR				0
+:COLOUR				255 255 255 255
+:POSITION_START	0.0 0.0
+:POSITION_END		0.0 0.0
+//:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\GREYFADE.PSD
+:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\GRADY.PSD
+:TIME_LENGTH		1.0
+
+:S{*****>>>
+	
+	/////////////////////////////////////////////////
+	// TITLE
+	////////////////////////////////////////////////
+	
+	:INHERIT					TITLE
+	:POSITION_START		0.3625 0.45625
+	:POSITION_END			0.3625 0.45625
+	
+	/////////////////////////////////////////////////
+	//
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// BACK ICON AND TEXT
+	////////////////////////////////////////////////
+
+	// DONE	
+	:INHERIT					BACK_ICON
+	:POSITION_START		0.3875 0.8708
+	:POSITION_END			0.3875 0.8708
+	
+	:INHERIT					BACK_TEXT
+	:POSITION_START		0.43584 0.85011
+	:POSITION_END			0.43584 0.85011
+	:TEXT_JUSTIFY			1
+	
+	////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	////////////////////////////////////////////////
+	// PLAYER GRAPHIC
+	////////////////////////////////////////////////
+			
+	:TYPE					UI_TYPE_GRAPHIC
+	:OBJECT_ID			PLAYER_GRAPHIC	
+	:TEXTURE_ENUM		GRAPHICS\GAME\COMMON\PLAYER.PSD
+	:AUTOSIZE			1
+	:POSITION_START	0.22344 0.2375
+	:POSITION_END		0.22344 0.2375
+	:COLOUR_START		255 249 135 0
+	:COLOUR_END			255 249 135 255
+	:TIME_LENGTH		0.16667
+
+	////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+		
+	////////////////////////////////////////////////
+	// TEMPLATE STAT TEXT
+	////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_TEXT
+	:OBJECT_ID			TEMPLATE_STAT_TEXT
+	:SIZE					1.0 0.06
+	:FONT					2
+	:FONT_COLOUR		51 51 51 255
+	:TEXT_JUSTIFY		1
+	:TIME_LENGTH		0.16667
+	
+	////////////////////////////////////////////////
+	//
+	////////////////////////////////////////////////
+		
+	/////////////////////////////////////////////////
+	// STAT TITLES
+	////////////////////////////////////////////////
+
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			PERCENTAGE_SIGN
+	:POSITION_START	0.0 0.26663
+	:POSITION_END		0.0 0.26663
+
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_PERCENTAGE_COMPLETE_VALUE
+	:POSITION_START	0.39375 0.24785
+	:POSITION_END		0.39375 0.24785
+	:FONT					4
+	
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_PLAYER_TXT
+	:POSITION_START	0.39375 0.32083
+	:POSITION_END		0.39375 0.32083
+	
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_RATING_TXT
+	:POSITION_START	0.39375 0.36776
+	:POSITION_END		0.39375 0.36776
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// STAT VALUES
+	////////////////////////////////////////////////
+
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_GAME_TXT
+	:TEXT					TXT_OPTIONS_GAME
+	:POSITION_START	0.7 0.22717
+	:POSITION_END		0.7 0.22717
+	:TEXT_JUSTIFY		1
+
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_PERCENTAGE_COMPLETE_TXT
+	:TEXT					TXT_GAME_STATUS_COMPLETE
+	:POSITION_START	0.7 0.26663
+	:POSITION_END		0.7 0.26663
+	:TEXT_JUSTIFY		1
+
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_PLAYER_VALUE
+	:POSITION_START	0.7 0.32083
+	:POSITION_END		0.7 0.32083
+	:TEXT_JUSTIFY		1
+	
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_RATING_VALUE
+	:POSITION_START	0.7 0.36776
+	:POSITION_END		0.7 0.36776
+	:TEXT_JUSTIFY		1
+	
+	/////////////////////////////////////////////////
+	// 
+	////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////
+	// GAME STATUS STAT TITLES
+	////////////////////////////////////////////////
+
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_VEHICLES_TXT
+	:TEXT					TXT_GAME_STATUS_VEHICLES
+	:POSITION_START	1.0 0.50833
+	:POSITION_END		0.39375 0.50833
+	:OFFSET_TIME		0.0
+	
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_RACE_TYPES_TXT
+	:TEXT					TXT_GAME_STATUS_RACE_TYPES
+	:POSITION_START	1.0 0.56041
+	:POSITION_END		0.39375 0.56041
+	:OFFSET_TIME		0.1
+	
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_TRACKS_TXT
+	:TEXT					TXT_GAME_STATUS_TRACKS
+	:POSITION_START	1.0 0.61667
+	:POSITION_END		0.39375 0.61667
+	:OFFSET_TIME		0.2
+	
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_TROPHIES_TXT
+	:TEXT					TXT_GAME_STATUS_TROPHIES
+	:POSITION_START	1.0 0.67292
+	:POSITION_END		0.39375 0.67292
+	:OFFSET_TIME		0.3
+		
+	////////////////////////////////////////////////
+	//
+	////////////////////////////////////////////////
+	
+	////////////////////////////////////////////////
+	// GAME STATUS STAT VALUES
+	////////////////////////////////////////////////
+		
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_VEHICLES_VALUE
+	:POSITION_START	1.0 0.50833
+	:POSITION_END		0.7 0.50833
+	:TEXT_JUSTIFY		1
+	:OFFSET_TIME		0.0
+	
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_RACE_TYPES_VALUE
+	:POSITION_START	1.0 0.56041
+	:POSITION_END		0.7 0.56041
+	:TEXT_JUSTIFY		1
+	:OFFSET_TIME		0.1
+	
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_TRACKS_VALUE
+	:POSITION_START	1.0 0.61667
+	:POSITION_END		0.7 0.61667
+	:TEXT_JUSTIFY		1
+	:OFFSET_TIME		0.2
+	
+	:INHERIT				TEMPLATE_STAT_TEXT
+	:OBJECT_ID			DRIVER_STAT_TYPE_TROPHIES_VALUE
+	:POSITION_START	1.0 0.67292
+	:POSITION_END		0.7 0.67292
+	:TEXT_JUSTIFY		1
+	:OFFSET_TIME 		0.3
+		
+	////////////////////////////////////////////////
+	//
+	////////////////////////////////////////////////
+	
+:E}*****<<<
+
+/////////////////////////////////////////////////
+//
+////////////////////////////////////////////////

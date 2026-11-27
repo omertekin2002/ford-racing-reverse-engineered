@@ -1,0 +1,260 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"SKULL"                                	scenes\extra\skull.ma
+	"BONES"                                	scenes\extra\bones.ma
+	"OLD_BRIDGE"                           	scenes\old bridge\des_b_c_bridge.ma
+	"DAM"                                  	scenes\dam\dam.ma
+	"LIGHT_FRAME"                          	scenes\new startgrid\light_frame.ma
+	"START_GRID"                           	scenes\new startgrid\start_grid.ma
+	"BLOCK"                                	scenes\tunnel\entry_blocks.ma
+	"GATEHOUSE"                            	scenes\tunnel\gatehouse.ma
+	"TUNNEL_WALLS"                         	scenes\tunnel\tunnel_walls.ma
+	"TUNNEL_TRAIN"                         	scenes\tunnel\tunnel_train.ma
+	"TUNNEL_EXIT"                          	scenes\tunnel\tunnel_exit.ma
+	"TUNNEL_ENTRANCE"                      	scenes\tunnel\tunnel_entrance.ma
+	"TUNNEL_BARRIERS"                      	scenes\tunnel\tunnel_barriers.ma
+	"EMPIRE"                               	scenes\new barriers\empire.ma
+	"BLANK"                                	scenes\new barriers\blank.ma
+	"RAZORWORKS"                           	scenes\new barriers\razorworks.ma
+	"EJAY"                                 	scenes\new barriers\ejay.ma
+	"XPLOSIV"                              	scenes\new barriers\xplosiv.ma
+	"CART_2"                               	scenes\vehicles\des_cart_4_wheels_v2.ma
+	"CART1"                                	scenes\vehicles\des_cart_4_wheels.ma
+	"WAGON"                                	scenes\vehicles\wagon_01.ma
+	"DES_SWINGING_COUNTY_STORE_SIGN"       	scenes\old west town\signs\des_swinging_county_store_sign.ma
+	"DES_WHISKEY_CREEK_FRAME_C"            	scenes\old west town\signs\des_whiskey_creek_frame_c.ma
+	"BANK_SIGN"                            	scenes\old west town\signs\des_bank_sign.ma
+	"TOWN_SIGN"                            	scenes\old west town\signs\des_whiskey_creek_frame.ma
+	"TOMBS_02"                             	scenes\old west town\signs\des_tombs_top_door_sign.ma
+	"TOMBS_01"                             	scenes\old west town\signs\des_tombs_sign.ma
+	"SWING"                                	scenes\old west town\signs\des_swing_n_store_sign.ma
+	"SALOON_SIGN"                          	scenes\old west town\signs\des_saloon_sign.ma
+	"JAIL"                                 	scenes\old west town\signs\des_jail_sign.ma
+	"GUN_STORE"                            	scenes\old west town\signs\des_gun_store_sign.ma
+	"GENERAL_STORE_02"                     	scenes\old west town\signs\des_gerneral_merchandise_store_sign_2.ma
+	"GENERAL_STORE"                        	scenes\old west town\signs\des_gerneral_merchandise_store_sign.ma
+	"FUNERAL_SIGN_02"                      	scenes\old west town\signs\des_funeral_top_door_sign.ma
+	"FUNERAL_SIGN"                         	scenes\old west town\signs\des_funeral_sign.ma
+	"BOARDING_HOUSE_SIGN_01"               	scenes\old west town\signs\des_boarding_house_sign.ma
+	"WHISKEY_STORE"                        	scenes\old west town\signs\des_whiskey_creek_store_sign.ma
+	"PROP"                                 	scenes\old west town\prop.ma
+	"FRAME"                                	scenes\old west town\des_wind_mill_frame.ma
+	"LARGE_LIVERY"                         	scenes\old west town\des_western_large_livery.ma
+	"CHURCH"                               	scenes\old west town\des_western_town_church.ma
+	"SHACKILL"                             	scenes\old west town\des_western_town_shack1.ma
+	"TOMB"                                 	scenes\old west town\des_western_town_funeral_tombs.ma
+	"DIRECTOR"                             	scenes\old west town\des_western_town_funeral_directors.ma
+	"SMALL_LIVERY"                         	scenes\old west town\des_western_small_old_livery.ma
+	"SHITE_SHACK"                          	scenes\old west town\des_ghost_town_shite_shack.ma
+	"KNACKERED_SHACK"                      	scenes\old west town\des_western_town_knackered_shack.ma
+	"BANK"                                 	scenes\old west town\des_western_town_bank.ma
+	"STORESSS"                             	scenes\old west town\des_western_town_store.ma
+	"TOWN_JAIL"                            	scenes\old west town\des_western_town_jail.ma
+	"BOARDING_HOUSE_2"                     	scenes\old west town\des_western_town_boarding_house2.ma
+	"BOARDING_HOUSE"                       	scenes\old west town\des_western_town_boarding_house.ma
+	"STOORE2"                              	scenes\old west town\des_western_town_store2.ma
+	"KNACKERED_BUILDING"                   	scenes\old west town\des_western_town_knackered_building.ma
+	"SALOON"                               	scenes\old west town\des_western_town_saloon.ma
+	"STORE1"                               	scenes\old west town\des_store1.ma
+	"STORE2"                               	scenes\old west town\des_store2.ma
+	"SHACK"                                	scenes\old west town\shack.ma
+	"STORE3"                               	scenes\old west town\des_store3.ma
+	"EFFECTS"                              	scenes\effects\effects.ma
+	"DESB_CUT_UP"                          	
+	"ROCK_03"                              	scenes\rock_03.ma
+	"RIVERBED_ROCKS_04"                    	scenes\riverbed_rocks_04.ma
+	"RIVERBED_ROCKS_03"                    	scenes\riverbed_rocks_03.ma
+	"RIVERBED_ROCKS_02"                    	scenes\riverbed_rocks_02.ma
+	"RIVERBED_ROCKS_01"                    	scenes\riverbed_rocks_01.ma
+	"ROCK_04"                              	scenes\rock_04.ma
+	"ROCK_01"                              	scenes\rock_01.ma
+	"ROCK_02"                              	scenes\rock_02.ma
+	"CONTAINER"                            	scenes\shipping containers.ma
+	"GROUP_CACTUS_2"                       	scenes\buildings\foliage\group cactus_2.ma
+	"GROUP_CACTUS_1"                       	scenes\buildings\foliage\group cactus_1.ma
+	"ARM_CACTUS_2"                         	scenes\buildings\foliage\arm cactus_2.ma
+	"ARM_CACTUS_1"                         	scenes\buildings\foliage\arm cactus_1.ma
+	"BUSH_01"                              	scenes\buildings\foliage\bush_01.ma
+	"BUSH_03"                              	scenes\buildings\foliage\bush_03.ma
+	"BUSH_02"                              	scenes\buildings\foliage\bush_02.ma
+	"SMALL_WOOD_FENCE_END"                 	scenes\buildings\fences\small_wood_fence_end.ma
+	"SMALL_WOOD_FENCE"                     	scenes\buildings\fences\small_wood_fence.ma
+	"FENCE_04"                             	scenes\buildings\fences\fence_04.ma
+	"FENCE_03"                             	scenes\buildings\fences\fence_03.ma
+	"DISTANCE_05"                          	scenes\buildings\distance_05.ma
+	"DISTANCE_04"                          	scenes\buildings\distance_04.ma
+	"DISTANCE_03"                          	scenes\buildings\distance_03.ma
+	"DISTANCE_02"                          	scenes\buildings\distance_02.ma
+	"DISTANCE_CLIFFS_01"                   	scenes\buildings\distance_cliffs_01.ma
+	"REDLIGHT"                             	scenes\buildings\accessories\redlight.ma
+	"OLD_TUNNEL"                           	scenes\buildings\old_tunnel.ma
+	"PEN_01"                               	scenes\buildings\pen_01.ma
+	"LARGE_GRASS_01"                       	scenes\buildings\foliage\large_grass_01.ma
+	"DESB_OBJECTS"                         	
+	"DESB_ANIMATIONS"                      	
+	"SKYDOME"                              	scenes\environment\desb_skydome.ma
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"REDLIGHTBEAMS"                        	scenes\buildings\accessories\redlightbeams.ma
+	"VULTURE"                              	scenes\buildings\accessories\vulture.ma
+	"TUMBLEWEED"                           	scenes\buildings\accessories\tumbleweed.ma
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"CAMERA"
+	"TUMBLEWEED"
+	"REDLIGHTBEAMS"
+	"VULTURE"
+	"PROP"
+	"DES_WHISKEY_CREEK_FRAME_C"
+	"DES_SWINGING_COUNTY_STORE_SIGN"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"SUNLIGHT"
+	"AMBIENT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+	"METAL"
+	"STONE"
+	"WOOD"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+	"ROTOR"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	128x128 	-	[  fM       ]	"SANDLOOSE_SANDS"                       	c6:9c:6d:00	 (World size: 9.278471)
+	256x256 	-	[ASfM   !   ]	"FENCES"                                	80:63:48:00	 (World size: 14.818223)
+	256x128 	-	[  fM       ]	"SANDPACKED_RAILS"                      	ad:87:62:00	 (World size: 32.674007)
+	256x256 	-	[  fM       ]	"ROCK_TOP_BRIGHT"                       	a1:7f:62:00	 (World size: 123.872887)
+	256x256 	-	[ASf    !   ]	"SHRUBS_512_ALPHA"                      	74:5c:41:00	 (World size: 10.291612)
+	256x128 	-	[  fM       ]	"TARMAC_ROADS2"                         	8d:77:5e:00	 (World size: 30.500162)
+	128x128 	-	[  fM   !   ]	"ROOF"                                  	7d:76:72:00	 (World size: 30.600742)
+	256x128 	-	[  fM       ]	"TARMAC_ROADS"                          	7d:72:61:00	 (World size: 12.814057)
+	64x64   	-	[  fM   !   ]	"TARMAC_GRATE"                          	68:66:4b:00	 (World size: 7.203959)
+	256x256 	-	[  fM       ]	"ROCK_BASE"                             	ac:8f:6c:00	 (World size: 42.192139)
+	128x32  	-	[  fM   !   ]	"WOOD"                                  	a6:81:60:00	 (World size: 12.239176)
+	256x128 	-	[  fM       ]	"SANDPACKED_TRACKS_V2"                  	b6:8c:62:00	 (World size: 19.061552)
+	256x128 	-	[  fM       ]	"SANDPACKED_RAILS_DIRTY"                	b0:89:63:00	 (World size: 40.944920)
+	32x16   	-	[  fM   !   ]	"CACTUS_02"                             	65:8e:5a:00	 (World size: 0.188230)
+	256x256 	-	[  fM       ]	"ROCK_TOP_V2"                           	a4:81:60:00	 (World size: 33.451378)
+	256x128 	-	[  fM       ]	"SANDPACKED_TRACKFADE"                  	bd:93:67:00	 (World size: 21.268745)
+	256x256 	-	[  fM       ]	"SANDPACKED_RIVERBED2"                  	aa:81:5a:00	 (World size: 77.001312)
+	64x32   	-	[  fM   !   ]	"CACTUS_01"                             	7a:98:6a:00	 (World size: 1.139905)
+	256x128 	-	[  fM       ]	"SANDPACKED_START"                      	b4:8b:63:00	 (World size: 25.265509)
+	256x256 	-	[A fM  X    ]	"BRIDGE"                                	00:00:00:28	 (World size: 184.252762)
+	256x256 	-	[  fM   !   ]	"GENERIC_GTOWN"                         	8e:84:73:00	 (World size: 21.450583)
+	256x256 	-	[  fM   !   ]	"GTOWN_SINGAGE"                         	96:98:81:00	 (World size: 12.595109)
+	256x128 	-	[  fM   !   ]	"GTOWN_SINGAGE2"                        	8a:89:7c:00	 (World size: 3.198009)
+	128x128 	-	[  fM   !   ]	"DES_CARTS"                             	75:60:56:00	 (World size: 4.784979)
+	128x128 	-	[  fM   !   ]	"WAGON"                                 	93:8d:7b:00	 (World size: 8.163012)
+	64x64   	-	[ASfM   !   ]	"GIRDERS"                               	2d:27:27:00	 (World size: 8.339445)
+	64x64   	-	[ASfM   !   ]	"NEW_BARRIERS"                          	7b:7b:7b:00	 (World size: 4.548800)
+	256x256 	-	[  fM   !   ]	"AD_TEMP"                               	8b:8b:91:00	 (World size: 15.938409)
+	512x128 	-	[  fM   !   ]	"STARTGRID"                             	93:92:92:00	 (World size: 40.477940)
+	256x256 	-	[  fM   !   ]	"DAM"                                   	96:93:92:00	 (World size: 57.619076)
+	64x64   	-	[  fM   !   ]	"BONES"                                 	c6:b6:a5:00	 (World size: 2.696186)
+	256x128 	-	[A fM       ]	"ALPHA_GRASS"                           	51:4e:30:0f	 (World size: 1.380414)
+	256x128 	-	[  fM   !   ]	"SHIPPING_CONTAINERS"                   	6d:7c:77:00	 (World size: 20.216688)
+	32x32   	-	[A fM       ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"GRASS"                                 	1b:1b:1b:22	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"HEADLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"REARLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"SPECULAR_SPRITE"                       	3d:3d:3d:3d	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"SPARK"                                 	2b:2b:2b:00	 (World size: 1.310660)
+	256x256 	-	[  fM       ]	"TRACK_SPECULAR"                        	88:88:85:00	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"TRACK_REFLECTION"                      	00:00:00:88	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"SMOKEANDDUST"                          	d3:d1:d1:54	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"TYRE_SMOKE"                            	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"SUN_FLARE"                             	16:0f:0f:12	 (World size: 1.310660)
+	64x64   	-	[  f        ]	"MINISKY"                               	49:56:79:00	 (World size: 3483.066895)
+	256x256 	-	[  f      # ]	"DESB_SEG8"                             	8f:a4:bb:00	 (World size: 2325.032715)
+	256x256 	-	[  f      # ]	"DESB_SEG1"                             	3c:6f:ae:00	 (World size: 2325.032715)
+	256x256 	-	[  f      # ]	"DESB_SEG2"                             	28:60:a9:00	 (World size: 2325.032959)
+	256x256 	-	[  f      # ]	"DESB_SEG3"                             	3a:76:c1:00	 (World size: 2325.033447)
+	256x256 	-	[  f      # ]	"DESB_SEG4"                             	57:9a:e5:00	 (World size: 2325.032715)
+	256x256 	-	[  f      # ]	"DESB_SEG5"                             	91:c7:f7:00	 (World size: 2360.591797)
+	256x256 	-	[  f      # ]	"DESB_SEG6"                             	8b:b5:df:00	 (World size: 2360.591553)
+	256x256 	-	[  f      # ]	"DESB_SEG7"                             	b7:c1:c8:00	 (World size: 2325.032959)
+	128x128 	-	[ASfM       ]	"VULTURE"                               	57:46:43:e7	 (World size: 6.211940)
+	256x256 	-	[  fM       ]	"MOUNTAIN_TUNNEL"                       	78:73:69:00	 (World size: 26.337597)
+	128x128 	-	[  fM   !   ]	"DES_DAM_BRIDGE"                        	96:89:7e:00	 (World size: 35.561058)
+	64x32   	-	[ASf    !   ]	"TUNNEL_RAILING"                        	15:13:10:00	 (World size: 5.729415)
+	64x64   	-	[ASf    !   ]	"TUMBLEWEED"                            	3e:33:2a:00	 (World size: 1.839895)
+	128x64  	-	[  fM       ]	"TRAIN2"                                	6b:6d:5b:00	 (World size: 28.750530)
+	8x8     	-	[  fM       ]	"REDLIGHT_GLASS"                        	ff:00:00:00	 (World size: 2.857181)
+	32x8    	-	[  fM       ]	"REDLIGHT_BEAM"                         	2e:00:00:00	 (World size: 4.905217)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

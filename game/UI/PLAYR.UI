@@ -1,0 +1,75 @@
+
+//////////////////////////////////////////////////////
+// UI SCREEN
+//////////////////////////////////////////////////////
+
+:TYPE 									UI_TYPE_SCREEN
+:OBJECT_ID 								PLAYR
+:AUTOSIZE								0
+:CLEAR 									0
+:POSITION_START 						0.0 0.0
+:POSITION_END 							0.0 0.0
+:SIZE 									1.0 1.0
+:STRETCH_GRAPHIC 						1
+:TEXTURE_ENUM 							GRAPHICS\GAME\BKGNDS\COBRABG.PSD
+:TIME_LENGTH 							1.0
+
+:S{*****>>>
+
+	//////////////////////////////////////////////////////
+	// TITLE BAR
+	//////////////////////////////////////////////////////
+
+	:INHERIT									TITLE
+	:POSITION_START 						0.37813 0.60833
+	:POSITION_END 							0.37813 0.60833
+
+	// DONE
+	:INHERIT									BACK_ICON
+	:POSITION_END 							0.40938 0.86875
+	:POSITION_START 						0.40938 0.86875
+
+	:INHERIT									BACK_TEXT
+	:POSITION_START 						0.45313 0.88
+	:POSITION_END 							0.45313 0.88
+	:TEXT_JUSTIFY							4
+		
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// MENU BARS
+	//////////////////////////////////////////////////////
+	
+	:INHERIT									MENUBAR
+
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID 								PLAYER1
+	:TEXT 									TXT_OPTIONS_CONTROLS_PLAYER_ONE
+	:POSITION_START 						1.0 0.6875
+	:POSITION_END 							0.41563 0.6875
+	:TEXT_JUSTIFY							1
+	:TIME_LENGTH							0.16667
+
+	:INHERIT									FR3_DEFAULT_BUTTON
+	:OBJECT_ID 								PLAYER2
+	:TEXT	 									TXT_OPTIONS_CONTROLS_PLAYER_TWO
+	:POSITION_START 						1.0 0.74375
+	:POSITION_END 							0.41563 0.74375
+	:TEXT_JUSTIFY							1
+	:TIME_LENGTH							0.16667
+	:OFFSET_TIME							0.1
+			
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+:E}*****<<<
+
+:CONNECTION "PLAYER1" "PLAYER2" "PLAYER2" "none" "none"
+:CONNECTION "PLAYER2" "PLAYER1" "PLAYER1" "none" "none"
+
+//////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////

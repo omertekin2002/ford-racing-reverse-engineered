@@ -268,7 +268,19 @@ export type BinInfo = Record<typeof binInfoTableNames[number], string[]>;
 export function parseBinInfo(bytes: Uint8Array): BinInfo {
   const reader = new Reader(bytes, "bininfo.BIN");
   if (reader.u32() !== bytes.length) throw new Error("bininfo.BIN length does not match its header");
-  const tables = binInfoTableNames.map(name => [name, reader.u32s(reader.u32())] as const);
+  // FR3 standard bundles contain all 11 tables; UI track previews and FR2 tracks omit the 11th (textureNames).
+  const tables: (readonly [typeof binInfoTableNames[number], Uint32Array])[] = [];
+  let firstStringOffset: number | undefined;
+  for (let i = 0; i < binInfoTableNames.length; i++) {
+    const name = binInfoTableNames[i]!;
+    if (i === binInfoTableNames.length - 1 && (reader.offset === bytes.length || (firstStringOffset !== undefined && reader.offset === firstStringOffset))) {
+      tables.push([name, new Uint32Array()]);
+      break;
+    }
+    const offsets = reader.u32s(reader.u32());
+    if (firstStringOffset === undefined && offsets.length > 0) firstStringOffset = offsets[0];
+    tables.push([name, offsets]);
+  }
   const entries = tables.map(([name, offsets]) => {
     const strings = Array.from(offsets, offset => {
       if (offset !== reader.offset) throw new Error(`Invalid bininfo.BIN string offset ${offset}`);

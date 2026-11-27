@@ -1,18 +1,29 @@
-"""Build identity from the supplied report, not yet independent evidence.
+"""Game build identity and shared tool/cache path resolution.
+
+The repository ships Ford Racing 3 Shuffle game assets under `game/` (manifested
+in `analysis/game-file-manifest.json`). Legacy demo archive constants remain
+available for historical static-analysis tooling.
 
 Also resolves the tool and download-cache roots shared by the setup and build
 scripts: an explicit flag wins, then FR3_TOOLS / FR3_CACHE, then XDG defaults.
-The original cloud workspace layout is FR3_TOOLS=/workspace/toolchains/fr3
-FR3_CACHE=/workspace/shared/downloads.
 """
 import hashlib
 import os
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_GAME_DIR = REPO_ROOT / "game"
+
+# Ford Racing 3 Shuffle executable identity (game/fr3.exe).
+EXE_SIZE = 1_773_056
+EXE_SHA256 = "6397bbb0fd09948cc1f91eb29f27767cd0621aa765ba748440e7a637ad6b41fb"
+SHUFFLE_PAGE = "https://github.com/ZippyZolton/Ford-Racing-3-Shuffle"
+
+# Legacy 2004 public Windows demo archive identity.
 ARCHIVE_SIZE = 37_080_961
 ARCHIVE_SHA256 = "4bf96967022195519817d91f143c5e1c62e5879a95dd70f5a1cd00ba89b1f84c"
-EXE_SIZE = 1_782_784
-EXE_SHA256 = "87cc71d881a2723784097108ce2923fe8d0384ea6a8b03fad3e95c5cda52e8b3"
+DEMO_EXE_SIZE = 1_782_784
+DEMO_EXE_SHA256 = "87cc71d881a2723784097108ce2923fe8d0384ea6a8b03fad3e95c5cda52e8b3"
 DEMO_PAGE = "https://www.moddb.com/games/ford-racing/downloads/ford-racing-3-demo"
 
 

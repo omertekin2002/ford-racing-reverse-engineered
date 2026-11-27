@@ -24,6 +24,11 @@ export interface MenuCar {
   readonly ratings?: { speed: number; power: number; acceleration: number; handling: number };
 }
 
+export interface MenuTrack {
+  readonly id: string;
+  readonly name: string;
+}
+
 export interface RaceSetup {
   readonly trackId: string;
   readonly carId: string;
@@ -55,7 +60,8 @@ export type MenuCommand =
 
 export type MenuAction =
   | "quick-race" | "select-car" | "previous-car" | "next-car"
-  | "previous-livery" | "next-livery" | "launch" | "options"
+  | "previous-livery" | "next-livery" | "previous-track" | "next-track"
+  | "launch" | "options"
   | "back" | "resume" | "restart" | "camera" | "quit" | "standings";
 
 export type MenuSceneAction = MenuAction
@@ -71,6 +77,7 @@ export interface MenuScene {
 export interface MenuView {
   readonly state: MenuState;
   readonly car?: MenuCar;
+  readonly track?: MenuTrack;
   readonly livery?: string;
   readonly settings: Readonly<MenuSettings>;
   readonly raceOptions: Readonly<Pick<RaceSetup, "difficulty" | "laps" | "mode">>;
@@ -84,6 +91,7 @@ type SettingsStorage = Pick<Storage, "getItem" | "setItem">;
 export interface MenuControllerOptions {
   readonly cars: readonly MenuCar[];
   readonly trackId: string;
+  readonly tracks?: readonly MenuTrack[];
   readonly quickRaces?: readonly RaceSetup[];
   readonly languages: readonly string[];
   readonly storage?: SettingsStorage;
@@ -97,7 +105,7 @@ const volumeKeys = ["masterVolume", "sfxVolume", "engineVolume"] as const;
 const allowedActions: Record<MenuState, readonly MenuAction[]> = {
   START: [],
   MAIN_MENU: ["quick-race", "select-car", "options"],
-  CAR_SELECT: ["previous-car", "next-car", "previous-livery", "next-livery", "launch", "options", "back"],
+  CAR_SELECT: ["previous-car", "next-car", "previous-livery", "next-livery", "previous-track", "next-track", "launch", "options", "back"],
   OPTIONS: ["back"],
   LOADING: ["back"],
   IN_GAME: [],
@@ -141,7 +149,9 @@ export class MenuController {
   private settings: MenuSettings;
   private optionsReturn: MenuState = "MAIN_MENU";
   private carIndex = 0;
+  private trackIndex = 0;
   private liveryIndex = 0;
+  private readonly tracks: readonly MenuTrack[];
   private quickRaceIndex = 0;
   private requestId = 0;
   private activeSetup?: RaceSetup;
@@ -154,6 +164,11 @@ export class MenuController {
   private commands: MenuCommand[] = [];
 
   constructor(private readonly options: MenuControllerOptions) {
+    this.tracks = options.tracks && options.tracks.length > 0
+      ? options.tracks
+      : [{ id: options.trackId, name: options.trackId }];
+    const initialTrack = this.tracks.findIndex(t => t.id.toLowerCase() === options.trackId.toLowerCase());
+    this.trackIndex = initialTrack >= 0 ? initialTrack : 0;
     this.storage = settingsStorage(options.storage);
     this.storageKey = options.storageKey ?? "racing.menu.settings.v1";
     this.settings = {
@@ -181,9 +196,11 @@ export class MenuController {
 
   getView(): MenuView {
     const car = this.options.cars[this.carIndex];
+    const track = this.tracks[this.trackIndex];
     return {
       state: this.state,
       car,
+      track,
       livery: car?.liveries[this.liveryIndex],
       settings: { ...this.settings },
       raceOptions: { ...this.raceOptions },
@@ -281,11 +298,19 @@ export class MenuController {
         this.previewCar();
         break;
       }
+      case "previous-track":
+      case "next-track": {
+        const count = this.tracks.length;
+        if (count < 2) return false;
+        this.trackIndex = (this.trackIndex + (action === "next-track" ? 1 : -1) + count) % count;
+        this.refreshScene();
+        break;
+      }
       case "launch": {
-        const { car, livery } = this.getView();
+        const { car, track, livery } = this.getView();
         if (!car) return false;
         this.launch({
-          trackId: this.options.trackId, carId: car.id, livery,
+          trackId: track?.id ?? this.options.trackId, carId: car.id, livery,
           ...this.raceOptions, transmission: this.settings.transmission,
         }, false);
         break;

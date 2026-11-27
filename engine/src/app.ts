@@ -1,6 +1,6 @@
 import { AudioEngine, type CountdownStep, type EngineLayer, type EngineLayerRole, type TyreSurface } from "./audio/audioEngine.js";
-import { DemoAssets, demoTrackDirectory } from "./demoAssets.js";
-import type { ResolvedCarConfig } from "./formats/databases.js";
+import { DemoAssets, trackDirectory, type TrackRuntimeData } from "./demoAssets.js";
+import type { ResolvedCarConfig, TrackRecord } from "./formats/databases.js";
 import type { PcgEntry } from "./formats/pcg.js";
 import { lookupTranslation } from "./formats/tlate.js";
 import { AiDriver, type AiObstacle, type CarControlOutput } from "./game/aiDriver.js";
@@ -17,7 +17,7 @@ import { UiBatchBuilder, UiRenderer, type HudState, type UiColor } from "./rende
 import { formatRaceTime } from "./ui/hudModel.js";
 import {
   MenuController, type MenuCar, type MenuCommand, type MenuScene, type MenuSceneAction,
-  type MenuSettings, type MenuState, type MenuView, type RaceSetup, type RaceStanding,
+  type MenuSettings, type MenuState, type MenuTrack, type MenuView, type RaceSetup, type RaceStanding,
 } from "./ui/menuController.js";
 import { UiScreenInstance } from "./ui/uiRuntime.js";
 
@@ -27,6 +27,7 @@ export interface EngineSnapshot {
   running: boolean;
   state: MenuState;
   phase: RacePhase | null;
+  trackId: string | null;
   carId: string | null;
   livery: string | null;
   speedMph: number;
@@ -65,6 +66,9 @@ interface RacerSlot {
 
 interface ActiveRace {
   setup: RaceSetup;
+  trackId: string;
+  trackName: string;
+  trackData: TrackRuntimeData;
   trackModel: CompiledModel;
   spatial: TrackSpatial;
   race: RaceManager;
@@ -197,7 +201,12 @@ function formatCarDisplayName(assets: DemoAssets, cfg: ResolvedCarConfig): strin
   return cfg.car.id.replaceAll("_", " ");
 }
 
-/** Complete playable WebGL2 Ford Racing 3 demo runtime (menus, 3D turntable, 6-car ENGAF race, HUD, audio). */
+function formatTrackDisplayName(assets: DemoAssets, track: TrackRecord): string {
+  const localized = lookupTranslation(assets.translation, track.INGAME_TEXT_ENUM);
+  return localized ?? track.id.replaceAll("_", " ");
+}
+
+/** Complete playable WebGL2 Ford Racing 3 runtime (menus, 3D turntable, multi-track races, HUD, audio). */
 export class FordRacing3App {
   private readonly gl: GlContext;
   private readonly scene: SceneRenderer;
@@ -218,8 +227,8 @@ export class FordRacing3App {
   private turntableRequest = 0;
 
   private activeRace?: ActiveRace;
-  private trackSpatialCache?: TrackSpatial;
-  private trackModelCache?: CompiledModel;
+  private readonly trackSpatialCache = new Map<string, TrackSpatial>();
+  private readonly trackModelCache = new Map<string, CompiledModel>();
   private loadRequestSeq = 0;
   private audioLoaded = false;
 
@@ -262,6 +271,12 @@ export class FordRacing3App {
       ratings: computeCarRatings(cfg),
     }));
 
+    const menuTracks: MenuTrack[] = assets.installedTracks.map(track => ({
+      id: track.id,
+      name: formatTrackDisplayName(assets, track),
+    }));
+    const installedTrackIds = new Set(assets.installedTracks.map(t => t.id.toLowerCase()));
+
     // Build Quick Race presets in fr3.exe's exact rotation order (QRACE_5 -> QRACE_6 -> QRACE_4 -> 1..3).
     const quickRaces: RaceSetup[] = assets.quickRaces
       .map(preset => {
@@ -270,8 +285,11 @@ export class FordRacing3App {
           .filter(p => p !== player && this.carConfigs.has(p.carId))
           .map(p => p.carId);
         const carId = player && this.carConfigs.has(player.carId) ? player.carId : menuCars[0]!.id;
+        const trackId = preset.trackId && installedTrackIds.has(preset.trackId.toLowerCase())
+          ? preset.trackId
+          : assets.defaultTrackId;
         return {
-          trackId: preset.trackId || "ENGAF",
+          trackId,
           carId,
           laps: Math.max(1, preset.laps || 2),
           difficulty: "MEDIUM" as const,
@@ -284,7 +302,8 @@ export class FordRacing3App {
 
     this.menu = new MenuController({
       cars: menuCars,
-      trackId: "ENGAF",
+      trackId: assets.defaultTrackId,
+      tracks: menuTracks,
       quickRaces,
       languages: assets.languages,
       input: this.input,
@@ -389,6 +408,7 @@ export class FordRacing3App {
       running: this.frame !== undefined,
       state: view.state,
       phase: race?.race.phase ?? null,
+      trackId: race?.trackId ?? view.track?.id ?? null,
       carId: player?.carId ?? view.car?.id ?? null,
       livery: view.livery ?? null,
       speedMph: player?.physics.state.speedMph ?? 0,
@@ -416,8 +436,9 @@ export class FordRacing3App {
     if (this.previousTabIndex === null) this.canvas.removeAttribute("tabindex");
     for (const model of this.compiledModels.values()) model.dispose();
     this.compiledModels.clear();
-    this.trackModelCache?.dispose();
-    this.trackModelCache = undefined;
+    for (const model of this.trackModelCache.values()) model.dispose();
+    this.trackModelCache.clear();
+    this.trackSpatialCache.clear();
     this.turntableModel = undefined;
     this.activeRace = undefined;
     this.ui.dispose();
@@ -664,7 +685,7 @@ export class FordRacing3App {
         void this.loadRace(cmd.requestId, cmd.setup);
         break;
       case "ResumeRace":
-        this.setStatus("Racing on ENGAF");
+        this.setStatus(`Racing on ${this.activeRace?.trackName ?? this.assets.defaultTrackId}`);
         break;
       case "CycleCamera":
         this.activeRace?.camera.nextMode();
@@ -679,24 +700,35 @@ export class FordRacing3App {
 
   private async loadRace(requestId: number, setup: RaceSetup): Promise<void> {
     const seq = ++this.loadRequestSeq;
-    this.setStatus("Loading ENGAF track and cars…");
+    const trackId = setup.trackId || this.assets.defaultTrackId;
+    const trackKey = trackId.toLowerCase();
+    const trackRecord = this.assets.tables.tracks.get(trackKey);
+    const trackName = trackRecord ? formatTrackDisplayName(this.assets, trackRecord) : trackId;
+    this.setStatus(`Loading ${trackName} track and cars…`);
     this.menu.setLoadProgress(requestId, 0.08);
     try {
-      const trackBundle = await this.assets.load3dBundle(demoTrackDirectory);
+      const [trackBundle, trackData] = await Promise.all([
+        this.assets.load3dBundle(trackDirectory(trackId)),
+        this.assets.loadTrackData(trackId),
+      ]);
       if (seq !== this.loadRequestSeq || this.disposed) return;
       this.menu.setLoadProgress(requestId, 0.35);
 
-      if (!this.trackModelCache || this.trackModelCache.isDisposed) {
-        this.trackModelCache = this.scene.compileModel(
+      let trackModel = this.trackModelCache.get(trackKey);
+      if (!trackModel || trackModel.isDisposed) {
+        trackModel = this.scene.compileModel(
           trackBundle.xbx, trackBundle.textures, trackBundle.binInfo, trackBundle.scene,
         );
+        this.trackModelCache.set(trackKey, trackModel);
       }
-      if (!this.trackSpatialCache) {
-        const defaultSurfaceName = this.assets.tables.tracks.get("engaf")?.DEFAULT_TRACK_SURFACE;
-        this.trackSpatialCache = new TrackSpatial(
-          trackBundle.xbx, trackBundle.scene, this.assets.tables.racingLine,
+      let spatial = this.trackSpatialCache.get(trackKey);
+      if (!spatial) {
+        const defaultSurfaceName = trackRecord?.DEFAULT_TRACK_SURFACE;
+        spatial = new TrackSpatial(
+          trackBundle.xbx, trackBundle.scene, trackData.racingLine,
           { surfaces: this.assets.tables.surfaces, defaultSurfaceName },
         );
+        this.trackSpatialCache.set(trackKey, spatial);
       }
       this.menu.setLoadProgress(requestId, 0.52);
 
@@ -723,8 +755,7 @@ export class FordRacing3App {
         this.menu.setLoadProgress(requestId, 0.52 + ((i + 1) / lineupCfgs.length) * 0.42);
       }
 
-      const spatial = this.trackSpatialCache;
-      const racingLine = this.assets.tables.racingLine;
+      const racingLine = trackData.racingLine;
       const ground = (x: number, z: number) => {
         const p = spatial.queryProgress(x, z);
         const h = spatial.queryGround(x, p.point[1] + 4, z);
@@ -747,7 +778,7 @@ export class FordRacing3App {
       });
 
       const difficulty = this.assets.tables.game.difficulty[setup.difficulty];
-      const trackScales = resolveTrackDifficultyScales(this.assets.tables.tracks.get("engaf")?.difficulty[setup.difficulty]);
+      const trackScales = resolveTrackDifficultyScales(trackRecord?.difficulty[setup.difficulty]);
       const automatic = setup.transmission === "AUTO";
 
       const racers: RacerSlot[] = lineupCfgs.map((cfg, index) => {
@@ -799,8 +830,11 @@ export class FordRacing3App {
       const courseMap = racingLine.points.map(pt => ({ x: pt.position[0], z: pt.position[2] }));
 
       this.activeRace = {
-        setup,
-        trackModel: this.trackModelCache,
+        setup: { ...setup, trackId },
+        trackId,
+        trackName,
+        trackData,
+        trackModel,
         spatial,
         race,
         racers,
@@ -813,7 +847,7 @@ export class FordRacing3App {
       this.menu.setLoadProgress(requestId, 1);
       this.menu.completeLoad(requestId);
       void this.loadSpcAudioOnce();
-      this.setStatus(`Racing ${formatCarDisplayName(this.assets, playerCfg)} on ENGAF`);
+      this.setStatus(`Racing ${formatCarDisplayName(this.assets, playerCfg)} on ${trackName}`);
     } catch (cause) {
       if (seq !== this.loadRequestSeq) return;
       const err = asError(cause);
@@ -915,7 +949,7 @@ export class FordRacing3App {
 
     const mobile = active.race.canMove;
     const playerSlot = active.racers[0]!;
-    const racingLine = this.assets.tables.racingLine;
+    const racingLine = active.trackData.racingLine;
     const playerStand = active.race.standings.find(s => s.isPlayer);
     const playerProgressTotal = playerStand?.progress ?? 0;
 
@@ -952,7 +986,7 @@ export class FordRacing3App {
       } else {
         const ai = r.ai ?? (r.ai = new AiDriver(racingLine, {
           difficulty: this.assets.tables.game.difficulty[active.setup.difficulty],
-          trackScales: resolveTrackDifficultyScales(this.assets.tables.tracks.get("engaf")?.difficulty[active.setup.difficulty]),
+          trackScales: resolveTrackDifficultyScales(this.assets.tables.tracks.get(active.trackId.toLowerCase())?.difficulty[active.setup.difficulty]),
           mode: active.setup.mode,
         }));
         const obstacles: AiObstacle[] = tracks
@@ -1137,7 +1171,7 @@ export class FordRacing3App {
         wheelSpeed: avgAngVel,
         wheelSpin: avgSpin,
         steeringAngle: st.steerAngleRad,
-        headlights: (this.assets.tables.trackConfig.CAR_HEADLIGHT_STRENGTH ?? 0) > 0.1,
+        headlights: (active.trackData.trackConfig.CAR_HEADLIGHT_STRENGTH ?? 0) > 0.1,
         braking: st.brake > 0.1,
         reversing: st.gear < 0,
         exhaust: st.boostActive,
@@ -1149,7 +1183,7 @@ export class FordRacing3App {
       camView.projMatrix,
       active.trackModel,
       carInstances,
-      this.assets.tables.fog ?? undefined,
+      active.trackData.fog ?? undefined,
       { x: 0, y: 0, width, height },
     );
   }
@@ -1293,12 +1327,13 @@ export class FordRacing3App {
     const s = 0.78;
 
     batch.solidQuad({ x: 0, y: 0, width: 1, height: 0.11 }, PANEL_DARK);
-    batch.text({ x: 0.04, y: 0.02, width: 0.65, height: 0.07 }, fTitle, view.car?.name ?? "SELECT CAR", {
+    batch.text({ x: 0.04, y: 0.02, width: 0.56, height: 0.07 }, fTitle, view.car?.name ?? "SELECT CAR", {
       justify: 1, colour: ACCENT, scale: s * 1.15,
     });
-    batch.text({ x: 0.68, y: 0.02, width: 0.28, height: 0.07 }, fBody, "TRACK: ENGLAND A (ENGAF)", {
-      justify: 2, colour: CYAN, scale: s * 0.9,
-    });
+    const trackLabel = view.track ? `${view.track.name} (${view.track.id})` : this.assets.defaultTrackId;
+    this.addButton(batch, { x: 0.62, y: 0.02, width: 0.34, height: 0.07 }, `TRACK: ${trackLabel}`, () => {
+      this.menu.activate("next-track");
+    }, s * 0.8);
 
     const px = 0.63;
     const pw = 0.33;
@@ -1392,7 +1427,7 @@ export class FordRacing3App {
     const s = 0.78;
 
     batch.solidQuad({ x: 0.10, y: 0.10, width: 0.80, height: 0.78 }, PANEL_CARD);
-    batch.text({ x: 0.14, y: 0.13, width: 0.72, height: 0.07 }, fTitle, "RACE RESULTS — ENGAF", {
+    batch.text({ x: 0.14, y: 0.13, width: 0.72, height: 0.07 }, fTitle, `RACE RESULTS — ${this.activeRace?.trackName ?? this.assets.defaultTrackId}`, {
       justify: 0, colour: ACCENT, scale: s * 1.15,
     });
 

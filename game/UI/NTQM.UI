@@ -1,0 +1,161 @@
+
+:TYPE					UI_TYPE_SCREEN
+:OBJECT_ID			NTQM
+:CLEAR				0
+:POSITION_START	0.000000 0.000000
+:POSITION_END		0.000000 0.000000
+:TIME_LENGTH		0.166667
+//:TEXTURE_ENUM		"GRAPHICS\GAME\COMMON\GREYFADE.PSD"
+:TEXTURE_ENUM		"GRAPHICS\GAME\COMMON\GRADY.PSD"
+
+:S{*****>>>
+
+	///////////////////////////////////////////////////////////
+	///TITLE
+	//////////////////////////////////////////////////////////
+
+	:INHERIT				TITLE
+	:POSITION_START	0.157813 0.108333
+	:POSITION_END		0.157813 0.108333
+	
+	///////////////////////////////////////////////////////////
+	///
+	//////////////////////////////////////////////////////////
+	
+	///////////////////////////////////////////////////////////
+	///BACK ICON AND TEXT
+	//////////////////////////////////////////////////////////
+
+	// DONE	
+	:INHERIT				BACK_ICON
+	:POSITION_START	0.20625 0.860416
+	:POSITION_END		0.20625 0.860416
+	
+	:INHERIT				BACK_TEXT
+	:POSITION_START	0.209375 0.839583
+	:POSITION_END		0.209375 0.839583
+	
+	///////////////////////////////////////////////////////////
+	///BACK ICON AND TEXT
+	//////////////////////////////////////////////////////////
+
+
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				INFO_BAR
+	:AUTOSIZE				0
+	:SIZE						1.000000 0.045833
+	:COLOUR					0 0 0 77
+	:FONT						2
+	:FONT_COLOUR			206 206 206 255
+	:HIGHLIGHTED_FONT		2
+	:TEXT_JUSTIFY			1							//TEXT_JUSTIFY_LEFT_CENTRE
+	:JUSTIFY_OFFSET		0.200000 0.000000
+	:TEXT						0
+	:POSITION_START		0.000000 0.172917
+	:POSITION_END			0.000000 0.172917
+	:TIME_LENGTH			0.166667
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				TRACK_INFO_BAR
+	:TEXT						0
+	:POSITION_START		0.001563 0.235417
+	:POSITION_END			0.001563 0.235417
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				LAPS_INFO_BAR
+	:TEXT_JUSTIFY			2							//TEXT_JUSTIFY_RIGHT_CENTRE
+	:TEXT						0
+	:COLOUR					0 0 0 0
+	:JUSTIFY_OFFSET		0.000000 0.000000
+	:POSITION_START		0.001563 0.235417
+	:POSITION_END			0.001563 0.235417
+	:SIZE						0.875862 0.045833
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				VEHICLE_CLASS_INFO_BAR
+	:TEXT						0
+	:POSITION_START		0.001563 0.270752
+	:POSITION_END			0.001563 0.270752
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				COLLISION_INFO_BAR
+	:TEXT_JUSTIFY			2							//TEXT_JUSTIFY_RIGHT_CENTRE
+	:TEXT						0
+	:COLOUR					0 0 0 0
+	:TEXT						0
+	:JUSTIFY_OFFSET		0.000000 0.000000
+	:POSITION_START		0.001563 0.270752
+	:POSITION_END			0.001563 0.270752
+	:SIZE						0.875862 0.045833
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				PLAYERS_INFO_BAR
+	:TEXT						0
+	:POSITION_START		0.001563 0.345833
+	:POSITION_END			0.001563 0.345833
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				GAME_STATUS_INFO_BAR
+	:TEXT						0
+	:POSITION_START		0.000000 0.458333
+	:POSITION_END			0.000000 0.458333
+	
+	:INHERIT					INFO_BAR
+	:OBJECT_ID				CONNECTION_STATUS_INFO_BAR
+	:TEXT						0
+	:POSITION_START		0.000000 0.500000
+	:POSITION_END			0.000000 0.500000
+	
+	:S{*****>>>
+		
+		:TYPE					UI_TYPE_AREA
+		:OBJECT_ID			CONNECTION_INDICATOR
+		:POSITION_START	0.546875	0.000000
+		:POSITION_END		0.546875	0.000000
+		
+	:E}*****<<<
+	
+	//////////////////////////////////////////////////////
+	//MENU BAR
+	/////////////////////////////////////////////////////
+	
+	:INHERIT				MENUBAR
+	
+	//////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////
+	
+	:INHERIT					FR3_DEFAULT_BUTTON
+	:OBJECT_ID				ACCEPT_GAME
+	:TEXT						TXT_XBOX_LIVE_QUICK_MATCH_ACCEPT
+	:POSITION_START		0.167187 0.608333
+	:POSITION_END			0.167187 0.608333
+	
+	:INHERIT					FR3_DEFAULT_BUTTON
+	:OBJECT_ID				NEXT_GAME
+	:TEXT						TXT_XBOX_LIVE_QUICK_MATCH_NEXT
+	:POSITION_START		0.168750 0.664583
+	:POSITION_END			0.168750 0.664583
+	
+	
+	//////////////////////////////////////////////////////////
+	// LINE PLOTER
+	/////////////////////////////////////////////////////////
+	
+	:TYPE						UI_TYPE_AREA
+	:OBJECT_ID				LINE_PLOTER
+	:CLEAR					1
+	:AUTOSIZE				0
+	:SIZE						1.0 1.0
+	
+	//////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////
+	
+	
+:E}*****<<<
+
+            //SET FOR				//UP								//DOWN							//LEFT	//RIGHT
+:CONNECTION	"ACCEPT_GAME"			"NEXT_GAME"						"NEXT_GAME"						"none"	"none"
+:CONNECTION	"NEXT_GAME"				"ACCEPT_GAME"						"ACCEPT_GAME"						"none"	"none"
+

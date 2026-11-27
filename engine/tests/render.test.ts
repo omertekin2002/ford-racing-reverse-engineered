@@ -155,7 +155,9 @@ test("HUD batches optional dial sprites, text and a course outline with live dot
   assert.equal(batch.commands.reduce((total, command) => total + command.vertexCount, 0), batch.vertices.length / 8);
 });
 
-const demoPath = "/home/omertekin2002/.cache/fr3/agent-demo/extracted/Program_Executable_Files";
+import { fileURLToPath } from "node:url";
+
+const demoPath = fileURLToPath(new URL("../../game", import.meta.url));
 
 test("demo FORDGT, 04LIGHT and ENGAF compile LOD, named parts and textured triangles",
   { skip: !existsSync(demoPath) }, async () => {

@@ -1,0 +1,1018 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// NB. currently for the challenges any choices must be the first reward listed for that objective. This is because it will be the 
+// last item awarded and the reward_choice variable won't get overwritten. 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:OBJECTIVE Initialisation
+	:GOAL
+		:TYPE INITIALISATION
+		
+		:REWARD
+				:TYPE COMPETITION COMPETITION1
+		
+				:TYPE CAR FOCUS_AIR_FORCE
+				:TYPE CAR PUMA
+				:TYPE CAR MUSTANG_68
+				:TYPE LIVERIES MUSTANG_68
+				:TYPE CAR F150
+				:TYPE LIVERIES F150
+				:TYPE CAR MUSTANG_CON
+				:TYPE LIVERIES MUSTANG_CON
+				:TYPE CAR VISOS
+				:TYPE CAR RANCH_1975
+				:TYPE LIVERIES RANCH_1975
+				:TYPE CAR MUSTANG_RALLY
+				:TYPE CAR FIESTA_ST
+	
+				:TYPE GAMEMODE RACING
+	
+				:TYPE TRACK ENGAF
+	
+				:TYPE CHALLENGE THUNDERBIRD
+				:TYPE CHALLENGE F100_1956
+				:TYPE CHALLENGE THUNDERBIRD_2002
+				:TYPE CHALLENGE FAIRLANE_66
+		:REWARD_END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:OBJECTIVE 1_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 1
+
+		:REWARD
+				TYPE CHALLENGE MACH1_SIXTY
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 2_challenges_choice
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 2
+		
+		:REWARD
+				:TYPE CHALLENGE EXPLORER
+		:REWARD_END
+
+		:REWARD
+				:TYPE CHALLENGE FALCON_XB_GT
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 3_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 3
+
+		:REWARD
+				:TYPE CHALLENGE MUSTANG_68B
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+		
+:OBJECTIVE 4_challenges_choice
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 4
+
+		:REWARD
+				:TYPE CHALLENGE RANCH_1972
+		:REWARD_END
+
+		:REWARD
+				:TYPE CHALLENGE FOCUS_SVT
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 5_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 5
+
+		:REWARD
+				:TYPE CHALLENGE EXPLORER
+				:TYPE CHALLENGE FALCON_XB_GT
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 6_challenges_choice
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 6
+
+		:REWARD
+				:TYPE CHALLENGE GRAN_TORINO
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 7_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 7
+		
+		:REWARD
+				:TYPE CHALLENGE THUNDERBIRD_MOVIE
+		:REWARD_END
+
+		:REWARD
+				:TYPE CHALLENGE F150_2004
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 8_challenges_choice
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 8
+
+		:REWARD
+				:TYPE CHALLENGE RANCH_1972
+				:TYPE CHALLENGE FOCUS_SVT
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 9_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 9
+
+		:REWARD
+				:TYPE CHALLENGE F1_1948
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 10_challenges_choice
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 10
+
+		:REWARD
+				:TYPE CHALLENGE POWERSTROKE
+		:REWARD_END
+
+		:REWARD
+				:TYPE CHALLENGE MACH1_AGENT
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 11_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 11
+
+		:REWARD
+				:TYPE CHALLENGE THUNDERBIRD_MOVIE
+				:TYPE CHALLENGE F150_2004
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 12_challenges_choice
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 12
+
+		:REWARD
+				:TYPE CHALLENGE THUNDERBIRD_66
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 13_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 13
+
+		:REWARD
+				:TYPE CHALLENGE FR100
+		:REWARD_END
+
+		:REWARD
+				:TYPE CHALLENGE COBRA
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 14_challenges_choice
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 14
+
+		:REWARD
+				:TYPE CHALLENGE POWERSTROKE
+				:TYPE CHALLENGE MACH1_AGENT
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 15_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 15
+
+		:REWARD
+				:TYPE CHALLENGE 49_COUPE
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 16_challenges_choice
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 16
+
+		:REWARD
+				:TYPE CHALLENGE LIGHTNING_SVT
+		:REWARD_END
+		
+		:REWARD
+				:TYPE CHALLENGE MUSTANG_GTR
+		:REWARD_END
+	
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 17_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 17
+
+		:REWARD
+				:TYPE CHALLENGE FR100
+				:TYPE CHALLENGE COBRA
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 18_challenges_choice
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 18
+		
+		:REWARD
+			:TYPE CHALLENGE MACH3
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 19_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 19
+
+		:REWARD
+				:TYPE CHALLENGE FR500
+		:REWARD_END
+
+		:REWARD
+				:TYPE CHALLENGE LIGHTNING_SVT_2004
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 20_challenges_choice
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 20
+
+		:REWARD
+				:TYPE CHALLENGE LIGHTNING_SVT
+				:TYPE CHALLENGE MUSTANG_GTR
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 21_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 21
+
+		:REWARD
+				:TYPE CHALLENGE INDIGO
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 22_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 22
+
+		:REWARD
+				:TYPE CHALLENGE MODEL_A
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 23_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 23
+
+		:REWARD
+				:TYPE CHALLENGE FR500
+				:TYPE CHALLENGE LIGHTNING_SVT_2004
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 24_challenges_choice
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 24
+		
+		:REWARD
+				:TYPE CHALLENGE MUSTANG_2005
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 25_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 25
+		
+		:REWARD
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+
+:OBJECTIVE 27_challenges
+	:GOAL
+		:TYPE CHALLENGE_COUNT
+		:VALUE 27
+		
+		:REWARD
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:OBJECTIVE All_Challenges
+
+	:GOAL
+		:TYPE CHALLENGE_POSITION
+		:VALUE 1
+		:DIFFICULTY_LEVEL HARD
+		:NAME CURRENT
+
+		:REWARD
+			:TYPE CAR CURRENT
+			:TYPE LIVERIES CURRENT
+			:TYPE TRACK CURRENT
+			:TYPE GAMEMODE CURRENT
+			:TYPE TOKEN CURRENT
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+		
+	:GOAL
+		:TYPE CHALLENGE_POSITION
+		:VALUE 1
+		:DIFFICULTY_LEVEL MEDIUM
+		:NAME CURRENT
+
+		:REWARD
+			:TYPE CAR CURRENT
+			:TYPE LIVERIES CURRENT
+			:TYPE TRACK CURRENT
+			:TYPE GAMEMODE CURRENT
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+
+	:GOAL
+		:TYPE CHALLENGE_POSITION
+		:VALUE 1
+		:DIFFICULTY_LEVEL EASY
+		:NAME CURRENT
+
+		:REWARD
+			:TYPE CAR CURRENT
+			:TYPE TRACK CURRENT
+			:TYPE GAMEMODE CURRENT
+		:REWARD_END
+		
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:OBJECTIVE Competition
+
+	////////////////////////////////////////////////////////////
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 1
+		:NAME COMPETITION1
+
+		:REWARD
+			:TYPE CAR 49_COUPE_MOVIE
+			:TYPE CAR CAPRI_RS2600_70
+			:TYPE LIVERIES CAPRI_RS2600_70
+			:TYPE CUP CURRENT
+			:TYPE COMPETITION COMPETITION2
+			:TYPE COMPETITION COMPETITION3
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 2
+		:NAME COMPETITION1
+
+		:REWARD
+			:TYPE CAR 49_COUPE_MOVIE
+			:TYPE LIVERIES 49_COUPE_MOVIE
+			:TYPE CAR CAPRI_RS2600_70
+			:TYPE LIVERIES CAPRI_RS2600_70
+			:TYPE COMPETITION COMPETITION2
+			:TYPE COMPETITION COMPETITION3
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 3
+		:NAME COMPETITION1
+
+		:REWARD
+			:TYPE CAR 49_COUPE_MOVIE
+			:TYPE CAR CAPRI_RS2600_70
+			:TYPE COMPETITION COMPETITION2
+			:TYPE COMPETITION COMPETITION3
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 1
+		:NAME COMPETITION2
+
+		:REWARD
+			:TYPE CAR F100_1965
+			:TYPE LIVERIES F100_1965
+			:TYPE CAR RS200
+			:TYPE LIVERIES RS200
+			:TYPE CUP CURRENT
+			:TYPE COMPETITION COMPETITION4
+			:TYPE COMPETITION COMPETITION5
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 2
+		:NAME COMPETITION2
+
+		:REWARD
+			:TYPE CAR F100_1965
+			:TYPE LIVERIES F100_1965
+			:TYPE CAR RS200
+			:TYPE LIVERIES RS200
+			:TYPE COMPETITION COMPETITION4
+			:TYPE COMPETITION COMPETITION5
+		:REWARD_END
+
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 3
+		:NAME COMPETITION2
+
+		:REWARD
+			:TYPE CAR F100_1965
+			:TYPE CAR RS200
+			:TYPE COMPETITION COMPETITION4
+			:TYPE COMPETITION COMPETITION5
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 1
+		:NAME COMPETITION3
+
+		:REWARD
+			:TYPE CAR GALAXY_64
+			:TYPE LIVERIES GALAXY_64
+			:TYPE CAR CROWN_VICTORIA
+			:TYPE LIVERIES CROWN_VICTORIA
+			:TYPE CUP CURRENT
+			:TYPE COMPETITION COMPETITION5
+			:TYPE COMPETITION COMPETITION6
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 2
+		:NAME COMPETITION3
+
+		:REWARD
+			:TYPE CAR GALAXY_64
+			:TYPE LIVERIES GALAXY_64
+			:TYPE CAR CROWN_VICTORIA
+			:TYPE LIVERIES CROWN_VICTORIA
+			:TYPE COMPETITION COMPETITION5
+			:TYPE COMPETITION COMPETITION6
+		:REWARD_END
+		
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 3
+		:NAME COMPETITION3
+
+		:REWARD
+			:TYPE CAR GALAXY_64
+			:TYPE CAR CROWN_VICTORIA
+			:TYPE COMPETITION COMPETITION5
+			:TYPE COMPETITION COMPETITION6
+		:REWARD_END
+		
+	////////////////////////////////////////////////////////////
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 1
+		:NAME COMPETITION4
+
+		:REWARD
+			:TYPE CAR EX
+			:TYPE LIVERIES EX
+			:TYPE CAR ESCORT_RS2000_73
+			:TYPE LIVERIES ESCORT_RS2000_73
+			:TYPE CUP CURRENT
+			:TYPE COMPETITION COMPETITION7
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 2
+		:NAME COMPETITION4
+
+		:REWARD
+			:TYPE CAR EX
+			:TYPE LIVERIES EX
+			:TYPE CAR ESCORT_RS2000_73
+			:TYPE LIVERIES ESCORT_RS2000_73
+			:TYPE COMPETITION COMPETITION7
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 3
+		:NAME COMPETITION4
+
+		:REWARD
+			:TYPE CAR EX
+			:TYPE CAR ESCORT_RS2000_73
+			:TYPE COMPETITION COMPETITION7
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 1
+		:NAME COMPETITION5
+
+		:REWARD
+			:TYPE CAR FORTYNINE
+			:TYPE LIVERIES FORTYNINE
+			:TYPE CAR CAPRI_78
+			:TYPE LIVERIES CAPRI_78
+			:TYPE CUP CURRENT
+			:TYPE COMPETITION COMPETITION7
+			:TYPE COMPETITION COMPETITION8
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 2
+		:NAME COMPETITION5
+
+		:REWARD
+			:TYPE CAR FORTYNINE
+			:TYPE LIVERIES FORTYNINE
+			:TYPE CAR CAPRI_78
+			:TYPE LIVERIES CAPRI_78
+			:TYPE COMPETITION COMPETITION7
+			:TYPE COMPETITION COMPETITION8
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 3
+		:NAME COMPETITION5
+
+		:REWARD
+			:TYPE CAR FORTYNINE
+			:TYPE CAR CAPRI_78
+			:TYPE COMPETITION COMPETITION7
+			:TYPE COMPETITION COMPETITION8
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 1
+		:NAME COMPETITION6
+
+		:REWARD
+			:TYPE CAR 46_CONVERTIBLE
+			:TYPE LIVERIES 46_CONVERTIBLE
+			:TYPE CUP CURRENT
+			:TYPE COMPETITION COMPETITION8
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 2
+		:NAME COMPETITION6
+
+		:REWARD
+			:TYPE CAR 46_CONVERTIBLE
+			:TYPE LIVERIES 46_CONVERTIBLE
+			:TYPE COMPETITION COMPETITION8
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 3
+		:NAME COMPETITION6
+
+		:REWARD
+			:TYPE CAR 46_CONVERTIBLE
+			:TYPE COMPETITION COMPETITION8
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 1
+		:NAME COMPETITION7
+
+		:REWARD
+			:TYPE CAR FALCON_XR8
+			:TYPE LIVERIES FALCON_XR8
+			:TYPE CAR MONDEO_ST220
+			:TYPE LIVERIES MONDEO_ST220
+			:TYPE CUP CURRENT
+			:TYPE COMPETITION COMPETITION9
+			:TYPE COMPETITION COMPETITION10
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 2
+		:NAME COMPETITION7
+
+		:REWARD
+			:TYPE CAR FALCON_XR8
+			:TYPE LIVERIES FALCON_XR8
+			:TYPE CAR MONDEO_ST220
+			:TYPE LIVERIES MONDEO_ST220
+			:TYPE COMPETITION COMPETITION9
+			:TYPE COMPETITION COMPETITION10
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 3
+		:NAME COMPETITION7
+
+		:REWARD
+			:TYPE CAR FALCON_XR8
+			:TYPE CAR MONDEO_ST220
+			:TYPE COMPETITION COMPETITION9
+			:TYPE COMPETITION COMPETITION10
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 1
+		:NAME COMPETITION8
+
+		:REWARD
+			:TYPE CAR FOCUS_FR200
+			:TYPE LIVERIES FOCUS_FR200
+			:TYPE CAR ESCORT_RS
+			:TYPE LIVERIES ESCORT_RS
+			:TYPE CUP CURRENT
+			:TYPE COMPETITION COMPETITION10
+			:TYPE COMPETITION COMPETITION11
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 2
+		:NAME COMPETITION8
+
+		:REWARD
+			:TYPE CAR FOCUS_FR200
+			:TYPE LIVERIES FOCUS_FR200
+			:TYPE CAR ESCORT_RS
+			:TYPE LIVERIES ESCORT_RS
+			:TYPE COMPETITION COMPETITION10
+			:TYPE COMPETITION COMPETITION11
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 3
+		:NAME COMPETITION8
+
+		:REWARD
+			:TYPE CAR FOCUS_FR200
+			:TYPE CAR ESCORT_RS
+			:TYPE COMPETITION COMPETITION10
+			:TYPE COMPETITION COMPETITION11
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 1
+		:NAME COMPETITION9
+
+		:REWARD
+			:TYPE CAR GT90
+			:TYPE LIVERIES GT90
+			:TYPE CAR RS500
+			:TYPE LIVERIES RS500
+			:TYPE CUP CURRENT
+			:TYPE COMPETITION COMPETITION12
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 2
+		:NAME COMPETITION9
+
+		:REWARD
+			:TYPE CAR GT90
+			:TYPE LIVERIES GT90
+			:TYPE CAR RS500
+			:TYPE LIVERIES RS500
+			:TYPE COMPETITION COMPETITION12
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 3
+		:NAME COMPETITION9
+
+		:REWARD
+			:TYPE CAR GT90
+			:TYPE CAR RS500
+			:TYPE COMPETITION COMPETITION12
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 1
+		:NAME COMPETITION10
+
+		:REWARD
+			:TYPE CAR MODEL_T
+			:TYPE CAR GT70
+			:TYPE CUP CURRENT
+			:TYPE COMPETITION COMPETITION12
+			:TYPE COMPETITION COMPETITION13
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 2
+		:NAME COMPETITION10
+
+		:REWARD
+			:TYPE CAR MODEL_T
+			:TYPE CAR GT70
+			:TYPE COMPETITION COMPETITION12
+			:TYPE COMPETITION COMPETITION13
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 3
+		:NAME COMPETITION10
+
+		:REWARD
+			:TYPE CAR MODEL_T
+			:TYPE CAR GT70
+			:TYPE COMPETITION COMPETITION12
+			:TYPE COMPETITION COMPETITION13
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 1
+		:NAME COMPETITION11
+
+		:REWARD
+			:TYPE CAR FOCUS_WRC
+			:TYPE LIVERIES FOCUS_WRC
+			:TYPE CUP CURRENT
+			:TYPE COMPETITION COMPETITION13
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 2
+		:NAME COMPETITION11
+
+		:REWARD
+			:TYPE CAR FOCUS_WRC
+			:TYPE LIVERIES FOCUS_WRC
+			:TYPE COMPETITION COMPETITION13
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 3
+		:NAME COMPETITION11
+
+		:REWARD
+			:TYPE CAR FOCUS_WRC
+			:TYPE COMPETITION COMPETITION13
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 1
+		:NAME COMPETITION12
+
+		:REWARD
+			:TYPE CAR TAURUS_STOCK_A
+			:TYPE LIVERIES TAURUS_STOCK_A
+			:TYPE CUP CURRENT
+			:TYPE COMPETITION COMPETITION14
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 2
+		:NAME COMPETITION12
+
+		:REWARD
+			:TYPE CAR TAURUS_STOCK_A
+			:TYPE LIVERIES TAURUS_STOCK_A
+			:TYPE COMPETITION COMPETITION14
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 3
+		:NAME COMPETITION12
+
+		:REWARD
+			:TYPE CAR TAURUS_STOCK_A
+			:TYPE COMPETITION COMPETITION14
+		:REWARD_END
+	
+	////////////////////////////////////////////////////////////
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 1
+		:NAME COMPETITION13
+
+		:REWARD
+			:TYPE CAR F350
+			:TYPE LIVERIES F350
+			:TYPE CUP CURRENT
+			:TYPE COMPETITION COMPETITION14
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 2
+		:NAME COMPETITION13
+
+		:REWARD
+			:TYPE CAR F350
+			:TYPE LIVERIES F350
+			:TYPE COMPETITION COMPETITION14
+		:REWARD_END
+	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 3
+		:NAME COMPETITION13
+
+		:REWARD
+			:TYPE CAR F350
+			:TYPE COMPETITION COMPETITION14
+		:REWARD_END
+
+	////////////////////////////////////////////////////////////	
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 1
+		:NAME COMPETITION14
+
+		:REWARD
+			:TYPE CAR FORD_GT
+			:TYPE LIVERIES FORD_GT
+			:TYPE CUP CURRENT
+			:TYPE TROPHY COMPETITION
+		:REWARD_END
+		
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 2
+		:NAME COMPETITION14
+
+		:REWARD
+			:TYPE CAR FORD_GT
+			:TYPE LIVERIES FORD_GT
+			:TYPE TROPHY COMPETITION
+		:REWARD_END
+		
+	:GOAL
+		:TYPE COMPETITION_POSITION
+		:VALUE 3
+		:NAME COMPETITION14
+
+		:REWARD
+			:TYPE CAR FORD_GT
+			:TYPE TROPHY COMPETITION
+		:REWARD_END
+	////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:OBJECTIVE All_Competition_Rounds
+	:GOAL
+		:TYPE COMPETITION_ROUND_POSITION
+		:VALUE 1
+		:NAME CURRENT
+	
+	:REWARD
+			:TYPE TRACK CURRENT
+			:TYPE GAMEMODE CURRENT
+	:REWARD_END
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:OBJECTIVE FR3_Trophy
+
+	:GOAL
+		:TYPE CUP_AND_TOKEN_COUNT
+		:VALUE 14
+		:VALUE 28
+
+		:REWARD
+			:TYPE TROPHY FR3
+		:REWARD_END
+		
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:OBJECTIVE Challenge_Trophy
+
+	:GOAL
+		:TYPE SHIELD_COUNT
+		:VALUE 7
+
+		:REWARD
+			:TYPE TROPHY CHALLENGE
+		:REWARD_END
+		
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+:OBJECTIVE Challenge_Shields
+
+	:GOAL
+		:TYPE CHALLENGE_THEME
+		:VALUE CURRENT
+
+		:REWARD
+			:TYPE SHIELD CURRENT
+		:REWARD_END
+		
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+:END
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

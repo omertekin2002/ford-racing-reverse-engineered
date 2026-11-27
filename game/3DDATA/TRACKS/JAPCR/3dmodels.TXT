@@ -1,0 +1,235 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid object shapes' names:		(original maya scene filename)
+
+	"MOTORWAY_BARRIER"                     	scenes\buildings\barriers\temp_barrier.ma
+	"ARROWS"                               	scenes\buildings\barriers\arrow_barrier.ma
+	"MOTORWAY_BARRIER_01"                  	scenes\buildings\barriers\motorway_barrier_01.ma
+	"LAMP"                                 	scenes\buildings\extra\double_lampost.ma
+	"JAPCOUPEII"                           	scenes\buildings\traffic\japcoupeii.ma
+	"BLUECOMPACTII"                        	scenes\buildings\traffic\bluecompactii.ma
+	"JAPYELLOWCARII"                       	scenes\buildings\traffic\japyellowcarii.ma
+	"JAPTRUCKBIGII"                        	scenes\buildings\traffic\japtruckbigii.ma
+	"HIGHAIRPLANE"                         	scenes\buildings\traffic\highairplane.ma
+	"SCOOTYBAN"                            	scenes\buildings\traffic\scootyban.ma
+	"JAPTRUCKBIG"                          	scenes\buildings\traffic\japtruckbig.ma
+	"JAPTRUCK"                             	scenes\buildings\traffic\japtruck.ma
+	"CARBREAK"                             	scenes\buildings\traffic\carbreak.ma
+	"YELLOWSEDAN"                          	scenes\buildings\traffic\yellowsedan.ma
+	"BLUECOMPACT"                          	scenes\buildings\traffic\bluecompact.ma
+	"CAR_I"                                	scenes\buildings\traffic\car_i.ma
+	"FBUILD1000_001"                       	scenes\buildings\fbuild1000_001.ma
+	"FBUILD700_003"                        	scenes\buildings\fbuild700_003.ma
+	"FBUILD700_002"                        	scenes\buildings\fbuild700_002.ma
+	"FBUILD700_001"                        	scenes\buildings\fbuild700_001.ma
+	"FBUILD1000"                           	scenes\buildings\fbuild1000.ma
+	"MINI_SKYDOME"                         	scenes\environment\mini_skydome.ma
+	"SKYDOME"                              	scenes\environment\baya_skydome.ma
+	"EFFECTS"                              	scenes\effects\effects.ma
+	"JAPCR_CUT_UP"                         	
+	"JAPCR_OBJECTS"                        	
+	"JAPCR_ANIMATIONS"                     	
+	"JAPCR_HOUSE_CHIMNEY_SMOKE"            	
+	"JAPCR_INDUSTRIAL_CHIMNEY_SMOKE"       	
+	"JAPCR_PARTICLES"                      	
+	"PARTICLE_EFFECTS"                     	scenes\particles\track_particles.ma
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid sub-object names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid skeletal animation names:
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid scene-link type names:
+
+	"HOUSE_CHIMNEY_SMOKE"
+	"INDUSTRIAL_CHIMNEY_SMOKE"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid camera names:
+
+	"CAMERA"
+	"CAR_BACK_BOUNCE"
+	"CAR_GAMEBONNET"
+	"CAR_FRONT"
+	"CAR_BACK_UP"
+	"CARBREAK"
+	"CAR_I"
+	"SCOOTYBAN"
+	"BLUECOMPACT"
+	"YELLOWSEDAN"
+	"JAPTRUCKBIG"
+	"JAPTRUCK"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid light names:
+
+	"AMBIENT"
+	"SUNLIGHT"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid Boundary type names:
+
+	"DEFAULT"
+	"HEDGE"
+	"METAL"
+	"STONE"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Valid texture livery sets:
+
+	"DEFAULT"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture transform sets:
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Valid texture names:
+
+Key:
+	A = Contains alpha
+	S = Alpha is only 0 or 255
+	f = Texture is filtered
+	M = Texture has mipmaps
+	H = Texture is high quality (16bit) texture
+	L = Texture is part of a livery set
+	X = Texture is shadow texture
+	! = Texture is 16 colour paletted texture
+	$ = Texture is alpha-paletted on PS2
+	# = Texture is NOT compressed using DX compression
+
+	Size			Type		Name												Palette filename
+
+	128x128 	-	[  fM       ]	"FIRE"                                  	52:52:52:00	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"GRASS"                                 	14:14:14:22	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SMOKEANDDUST"                          	ff:ff:ff:5f	 (World size: 1.310660)
+	128x128 	-	[ASfM   !   ]	"SPARK"                                 	f5:0c:0c:ff	 (World size: 1.310660)
+	128x128 	-	[A fM    $  ]	"SPRAY"                                 	ef:ef:ef:39	 (World size: 1.310660)
+	64x64   	-	[A fM    $  ]	"STREAM"                                	fe:fe:fe:6a	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"CAMERA_FLARE"                          	46:46:46:46	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"HEADLIGHT_FLARE"                       	07:07:07:08	 (World size: 1.310660)
+	64x64   	-	[A fM       ]	"SPECULAR_SPRITE"                       	44:43:43:44	 (World size: 1.310660)
+	32x32   	-	[A fM       ]	"REARLIGHT_FLARE"                       	1c:1b:20:1f	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"SUN_FLARE"                             	15:10:10:12	 (World size: 1.310660)
+	128x128 	-	[  fM   !   ]	"TRACK_SPECULAR"                        	24:24:24:00	 (World size: 10.000000)
+	128x128 	-	[A fM       ]	"LENSE_REFLECTION"                      	39:39:39:39	 (World size: 1.310660)
+	32x32   	-	[ASfM   !   ]	"TRACK_REFLECTION"                      	00:00:00:00	 (World size: 1.310660)
+	16x16   	-	[A fM       ]	"TYRE_SKID"                             	9c:97:8c:4d	 (World size: 1.310660)
+	16x16   	-	[A fM    $  ]	"TYRE_DENT"                             	13:11:11:41	 (World size: 1.310660)
+	128x128 	-	[A fM       ]	"LENSE_REFLECTION2"                     	20:20:20:35	 (World size: 1.310660)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD001"               	c4:c4:c4:23	 (World size: 1873.590088)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD002"               	c4:c4:c4:14	 (World size: 1873.588501)
+	128x128 	-	[A fM    $# ]	"TARMAC_PACIFIC_CLOUD003"               	c4:c4:c4:0e	 (World size: 1873.588379)
+	64x64   	-	[  f        ]	"MINISKY"                               	aa:b9:bc:00	 (World size: 3427.191406)
+	512x256 	-	[  fM   !   ]	"TARMAC_JAPAN_ROAD_01"                  	55:54:52:00	 (World size: 12.193037)
+	256x256 	-	[  fM   !   ]	"GRASS_JAPAN_02"                        	4d:4d:1b:00	 (World size: 21.184866)
+	256x128 	-	[  fM   !   ]	"TARMAC_JAPAN_RUNOFF_02"                	4e:4e:4e:00	 (World size: 9.059441)
+	256x128 	-	[  fM   !   ]	"TARMAC_JAPAN_RUNOFF_01"                	44:42:25:00	 (World size: 7.352947)
+	256x128 	-	[  fM   !   ]	"TARMAC_JAPAN_VERGE"                    	3e:3a:27:00	 (World size: 7.898826)
+	256x128 	-	[  fM       ]	"TARMAC_JAPAN_RUNOFF_05"                	3e:3d:36:00	 (World size: 5.492593)
+	256x256 	-	[  fM   !   ]	"TARMAC_JAPAN_ROAD_03"                  	61:5d:5e:00	 (World size: 11.361152)
+	256x256 	-	[  fM   !   ]	"TARMAC_JAPAN_ROAD_02"                  	9a:99:97:00	 (World size: 8.038144)
+	256x256 	-	[  fM   !   ]	"GRASS_JAPAN_03"                        	54:50:21:00	 (World size: 36.107178)
+	128x128 	-	[  fM   !   ]	"TARMAC_JAPAN_PAVEMENT_01"              	8e:8c:8a:00	 (World size: 6.579641)
+	256x128 	-	[  fM       ]	"TARMAC_JAPAN_ROAD_BLEND"               	5a:50:48:00	 (World size: 17.404507)
+	128x32  	-	[  fM   !   ]	"TARMAC_JAPAN_RUNOFF_01BLEND"           	4b:41:27:00	 (World size: 7.839665)
+	128x32  	-	[  fM   !   ]	"TARMAC_JAPAN_CERB_01"                  	72:76:7d:00	 (World size: 2.845201)
+	512x256 	-	[  fM   !   ]	"TARMAC_JAPAN_ROAD_STARTLINE"           	58:57:55:00	 (World size: 25.294178)
+	256x256 	-	[  fM   !   ]	"DIRT_JAPAN_ROAD_01_NEW1"               	65:4d:3b:00	 (World size: 13.958494)
+	256x64  	-	[  fM       ]	"DIRT_JAPAN_RUNOFF_01_NEW"              	50:41:27:00	 (World size: 11.614860)
+	256x256 	-	[  fM   !   ]	"BIGTANK"                               	87:86:88:00	 (World size: 73.309326)
+	256x256 	-	[  fM   !   ]	"SCRUB001"                              	4e:5c:41:00	 (World size: 86.792511)
+	128x16  	-	[  fM   !   ]	"BAMBOO"                                	8d:8d:75:00	 (World size: 5.672898)
+	256x256 	-	[  fM   !   ]	"CLIFF001"                              	6e:67:54:00	 (World size: 17.961720)
+	128x128 	-	[  fM   !   ]	"V_STEPS"                               	87:81:7b:00	 (World size: 10.022093)
+	128x128 	-	[  fM   !   ]	"V_UP_PATH"                             	85:84:7c:00	 (World size: 14.086419)
+	256x128 	-	[  fM   !   ]	"SCRUB001CLIFF"                         	8f:87:79:00	 (World size: 60.809700)
+	256x256 	-	[  fM   !   ]	"MUDWALL1"                              	76:73:58:00	 (World size: 20.526045)
+	256x256 	-	[  f    !   ]	"ROCK_01"                               	48:46:3e:00	 (World size: 22.239424)
+	256x128 	-	[  fM   !   ]	"TUNNEL_02"                             	87:89:86:00	 (World size: 8.247369)
+	32x32   	-	[  fM   !   ]	"SHADOW"                                	2d:2d:2d:00	 (World size: 5.316651)
+	128x64  	-	[  fM   !   ]	"JAPTRUCK"                              	85:87:84:00	 (World size: 13.218971)
+	128x64  	-	[  fM   !   ]	"TRAFFICUSYELLOW"                       	9e:94:3b:00	 (World size: 8.404897)
+	128x64  	-	[  fM   !   ]	"TRAFFICUSCOUPE"                        	8a:3d:3e:00	 (World size: 10.819818)
+	128x64  	-	[  fM   !   ]	"TRAFFICUSBLUE"                         	3c:57:7d:00	 (World size: 9.184177)
+	128x64  	-	[  fM   !   ]	"TRAFFICUSSILVER"                       	8c:8e:8f:00	 (World size: 7.433596)
+	128x64  	-	[  fM   !   ]	"SCOOTYBAN"                             	9a:a0:ab:00	 (World size: 3.471417)
+	64x16   	-	[A fM    $  ]	"HIGHAIRPLANE"                          	eb:eb:eb:bd	 (World size: 431.161011)
+	256x256 	-	[ASfM   !   ]	"BUSH"                                  	4c:4b:1b:3d	 (World size: 1.253176)
+	128x32  	-	[  fM       ]	"TREE_07BARK"                           	29:26:22:00	 (World size: 2.946797)
+	256x256 	-	[ASfM   !   ]	"LARGE_SHRUB"                           	24:25:11:44	 (World size: 3.980582)
+	128x128 	-	[ASf    !   ]	"LARGE_SHRUB2"                          	63:62:2e:44	 (World size: 9.567443)
+	128x128 	-	[ASfM       ]	"TREE_07"                               	4c:4d:1b:5b	 (World size: 8.319717)
+	256x128 	-	[ASf        ]	"TREEWALL1"                             	49:49:21:db	 (World size: 43.590973)
+	128x128 	-	[ASfM       ]	"TREE_07A"                              	50:46:1c:5b	 (World size: 7.494952)
+	128x64  	-	[  fM       ]	"ARMCO2"                                	4a:3b:38:00	 (World size: 1.744794)
+	256x32  	-	[ASfM   !   ]	"ARMCO"                                 	9e:a5:9f:fd	 (World size: 4.561084)
+	256x128 	-	[A fM    $  ]	"BRIDGE_FENCE"                          	2d:2f:2b:91	 (World size: 10.337465)
+	256x128 	-	[  fM   !   ]	"CONCRETE_SLEEPER"                      	65:69:66:00	 (World size: 3.069854)
+	128x64  	-	[  fM   !   ]	"ARMCO4"                                	bc:74:71:00	 (World size: 3.748669)
+	256x256 	-	[  fM   !   ]	"OLDJAPBUILDINGS1"                      	59:47:33:00	 (World size: 24.699862)
+	256x256 	-	[  fM   !   ]	"OLDJAPBUILDINGS2"                      	4d:44:3a:00	 (World size: 21.494438)
+	128x128 	-	[  fM       ]	"FREEWAY_BUILDS001"                     	6a:6f:74:00	 (World size: 49.651726)
+	128x128 	-	[  fM       ]	"FREEWAY_BUILDS002"                     	75:76:75:00	 (World size: 13.901423)
+	64x64   	-	[  fM   !   ]	"SBARRIER"                              	c9:bb:bb:00	 (World size: 6.883888)
+	256x64  	-	[A f        ]	"NEWCHECKER_3"                          	a7:a3:a5:fc	 (World size: 18.385777)
+	16x16   	-	[A fM    $  ]	"NEWCHECKER_3_ROPE"                     	81:81:81:60	 (World size: 1.722519)
+	16x16   	-	[  fM   !   ]	"BAR_1"                                 	85:85:85:00	 (World size: 10.067727)
+	64x64   	-	[ASfM   !   ]	"GRID_1"                                	6b:6b:6b:66	 (World size: 5.192668)
+	64x64   	-	[  fM   !   ]	"LAMP-POSTS"                            	88:88:81:00	 (World size: 3.697687)
+	32x32   	-	[  fM   !   ]	"RUST"                                  	43:2f:2a:00	 (World size: 1.869640)
+	256x256 	-	[  fM   !   ]	"BR001"                                 	65:67:5e:00	 (World size: 19.535872)
+	256x256 	-	[A fM    $  ]	"FENCE002"                              	64:64:65:7c	 (World size: 8.564663)
+	128x128 	-	[  fM   !   ]	"ROCK_02"                               	4c:4a:30:00	 (World size: 21.147099)
+	256x256 	-	[  fM       ]	"FREESIGNS"                             	1e:48:37:00	 (World size: 19.898649)
+	128x64  	-	[A fM    $  ]	"FREESIGNSB"                            	35:40:41:5c	 (World size: 3.140641)
+	32x32   	-	[A fM    $  ]	"FREESIGNS003"                          	22:52:41:3d	 (World size: 1.506703)
+	64x32   	-	[  fM   !   ]	"FREESIGNSN001"                         	42:5c:4a:00	 (World size: 1.836935)
+	64x32   	-	[  fM   !   ]	"FREESIGNSN002"                         	43:5c:4d:00	 (World size: 1.746544)
+	256x256 	-	[  fM   !   ]	"FREESIGNSNUMA"                         	21:4c:35:00	 (World size: 1.544428)
+	256x256 	-	[  fM   !   ]	"FREESIGNSNUMB"                         	1f:4c:35:00	 (World size: 1.544427)
+	256x256 	-	[A fM  X    ]	"SHADOWS"                               	00:00:00:50	 (World size: 109.843391)
+	32x32   	-	[A fM    $  ]	"WIRE"                                  	17:17:20:34	 (World size: 4.236089)
+	256x256 	-	[ASfM       ]	"BAYA_TREEPAGE"                         	4a:48:1d:7f	 (World size: 26.883625)
+	128x128 	-	[  fM   !   ]	"CONC"                                  	8a:8c:8a:00	 (World size: 12.797939)
+	128x128 	-	[  fM   !   ]	"KAMS_TEMPWALL"                         	66:6a:60:00	 (World size: 8.641644)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

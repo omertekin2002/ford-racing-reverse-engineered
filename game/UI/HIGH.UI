@@ -1,0 +1,413 @@
+	
+//////////////////////////////////////////////////////
+// UI SCREEN
+//////////////////////////////////////////////////////
+	
+:TYPE								UI_TYPE_SCREEN
+:OBJECT_ID 						HIGH
+:AUTOSIZE 						0
+:CLEAR 							1
+:POSITION_START 				0.0 0.0
+:POSITION_END 					0.0 0.0
+:SIZE 							1.0 1.0
+:TIME_LENGTH					0.166667
+
+:S{*****>>>
+
+	//////////////////////////////////////////////////////
+	// FORD BANNER GRAPHIC
+	//////////////////////////////////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			LOGO_BKGND
+	:SIZE					1.0 0.08958
+	:COLOUR				204 204 204 229
+	:POSITION_START	0.0 0.1625
+	:POSITION_END		0.0 0.1625
+	:TIME_LENGTH		0.166667
+	
+	:S{*****>>>
+	
+		:TYPE					UI_TYPE_GRAPHIC
+		:OBJECT_ID			FORD_RACING_LOGO
+		:SIZE					1.0 1.0
+		:POSITION_START	0.10156 0.0
+		:POSITION_END		0.10156 0.0
+		:STRETCH_GRAPHIC	0
+		:TEXTURE_ENUM		"GRAPHICS\GAME\COMMON\FORDRACE.PSD"
+		:TIME_LENGTH		0.166667
+		
+	:E}*****<<<
+	
+	//////////////////////////////////////////////////////
+	// DISPLAY FACTOR BUTTONS
+	//////////////////////////////////////////////////////
+
+	:TYPE 							UI_TYPE_BUTTON	
+	:OBJECT_ID 						HIGH_SCORE_TABLE_DISPLAY_FACTOR_TYPE_CAR_GROUP_BUTTON
+	:CLEAR 							0
+	:COLOUR							255 255 255 0
+	:FONT 							2
+	:FONT_COLOUR 					216 234 242 255
+	:JUSTIFY_OFFSET 				0.05 	0.0
+	:POSITION_START 				0.0	0.31
+	:POSITION_END					0.0 	0.31
+	:SIZE 							1.0 	0.1
+	:TEXT_JUSTIFY 					0
+	:WORD_WRAP 						0
+	:TIME_LENGTH					0.166667
+
+	:TYPE 							UI_TYPE_BUTTON	
+	:OBJECT_ID 						HIGH_SCORE_TABLE_DISPLAY_FACTOR_TYPE_TRACK_BUTTON
+	:CLEAR 							0
+	:COLOUR 							255 255 255 0
+	:FONT 							2
+	:FONT_COLOUR 					216 234 242 255
+	:POSITION_START 				0.0 	0.4
+	:POSITION_END 					0.0 	0.4
+	:SIZE 							1.0	0.1
+	:TEXT_JUSTIFY 					0
+	:WORD_WRAP 						0
+	:TIME_LENGTH					0.166667
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// DISPLAY FACTOR ARROW GRAPHICS
+	//////////////////////////////////////////////////////
+
+	:TYPE 							UI_TYPE_GRAPHIC
+	:OBJECT_ID 						HIGH_SCORE_TABLE_DISPLAY_FACTOR_TYPE_CAR_GROUP_LEFT_ARROW
+	:COLOUR 							255 255 255 255
+	:POSITION_START 				0.25 0.3245
+	:POSITION_END 					0.25 0.3245
+	:STRETCH_GRAPHIC 				1
+	:TEXTURE_ENUM 					GRAPHICS\GAME\COMMON\SMARROW.PSD
+
+	:TYPE 							UI_TYPE_GRAPHIC
+	:OBJECT_ID 						HIGH_SCORE_TABLE_DISPLAY_FACTOR_TYPE_CAR_GROUP_RIGHT_ARROW
+	:COLOUR 							255 255 255 255
+	:FLIP_GRAPHIC 					1 0
+	:POSITION_START 				0.75 0.3245
+	:POSITION_END 					0.75 0.3245
+	:STRETCH_GRAPHIC 				1
+	:TEXTURE_ENUM 					GRAPHICS\GAME\COMMON\SMARROW.PSD
+
+	:TYPE 							UI_TYPE_GRAPHIC
+	:OBJECT_ID 						HIGH_SCORE_TABLE_DISPLAY_FACTOR_TYPE_TRACK_LEFT_ARROW
+	:AUTOSIZE 						1
+	:COLOUR 							255 255 255 255
+	:HIGHLIGHTED_COLOUR 			0 0 0 102
+	:POSITION_START 				0.25 0.4145
+	:POSITION_END 					0.25 0.4145
+	:STRETCH_GRAPHIC 				1
+	:TEXTURE_ENUM 					GRAPHICS\GAME\COMMON\SMARROW.PSD
+
+	:TYPE 							UI_TYPE_GRAPHIC
+	:OBJECT_ID 						HIGH_SCORE_TABLE_DISPLAY_FACTOR_TYPE_TRACK_RIGHT_ARROW
+	:COLOUR 							255 255 255 255
+	:FLIP_GRAPHIC 					1 0
+	:HIGHLIGHTED_COLOUR 			0 0 0 102
+	:POSITION_START				0.75 0.4145
+	:POSITION_END 					0.75 0.4145
+	:STRETCH_GRAPHIC 				1
+	:TEXTURE_ENUM 					GRAPHICS\GAME\COMMON\SMARROW.PSD
+
+
+	/////////////////////////
+	// BACKGROUND PANEL
+	/////////////////////////
+	
+	:TYPE					UI_TYPE_AREA
+	:OBJECT_ID			SCREEN_BG_PANEL
+	:COLOUR				0 0 0 100
+	:AUTOSIZE			0
+	//:SIZE_START			0.000000 0.518815
+	//:SIZE_END			1.001562 0.518815
+	:SIZE_START			0.000000 0.533333
+	:SIZE_END			1.001562 0.533333
+	:POSITION_START	0.500000 0.266667
+	:POSITION_END		0.000000 0.266667
+	:TIME_LENGTH		0.200000
+	
+	/////////////////////////
+	//
+	/////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// TRACK_RECORDS_TTTLE_BACKGROUND
+	//////////////////////////////////////////////////////
+
+	:TYPE 							UI_TYPE_AREA
+	:OBJECT_ID 						TRACK_RECORDS_TITLE_BACKGROUND
+	:CLEAR							1
+	:COLOUR 							0 0 0 100
+	:POSITION_START 				0.0 0.26875
+	:POSITION_END 					0.0 0.26875
+	:SIZE 							1.0 0.06667
+	:TIME_LENGTH					0.166667
+
+	:S{*****>>>
+	
+		:TYPE 							UI_TYPE_TEXT
+		:OBJECT_ID 						TRACK_RECORDS_TITLE_TEXT
+		:CLEAR							1
+		//:POSITION_START 				-0.3 0.0
+		:POSITION_START 				0.11875 0.0
+		:POSITION_END 					0.11875 0.0
+		:FONT								1
+		:FONT_COLOUR					200 200 200 255
+		:TEXT								TXT_RACE_RESULTS_TRACK_RECORD
+		:TEXT_JUSTIFY					1
+		:TIME_LENGTH					0.166667
+		
+	:E}*****<<<
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////
+	// TRACK_RECORDS_BACKGROUND
+	//////////////////////////////////////////////////////
+
+	:TYPE 					UI_TYPE_AREA
+	:OBJECT_ID 				TRACK_RECORDS_BACKGROUND
+	:CLEAR					1
+	:COLOUR 					0 0 0 100
+	:POSITION_START 		0.0 0.34583
+	:POSITION_END 			0.0 0.34583
+	:SIZE 					1.0 0.07917
+	:TIME_LENGTH			0.166667
+
+	:S{*****>>>
+
+		//////////////////////////////////////////////////////
+		// TRACK_NAME_TEXT
+		//////////////////////////////////////////////////////
+			
+		:TYPE						UI_TYPE_TEXT
+		:OBJECT_ID				TRACK_NAME_TEXT
+		:FONT						2
+		:FONT_COLOUR			200 200 200 255
+		:TEXT_JUSTIFY			1
+		:POSITION_START		0.11875 0.0
+		:POSITION_END			0.11875 0.0
+		:SIZE 					1.0 0.5
+		:TIME_LENGTH			0.166667
+
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+		
+		//////////////////////////////////////////////////////
+		// VEHICLE_CLASS_TEXT
+		//////////////////////////////////////////////////////
+		
+		:TYPE						UI_TYPE_TEXT
+		:OBJECT_ID				VEHICLE_NAME_TEXT
+		:FONT						2
+		:FONT_COLOUR			200 200 200 255
+		:TEXT_JUSTIFY			1
+		:POSITION_START		0.11875 0.5
+		:POSITION_END			0.11875 0.5
+		:SIZE 					1.0 0.5	
+		:TIME_LENGTH			0.166667
+		
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+
+	:E}*****<<<
+
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// TABLE BACKGROUND
+	//////////////////////////////////////////////////////
+
+	:TYPE 							UI_TYPE_AREA
+	:OBJECT_ID 						TABLE_BACKGROUND
+	:CLEAR							1
+	:POSITION_START 				0.5 0.49167
+	:POSITION_END 					0.0 0.49167
+	:SIZE_START						0.0 0.27292	
+	:SIZE_END						1.0 0.27292
+	:TIME_LENGTH					0.166667
+			
+	:S{*****>>>
+		
+		//////////////////////////////////////////////////////
+		// TABLE HEADER BACKGROUND
+		//////////////////////////////////////////////////////
+
+		:TYPE 							UI_TYPE_AREA
+		:OBJECT_ID 						TABLE_HEADER_BACKGROUND
+		:CLEAR							1
+		:COLOUR 							0 0 0 100	
+		:COLOUR_START					0 0 0 0
+		:POSITION_START 				0.0 0.0
+		:POSITION_END 					0.0 0.0
+		:SIZE 							1.0 0.15267
+		:TIME_LENGTH					0.166667
+	
+		:S{*****>>>
+			
+			//////////////////////////////////////////////////////
+			// TABLE HEADERS
+			//////////////////////////////////////////////////////
+				
+			:TYPE							UI_TYPE_TEXT
+			:OBJECT_ID					TABLE_HEADER_DRIVER_TEXT
+			:FONT							2
+			:FONT_COLOUR				200 200 200 255
+			:TEXT							TXT_GENERAL_DRIVER
+			:TEXT_JUSTIFY				1
+			:POSITION_START 			0.11875 0.0
+			:POSITION_END 				0.11875 0.0
+			:SIZE 						0.26094 1.0
+			:TIME_LENGTH				0.166667
+				
+			:TYPE							UI_TYPE_TEXT
+			:OBJECT_ID					TABLE_HEADER_CAR_TEXT
+			:FONT							2
+			:FONT_COLOUR				200 200 200 255
+			:TEXT							TXT_GENERAL_CAR
+			:TEXT_JUSTIFY				1
+			:POSITION_START 			0.37969 0.0
+			:POSITION_END 				0.37969 0.0
+			:SIZE 						0.33125 1.0
+			:TIME_LENGTH				0.166667
+		
+			:TYPE							UI_TYPE_TEXT
+			:OBJECT_ID					TABLE_HEADER_LAP_TIME_TEXT
+			:FONT							2
+			:FONT_COLOUR				200 200 200 255
+			:TEXT							TXT_GENERAL_LAP_TIME
+			:TEXT_JUSTIFY				2
+			:POSITION_START 			0.71094 0.0
+			:POSITION_END 				0.71094 0.0
+			:SIZE 						0.19219 1.0
+			:TIME_LENGTH				0.166667
+
+			//////////////////////////////////////////////////////
+			//
+			//////////////////////////////////////////////////////
+
+		:E}*****<<<
+			
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+		
+		//////////////////////////////////////////////////////
+		// TABLE RECORDS BACKGROUND
+		//////////////////////////////////////////////////////
+
+		:TYPE 							UI_TYPE_AREA
+		:OBJECT_ID 						TABLE_RECORDS_BACKGROUND
+		:CLEAR							1
+		:COLOUR 							0 0 0 100
+		:COLOUR_START					0 0 0 0
+		:POSITION_START 				0.0 0.18321
+		:POSITION_END 					0.0 0.18321
+		:SIZE 							1.0 0.81679
+		:TIME_LENGTH					0.166667
+	
+		:S{*****>>>
+			
+			//////////////////////////////////////////////////////
+			// TABLE LIST BOXES
+			//////////////////////////////////////////////////////
+	
+			:TYPE 						UI_TYPE_LIST_BOX	
+			:OBJECT_ID 					HIGH_SCORE_TABLE_COLUMN_TYPE_POSITION_LIST_BOX
+			:CLEAR 						1
+			:POSITION_START 			0.08438 0.05
+			:POSITION_END 				0.08438 0.05
+			:SIZE 						0.03438 1.0
+			:TEXT_JUSTIFY 				1
+	
+			:TYPE 						UI_TYPE_LIST_BOX
+			:OBJECT_ID 					HIGH_SCORE_TABLE_COLUMN_TYPE_DRIVER_INITIALS_LIST_BOX
+			:CLEAR 						1
+			:POSITION_START 			0.11875 0.05
+			:POSITION_END 				0.11875 0.05
+			:SIZE 						0.26094 1.0
+			:TEXT_JUSTIFY 				1
+	
+			:TYPE 						UI_TYPE_LIST_BOX
+			:OBJECT_ID 					HIGH_SCORE_TABLE_COLUMN_TYPE_CAR_LIST_BOX
+			:CLEAR 						1
+			:POSITION_START 			0.37969 0.05
+			:POSITION_END 				0.37969 0.05
+			:SIZE 						0.42812 1.0
+			:TEXT_JUSTIFY 				1
+	
+			:TYPE 						UI_TYPE_LIST_BOX	
+			:OBJECT_ID 					HIGH_SCORE_TABLE_COLUMN_TYPE_LAP_TIME_LIST_BOX
+			:CLEAR 						1
+			:POSITION_START 			0.80781 0.05
+			:POSITION_END 				0.80781 0.05
+			:SIZE 						0.19219 1.0
+			:TEXT_JUSTIFY 				1
+	
+			//////////////////////////////////////////////////////
+			//
+			//////////////////////////////////////////////////////
+			
+		:E}*****<<<
+		
+		//////////////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////////////
+			
+
+	:E}*****<<<
+	
+	//////////////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////////////
+	
+	//:READ_SCRIPT_FILE UI\FORDBAR.UI
+	
+	//////////////////////////////////////////////////////////////////
+	// SELECT_BAR
+	/////////////////////////////////////////////////////////////////
+	
+	//:INHERIT		SELECT_BAR
+	
+	//////////////////////////////////////////////////////////////////
+	//
+	/////////////////////////////////////////////////////////////////
+	
+	////////////////////////////////////
+	//VERTICAL BOTTOM BAR
+	/////////////////////////////////////
+	
+	:INHERIT	VERTICAL_BOTTOM_BAR
+	
+	////////////////////////////////////
+	//
+	/////////////////////////////////////
+
+:E}*****<<<
+
+//////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////
+// SET THE BUTTON CONNECTIONS
+//////////////////////////////////////////////////////
+
+:CONNECTION "HIGH_SCORE_TABLE_DISPLAY_FACTOR_TYPE_TRACK_BUTTON" 		"HIGH_SCORE_TABLE_DISPLAY_FACTOR_TYPE_CAR_GROUP_BUTTON"	"HIGH_SCORE_TABLE_DISPLAY_FACTOR_TYPE_CAR_GROUP_BUTTON" 	"none" "none"
+:CONNECTION "HIGH_SCORE_TABLE_DISPLAY_FACTOR_TYPE_CAR_GROUP_BUTTON"	"HIGH_SCORE_TABLE_DISPLAY_FACTOR_TYPE_TRACK_BUTTON" 		"HIGH_SCORE_TABLE_DISPLAY_FACTOR_TYPE_TRACK_BUTTON"		"none" "none"
+
+//////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////
