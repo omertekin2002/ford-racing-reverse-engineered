@@ -1,7 +1,9 @@
 import { AudioEngine, type CountdownStep, type EngineLayer, type EngineLayerRole, type TyreSurface } from "./audio/audioEngine.js";
 import { DemoAssets, trackDirectory, type TrackRuntimeData } from "./demoAssets.js";
-import type { ResolvedCarConfig, TrackRecord } from "./formats/databases.js";
+import type { EngineSoundRecord, ResolvedCarConfig, TrackRecord } from "./formats/databases.js";
+import { measureTextLine, type ParsedFont } from "./formats/fonts.js";
 import type { PcgEntry } from "./formats/pcg.js";
+import type { SpcBank, SpcEntry } from "./formats/spc.js";
 import { lookupTranslation } from "./formats/tlate.js";
 import { AiDriver, type AiObstacle, type CarControlOutput } from "./game/aiDriver.js";
 import { CameraController, cameraPresetFromDefinition, type CameraMode, type CameraView } from "./game/cameraController.js";
@@ -13,8 +15,10 @@ import { TrackSpatial } from "./physics/trackSpatial.js";
 import { VehiclePhysics } from "./physics/vehiclePhysics.js";
 import { GlContext } from "./render/glContext.js";
 import { SceneRenderer, type CarInstance, type CompiledModel, type ViewportRect } from "./render/sceneRenderer.js";
-import { UiBatchBuilder, UiRenderer, type HudState, type UiColor } from "./render/uiRenderer.js";
-import { formatRaceTime } from "./ui/hudModel.js";
+import {
+  canvasToUiPoint, computeUiViewport, UiBatchBuilder, UiRenderer, type HudState, type UiColor,
+} from "./render/uiRenderer.js";
+import { formatRaceTime, formatResultsRowTimes } from "./ui/hudModel.js";
 import {
   MenuController, type MenuCar, type MenuCommand, type MenuScene, type MenuSceneAction,
   type MenuSettings, type MenuState, type MenuTrack, type MenuView, type RaceSetup, type RaceStanding,
@@ -62,6 +66,8 @@ interface RacerSlot {
   lastGear: number;
   lastLap: number;
   lastBoostActive: boolean;
+  lowSpeedTimer: number;
+  flippedTimer: number;
 }
 
 interface ActiveRace {
@@ -85,6 +91,8 @@ const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
 const RACE_MODES: readonly RaceMode[] = ["RACING_BOOST", "RACING"];
 const TURNTABLE_RECT: ViewportRect = { x: 0.04, y: 0.16, width: 0.56, height: 0.62 };
 
+/** Smallest text scale used for labels that must stay legible on narrow (portrait) viewports. */
+export const READABLE_MIN_TEXT_SCALE = 0.6;
 const PANEL_DARK: UiColor = [0.03, 0.06, 0.09, 0.86];
 const PANEL_SCRIM: UiColor = [0.02, 0.04, 0.07, 0.68];
 const PANEL_CARD: UiColor = [0.05, 0.10, 0.15, 0.92];
@@ -151,6 +159,320 @@ export function aiControlToDrivingInput(
   };
 }
 
+export const AI_BLOCKED_IMPULSE_THRESHOLD = 50;
+export const AI_FLIPPED_UP_THRESHOLD = 0.25;
+export const AI_FLIPPED_RESET_SECONDS = 2.0;
+
+/** Detect when an AI car is pinned against a barrier/car or stalled at low speed. */
+export function isAiCarBlocked(
+  lastImpactImpulse: number,
+  speedMps: number,
+  lowSpeedContactSeconds = 0,
+): boolean {
+  return (lastImpactImpulse > AI_BLOCKED_IMPULSE_THRESHOLD && speedMps < 2.0)
+    || (lowSpeedContactSeconds >= 1.0 && speedMps < 1.5);
+}
+
+/** Track how long an AI car has been overturned (`up[1] < 0.25`) and trigger upright recovery after 2s. */
+export function updateAiFlippedTimer(
+  currentTimer: number,
+  upY: number,
+  dt: number,
+): { timer: number; shouldReset: boolean } {
+  if (upY < AI_FLIPPED_UP_THRESHOLD) {
+    const next = currentTimer + Math.max(0, dt);
+    if (next >= AI_FLIPPED_RESET_SECONDS) return { timer: 0, shouldReset: true };
+    return { timer: next, shouldReset: false };
+  }
+  return { timer: 0, shouldReset: false };
+}
+
+const ENGINE_SPC_POSITIONAL_ROLES: readonly EngineLayerRole[] = [
+  "HIGH_LOADED", "HIGH_UNLOADED", "LOW_LOADED", "LOW_UNLOADED", "TICKOVER",
+];
+
+/** Match an SPC entry name (case-insensitive) to an engine layer role, falling back to FR3's SPC order. */
+export function resolveEngineLayerRole(entryName: string, index: number): EngineLayerRole | null {
+  const upper = entryName.toUpperCase();
+  if (upper.includes("HIGH_LOADED")) return "HIGH_LOADED";
+  if (upper.includes("HIGH_UNLOADED")) return "HIGH_UNLOADED";
+  if (upper.includes("LOW_LOADED")) return "LOW_LOADED";
+  if (upper.includes("LOW_UNLOADED")) return "LOW_UNLOADED";
+  if (upper.includes("TICKOVER")) return "TICKOVER";
+  if (upper.includes("SUPERCHARGER")) return "SUPERCHARGER";
+  if (upper.includes("TURBO")) return "TURBO";
+  if (upper.includes("GEARBOX_WHINE")) return "GEARBOX_WHINE";
+  return ENGINE_SPC_POSITIONAL_ROLES[index] ?? null;
+}
+
+/** Sensible recorded reference RPM per engine layer role when ENGSND.DAT does not specify START_RPM. */
+export function defaultReferenceRpmForRole(role: EngineLayerRole): number {
+  switch (role) {
+    case "TICKOVER": return 1800;
+    case "LOW_UNLOADED":
+    case "LOW_LOADED": return 3500;
+    case "HIGH_UNLOADED":
+    case "HIGH_LOADED": return 6200;
+    case "SUPERCHARGER": return 3000;
+    case "TURBO":
+    case "GEARBOX_WHINE": return 4000;
+  }
+}
+
+/** Resolve a car's configured engine sound bank from ENGSND.DAT, falling back to SND/ENGINE1.SPC. */
+export function resolveCarEngineSound(
+  cfg: Pick<ResolvedCarConfig, "car">,
+  engineSounds: ReadonlyMap<string, EngineSoundRecord>,
+): { bankPath: string; record?: EngineSoundRecord } {
+  const soundType = cfg.car.fields.CAR_SOUND_TYPE;
+  const record = soundType ? engineSounds.get(soundType.toLowerCase()) : undefined;
+  const bank = record?.bank?.trim();
+  return {
+    bankPath: bank ? `SND/${bank}.SPC` : "SND/ENGINE1.SPC",
+    record,
+  };
+}
+
+/** Shared auxiliary engine sample bank referenced by ENGSND.DAT TURBO/SUPERCHARGER/GEARBOX_WHINE/WIND types. */
+export const GEN_ENGINE_SPC_PATH = "SND/GEN_ENG.SPC";
+
+export type GenEngineSampleRole = "TURBO" | "SUPERCHARGER" | "GEARBOX_WHINE" | "WIND";
+
+/** Strictly match an SND/GEN_ENG.SPC entry name to its auxiliary role (no positional fallback). */
+export function resolveGenEngineRole(entryName: string): GenEngineSampleRole | null {
+  const upper = entryName.toUpperCase();
+  if (upper.includes("SUPERCHARGER")) return "SUPERCHARGER";
+  if (upper.includes("TURBO")) return "TURBO";
+  if (upper.includes("GEARBOX_WHINE")) return "GEARBOX_WHINE";
+  if (upper.includes("WIND")) return "WIND";
+  return null;
+}
+
+/**
+ * Pick the GEN_ENG.SPC entries a car's ENGSND.DAT record asks for (TURBO / SUPERCHARGER / GEARBOX_WHINE)
+ * that its own engine bank does not already provide.
+ */
+export function pickGenEngineAuxEntries(
+  entries: readonly SpcEntry[],
+  record: Pick<EngineSoundRecord, "samples"> | undefined,
+  presentRoles: ReadonlySet<EngineLayerRole> = new Set(),
+): { role: Exclude<GenEngineSampleRole, "WIND">; entry: SpcEntry }[] {
+  if (!record) return [];
+  const wanted = new Set<GenEngineSampleRole>();
+  for (const sample of record.samples) {
+    const role = resolveGenEngineRole(sample.type);
+    if (role && role !== "WIND" && !presentRoles.has(role)) wanted.add(role);
+  }
+  const picked: { role: Exclude<GenEngineSampleRole, "WIND">; entry: SpcEntry }[] = [];
+  for (const entry of entries) {
+    const role = resolveGenEngineRole(entry.name);
+    if (!role || role === "WIND" || !wanted.has(role)) continue;
+    wanted.delete(role);
+    picked.push({ role, entry });
+  }
+  return picked;
+}
+
+/** Pick the looped wind sample from SND/GEN_ENG.SPC. */
+export function pickWindEntry(entries: readonly SpcEntry[]): SpcEntry | undefined {
+  return entries.find(e => resolveGenEngineRole(e.name) === "WIND");
+}
+
+/**
+ * True when a car's texture archive carries per-livery texture variants (fr3.exe matches bits 24..31 of
+ * the texture flags against the livery index). CARDATA.DAT livery stems are not a reliable signal: many
+ * cars list `QUESTION` for every livery yet ship real variants.
+ */
+export function hasLiveryTextureVariants(textures: readonly { kind: string; flags: number }[]): boolean {
+  return textures.some(t => t.kind !== "reference" && (t.flags >>> 24) > 0);
+}
+
+/**
+ * Selectable liveries for Car Select: a car whose model has no texture variants (the 16 GT/LMP bonus cars
+ * that list 12 `QUESTION` liveries) collapses to its first livery so the menu offers no no-op choices.
+ */
+export function dedupeCarLiveries(
+  liveries: readonly { type: string }[],
+  hasTextureVariants: boolean,
+): string[] {
+  const types = liveries.map(l => l.type);
+  return !hasTextureVariants && types.length > 1 ? [types[0]!] : types;
+}
+
+/** Results-table row input: the race manager standing fields needed to build a results row. */
+export interface ResultStandingInput {
+  readonly carId: string;
+  readonly progress: number;
+  readonly totalRaceTime: number;
+  readonly bestLapTime: number | null;
+  readonly finishTime: number | null;
+}
+
+/**
+ * Build results rows. Finished racers keep their real finish time; unfinished racers get no time
+ * (so the table never repeats the player's finish time) and instead a laps-down count or an
+ * estimated gap to the winner from their average pace.
+ */
+export function buildRaceResultRows(
+  standings: readonly ResultStandingInput[],
+  laps: number,
+  carNameOf: (carId: string, index: number) => string,
+): RaceStanding[] {
+  const leaderTime = standings.find(s => s.finishTime !== null)?.finishTime ?? null;
+  const raceLaps = Math.max(1, laps);
+  return standings.map((s, index) => {
+    const finished = s.finishTime !== null;
+    let lapsDown = 0;
+    let estimatedGapSeconds: number | null = null;
+    if (!finished) {
+      const remaining = Math.max(0, raceLaps - s.progress);
+      lapsDown = Math.floor(remaining + 1e-9);
+      if (lapsDown < 1 && leaderTime !== null && s.progress > 0.05 && s.totalRaceTime > 0) {
+        const pace = s.totalRaceTime / s.progress;
+        const projected = s.totalRaceTime + remaining * pace;
+        estimatedGapSeconds = Math.max(0, projected - leaderTime);
+      }
+    }
+    return {
+      carId: s.carId,
+      carName: carNameOf(s.carId, index),
+      totalSeconds: s.finishTime,
+      bestLapSeconds: s.bestLapTime,
+      gapSeconds: leaderTime !== null && s.finishTime !== null ? Math.max(0, s.finishTime - leaderTime) : estimatedGapSeconds,
+      finished,
+      lapsDown,
+    };
+  });
+}
+
+/**
+ * Policy for exceptions thrown inside the animation frame. Transient errors keep the loop alive (reporting
+ * only the first of a streak); after `maxConsecutive` back-to-back failures the loop halts instead of
+ * spamming errors, and a later user gesture / restart / menu action may resume it.
+ */
+export class TickErrorGuard {
+  private consecutive = 0;
+  private halted = false;
+
+  constructor(readonly maxConsecutive = 5) {}
+
+  get isHalted(): boolean { return this.halted; }
+  get consecutiveErrors(): number { return this.consecutive; }
+
+  /** Record a successful frame. */
+  success(): void {
+    this.consecutive = 0;
+  }
+
+  /** Record a failed frame; `contextLost` errors always halt. */
+  failure(contextLost: boolean): { report: boolean; halt: boolean } {
+    this.consecutive++;
+    const halt = contextLost || this.consecutive >= Math.max(1, this.maxConsecutive);
+    if (halt) this.halted = true;
+    return { report: this.consecutive === 1 || halt, halt };
+  }
+
+  /** Clear the halt so the loop may restart; returns whether it had been halted. */
+  recover(): boolean {
+    const was = this.halted;
+    this.halted = false;
+    this.consecutive = 0;
+    return was;
+  }
+}
+
+/** Race status line, shared by race start and resume-from-pause: `Racing <car> on <track>`. */
+export function formatRacingStatus(carName: string | undefined, trackName: string): string {
+  return carName ? `Racing ${carName} on ${trackName}` : `Racing on ${trackName}`;
+}
+
+/** Pick the primary tyre skid loop sample from SND/TYRES.SPC. */
+export function pickSkidEntry(entries: readonly SpcEntry[]): SpcEntry | undefined {
+  const byMatch = (needle: string) => entries.find(e => e.name.toUpperCase().includes(needle));
+  return byMatch("SQUEAL") ?? byMatch("SQUEAK") ?? byMatch("SQUALL") ?? byMatch("SKID") ?? entries[0];
+}
+
+/** Pick the primary collision impact sample from SND/misc.spc. */
+export function pickCollisionEntry(entries: readonly SpcEntry[]): SpcEntry | undefined {
+  const byMatch = (needle: string) => entries.find(e => e.name.toUpperCase().includes(needle));
+  return byMatch("MEDIUM1") ?? byMatch("HEAVY1") ?? byMatch("MEDIUM") ?? byMatch("HEAVY") ?? byMatch("LIGHT") ?? byMatch("CRASH");
+}
+
+/** Pick the boost activation sample from SND/misc.spc. */
+export function pickBoostEntry(entries: readonly SpcEntry[]): SpcEntry | undefined {
+  return entries.find(e => e.name.toUpperCase().includes("BOOST"));
+}
+
+/** Clamp text scale so single/multi-line UI strings stay inside `maxWidthPx` without overflowing the 640px frame. */
+export function fitTextScale(
+  font: ParsedFont,
+  text: string,
+  maxWidthPx: number,
+  baseScale = 1,
+  minScale = 0.45,
+): number {
+  if (baseScale <= 0 || maxWidthPx <= 0) return baseScale;
+  const lines = text.replace(/\r?\n/g, "|").split("|");
+  let maxLineWidth = 0;
+  for (const line of lines) {
+    maxLineWidth = Math.max(maxLineWidth, measureTextLine(font, line));
+  }
+  if (maxLineWidth <= 0) return baseScale;
+  const needed = maxLineWidth * baseScale;
+  if (needed <= maxWidthPx) return baseScale;
+  return Math.max(minScale, maxWidthPx / maxLineWidth);
+}
+
+/**
+ * Fit a label into `maxWidthPx` without shrinking below a readable `minScale`: try each candidate
+ * (longest first) and, when even the shortest overflows at `minScale`, truncate it with "...".
+ */
+export function fitTextWithEllipsis(
+  font: ParsedFont,
+  candidates: readonly string[],
+  maxWidthPx: number,
+  baseScale = 1,
+  minScale = 0.6,
+): { text: string; scale: number } {
+  const options = candidates.filter(c => c.length > 0);
+  if (!options.length) return { text: "", scale: baseScale };
+  if (baseScale <= 0 || maxWidthPx <= 0) return { text: options[0]!, scale: baseScale };
+  const floor = Math.min(baseScale, Math.max(0.01, minScale));
+  for (const text of options) {
+    const scale = fitTextScale(font, text, maxWidthPx, baseScale, floor);
+    if (measureTextLine(font, text) * scale <= maxWidthPx + 1e-6) return { text, scale };
+  }
+  const last = options[options.length - 1]!;
+  for (let len = last.length - 1; len > 0; len--) {
+    const text = `${last.slice(0, len).trimEnd()}...`;
+    if (measureTextLine(font, text) * floor <= maxWidthPx + 1e-6) return { text, scale: floor };
+  }
+  return { text: "...", scale: floor };
+}
+
+const LANGUAGE_DISPLAY_NAMES: Readonly<Record<string, string>> = {
+  EN: "ENGLISH",
+  US: "ENGLISH (US)",
+  GR: "DEUTSCH (GR)",
+  DE: "DEUTSCH (DE)",
+  FR: "FRANCAIS (FR)",
+  SP: "ESPANOL (SP)",
+  ES: "ESPANOL (ES)",
+  IT: "ITALIANO (IT)",
+  CZ: "CESTINA (CZ)",
+  PL: "POLSKI (PL)",
+  RU: "RUSSKIY (RU)",
+  HN: "MAGYAR (HN)",
+  RM: "ROMANA (RM)",
+  TK: "TURKCE (TK)",
+};
+
+/** Format a TLATE language code (e.g. `GR`, `EN`, `US`) as a human-readable label for the Options menu. */
+export function formatLanguageDisplayName(code: string): string {
+  const upper = code.trim().toUpperCase();
+  return LANGUAGE_DISPLAY_NAMES[upper] ?? upper;
+}
+
 function asError(cause: unknown): Error {
   return cause instanceof Error ? cause : new Error(String(cause));
 }
@@ -192,17 +514,28 @@ function computeCarRatings(cfg: ResolvedCarConfig): NonNullable<MenuCar["ratings
   };
 }
 
+/**
+ * Strips the internal `!!tag!!` markers the translation tables prefix to some names (`!!secret!! 2004 M3 GTR`,
+ * `!!clone!! 1985 RS200`). A string that is nothing but a marker (`!!TEXT MISSING!!`) is not a name, so it yields
+ * `undefined` and the caller falls back to the record id.
+ */
+export function stripDisplayNameMarkers(text: string | undefined): string | undefined {
+  if (text === undefined) return undefined;
+  const stripped = text.replace(/^(?:\s*!![^!]*!!)+\s*/, "").trim();
+  return stripped || undefined;
+}
+
 function formatCarDisplayName(assets: DemoAssets, cfg: ResolvedCarConfig): string {
   const enumKey = cfg.car.fields.INGAME_TEXT_ENUM;
   if (typeof enumKey === "string") {
-    const localized = lookupTranslation(assets.translation, enumKey);
+    const localized = stripDisplayNameMarkers(lookupTranslation(assets.translation, enumKey));
     if (localized) return localized;
   }
   return cfg.car.id.replaceAll("_", " ");
 }
 
 function formatTrackDisplayName(assets: DemoAssets, track: TrackRecord): string {
-  const localized = lookupTranslation(assets.translation, track.INGAME_TEXT_ENUM);
+  const localized = stripDisplayNameMarkers(lookupTranslation(assets.translation, track.INGAME_TEXT_ENUM));
   return localized ?? track.id.replaceAll("_", " ");
 }
 
@@ -230,7 +563,12 @@ export class FordRacing3App {
   private readonly trackSpatialCache = new Map<string, TrackSpatial>();
   private readonly trackModelCache = new Map<string, CompiledModel>();
   private loadRequestSeq = 0;
-  private audioLoaded = false;
+  private sharedAudioLoaded = false;
+  private loadedEngineBankKey = "";
+  private engineBankRequestSeq = 0;
+  private genEngineBank?: Promise<SpcBank | null>;
+  private readonly tickErrors = new TickErrorGuard();
+  private errorRecoveryArmed = false;
 
   private frame?: number;
   private lastTime?: number;
@@ -326,6 +664,7 @@ export class FordRacing3App {
   start(): void {
     if (this.disposed || this.frame !== undefined || this.gl.gl.isContextLost()) return;
     this.input.attach(this.view, this.canvas);
+    this.view.addEventListener("keydown", this.onTrackSelectKeyDown);
     this.canvas.focus();
     this.frame = this.view.requestAnimationFrame(this.tick);
   }
@@ -335,10 +674,12 @@ export class FordRacing3App {
     this.frame = undefined;
     this.lastTime = undefined;
     this.fps = 0;
+    this.view.removeEventListener("keydown", this.onTrackSelectKeyDown);
     this.input.detach();
   }
 
   restart(): void {
+    this.resumeAfterError();
     if (this.activeRace) {
       this.menu.activate("restart");
       this.processCommands();
@@ -352,17 +693,22 @@ export class FordRacing3App {
   }
 
   continueFromStart(): void {
+    this.resumeAfterError();
+    const prev = this.menu.getView().state;
     this.menu.continueFromStart();
     this.processCommands();
+    this.syncStatusForState(prev, this.menu.getView().state);
   }
 
   launchQuickRace(): void {
+    this.resumeAfterError();
     if (this.menu.getView().state === "START") this.menu.continueFromStart();
     this.menu.activate("quick-race");
     this.processCommands();
   }
 
   launchCarRace(carId?: string): void {
+    this.resumeAfterError();
     if (this.menu.getView().state === "START") this.menu.continueFromStart();
     if (carId && this.carConfigs.has(carId)) {
       const idx = this.assets.installedCars.findIndex(c => c.car.id === carId);
@@ -433,6 +779,7 @@ export class FordRacing3App {
     this.turntableRequest++;
     this.stop();
     this.canvas.removeEventListener("webglcontextlost", this.onContextLost);
+    this.disarmErrorRecovery();
     if (this.previousTabIndex === null) this.canvas.removeAttribute("tabindex");
     for (const model of this.compiledModels.values()) model.dispose();
     this.compiledModels.clear();
@@ -451,6 +798,44 @@ export class FordRacing3App {
     this.status = status;
     this.options.onStatus?.(status);
   }
+
+  private syncStatusForState(prev: MenuState, next: MenuState): void {
+    if (prev === next) return;
+    const view = this.menu.getView();
+    switch (next) {
+      case "MAIN_MENU":
+        this.setStatus("Main menu");
+        break;
+      case "CAR_SELECT":
+        this.setStatus(view.car ? `Select Car: ${view.car.name}` : "Select Car");
+        break;
+      case "OPTIONS":
+        this.setStatus("Options");
+        break;
+      case "PAUSE":
+        this.setStatus("Paused");
+        break;
+      case "RACE_END":
+      case "RESULTS":
+        this.setStatus("Race finished");
+        break;
+      default:
+        break;
+    }
+  }
+
+  private readonly onTrackSelectKeyDown = (event: KeyboardEvent): void => {
+    if (this.disposed || this.menu.getView().state !== "CAR_SELECT") return;
+    if (event.code === "BracketLeft" || event.code === "PageUp") {
+      event.preventDefault();
+      this.menu.activate("previous-track");
+      this.processCommands();
+    } else if (event.code === "BracketRight" || event.code === "PageDown") {
+      event.preventDefault();
+      this.menu.activate("next-track");
+      this.processCommands();
+    }
+  };
 
   private readonly onContextLost = (): void => {
     this.loadRequestSeq++;
@@ -488,49 +873,161 @@ export class FordRacing3App {
     }
   }
 
-  private async loadSpcAudioOnce(): Promise<void> {
-    if (this.audioLoaded || this.disposed) return;
-    this.audioLoaded = true;
+  private async loadSharedAudioOnce(): Promise<void> {
+    if (this.disposed) return;
     const ready = await this.audio.resume();
     if (!ready || this.disposed) return;
+    if (!this.sharedAudioLoaded) {
+      this.sharedAudioLoaded = true;
+      try {
+        const [tyresBank, miscBank, genBank] = await Promise.all([
+          this.assets.loadSpc("SND/TYRES.SPC").catch(() => null),
+          this.assets.loadSpc("SND/misc.spc").catch(() => null),
+          this.loadGenEngineBank(),
+        ]);
+        if (this.disposed) return;
+        const windEntry = genBank ? pickWindEntry(genBank.entries) : undefined;
+        if (windEntry) {
+          const buffer = await this.audio.decodeWave(windEntry.wave.riff);
+          if (buffer && !this.disposed) {
+            const smpl = windEntry.wave.smplLoops[0];
+            this.audio.setWindSample({
+              buffer,
+              loop: smpl ? {
+                loopStartFrame: smpl.startFrame,
+                loopEndFrame: smpl.endFrameInclusive,
+                sampleRate: windEntry.wave.format.sampleRate,
+              } : undefined,
+            });
+          }
+        }
+        if (tyresBank && tyresBank.entries.length > 0) {
+          const skidEntry = pickSkidEntry(tyresBank.entries);
+          if (skidEntry) {
+            const buffer = await this.audio.decodeWave(skidEntry.wave.riff);
+            if (buffer && !this.disposed) {
+              const smpl = skidEntry.wave.smplLoops[0];
+              this.audio.setSkidSample({
+                buffer,
+                loop: smpl ? {
+                  loopStartFrame: smpl.startFrame,
+                  loopEndFrame: smpl.endFrameInclusive,
+                  sampleRate: skidEntry.wave.format.sampleRate,
+                } : undefined,
+              });
+            }
+          }
+        }
+        if (miscBank && miscBank.entries.length > 0) {
+          const collisionEntry = pickCollisionEntry(miscBank.entries);
+          if (collisionEntry) {
+            const buffer = await this.audio.decodeWave(collisionEntry.wave.riff);
+            if (buffer && !this.disposed) this.audio.setEffectSample("collision", buffer);
+          }
+          const boostEntry = pickBoostEntry(miscBank.entries);
+          if (boostEntry) {
+            const buffer = await this.audio.decodeWave(boostEntry.wave.riff);
+            if (buffer && !this.disposed) this.audio.setEffectSample("boost", buffer);
+          }
+        }
+      } catch {
+        // Keep procedural audio fallback active cleanly.
+      }
+    }
+    const targetCar = this.activeRace?.racers[0]?.config ?? this.assets.installedCars[0];
+    if (targetCar && !this.loadedEngineBankKey) {
+      void this.loadEngineBankForCar(targetCar);
+    }
+  }
+
+  /** Load SND/GEN_ENG.SPC once (shared turbo / supercharger / gearbox whine / wind samples). */
+  private loadGenEngineBank(): Promise<SpcBank | null> {
+    this.genEngineBank ??= this.assets.loadSpc(GEN_ENGINE_SPC_PATH).catch(() => null);
+    return this.genEngineBank;
+  }
+
+  private async loadEngineBankForCar(cfg: ResolvedCarConfig): Promise<void> {
+    if (this.disposed) return;
+    const ready = await this.audio.resume();
+    if (!ready || this.disposed) return;
+    const { bankPath, record } = resolveCarEngineSound(cfg, this.assets.tables.engineSounds);
+    const cacheKey = `${bankPath.toLowerCase()}::${record?.id.toLowerCase() ?? "default"}`;
+    if (this.loadedEngineBankKey === cacheKey) return;
+    const seq = ++this.engineBankRequestSeq;
     try {
-      const [engBank, miscBank] = await Promise.all([
-        this.assets.loadSpc("SND/ENGINE1.SPC").catch(() => null),
-        this.assets.loadSpc("SND/misc.spc").catch(() => null),
-      ]);
-      if (this.disposed) return;
-      if (engBank && engBank.entries.length > 0) {
-        const roles: readonly EngineLayerRole[] = [
-          "TICKOVER", "LOW_UNLOADED", "LOW_LOADED", "HIGH_UNLOADED", "HIGH_LOADED",
-        ];
-        const layers: EngineLayer[] = [];
-        for (let i = 0; i < Math.min(engBank.entries.length, roles.length); i++) {
-          const e = engBank.entries[i]!;
-          const buffer = await this.audio.decodeWave(e.wave.riff);
+      const engBank = await this.assets.loadSpc(bankPath).catch(() =>
+        bankPath.toUpperCase() === "SND/ENGINE1.SPC"
+          ? null
+          : this.assets.loadSpc("SND/ENGINE1.SPC").catch(() => null),
+      );
+      if (this.disposed || seq !== this.engineBankRequestSeq || !engBank || engBank.entries.length === 0) return;
+
+      const sampleMap = new Map<EngineLayerRole, { startRpm: number; maxVolume: number }>();
+      if (record) {
+        for (const s of record.samples) {
+          const role = resolveEngineLayerRole(s.type, -1);
+          if (role) sampleMap.set(role, { startRpm: s.startRpm, maxVolume: s.maxVolume });
+        }
+      }
+
+      const layers: EngineLayer[] = [];
+      for (let i = 0; i < engBank.entries.length; i++) {
+        const e = engBank.entries[i]!;
+        const role = resolveEngineLayerRole(e.name, i);
+        if (!role) continue;
+        const buffer = await this.audio.decodeWave(e.wave.riff);
+        if (this.disposed || seq !== this.engineBankRequestSeq) return;
+        if (!buffer) continue;
+        const smpl = e.wave.smplLoops[0];
+        const info = sampleMap.get(role);
+        const referenceRpm = info && Number.isFinite(info.startRpm) && info.startRpm > 0
+          ? info.startRpm
+          : defaultReferenceRpmForRole(role);
+        layers.push({
+          role,
+          buffer,
+          referenceRpm,
+          maxGain: info && Number.isFinite(info.maxVolume) ? clamp(info.maxVolume, 0, 1) : 1,
+          loop: smpl ? {
+            loopStartFrame: smpl.startFrame,
+            loopEndFrame: smpl.endFrameInclusive,
+            sampleRate: e.wave.format.sampleRate,
+          } : undefined,
+        });
+      }
+      if (layers.length > 0 && record) {
+        const present = new Set(layers.map(l => l.role));
+        const genBank = await this.loadGenEngineBank();
+        if (this.disposed || seq !== this.engineBankRequestSeq) return;
+        for (const { role, entry } of pickGenEngineAuxEntries(genBank?.entries ?? [], record, present)) {
+          const buffer = await this.audio.decodeWave(entry.wave.riff);
+          if (this.disposed || seq !== this.engineBankRequestSeq) return;
           if (!buffer) continue;
-          const smpl = e.wave.smplLoops[0];
+          const info = sampleMap.get(role);
+          const smpl = entry.wave.smplLoops[0];
           layers.push({
-            role: roles[i]!,
+            role,
             buffer,
-            referenceRpm: 1200 + i * 1400,
+            referenceRpm: info && Number.isFinite(info.startRpm) && info.startRpm > 0
+              ? info.startRpm
+              : defaultReferenceRpmForRole(role),
+            maxGain: info && Number.isFinite(info.maxVolume) ? clamp(info.maxVolume, 0, 1) : 1,
             loop: smpl ? {
               loopStartFrame: smpl.startFrame,
               loopEndFrame: smpl.endFrameInclusive,
-              sampleRate: e.wave.format.sampleRate,
+              sampleRate: entry.wave.format.sampleRate,
             } : undefined,
           });
         }
-        if (layers.length > 0) this.audio.setEngineBank({ layers });
       }
-      if (miscBank) {
-        for (const e of miscBank.entries) {
-          const n = e.name.toLowerCase();
-          if (!n.includes("skid") && !n.includes("crash")) continue;
-          const buffer = await this.audio.decodeWave(e.wave.riff);
-          if (!buffer) continue;
-          if (n.includes("skid")) this.audio.setSkidSample({ buffer });
-          else if (n.includes("crash")) this.audio.setEffectSample("collision", buffer);
-        }
+      if (layers.length > 0 && !this.disposed && seq === this.engineBankRequestSeq) {
+        this.audio.setEngineBank({
+          layers,
+          pitchMultiplier: record && Number.isFinite(record.pitchModifier) && record.pitchModifier > 0
+            ? record.pitchModifier
+            : 1,
+        });
+        this.loadedEngineBankKey = cacheKey;
       }
     } catch {
       // Keep procedural audio fallback active cleanly.
@@ -560,7 +1057,7 @@ export class FordRacing3App {
         ["BUTTON3", "TXT_MENU_BUTTON_OPTIONS", "options"],
       ];
       const actions: Record<string, MenuSceneAction> = {};
-      for (const id of ["BUTTON1", "BUTTON2", "BUTTON3", "BUTTON4", "BUTTON5", "BUTTON6"]) {
+      for (const id of ["BUTTON1", "BUTTON2", "BUTTON3", "BUTTON4", "BUTTON5", "BUTTON6", "BACK_ICON", "BACK_TEXT"]) {
         screen.setNodeVisible(id, false);
         screen.setNodeEnabled(id, false);
       }
@@ -640,6 +1137,13 @@ export class FordRacing3App {
     try {
       const model = await this.getOrCompileModel(cfg.shapeFolder, livery);
       if (req !== this.turntableRequest || this.disposed) return;
+      if (cfg.car.liveries.length > 1) {
+        // Cached by DemoAssets: inspect texture variants to hide no-op placeholder liveries.
+        const bundle = await this.assets.load3dBundle(cfg.shapeFolder);
+        if (req !== this.turntableRequest || this.disposed) return;
+        const liveries = dedupeCarLiveries(cfg.car.liveries, hasLiveryTextureVariants(bundle.textures.textures));
+        this.menu.setCarLiveries(carId, liveries);
+      }
       this.turntableModel = model;
       this.turntableKey = key;
       this.setStatus(`Select Car: ${formatCarDisplayName(this.assets, cfg)}`);
@@ -671,7 +1175,7 @@ export class FordRacing3App {
   private handleCommand(cmd: MenuCommand): void {
     switch (cmd.type) {
       case "PlayUiSound":
-        void this.loadSpcAudioOnce();
+        void this.loadSharedAudioOnce();
         this.audio.playMenu(cmd.sound === "move" ? "navigate" : cmd.sound);
         break;
       case "SettingsChanged":
@@ -685,7 +1189,10 @@ export class FordRacing3App {
         void this.loadRace(cmd.requestId, cmd.setup);
         break;
       case "ResumeRace":
-        this.setStatus(`Racing on ${this.activeRace?.trackName ?? this.assets.defaultTrackId}`);
+        this.setStatus(formatRacingStatus(
+          this.activeRace?.racers[0]?.carName,
+          this.activeRace?.trackName ?? this.assets.defaultTrackId,
+        ));
         break;
       case "CycleCamera":
         this.activeRace?.camera.nextMode();
@@ -704,7 +1211,7 @@ export class FordRacing3App {
     const trackKey = trackId.toLowerCase();
     const trackRecord = this.assets.tables.tracks.get(trackKey);
     const trackName = trackRecord ? formatTrackDisplayName(this.assets, trackRecord) : trackId;
-    this.setStatus(`Loading ${trackName} track and cars…`);
+    this.setStatus(`Loading ${trackName} track and cars...`);
     this.menu.setLoadProgress(requestId, 0.08);
     try {
       const [trackBundle, trackData] = await Promise.all([
@@ -807,6 +1314,8 @@ export class FordRacing3App {
           lastGear: physics.state.gear,
           lastLap: 1,
           lastBoostActive: false,
+          lowSpeedTimer: 0,
+          flippedTimer: 0,
         };
       });
 
@@ -846,8 +1355,9 @@ export class FordRacing3App {
       };
       this.menu.setLoadProgress(requestId, 1);
       this.menu.completeLoad(requestId);
-      void this.loadSpcAudioOnce();
-      this.setStatus(`Racing ${formatCarDisplayName(this.assets, playerCfg)} on ${trackName}`);
+      void this.loadSharedAudioOnce();
+      void this.loadEngineBankForCar(playerCfg);
+      this.setStatus(formatRacingStatus(formatCarDisplayName(this.assets, playerCfg), trackName));
     } catch (cause) {
       if (seq !== this.loadRequestSeq) return;
       const err = asError(cause);
@@ -869,7 +1379,7 @@ export class FordRacing3App {
       const stateBefore = this.menu.getView().state;
 
       if (frame.menu.anyKey || frame.menu.pointerClicked) {
-        void this.loadSpcAudioOnce();
+        void this.loadSharedAudioOnce();
       }
 
       if (stateBefore === "IN_GAME" && this.activeRace) {
@@ -884,15 +1394,51 @@ export class FordRacing3App {
         this.stepMenu(dt, frame);
       }
 
+      this.syncStatusForState(stateBefore, this.menu.getView().state);
       this.render();
+      this.tickErrors.success();
     } catch (cause) {
-      this.stop();
-      this.setStatus("Engine error");
-      this.options.onError?.(asError(cause));
+      const contextLost = this.gl.gl.isContextLost();
+      const { report, halt } = this.tickErrors.failure(contextLost);
+      if (report) this.options.onError?.(asError(cause));
+      if (halt) {
+        this.stop();
+        this.setStatus(contextLost ? "WebGL2 context lost" : "Engine error - click or press a key to retry");
+        if (!contextLost) this.armErrorRecovery();
+        return;
+      }
     }
 
     if (this.frame !== undefined) this.frame = this.view.requestAnimationFrame(this.tick);
   };
+
+  /** After a halt on repeated non-fatal errors, resume on the next pointer or key gesture. */
+  private armErrorRecovery(): void {
+    if (this.errorRecoveryArmed || this.disposed) return;
+    this.errorRecoveryArmed = true;
+    this.view.addEventListener("keydown", this.onErrorRecoveryGesture);
+    this.canvas.addEventListener("pointerdown", this.onErrorRecoveryGesture);
+  }
+
+  private disarmErrorRecovery(): void {
+    if (!this.errorRecoveryArmed) return;
+    this.errorRecoveryArmed = false;
+    this.view.removeEventListener("keydown", this.onErrorRecoveryGesture);
+    this.canvas.removeEventListener("pointerdown", this.onErrorRecoveryGesture);
+  }
+
+  private readonly onErrorRecoveryGesture = (): void => {
+    this.resumeAfterError();
+  };
+
+  /** Restart a loop halted by non-fatal frame errors (no-op while running, disposed or context-lost). */
+  private resumeAfterError(): void {
+    if (!this.tickErrors.isHalted || this.disposed || this.gl.gl.isContextLost()) return;
+    this.disarmErrorRecovery();
+    this.tickErrors.recover();
+    this.setStatus("Recovered from engine error");
+    this.start();
+  }
 
   private stepMenu(dt: number, frame: InputFrame): void {
     const view = this.menu.getView();
@@ -900,9 +1446,21 @@ export class FordRacing3App {
       this.turntableAngle = (this.turntableAngle + dt * 0.6) % (2 * Math.PI);
     }
 
-    if (frame.menu.pointerClicked && this.overlayButtons.length > 0) {
-      const px = frame.menu.pointerX;
-      const py = frame.menu.pointerY;
+    const gl = this.gl.gl;
+    const [uiPointerX, uiPointerY] = canvasToUiPoint(
+      frame.menu.pointerX,
+      frame.menu.pointerY,
+      gl.drawingBufferWidth,
+      gl.drawingBufferHeight,
+    );
+    const uiFrame: InputFrame = {
+      driving: frame.driving,
+      menu: { ...frame.menu, pointerX: uiPointerX, pointerY: uiPointerY },
+    };
+
+    if (uiFrame.menu.pointerClicked && this.overlayButtons.length > 0) {
+      const px = uiFrame.menu.pointerX;
+      const py = uiFrame.menu.pointerY;
       for (const btn of this.overlayButtons) {
         if (px >= btn.rect.x && px <= btn.rect.x + btn.rect.width && py >= btn.rect.y && py <= btn.rect.y + btn.rect.height) {
           btn.onClick();
@@ -914,18 +1472,18 @@ export class FordRacing3App {
     }
 
     if (view.state === "CAR_SELECT") {
-      if (frame.menu.left) this.menu.activate("previous-car");
-      else if (frame.menu.right) this.menu.activate("next-car");
-      else if (frame.menu.up) this.menu.activate("previous-livery");
-      else if (frame.menu.down) this.menu.activate("next-livery");
-      else if (frame.menu.confirm) this.menu.activate("launch");
-      else if (frame.menu.back) this.menu.activate("back");
+      if (uiFrame.menu.left) this.menu.activate("previous-car");
+      else if (uiFrame.menu.right) this.menu.activate("next-car");
+      else if (uiFrame.menu.up) this.menu.activate("previous-livery");
+      else if (uiFrame.menu.down) this.menu.activate("next-livery");
+      else if (uiFrame.menu.confirm) this.menu.activate("launch");
+      else if (uiFrame.menu.back) this.menu.activate("back");
       this.processCommands();
       return;
     }
 
     if (view.state === "OPTIONS") {
-      if (frame.menu.back) {
+      if (uiFrame.menu.back) {
         this.menu.activate("back");
         this.processCommands();
       }
@@ -933,13 +1491,14 @@ export class FordRacing3App {
     }
 
     if (view.state === "RESULTS" || view.state === "RACE_END") {
-      if (frame.menu.confirm) this.menu.activate("restart");
-      else if (frame.menu.back) this.menu.activate("quit");
+      if (uiFrame.menu.confirm) this.menu.activate("restart");
+      // Esc follows MenuController.back(): RACE_END -> RESULTS, RESULTS -> main menu.
+      else if (uiFrame.menu.back) this.menu.activate("back");
       this.processCommands();
       return;
     }
 
-    this.menu.update(dt, frame);
+    this.menu.update(dt, uiFrame);
     this.processCommands();
   }
 
@@ -984,6 +1543,20 @@ export class FordRacing3App {
       } else if (r.isPlayer && active.race.phase !== "FINISHED") {
         ctrl = driving;
       } else {
+        if (!r.isPlayer) {
+          const flipped = updateAiFlippedTimer(r.flippedTimer, st.up[1], dt);
+          r.flippedTimer = flipped.timer;
+          if (flipped.shouldReset) {
+            r.physics.resetToTrack();
+            r.lowSpeedTimer = 0;
+          }
+          if (active.race.phase === "RACING" && active.race.phaseElapsed > 1.0 && st.speedMps < 1.5) {
+            r.lowSpeedTimer += dt;
+          } else if (st.speedMps >= 2.0) {
+            r.lowSpeedTimer = 0;
+          }
+        }
+        const curState = r.physics.state;
         const ai = r.ai ?? (r.ai = new AiDriver(racingLine, {
           difficulty: this.assets.tables.game.difficulty[active.setup.difficulty],
           trackScales: resolveTrackDifficultyScales(this.assets.tables.tracks.get(active.trackId.toLowerCase())?.difficulty[active.setup.difficulty]),
@@ -995,17 +1568,17 @@ export class FordRacing3App {
         const referenceGap = ((standing?.progress ?? 0) - playerProgressTotal) * racingLine.length;
         const aiOut = ai.update(dt, {
           car: {
-            position: st.position,
-            forward: st.forward,
-            rotation: st.orientation,
-            speed: st.speedMps,
-            blocked: st.lastImpactImpulse > 400 && st.speedMps < 1.5,
+            position: curState.position,
+            forward: curState.forward,
+            rotation: curState.orientation,
+            speed: curState.speedMps,
+            blocked: isAiCarBlocked(curState.lastImpactImpulse, curState.speedMps, r.lowSpeedTimer),
           },
           track: { u: tr.u, lateralOffset: tr.lateralOffset },
           obstacles,
           referenceGap,
-          boostCharges: st.boostCharges,
-          boostActive: st.boostActive,
+          boostCharges: curState.boostCharges,
+          boostActive: curState.boostActive,
         });
         let finalOut: CarControlOutput = aiOut;
         if (r.isPlayer) {
@@ -1019,7 +1592,7 @@ export class FordRacing3App {
             driveDirection: 1,
           }, aiOut);
         }
-        ctrl = aiControlToDrivingInput(finalOut, st);
+        ctrl = aiControlToDrivingInput(finalOut, curState);
       }
 
       r.physics.step(dt, ctrl);
@@ -1111,16 +1684,9 @@ export class FordRacing3App {
       if (active.finishHoldTimer >= 2.2) {
         active.finishedReported = true;
         const standings = active.race.standings;
-        const leaderTime = standings[0]?.finishTime ?? null;
-        const resultRows: RaceStanding[] = standings.map(s => {
-          const racer = active.racers.find(r => r.id === s.id);
-          return {
-            carId: s.carId,
-            carName: racer?.carName ?? s.carId,
-            totalSeconds: s.finishTime ?? s.totalRaceTime,
-            bestLapSeconds: s.bestLapTime,
-            gapSeconds: leaderTime !== null && s.finishTime !== null ? Math.max(0, s.finishTime - leaderTime) : null,
-          };
+        const resultRows = buildRaceResultRows(standings, active.setup.laps, (_carId, i) => {
+          const s = standings[i]!;
+          return active.racers.find(r => r.id === s.id)?.carName ?? s.carId;
         });
         this.menu.finishRace(resultRows);
         this.audio.update({ rpm: 0, speedMps: 0, tyreSlip: 0 });
@@ -1225,7 +1791,8 @@ export class FordRacing3App {
   }
 
   private renderMenuUi(view: MenuView, width: number, height: number): void {
-    const batch = new UiBatchBuilder(width, height);
+    const vp = computeUiViewport(width, height);
+    const batch = new UiBatchBuilder(vp.width || width, vp.height || height);
     const fonts = this.assets.fonts;
     const fontFor = (slot: number) => fonts[slot] ?? fonts[2] ?? fonts[0]!;
     this.overlayButtons = [];
@@ -1263,11 +1830,18 @@ export class FordRacing3App {
               [0.08, 0.22, 0.34, 0.72],
             );
           }
+          const textX = item.rect.x + item.justifyOffset[0];
+          const maxWidthNorm = !item.wordWrap && textX >= 0 && textX < 0.985
+            ? Math.min(item.rect.width, Math.max(0.05, 0.985 - textX))
+            : item.rect.width;
+          const fittedScale = item.wordWrap
+            ? 1
+            : fitTextScale(font.font, item.text, maxWidthNorm * 640, 1);
           batch.text(
             {
-              x: item.rect.x + item.justifyOffset[0],
+              x: textX,
               y: item.rect.y + item.justifyOffset[1],
-              width: item.rect.width,
+              width: item.textJustify % 3 === 1 ? maxWidthNorm : item.rect.width,
               height: item.rect.height,
             },
             font,
@@ -1276,7 +1850,7 @@ export class FordRacing3App {
               justify: item.textJustify,
               wordWrap: item.wordWrap,
               colour: color,
-              scale: 1,
+              scale: fittedScale,
               shadow: true,
             },
           );
@@ -1288,7 +1862,13 @@ export class FordRacing3App {
       this.ui.render(batch.build(), width, height);
       batch.clear();
       if (this.turntableModel && !this.turntableModel.isDisposed) {
-        this.scene.renderCarTurntable(this.turntableModel, this.turntableAngle, TURNTABLE_RECT, width, height);
+        const turntableCanvasRect: ViewportRect = {
+          x: (vp.x + TURNTABLE_RECT.x * vp.width) / width,
+          y: (vp.y + TURNTABLE_RECT.y * vp.height) / height,
+          width: (TURNTABLE_RECT.width * vp.width) / width,
+          height: (TURNTABLE_RECT.height * vp.height) / height,
+        };
+        this.scene.renderCarTurntable(this.turntableModel, this.turntableAngle, turntableCanvasRect, width, height);
       }
       this.drawCarSelectOverlay(batch, view);
     } else if (view.state === "OPTIONS") {
@@ -1309,13 +1889,25 @@ export class FordRacing3App {
     onClick: () => void,
     scale: number,
     accent = false,
+    /** Shorter fallbacks; when given, the label keeps a readable minimum scale and truncates with "...". */
+    fallbackLabels?: readonly string[],
   ): void {
     const font = this.assets.fonts[2] ?? this.assets.fonts[0]!;
+    const maxWidthPx = Math.max(8, (rect.width - 0.012) * 640);
+    let fittedScale: number;
+    let shown = label;
+    if (fallbackLabels) {
+      const fitted = fitTextWithEllipsis(font.font, [label, ...fallbackLabels], maxWidthPx, scale, READABLE_MIN_TEXT_SCALE);
+      shown = fitted.text;
+      fittedScale = fitted.scale;
+    } else {
+      fittedScale = fitTextScale(font.font, label, maxWidthPx, scale);
+    }
     batch.solidQuad(rect, accent ? [0.14, 0.46, 0.34, 0.94] : [0.08, 0.15, 0.22, 0.92]);
-    batch.text(rect, font, label, {
+    batch.text(rect, font, shown, {
       justify: 0,
       colour: accent ? ACCENT : INK,
-      scale,
+      scale: fittedScale,
       shadow: true,
     });
     this.overlayButtons.push({ rect, label, active: accent, onClick });
@@ -1327,13 +1919,23 @@ export class FordRacing3App {
     const s = 0.78;
 
     batch.solidQuad({ x: 0, y: 0, width: 1, height: 0.11 }, PANEL_DARK);
-    batch.text({ x: 0.04, y: 0.02, width: 0.56, height: 0.07 }, fTitle, view.car?.name ?? "SELECT CAR", {
-      justify: 1, colour: ACCENT, scale: s * 1.15,
+    const carTitle = view.car?.name ?? "SELECT CAR";
+    batch.text({ x: 0.03, y: 0.02, width: 0.37, height: 0.07 }, fTitle, carTitle, {
+      justify: 1, colour: ACCENT, scale: fitTextScale(fTitle.font, carTitle, 0.37 * 640, s * 1.15),
     });
-    const trackLabel = view.track ? `${view.track.name} (${view.track.id})` : this.assets.defaultTrackId;
-    this.addButton(batch, { x: 0.62, y: 0.02, width: 0.34, height: 0.07 }, `TRACK: ${trackLabel}`, () => {
+    const trackName = view.track?.name ?? this.assets.defaultTrackId;
+    const trackLabels = view.track
+      ? [`TRACK: ${view.track.name} (${view.track.id})`, `TRACK: ${view.track.name}`, view.track.name]
+      : [`TRACK: ${trackName}`, trackName];
+    this.addButton(batch, { x: 0.41, y: 0.02, width: 0.05, height: 0.07 }, "<", () => {
+      this.menu.activate("previous-track");
+    }, s * 0.85);
+    this.addButton(batch, { x: 0.465, y: 0.02, width: 0.445, height: 0.07 }, trackLabels[0]!, () => {
       this.menu.activate("next-track");
-    }, s * 0.8);
+    }, s * 0.8, false, trackLabels.slice(1));
+    this.addButton(batch, { x: 0.915, y: 0.02, width: 0.05, height: 0.07 }, ">", () => {
+      this.menu.activate("next-track");
+    }, s * 0.85);
 
     const px = 0.63;
     const pw = 0.33;
@@ -1398,7 +2000,7 @@ export class FordRacing3App {
     this.addButton(batch, { x: 0.22, y: 0.45, width: 0.56, height: 0.07 }, `SOUND: ${this.audio.muted ? "OFF" : "ON"} (${Math.round(st.masterVolume * 100)}%)`, () => {
       this.setMuted(!this.audio.muted);
     }, s * 0.9);
-    this.addButton(batch, { x: 0.22, y: 0.54, width: 0.56, height: 0.07 }, `LANGUAGE: ${st.language}`, () => {
+    this.addButton(batch, { x: 0.22, y: 0.54, width: 0.56, height: 0.07 }, `LANGUAGE: ${formatLanguageDisplayName(st.language)}`, () => {
       const langs = this.assets.languages;
       const next = langs[(langs.indexOf(st.language) + 1) % langs.length] ?? "EN";
       this.menu.updateSettings({ language: next });
@@ -1411,13 +2013,14 @@ export class FordRacing3App {
     const fBody = this.assets.fonts[2] ?? this.assets.fonts[0]!;
     const s = 0.82;
     batch.solidQuad({ x: 0.14, y: 0.34, width: 0.72, height: 0.30 }, PANEL_CARD);
-    batch.text({ x: 0.18, y: 0.38, width: 0.64, height: 0.07 }, fTitle, "LOADING RACE…", {
+    batch.text({ x: 0.18, y: 0.38, width: 0.64, height: 0.07 }, fTitle, "LOADING RACE...", {
       justify: 0, colour: ACCENT, scale: s * 1.1,
     });
     batch.solidQuad({ x: 0.20, y: 0.49, width: 0.60, height: 0.045 }, BAR_BG);
     batch.solidQuad({ x: 0.20, y: 0.49, width: 0.60 * clamp(view.progress, 0.02, 1), height: 0.045 }, CYAN);
-    batch.text({ x: 0.18, y: 0.56, width: 0.64, height: 0.05 }, fBody, view.loadingError ?? this.status, {
-      justify: 0, colour: INK, scale: s * 0.85,
+    const statusText = view.loadingError ?? this.status;
+    batch.text({ x: 0.18, y: 0.56, width: 0.64, height: 0.05 }, fBody, statusText, {
+      justify: 0, colour: INK, scale: fitTextScale(fBody.font, statusText, 0.62 * 640, s * 0.85),
     });
   }
 
@@ -1427,21 +2030,40 @@ export class FordRacing3App {
     const s = 0.78;
 
     batch.solidQuad({ x: 0.10, y: 0.10, width: 0.80, height: 0.78 }, PANEL_CARD);
-    batch.text({ x: 0.14, y: 0.13, width: 0.72, height: 0.07 }, fTitle, `RACE RESULTS — ${this.activeRace?.trackName ?? this.assets.defaultTrackId}`, {
-      justify: 0, colour: ACCENT, scale: s * 1.15,
+    const resultsTitle = `RACE RESULTS - ${this.activeRace?.trackName ?? this.assets.defaultTrackId}`;
+    batch.text({ x: 0.14, y: 0.13, width: 0.72, height: 0.07 }, fTitle, resultsTitle, {
+      justify: 0, colour: ACCENT, scale: fitTextScale(fTitle.font, resultsTitle, 0.70 * 640, s * 1.15),
     });
 
+    // Columns: POS | CAR | TIME | BEST (all in 0..1 UI space, inside the 0.14..0.86 card).
+    const cols = {
+      pos: { x: 0.15, width: 0.06 },
+      car: { x: 0.22, width: 0.33 },
+      time: { x: 0.56, width: 0.14 },
+      best: { x: 0.71, width: 0.14 },
+    } as const;
+    const headerY = 0.205;
+    const cell = (col: { x: number; width: number }, y: number, height: number, text: string,
+      justify: 0 | 1 | 2, colour: UiColor, base: number) => {
+      batch.text({ x: col.x, y, width: col.width, height }, fBody, text, {
+        justify, colour, scale: fitTextScale(fBody.font, text, (col.width - 0.008) * 640, base, 0.5),
+      });
+    };
+    cell(cols.pos, headerY, 0.03, "POS", 1, MUTED, s * 0.7);
+    cell(cols.car, headerY, 0.03, "CAR", 1, MUTED, s * 0.7);
+    cell(cols.time, headerY, 0.03, "TIME", 2, MUTED, s * 0.7);
+    cell(cols.best, headerY, 0.03, "BEST", 2, MUTED, s * 0.7);
+
     view.standings.slice(0, 6).forEach((row, idx) => {
-      const y = 0.23 + idx * 0.075;
-      batch.solidQuad({ x: 0.14, y, width: 0.72, height: 0.062 }, idx === 0 ? [0.14, 0.27, 0.22, 0.9] : [0.06, 0.11, 0.16, 0.88]);
-      const timeStr = row.totalSeconds !== null ? (formatRaceTime(row.totalSeconds) ?? "--:--.--") : "--:--.--";
-      const bestStr = row.bestLapSeconds !== null ? `BEST ${formatRaceTime(row.bestLapSeconds)}` : "";
-      batch.text({ x: 0.16, y, width: 0.40, height: 0.062 }, fBody, `${idx + 1}. ${row.carName}`, {
-        justify: 1, colour: idx === 0 ? ACCENT : INK, scale: s * 0.88,
-      });
-      batch.text({ x: 0.56, y, width: 0.28, height: 0.062 }, fBody, `${timeStr}  ${bestStr}`, {
-        justify: 2, colour: CYAN, scale: s * 0.82,
-      });
+      const y = 0.24 + idx * 0.072;
+      const h = 0.06;
+      batch.solidQuad({ x: 0.14, y, width: 0.72, height: h }, idx === 0 ? [0.14, 0.27, 0.22, 0.9] : [0.06, 0.11, 0.16, 0.88]);
+      const { time, best } = formatResultsRowTimes(row);
+      const finished = row.finished ?? row.totalSeconds !== null;
+      cell(cols.pos, y, h, `${idx + 1}`, 1, idx === 0 ? ACCENT : INK, s * 0.88);
+      cell(cols.car, y, h, row.carName, 1, idx === 0 ? ACCENT : INK, s * 0.88);
+      cell(cols.time, y, h, time, 2, finished ? CYAN : MUTED, s * 0.82);
+      cell(cols.best, y, h, best, 2, CYAN, s * 0.82);
     });
 
     this.addButton(batch, { x: 0.14, y: 0.76, width: 0.22, height: 0.08 }, "RETRY RACE", () => this.menu.activate("restart"), s * 0.9, true);

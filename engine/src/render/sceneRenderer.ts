@@ -26,10 +26,12 @@ export interface ModelNode {
 export interface RenderMaterial {
   textureIndex: number | null;
   detailTextureIndex: number | null;
+  darkTextureIndex?: number;
   colour: Rgba;
   prelit: boolean;
   shine: number;
   pass: RenderPass;
+  additive?: boolean;
 }
 export interface GeometryBatch {
   nodeId: number;
@@ -42,6 +44,8 @@ export interface GeometryBatch {
 export interface CompiledGeometry {
   /** Interleaved position, normal, RGBA, UV0 and UV1 in that order. */
   vertices: Float32Array;
+  /** Separate UVs for the subtractive stage when present. */
+  darkUvs?: Float32Array;
   indices: Uint32Array;
   batches: GeometryBatch[];
   nodes: ModelNode[];
@@ -94,16 +98,33 @@ function textureSelectors(archive: TextureArchive, livery: number): (index: numb
   for (const [i, texture] of archive.textures.entries()) {
     if (texture.kind === "reference") continue;
     const name = texture.name.toUpperCase();
-    if (!defaults.has(name) || texture.flags & 0x10000) defaults.set(name, i);
-    if (texture.flags & 0x2000 && texture.flags >>> 24 === livery) variants.set(name, i);
+    const variantId = texture.flags >>> 24;
+    if (variantId === 0) {
+      if (!defaults.has(name) || (texture.flags & 0xff0000) !== 0) defaults.set(name, i);
+    } else if (variantId === livery) {
+      variants.set(name, i);
+    }
   }
 
   return index => {
-    const texture = index === null ? undefined : archive.textures[index];
+    if (index === null) return null;
+    const texture = archive.textures[index];
     if (!texture) return null;
     const name = texture.name.toUpperCase();
     if (texture.kind === "reference") return variants.get(name) ?? defaults.get(name) ?? null;
-    if (texture.flags & 0x30000 && livery > 0) return variants.get(name) ?? index;
+    if (livery > 0) {
+      // fr3.exe (0x43db54) stores the variant count in bits 16..23 and matches bits 24..31 against the livery index.
+      const variantCount = (texture.flags >>> 16) & 0xff;
+      for (let offset = 1; offset <= variantCount && index + offset < archive.textures.length; offset++) {
+        const candidate = archive.textures[index + offset];
+        if (candidate?.kind === "texture" && (candidate.flags >>> 24) === livery
+          && candidate.name.toUpperCase() === name) {
+          return index + offset;
+        }
+      }
+      const byName = variants.get(name);
+      if (byName !== undefined) return byName;
+    }
     return index;
   };
 }
@@ -121,6 +142,7 @@ export function compileModelGeometry(
   const subObjects = new Map<string, ModelNode[]>();
   const batches: GeometryBatch[] = [];
   const vertices: number[] = [];
+  let darkUvs: number[] | undefined;
   const indices: number[] = [];
   const bounds = emptyBounds();
 
@@ -150,16 +172,24 @@ export function compileModelGeometry(
           ? decodeArgb(part.descriptorExtension[extra++] ?? 0xffffffff) : WHITE;
         const shine = part.f & 8 ? (part.descriptorExtension[extra++]! >>> 24) / 255 : 0;
         if (part.f & 16) extra++;
-        const layer = part.descriptorExtension[extra] ?? 0xffff0000;
-        const detailTextureIndex = part.uv1 && part.f & 0xc0 ? selectTexture(layer >>> 16) : null;
+        // fr3.exe's prelit renderer uses SUBTRACT for 0x80 (0x457d33)
+        // and BLENDTEXTUREALPHA for 0x40 (0x457dd7), in that order.
+        const darkLayer = part.f & 0x80 ? part.descriptorExtension[extra++] : undefined;
+        const detailLayer = part.f & 0x40 ? part.descriptorExtension[extra] : undefined;
+        const darkTextureIndex = darkLayer !== undefined && part.uv1 ? selectTexture(darkLayer >>> 16) : null;
+        const detailUvs = part.f & 0x80 ? part.uv2 : part.uv1;
+        const detailTextureIndex = detailLayer !== undefined && detailUvs ? selectTexture(detailLayer >>> 16) : null;
         const textureIndex = selectTexture(part.primaryTexture);
         const record = textureIndex === null ? undefined : archive.textures[textureIndex];
         const textureClass = record?.kind === "texture" ? record.formatClass : 1;
         const prelit = Boolean(part.g & 4) || (part.g & 0x30) === 0 && part.colors[3] !== 0;
+        // fr3.exe sets both framebuffer blend factors to ONE for this flag (0x45629b).
+        const additive = !shadow && Boolean(part.f & 1);
         const pass: RenderPass = shadow ? "shadow"
-          : groupIndex > 0 || textureClass === 3 || colour[3] < 1 ? "alpha"
+          : additive || groupIndex > 0 || textureClass === 3 || colour[3] < 1 ? "alpha"
           : textureClass === 2 ? "cutout" : "opaque";
-        const material = { textureIndex, detailTextureIndex, colour, shine, prelit, pass };
+        const material = { textureIndex, detailTextureIndex, colour, shine, prelit, pass,
+          ...(darkTextureIndex !== null && { darkTextureIndex }), ...(additive && { additive }) };
         const key = JSON.stringify(material);
         const entry = groups.get(key) ?? { material, parts: [] };
         entry.parts.push(part);
@@ -174,7 +204,9 @@ export function compileModelGeometry(
       const world: Vec3 = [0, 0, 0];
       for (const part of parts) {
         const base = vertices.length / STRIDE;
-        const detail = part.uv2 ?? part.uv1;
+        const detail = part.f & 0x80 ? part.uv2 : part.uv1;
+        const dark = material.darkTextureIndex === undefined ? undefined : part.uv1;
+        if (dark && !darkUvs) darkUvs = new Array<number>(base * 2).fill(0);
         for (let v = 0; v < part.vertexCount; v++) {
           const p = v * 3, c = v * 4, uv = v * 2;
           point[0] = part.positions[p]!;
@@ -185,6 +217,7 @@ export function compileModelGeometry(
           vertices.push(...point, part.normals[p]!, part.normals[p + 1]!, part.normals[p + 2]!,
             part.colors[c]! / 255, part.colors[c + 1]! / 255, part.colors[c + 2]! / 255, part.colors[c + 3]! / 255,
             part.uv0?.[uv] ?? 0, part.uv0?.[uv + 1] ?? 0, detail?.[uv] ?? 0, detail?.[uv + 1] ?? 0);
+          darkUvs?.push(dark?.[uv] ?? 0, dark?.[uv + 1] ?? 0);
         }
         for (const index of part.indices) indices.push(base + index);
       }
@@ -254,7 +287,10 @@ export function compileModelGeometry(
     if (!active || name && active.includes(name)) visitRoot(root, null, identity(), new Set());
   }
   const modelBounds = Number.isFinite(bounds.min[0]) ? bounds : { min: [0, 0, 0] as Vec3, max: [0, 0, 0] as Vec3 };
-  return { vertices: Float32Array.from(vertices), indices: Uint32Array.from(indices), batches, nodes, subObjects, bounds: modelBounds };
+  return {
+    vertices: Float32Array.from(vertices), indices: Uint32Array.from(indices), batches, nodes, subObjects, bounds: modelBounds,
+    ...(darkUvs && { darkUvs: Float32Array.from(darkUvs) }),
+  };
 }
 
 const MESH_VERTEX = `#version 300 es
@@ -263,13 +299,14 @@ layout(location=1) in vec3 normal;
 layout(location=2) in vec4 color;
 layout(location=3) in vec2 uv0;
 layout(location=4) in vec2 uv1;
+layout(location=5) in vec2 darkUv;
 uniform mat4 model, view, projection;
 uniform mat3 normalMatrix;
 uniform bool projectShadow;
 uniform float groundY;
 out vec3 worldPosition, worldNormal;
 out vec4 vertexColor;
-out vec2 baseUV, detailUV;
+out vec2 baseUV, detailUV, darkUV;
 out float depth;
 void main() {
   vec4 world = model * vec4(position, 1.0);
@@ -281,6 +318,7 @@ void main() {
   vertexColor = color;
   baseUV = uv0;
   detailUV = uv1;
+  darkUV = darkUv;
   depth = eye.z;
 }`;
 
@@ -290,10 +328,10 @@ precision highp float;
 #define VEHICLE ${vehicle ? 1 : 0}
 in vec3 worldPosition, worldNormal;
 in vec4 vertexColor;
-in vec2 baseUV, detailUV;
+in vec2 baseUV, detailUV, darkUV;
 in float depth;
-uniform sampler2D baseTexture, detailTexture;
-uniform bool prelit, hasDetail, projectShadow;
+uniform sampler2D baseTexture, detailTexture, darkTexture;
+uniform bool prelit, hasDetail, hasDark, projectShadow, additive;
 uniform vec4 colour;
 uniform vec3 camera, sun, tint, emissive, fogColour;
 uniform float cutoff, shine;
@@ -307,6 +345,7 @@ void main() {
   }
   if (prelit) base *= vertexColor;
   if (base.a <= cutoff) discard;
+  if (hasDark) base.rgb = max(vec3(0.0), base.rgb - texture(darkTexture, darkUV).rgb);
   if (hasDetail) {
     vec4 detail = texture(detailTexture, detailUV);
     base.rgb = mix(base.rgb, detail.rgb, detail.a);
@@ -329,7 +368,7 @@ void main() {
   float extent = max(fogRange.y - fogRange.x, 0.001);
   float haze = fogRange.w > 0.5 ? 1.0 - exp(-fogRange.z * travel / extent)
     : fogRange.z * clamp(travel / extent, 0.0, 1.0);
-  pixel = vec4(mix(lit, fogColour, clamp(haze, 0.0, 1.0)), base.a);
+  pixel = vec4(mix(lit, additive ? vec3(0.0) : fogColour, clamp(haze, 0.0, 1.0)), base.a);
 }`;
 }
 
@@ -468,6 +507,7 @@ const BASE_TRANSFORM = identity();
 const MESH_UNIFORMS = [
   "model", "view", "projection", "normalMatrix", "projectShadow", "groundY", "baseTexture", "detailTexture",
   "prelit", "hasDetail", "colour", "camera", "sun", "tint", "emissive", "fogColour", "cutoff", "shine", "fogRange",
+  "additive", "darkTexture", "hasDark",
 ] as const;
 type Pipeline<T extends string> = { program: WebGLProgram; uniforms: Record<T, WebGLUniformLocation | null> };
 type MeshPipeline = Pipeline<typeof MESH_UNIFORMS[number]>;
@@ -542,8 +582,17 @@ export class SceneRenderer {
         gl.vertexAttribPointer(location, size, gl.FLOAT, false, STRIDE * 4, offset * 4);
         offset += size;
       });
+      if (geometry.darkUvs) {
+        const darkUvBuffer = this.context.createBuffer();
+        owned.push(darkUvBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, darkUvBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, geometry.darkUvs, gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(5);
+        gl.vertexAttribPointer(5, 2, gl.FLOAT, false, 0, 0);
+      }
       const textures: (WebGLTexture | null)[] = Array.from({ length: archive.textures.length }, () => null);
-      const used = new Set(geometry.batches.flatMap(({ material }) => [material.textureIndex, material.detailTextureIndex]));
+      const used = new Set(geometry.batches.flatMap(({ material }) =>
+        [material.textureIndex, material.detailTextureIndex, material.darkTextureIndex ?? null]));
       for (const index of used) {
         if (index === null || !archive.textures[index]) continue;
         const texture = this.context.uploadTexture(archive.textures[index]!);
@@ -708,6 +757,7 @@ export class SceneRenderer {
         gl.uniform4f(u.fogRange, fog.start ?? 45, fog.end ?? 550, fog.density, fog.mode === "exp" ? 1 : 0);
         gl.uniform1i(u.baseTexture, 0);
         gl.uniform1i(u.detailTexture, 1);
+        gl.uniform1i(u.darkTexture, 2);
       }
 
       gl.enable(gl.DEPTH_TEST);
@@ -728,7 +778,16 @@ export class SceneRenderer {
       }
 
       gl.enable(gl.CULL_FACE);
-      for (const draw of sections.alpha) this.drawMesh(draw, viewSign);
+      let additiveBlend = false;
+      for (const draw of sections.alpha) {
+        const additive = draw.batch.material.additive === true;
+        if (additive !== additiveBlend) {
+          if (additive) gl.blendFunc(gl.ONE, gl.ONE);
+          else gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+          additiveBlend = additive;
+        }
+        this.drawMesh(draw, viewSign);
+      }
     } finally {
       gl.depthMask(true);
       gl.activeTexture(gl.TEXTURE0);
@@ -753,6 +812,7 @@ export class SceneRenderer {
     gl.uniformMatrix4fv(u.model, false, transform);
     gl.uniformMatrix3fv(u.normalMatrix, false, normal);
     gl.uniform1i(u.prelit, Number(material.prelit));
+    gl.uniform1i(u.additive, Number(Boolean(material.additive)));
     gl.uniform1i(u.projectShadow, Number(material.pass === "shadow"));
     gl.uniform1f(u.groundY, (car?.groundY ?? car?.transform?.[13] ?? 0) + 0.025);
     gl.uniform4f(u.colour, ...material.colour);
@@ -762,11 +822,15 @@ export class SceneRenderer {
     gl.uniform1f(u.cutoff, material.pass === "cutout" ? 0.45 : 0);
     const base = material.textureIndex === null ? this.white : model.textures[material.textureIndex] ?? this.white;
     const detail = material.detailTextureIndex === null ? null : model.textures[material.detailTextureIndex];
+    const dark = material.darkTextureIndex === undefined ? null : model.textures[material.darkTextureIndex];
     gl.uniform1i(u.hasDetail, Number(Boolean(detail)));
+    gl.uniform1i(u.hasDark, Number(Boolean(dark)));
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, base);
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, detail ?? this.white);
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, dark ?? this.white);
     gl.drawElements(gl.TRIANGLES, batch.indexCount, gl.UNSIGNED_INT, batch.firstIndex * 4);
   }
 

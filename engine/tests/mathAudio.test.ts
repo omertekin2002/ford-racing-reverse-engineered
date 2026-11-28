@@ -423,3 +423,33 @@ test("skid and wind respond to driving, and one-shots route to their mix buses",
   assert.equal(ctx.oscillators.length, 12);
   await audio.dispose();
 });
+
+test("a loaded wind sample replaces procedural wind noise and scales with speed", async () => {
+  const ctx = new MockContext();
+  const audio = new AudioEngine({ createContext: () => ctx as unknown as AudioContext });
+  const buffer = ctx.createBuffer(1, 48000, 48000) as unknown as AudioBuffer;
+  audio.setWindSample({ buffer, loop: { loopStartFrame: 0, loopEndFrame: 22049, sampleRate: 22050 } });
+  assert.equal(audio.hasWindSample, true);
+  await audio.resume();
+
+  const [noise, windSample] = ctx.sources;
+  assert.ok(noise && windSample?.loop);
+  near(windSample.loopEnd, 1);
+  const windFilter = noise.outputs[0] as MockFilter;
+  const noiseWindGain = windFilter.outputs[0] as MockGain;
+  const windSampleGain = windSample.outputs[0] as MockGain;
+  assert.equal(windSampleGain.outputs[0], ctx.gains[2], "wind sample routes to the sfx bus");
+
+  audio.update({ speedMps: 0 });
+  assert.equal(windSampleGain.gain.value, 0);
+  audio.update({ speedMps: 70 });
+  assert.ok(windSampleGain.gain.value > 0);
+  assert.equal(noiseWindGain.gain.value, 0, "procedural wind muted while the sample plays");
+  assert.ok(windSample.playbackRate.value > 1);
+
+  audio.setWindSample();
+  assert.equal(audio.hasWindSample, false);
+  assert.ok(windSample.stopTime !== undefined);
+  assert.ok(noiseWindGain.gain.value > 0, "procedural wind returns without a sample");
+  await audio.dispose();
+});

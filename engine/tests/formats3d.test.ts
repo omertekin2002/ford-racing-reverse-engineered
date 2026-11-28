@@ -4,7 +4,7 @@ import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { crc32, deflateRawSync, deflateSync } from "node:zlib";
+import { crc32, deflateRawSync, deflateSync, inflateSync } from "node:zlib";
 
 import { decodeA8R8G8B8, decodeDxt1, decodeDxt3, parseTexturesDxt } from "../src/formats/dxt.js";
 import { expandTriangleStrip, parse3dObjDb, parseBinInfo, parseXbx } from "../src/formats/xbx.js";
@@ -387,4 +387,132 @@ test("core Shuffle 3D sets (FORDGT, 04LIGHT, ENGAF, MISC) parse to EOF and match
   const uiBin = parseBinInfo(await vfs.readUnpacked("3ddata/ui/engaf/bininfo.bin"));
   assert.deepEqual(uiBin.shapes, ["ENGAF"]);
   assert.deepEqual(uiBin.textureNames, []);
+});
+
+test("FR3 zlib fallback handles trailing junk and stale size prefixes while still rejecting corruption", async () => {
+  const payload = Buffer.from(
+    "FR3 Shuffle trailing junk regression payload ".repeat(64) +
+    Array.from({ length: 256 }, (_, i) => String.fromCharCode(i)).join(""),
+    "latin1",
+  );
+  const junk = Buffer.alloc(1024, 0xa5);
+  for (const level of [0, 1, 6, 9]) {
+    const compressed = deflateSync(payload, { level });
+    // Trailing junk with matching declared size, stale larger size, and stale smaller size.
+    for (const declaredSize of [payload.length, payload.length + 50_000, Math.max(0, payload.length - 100)]) {
+      const packet = Buffer.concat([words(declaredSize), compressed, junk]);
+      assert.equal(hasFr3Wrapper(packet), true);
+      assert.deepEqual(await unpackFr3Resource(packet), new Uint8Array(payload));
+    }
+    // Corrupting the Adler-32 trailer must still reject even when trailing junk is present.
+    const badAdler = Buffer.concat([words(payload.length + 100), compressed, junk]);
+    badAdler[4 + compressed.length - 1] = badAdler[4 + compressed.length - 1]! ^ 0xff;
+    await assert.rejects(unpackFr3Resource(badAdler));
+  }
+  // Empty payload with trailing junk and stale size.
+  const emptyPacket = Buffer.concat([words(1234), deflateSync(Buffer.alloc(0)), junk]);
+  assert.deepEqual(await unpackFr3Resource(emptyPacket), new Uint8Array());
+  // Corrupting deflate data must reject even with trailing junk.
+  const badDeflate = Buffer.concat([words(payload.length), deflateSync(payload), junk]);
+  badDeflate[6] = badDeflate[6]! ^ 0xff;
+  badDeflate[7] = badDeflate[7]! ^ 0xff;
+  await assert.rejects(unpackFr3Resource(badDeflate));
+});
+
+test("3dobjdb.BIN handles out-of-order roots, stale header totals, and version 17 headers", () => {
+  const names = parseBinInfo(namesFixture());
+  const sentinels = Buffer.alloc(16, 255);
+  const root0 = Buffer.concat([
+    sentinels, words(0, 0, 0, 0, 0, 0, 0, 2), floats(0, 50), words(0, 0, 1, 99, 5, 0, 0, 0, 0),
+  ]);
+  const root1 = Buffer.concat([
+    sentinels, words(1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 6, 0, 0, 0, 1, 0),
+  ]);
+  const trailer = Buffer.concat([words(0, 0), words(0, 0)]);
+
+  // C2 + C3: root 1 stored before root 0, plus stale header totals on words 4, 12, and 13.
+  const staleHeader = words(18, 2, 0, 0, 99, 0, 0, 0, 0, 0, 0, 1, 77, 88, 0, 0, 0, 0);
+  const outOfOrder = parse3dObjDb(Buffer.concat([staleHeader, root1, root0, trailer]), names);
+  assert.equal(outOfOrder.version, 18);
+  assert.equal(outOfOrder.header.length, 18);
+  assert.deepEqual(outOfOrder.roots.map(r => r.shapeId), [0, 1]);
+  assert.equal(outOfOrder.roots[0]?.meshSlotId, 5);
+  assert.equal(outOfOrder.roots[1]?.meshSlotId, 6);
+
+  // Duplicate and out-of-range shape IDs are still rejected.
+  assert.throws(
+    () => parse3dObjDb(Buffer.concat([staleHeader, root0, root0, trailer]), names),
+    /Duplicate 3dobjdb\.BIN root/,
+  );
+  const badIdRoot = Buffer.from(root1);
+  badIdRoot.writeUInt32LE(2, 16);
+  assert.throws(
+    () => parse3dObjDb(Buffer.concat([staleHeader, root0, badIdRoot, trailer]), names),
+    /Invalid 3dobjdb\.BIN shape header id 2/,
+  );
+
+  // C4: version 17 uses a 17-word header (omitting word 17) with the same root & trailer layout.
+  const v17Header = words(17, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 0, 0, 0);
+  const v17 = parse3dObjDb(Buffer.concat([v17Header, root1, root0, trailer]), names);
+  assert.equal(v17.version, 17);
+  assert.equal(v17.header.length, 17);
+  assert.deepEqual(v17.roots.map(r => r.shapeId), [0, 1]);
+  assert.equal(v17.roots[0]?.meshSlotId, 5);
+  assert.equal(v17.roots[1]?.meshSlotId, 6);
+
+  // Unsupported versions still throw.
+  const v16Header = Buffer.from(v17Header);
+  v16Header.writeUInt32LE(16, 0);
+  assert.throws(() => parse3dObjDb(Buffer.concat([v16Header, root0, root1, trailer]), names), /Unsupported 3dobjdb\.BIN version 16/);
+});
+
+test("Shuffle modded tracks (v17, out-of-order) and cars (stale headers, trailing zlib junk) parse cleanly", { skip: !existsSync(demoPath) }, async () => {
+  const vfs = await NodeVfs.open(demoPath);
+
+  // C4: all 17 version-17 FR2 port tracks.
+  const v17Tracks = [
+    "bayaf", "bayb", "bayc", "flora", "florb", "florc",
+    "desa", "desb", "desc", "fukuoka", "junga", "jungb", "jungc",
+    "oval2", "oval3", "spring", "spring2",
+  ];
+  for (const track of v17Tracks) {
+    const dir = `3ddata/tracks/${track}`;
+    const binInfo = parseBinInfo(await vfs.readUnpacked(`${dir}/bininfo.bin`));
+    const slots = parseXbx(await vfs.readUnpacked(`${dir}/3dobjs.xbx`), await vfs.readUnpacked(`${dir}/3dobjsp.xbx`));
+    const scene = parse3dObjDb(await vfs.readUnpacked(`${dir}/3dobjdb.bin`), binInfo);
+    assert.equal(scene.version, 17, track);
+    assert.equal(scene.header.length, 17, track);
+    assert.equal(scene.roots.length, binInfo.shapes.length, track);
+    assert.ok(slots.length > 0, track);
+    for (let i = 0; i < scene.roots.length; i++) assert.equal(scene.roots[i]!.shapeId, i, track);
+  }
+
+  // C2: representative out-of-order tracks.
+  for (const track of ["engbf", "pacbf", "paccf", "tfukuoka", "tmonza"]) {
+    const dir = `3ddata/tracks/${track}`;
+    const binInfo = parseBinInfo(await vfs.readUnpacked(`${dir}/bininfo.bin`));
+    const scene = parse3dObjDb(await vfs.readUnpacked(`${dir}/3dobjdb.bin`), binInfo);
+    assert.equal(scene.roots.length, binInfo.shapes.length, track);
+    for (let i = 0; i < scene.roots.length; i++) assert.equal(scene.roots[i]!.shapeId, i, track);
+  }
+
+  // C3 + C5: stale-header cars and all 5 trailing-junk car directories.
+  const trailingCars = ["75ranch", "cnmust", "fiestast", "v6must", "v6mus2"];
+  for (const car of trailingCars) {
+    const dir = `3ddata/cars/${car}`;
+    const rawObjs = await vfs.readBytes(`${dir}/3dobjs.xbx`);
+    const rawObjsp = await vfs.readBytes(`${dir}/3dobjsp.xbx`);
+    const objs = await vfs.readUnpacked(`${dir}/3dobjs.xbx`);
+    const objsp = await vfs.readUnpacked(`${dir}/3dobjsp.xbx`);
+    assert.deepEqual(objs, new Uint8Array(inflateSync(rawObjs.subarray(4))), `${car}/3dobjs.xbx`);
+    assert.deepEqual(objsp, new Uint8Array(inflateSync(rawObjsp.subarray(4))), `${car}/3dobjsp.xbx`);
+    const slots = parseXbx(objs, objsp);
+    assert.ok(slots.length > 0, car);
+  }
+  for (const car of ["01escap", "67gt500", "boss302", "rs200", "caprsev", ...trailingCars]) {
+    const dir = `3ddata/cars/${car}`;
+    const binInfo = parseBinInfo(await vfs.readUnpacked(`${dir}/bininfo.bin`));
+    const scene = parse3dObjDb(await vfs.readUnpacked(`${dir}/3dobjdb.bin`), binInfo);
+    assert.equal(scene.roots.length, binInfo.shapes.length, car);
+  }
 });

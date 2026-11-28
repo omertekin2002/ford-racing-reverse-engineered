@@ -70,6 +70,39 @@
       background: #ddd;
       transition: width 120ms linear;
     }
+    #error-banner {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: min(640px, calc(100% - 24px));
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      background: rgba(64, 16, 16, 0.92);
+      border: 1px solid rgba(255, 110, 100, 0.65);
+      border-radius: 4px;
+      color: #ffeceb;
+      font-size: 13px;
+      z-index: 10;
+    }
+    #error-banner[hidden] {
+      display: none;
+    }
+    #error-dismiss {
+      flex: none;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+      color: #fff;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    #error-dismiss:hover {
+      background: rgba(255, 255, 255, 0.16);
+    }
     /* Below the canvas, outside #stage, so neither the game nor the loading overlay covers it. */
     #rights-notice {
       flex: none;
@@ -95,6 +128,10 @@
       <div id="bar-wrap"><div id="bar"></div></div>
       <p id="msg">Loading native engine…</p>
     </div>
+    <div id="error-banner" role="alert" hidden>
+      <span id="error-msg"></span>
+      <button id="error-dismiss" type="button" aria-label="Dismiss error">Dismiss</button>
+    </div>
   </div>
   <aside id="rights-notice" aria-label="Rights notice">
     <p>An independent reimplementation that reads Ford Racing 3 Shuffle’s files, not the original executable. Its physics and AI are approximations.</p>
@@ -113,6 +150,10 @@
     const overlay = document.getElementById("overlay");
     const bar = document.getElementById("bar");
     const msg = document.getElementById("msg");
+    const errorBanner = document.getElementById("error-banner");
+    const errorMsg = document.getElementById("error-msg");
+    const errorDismiss = document.getElementById("error-dismiss");
+    let mounted = false;
 
     function notify(payload) {
       if (window.parent && window.parent !== window) {
@@ -120,9 +161,33 @@
       }
     }
 
+    function clearRuntimeError() {
+      errorBanner.hidden = true;
+      errorMsg.textContent = "";
+      if (mounted) {
+        overlay.classList.add("hidden");
+      }
+    }
+
+    errorDismiss.addEventListener("click", () => {
+      clearRuntimeError();
+      canvas.focus();
+    });
+
+    canvas.addEventListener("pointerdown", () => {
+      if (mounted && !errorBanner.hidden) {
+        clearRuntimeError();
+      }
+    });
+
     window.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && document.fullscreenElement) {
-        notify({ action: "exit-fullscreen" });
+      if (event.key === "Escape") {
+        if (mounted && !errorBanner.hidden) {
+          clearRuntimeError();
+        }
+        if (document.fullscreenElement) {
+          notify({ action: "exit-fullscreen" });
+        }
       }
     });
 
@@ -140,16 +205,26 @@
       },
       onStatus(status) {
         msg.textContent = status;
+        if (mounted && !/^(load failed|engine error|webgl2 context lost)/i.test(status)) {
+          clearRuntimeError();
+        }
         notify({ status, log: `[native] ${status}` });
       },
       onError(error) {
         const text = String(error?.message || error);
-        overlay.classList.remove("hidden");
-        msg.textContent = text;
+        if (!mounted) {
+          overlay.classList.remove("hidden");
+          msg.textContent = text;
+        } else {
+          overlay.classList.add("hidden");
+          errorMsg.textContent = text;
+          errorBanner.hidden = false;
+        }
         notify({ state: "error", status: text, log: `[native] ERROR: ${text}` });
       },
     }).then(() => {
-      overlay.classList.add("hidden");
+      mounted = true;
+      clearRuntimeError();
       canvas.focus();
       notify({ state: "running", status: "Running. Click the game, then press Enter.", log: "[native] ready" });
     }).catch(() => {});

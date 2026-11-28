@@ -71,6 +71,112 @@ const ASCII_DECODER = new TextDecoder("ascii");
 const DESCRIPTOR_STRIDE = 172;
 const FALLBACK_CODEPOINT = 0x25a1;
 
+const FALLBACK_TRANSLITERATION: Readonly<Record<string, string>> = {
+  // Punctuation and typographic symbols absent from the 134-glyph bitmap font
+  "\u2026": "...", // …
+  "\u2014": "-",   // —
+  "\u2013": "-",   // –
+  "\u2212": "-",   // −
+  "\u2018": "'",   // ‘
+  "\u2019": "'",   // ’
+  "\u00b4": "'",   // ´
+  "\u201c": "\"",  // “
+  "\u201d": "\"",  // ”
+  "\u2022": "-",   // •
+  "\u00a0": " ",   // NBSP
+  // Special Latin characters that do not decompose to ASCII under NFD
+  "\u0141": "L", "\u0142": "l", // Ł ł
+  "\u0110": "D", "\u0111": "d", // Đ đ
+  "\u00d8": "O", "\u00f8": "o", // Ø ø
+  "\u00c6": "AE", "\u00e6": "ae", // Æ æ
+  "\u0153": "oe", // œ
+  "\u00df": "ss", // ß (only used if a font lacks ß)
+  // Cyrillic uppercase (RU translation)
+  "\u0410": "A", "\u0411": "B", "\u0412": "V", "\u0413": "G", "\u0414": "D",
+  "\u0415": "E", "\u0401": "YO", "\u0416": "ZH", "\u0417": "Z", "\u0418": "I",
+  "\u0419": "Y", "\u041a": "K", "\u041b": "L", "\u041c": "M", "\u041d": "N",
+  "\u041e": "O", "\u041f": "P", "\u0420": "R", "\u0421": "S", "\u0422": "T",
+  "\u0423": "U", "\u0424": "F", "\u0425": "KH", "\u0426": "TS", "\u0427": "CH",
+  "\u0428": "SH", "\u0429": "SHCH", "\u042a": "", "\u042b": "Y", "\u042c": "'",
+  "\u042d": "E", "\u042e": "YU", "\u042f": "YA",
+  // Cyrillic lowercase
+  "\u0430": "a", "\u0431": "b", "\u0432": "v", "\u0433": "g", "\u0434": "d",
+  "\u0435": "e", "\u0451": "yo", "\u0436": "zh", "\u0437": "z", "\u0438": "i",
+  "\u0439": "y", "\u043a": "k", "\u043b": "l", "\u043c": "m", "\u043d": "n",
+  "\u043e": "o", "\u043f": "p", "\u0440": "r", "\u0441": "s", "\u0442": "t",
+  "\u0443": "u", "\u0444": "f", "\u0445": "kh", "\u0446": "ts", "\u0447": "ch",
+  "\u0448": "sh", "\u0449": "shch", "\u044a": "", "\u044b": "y", "\u044c": "'",
+  "\u044d": "e", "\u044e": "yu", "\u044f": "ya",
+};
+
+function stripDiacritics(ch: string): string {
+  const mapped = FALLBACK_TRANSLITERATION[ch];
+  if (mapped !== undefined) return mapped;
+  const nfd = ch.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return nfd !== ch ? nfd : "";
+}
+
+function fitReplacementToFont(font: ParsedFont, replacement: string): string | null {
+  let out = "";
+  for (let i = 0; i < replacement.length; i++) {
+    const c = replacement[i]!;
+    const cp = c.charCodeAt(0);
+    if (font.glyphMap.has(cp)) {
+      out += c;
+      continue;
+    }
+    const upper = c.toUpperCase();
+    if (upper.length === 1 && font.glyphMap.has(upper.charCodeAt(0))) {
+      out += upper;
+      continue;
+    }
+    const lower = c.toLowerCase();
+    if (lower.length === 1 && font.glyphMap.has(lower.charCodeAt(0))) {
+      out += lower;
+      continue;
+    }
+    return null;
+  }
+  return out;
+}
+
+/**
+ * Replace characters missing from `font` with ASCII/diacritic-stripped or transliterated equivalents
+ * when those target glyphs exist in `font`. Exact glyphs already in `font` are left untouched.
+ */
+export function transliterateForFont(font: ParsedFont, text: string): string {
+  let needsFallback = false;
+  for (let i = 0; i < text.length; i++) {
+    const code = text.charCodeAt(i);
+    if (code === 0x7e || code === 0x7c || code === 0x0a || code === 0x0d) continue;
+    if (!font.glyphMap.has(code)) {
+      needsFallback = true;
+      break;
+    }
+  }
+  if (!needsFallback) return text;
+
+  let out = "";
+  for (let i = 0; i < text.length; i++) {
+    const code = text.charCodeAt(i);
+    if (code === 0x7e || code === 0x7c || code === 0x0a || code === 0x0d || font.glyphMap.has(code)) {
+      out += text[i]!;
+      continue;
+    }
+    const ch = text[i]!;
+    const stripped = stripDiacritics(ch);
+    if (stripped.length > 0 || FALLBACK_TRANSLITERATION[ch] === "") {
+      const fitted = fitReplacementToFont(font, stripped);
+      if (fitted !== null) {
+        out += fitted;
+        continue;
+      }
+    }
+    out += ch;
+  }
+  return out;
+}
+
 export function parseFontBase(bytes: Uint8Array): FontDescriptor[] {
   if (bytes.length === 0 || bytes.length % DESCRIPTOR_STRIDE !== 0) {
     throw new Error(`Invalid fontbase.dat size ${bytes.length} (not a multiple of ${DESCRIPTOR_STRIDE})`);
@@ -230,22 +336,34 @@ export function buildFontAtlas(font: ParsedFont): FontAtlas {
 export function lookupGlyph(font: ParsedFont, codePoint: number): FontGlyph | undefined {
   // Renderer maps '~' (non-breaking space) to U+0020 space glyph.
   const mapped = codePoint === 0x7e ? 0x20 : codePoint;
-  return font.glyphMap.get(mapped) ?? font.glyphMap.get(FALLBACK_CODEPOINT);
+  const exact = font.glyphMap.get(mapped);
+  if (exact) return exact;
+  const ch = String.fromCodePoint(mapped);
+  const stripped = stripDiacritics(ch);
+  if (stripped.length > 0) {
+    const fitted = fitReplacementToFont(font, stripped[0]!);
+    if (fitted && fitted.length > 0) {
+      const fallback = font.glyphMap.get(fitted.charCodeAt(0));
+      if (fallback) return fallback;
+    }
+  }
+  return font.glyphMap.get(FALLBACK_CODEPOINT);
 }
 
 export function measureTextLine(font: ParsedFont, line: string): number {
+  const normalized = transliterateForFont(font, line);
   let width = 0;
   let prev = -1;
-  for (let i = 0; i < line.length; i++) {
-    const raw = line.charCodeAt(i);
+  for (let i = 0; i < normalized.length; i++) {
+    const raw = normalized.charCodeAt(i);
     const code = raw === 0x7e ? 0x20 : raw;
     const glyph = lookupGlyph(font, code);
     if (!glyph) continue;
     if (prev >= 0) {
-      width += font.kerningMap.get((prev << 16) | code) ?? 0;
+      width += font.kerningMap.get((prev << 16) | glyph.codePoint) ?? 0;
     }
     width += glyph.advance;
-    prev = code;
+    prev = glyph.codePoint;
   }
   return width;
 }
@@ -268,7 +386,8 @@ export function layoutText(
   wordWrap: boolean,
   scale = 1
 ): TextLineLayout[] {
-  const hardLines = text.split("|");
+  const normalized = transliterateForFont(font, text);
+  const hardLines = normalized.split("|");
   const lines: string[] = [];
   const invScale = scale > 0 ? 1 / scale : 1;
   const maxFontWidth = wordWrap && boxWidth > 0 ? boxWidth * invScale : Number.POSITIVE_INFINITY;

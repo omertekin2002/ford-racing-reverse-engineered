@@ -44,6 +44,44 @@ const ZERO_UV: Point = [0, 0];
 const QUAD_INDICES = [0, 1, 2, 0, 2, 3] as const;
 const DEFAULT_SHADOW = { x: 1, y: 1, colour: [0, 0, 0, 0.72] as UiColor };
 
+/** Compute the largest centered 4:3 viewport rectangle inside a canvas so 640x480 UI never stretches unevenly. */
+export function computeUiViewport(
+  canvasWidth: number,
+  canvasHeight: number,
+  targetAspect = REF_WIDTH / REF_HEIGHT,
+): ViewportRect {
+  if (canvasWidth <= 0 || canvasHeight <= 0 || !Number.isFinite(targetAspect) || targetAspect <= 0) {
+    return { x: 0, y: 0, width: 0, height: 0 };
+  }
+  const aspect = canvasWidth / canvasHeight;
+  if (Math.abs(aspect - targetAspect) < 1e-4) {
+    return { x: 0, y: 0, width: canvasWidth, height: canvasHeight };
+  }
+  if (aspect > targetAspect) {
+    const width = Math.max(1, Math.round(canvasHeight * targetAspect));
+    const x = Math.floor((canvasWidth - width) * 0.5);
+    return { x, y: 0, width, height: canvasHeight };
+  }
+  const height = Math.max(1, Math.round(canvasWidth / targetAspect));
+  const y = Math.floor((canvasHeight - height) * 0.5);
+  return { x: 0, y, width: canvasWidth, height };
+}
+
+/** Map normalized full-canvas pointer coordinates [0, 1] into the centered 4:3 UI viewport's [0, 1] space. */
+export function canvasToUiPoint(
+  canvasX: number,
+  canvasY: number,
+  canvasWidth: number,
+  canvasHeight: number,
+): readonly [number, number] {
+  const vp = computeUiViewport(canvasWidth, canvasHeight);
+  if (vp.width <= 0 || vp.height <= 0) return [canvasX, canvasY];
+  return [
+    (canvasX * canvasWidth - vp.x) / vp.width,
+    (canvasY * canvasHeight - vp.y) / vp.height,
+  ];
+}
+
 /** Build a frame in normalized UI coordinates with a top-left origin. */
 export class UiBatchBuilder {
   private readonly vertices: number[] = [];
@@ -152,7 +190,7 @@ export class UiBatchBuilder {
         const code = char === 0x7e ? 0x20 : char;
         const glyph = lookupGlyph(font, code);
         if (!glyph) continue;
-        if (previous >= 0) x += (font.kerningMap.get((previous << 16) | code) ?? 0) * scale;
+        if (previous >= 0) x += (font.kerningMap.get((previous << 16) | glyph.codePoint) ?? 0) * scale;
         const metrics = atlas.glyphs.get(glyph.codePoint);
         if (metrics && glyph.coverage.length && glyph.width && glyph.height) {
           const left = rect.x + (x + glyph.leftBearing * scale) / this.layoutWidth;
@@ -167,7 +205,7 @@ export class UiBatchBuilder {
           });
         }
         x += glyph.advance * scale;
-        previous = code;
+        previous = glyph.codePoint;
       }
     }
 
@@ -270,11 +308,19 @@ export class UiRenderer {
     for (const resource of [this.program, this.vao, this.buffer, this.white]) this.context.release(resource);
   }
 
-  render(batch: UiBatch, canvasWidth = this.context.gl.drawingBufferWidth, canvasHeight = this.context.gl.drawingBufferHeight): void {
+  render(
+    batch: UiBatch,
+    canvasWidth = this.context.gl.drawingBufferWidth,
+    canvasHeight = this.context.gl.drawingBufferHeight,
+    preserveAspect = true,
+  ): void {
     if (this.disposed) throw new Error("UI renderer has been disposed");
     if (!batch.commands.length || canvasWidth <= 0 || canvasHeight <= 0) return;
     const gl = this.context.gl;
-    gl.viewport(0, 0, canvasWidth, canvasHeight);
+    const vp = preserveAspect
+      ? computeUiViewport(canvasWidth, canvasHeight)
+      : { x: 0, y: 0, width: canvasWidth, height: canvasHeight };
+    gl.viewport(vp.x, vp.y, vp.width, vp.height);
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
     gl.disable(gl.SCISSOR_TEST);
@@ -302,7 +348,8 @@ export class UiRenderer {
   }
 
   renderHud(hudState: HudState, canvasWidth: number, canvasHeight: number, fonts: HudFonts, pcgTextures: HudTextures = {}): void {
-    this.render(buildHudBatch(hudState, canvasWidth, canvasHeight, fonts, pcgTextures), canvasWidth, canvasHeight);
+    const vp = computeUiViewport(canvasWidth, canvasHeight);
+    this.render(buildHudBatch(hudState, vp.width || canvasWidth, vp.height || canvasHeight, fonts, pcgTextures), canvasWidth, canvasHeight);
   }
 }
 

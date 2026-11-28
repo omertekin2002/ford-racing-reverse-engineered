@@ -1,4 +1,4 @@
-import { decodeA8R8G8B8, decodeDxt1, decodeDxt3, type TextureRecord } from "../formats/dxt.js";
+import { decodeTextureMip, type TextureRecord } from "../formats/dxt.js";
 import type { FontAtlas } from "../formats/fonts.js";
 import { decodePcgEntryRgba, type PcgEntry } from "../formats/pcg.js";
 
@@ -126,7 +126,8 @@ export class GlContext {
     // The extension requires block-aligned top-level dimensions.
     const top = record.mips[0];
     if (!top) throw new Error(`Texture ${record.name} has no mip levels`);
-    const compressed = extension && record.storage !== "a8r8g8b8" && top.width % 4 === 0 && top.height % 4 === 0
+    const isCompressedStorage = record.storage === "dxt1" || record.storage === "dxt3";
+    const compressed = extension && isCompressedStorage && top.width % 4 === 0 && top.height % 4 === 0
       && record.mips.every(({ width, height }) => (width <= 2 || width % 4 === 0) && (height <= 2 || height % 4 === 0));
     return this.upload(record.mips.length, (record.flags & 0x200) === 0, false, () => {
       record.mips.forEach(({ width, height, data }, level) => {
@@ -135,9 +136,7 @@ export class GlContext {
             : extension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
           gl.compressedTexImage2D(gl.TEXTURE_2D, level, format, width, height, 0, data);
         } else {
-          const rgba = record.storage === "dxt1" ? decodeDxt1(data, width, height)
-            : record.storage === "dxt3" ? decodeDxt3(data, width, height) : decodeA8R8G8B8(data);
-          this.writeRgba(level, width, height, rgba);
+          this.writeRgba(level, width, height, decodeTextureMip(record, level));
         }
       });
     });

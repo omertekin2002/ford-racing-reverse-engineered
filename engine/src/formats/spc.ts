@@ -176,6 +176,8 @@ export function parseSpc(bytes: Uint8Array): SpcBank {
 
 export interface MpcEntry {
   readonly stem: string;
+  /** Optional audio filename stem present in 128-byte paired VPC speech tables. */
+  readonly fileStem?: string;
   /** Bytes following the NUL terminator in the fixed-width record. */
   readonly metadata: Uint8Array;
 }
@@ -186,12 +188,41 @@ export interface MpcIndex {
   readonly shortfall: number;
 }
 
-export function parseMpc(bytes: Uint8Array, options: { readonly allowShortfall?: boolean } = {}): MpcIndex {
+export interface ParseMpcOptions {
+  readonly allowShortfall?: boolean;
+  readonly allowPartialTrailingEntry?: boolean;
+}
+
+export function parseMpc(bytes: Uint8Array, options: ParseMpcOptions = {}): MpcIndex {
   if (bytes.length < 4) throw new Error("Truncated MPC count");
   const declaredCount = view(bytes).getUint32(0, true);
   const payloadLength = bytes.length - 4;
-  if (payloadLength % mpcEntrySize !== 0) throw new Error("Partial MPC entry");
-  const present = payloadLength / mpcEntrySize;
+
+  // Speech tables (e.g. SND/SPEECH/<LANG>/*.vpc) store 128-byte pairs: [64-byte cue stem][64-byte file stem].
+  const pairedEntrySize = mpcEntrySize * 2;
+  if (declaredCount > 0 && payloadLength === declaredCount * pairedEntrySize) {
+    const entries: MpcEntry[] = [];
+    for (let index = 0; index < declaredCount; index++) {
+      const start = 4 + index * pairedEntrySize;
+      const cueSlot = bytes.subarray(start, start + mpcEntrySize);
+      const fileSlot = bytes.subarray(start + mpcEntrySize, start + pairedEntrySize);
+      const cueTerm = cueSlot.indexOf(0);
+      if (cueTerm <= 0) throw new Error(`MPC entry ${index} requires a nonempty NUL-terminated stem`);
+      const fileTerm = fileSlot.indexOf(0);
+      if (fileTerm <= 0) throw new Error(`MPC entry ${index} requires a nonempty NUL-terminated file stem`);
+      entries.push({
+        stem: ascii(cueSlot, 0, cueTerm, true),
+        fileStem: ascii(fileSlot, 0, fileTerm, true),
+        metadata: cueSlot.subarray(cueTerm + 1),
+      });
+    }
+    return { declaredCount, entries, shortfall: 0 };
+  }
+
+  const remainder = payloadLength % mpcEntrySize;
+  if (remainder !== 0 && !options.allowPartialTrailingEntry) throw new Error("Partial MPC entry");
+  const fullEntries = Math.floor(payloadLength / mpcEntrySize);
+  const present = fullEntries + (remainder > 0 ? 1 : 0);
   const shortfall = declaredCount - present;
   if (shortfall < 0 || (shortfall > 0 && !options.allowShortfall)) {
     throw new Error(`MPC declares ${declaredCount} entries but contains ${present}`);
@@ -200,7 +231,7 @@ export function parseMpc(bytes: Uint8Array, options: { readonly allowShortfall?:
   const entries: MpcEntry[] = [];
   for (let index = 0; index < present; index++) {
     const start = 4 + index * mpcEntrySize;
-    const end = start + mpcEntrySize;
+    const end = Math.min(bytes.length, start + mpcEntrySize);
     const entry = bytes.subarray(start, end);
     const terminator = entry.indexOf(0);
     if (terminator <= 0) throw new Error(`MPC entry ${index} requires a nonempty NUL-terminated stem`);

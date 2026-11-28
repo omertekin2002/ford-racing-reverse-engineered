@@ -47,6 +47,8 @@ export interface TrackSpatialOptions {
   slotOffsetsApplied?: boolean;
   /** Corridor width override, in world units added to either side. */
   corridorMargin?: number;
+  /** Boundary type table from the scene's BININFO, indexed by each root boundary's first word. */
+  boundaryTypes?: readonly string[];
 }
 
 type Triangle = {
@@ -179,7 +181,7 @@ export class TrackSpatial {
       this.segments.insert(Math.min(a[0], b[0]), Math.min(a[2], b[2]), Math.max(a[0], b[0]), Math.max(a[2], b[2]), i);
     }
     this.length = racingLine.length > 0 ? racingLine.length : geometricLength;
-    if (scene) this.addSceneBarriers(scene);
+    if (scene) this.addSceneBarriers(scene, options.boundaryTypes);
   }
 
   private position(index: number): Vec3 {
@@ -306,7 +308,7 @@ export class TrackSpatial {
     };
   }
 
-  private addSceneBarriers(scene: SceneDatabase): void {
+  private addSceneBarriers(scene: SceneDatabase, boundaryTypes: readonly string[] | undefined): void {
     const seen = new Set<string>();
     const keyFor = (x: number, z: number, endX: number, endZ: number) =>
       `${Math.round(x * 100)},${Math.round(z * 100)}:${Math.round(endX * 100)},${Math.round(endZ * 100)}`;
@@ -316,23 +318,49 @@ export class TrackSpatial {
       const key = keyFor(x, z, endX, endZ);
       if (seen.has(key)) return;
       seen.add(key);
+      if (this.crossesRacingLine(x, z, endX, endZ)) return;
       const dx = (endX - x) / length, dz = (endZ - z) / length;
       const nx = -dz, nz = dx;
       this.barriers.insert(Math.min(x, endX), Math.min(z, endZ), Math.max(x, endX), Math.max(z, endZ),
         { x, z, dx, dz, length, nx, nz });
       this.hasSceneBarriers = true;
     };
-    // Only the 28-byte directed wall segments on scene roots are collision
-    // barriers. scene.boundaryGroups holds planar sector/zone polygons tiling
-    // the course whose outer edges cut straight across the road.
+    // fr3.exe loads these directed X/Z segments at 0x439673 and resolves their
+    // first word against the per-track boundary type table (0x43e180).
+    // The physics lookup at 0x45e560 reads the active track sector's list.
+    // The separate mode records at 0x43999e have a different field layout.
     for (const root of scene.roots) {
-      for (const raw of [...root.boundaries, ...root.modeBoundaries]) {
+      for (const raw of root.boundaries) {
         const data = new DataView(raw.buffer, raw.byteOffset, raw.byteLength);
+        const typeIndex = data.getUint32(0, true);
+        const type = boundaryTypes?.[typeIndex]?.toUpperCase();
+        // Installed tracks put telegraph links on object placement lists.
+        // The cut-up roots also carry default boundaries, so retain index 0.
+        if (type?.startsWith("TELEGRAPH_LINK_TYPE_")
+          || (type === undefined && typeIndex !== 0 && root.secondaryRecords.length > 0)) continue;
         const x = data.getFloat32(4, true), z = data.getFloat32(8, true);
         const length = data.getFloat32(20, true);
         add(x, z, x + data.getFloat32(12, true) * length, z + data.getFloat32(16, true) * length);
       }
     }
+  }
+
+  private crossesRacingLine(x: number, z: number, endX: number, endZ: number): boolean {
+    // A wall has infinite height in this index. Reject projected crossings
+    // such as ENGBF's stone spans and telegraph links with no type table.
+    const dx = endX - x, dz = endZ - z;
+    const candidates = this.segments.near((x + endX) / 2, (z + endZ) / 2, Math.max(Math.abs(dx), Math.abs(dz)) / 2);
+    for (const i of candidates) {
+      const [ax, , az] = this.position(i);
+      const [bx, , bz] = this.position(i + 1);
+      const sideA = dx * (az - z) - dz * (ax - x);
+      const sideB = dx * (bz - z) - dz * (bx - x);
+      if (sideA * sideB >= 0) continue;
+      const sideStart = (bx - ax) * (z - az) - (bz - az) * (x - ax);
+      const sideEnd = (bx - ax) * (endZ - az) - (bz - az) * (endX - ax);
+      if (sideStart * sideEnd < 0) return true;
+    }
+    return false;
   }
 
   queryBarrierContacts(spheres: readonly WorldSphere[]): BarrierContact[] {

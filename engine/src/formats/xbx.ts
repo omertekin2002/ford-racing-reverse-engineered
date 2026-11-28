@@ -365,7 +365,7 @@ export interface ScenePlanarBoundary {
 }
 
 export interface SceneDatabase {
-  version: 18;
+  version: 17 | 18;
   header: Uint32Array;
   roots: SceneRoot[];
   animationGroups: SceneRangeBand[][];
@@ -396,9 +396,13 @@ function readCamera(reader: Reader): SceneCamera {
   return { raw, children };
 }
 
-function readRoot(reader: Reader, index: number): SceneRoot {
-  if (reader.u32s(4).some(word => word !== 0xffffffff) || reader.u32() !== index) {
-    throw new Error(`Invalid 3dobjdb.BIN shape header for root ${index}`);
+function readRoot(reader: Reader, rootCount: number): SceneRoot {
+  if (reader.u32s(4).some(word => word !== 0xffffffff)) {
+    throw new Error(`Invalid 3dobjdb.BIN shape header sentinel at ${reader.offset - 16}`);
+  }
+  const shapeId = reader.u32();
+  if (shapeId >= rootCount) {
+    throw new Error(`Invalid 3dobjdb.BIN shape header id ${shapeId} (root count ${rootCount})`);
   }
   const transforms = Array.from({ length: reader.u32() & 0x3f }, () => ({
     first: reader.floats(3),
@@ -430,7 +434,7 @@ function readRoot(reader: Reader, index: number): SceneRoot {
     ? { kind: "indirect", references: reader.u32s(childCount) }
     : { kind: "inline", nodes: Array.from({ length: childCount }, () => readChild(reader)) };
   return {
-    shapeId: index, transforms, boundaries, points, references, secondaryRecords, mode,
+    shapeId, transforms, boundaries, points, references, secondaryRecords, mode,
     modeBoundaries, cameraControl, cameras, modePairs, lodValues, declaredInlineChildren,
     declaredChildPairs, preMeshWords, meshSlotId, controlWords, meshPairs, children,
   };
@@ -463,36 +467,33 @@ function readAnimationGroups(reader: Reader, groupCount: number): SceneRangeBand
 
 export function parse3dObjDb(bytes: Uint8Array, binInfo?: BinInfo): SceneDatabase {
   const reader = new Reader(bytes, "3dobjdb.BIN");
-  const header = reader.u32s(18);
-  const version = header[0];
-  if (version !== 18) throw new Error(`Unsupported 3dobjdb.BIN version ${version}`);
+  const version = reader.u32();
+  if (version !== 17 && version !== 18) {
+    throw new Error(`Unsupported 3dobjdb.BIN version ${version}`);
+  }
+  // Version 17 (FR2 ports and UI track previews) has a 17-word header;
+  // version 18 (FR3) adds word 17 (modePairs allocation total).
+  const headerLength = version === 17 ? 17 : 18;
+  const header = new Uint32Array(headerLength);
+  header[0] = version;
+  header.set(reader.u32s(headerLength - 1), 1);
   const rootCount = header[1]!;
   if (binInfo && rootCount !== binInfo.shapes.length) {
     throw new Error("3dobjdb.BIN root count does not match bininfo.BIN");
   }
 
-  const roots: SceneRoot[] = [];
-  const countedWords = [2, 3, 4, 6, 9, 10, 11, 12, 13];
-  const totals = new Array<number>(18).fill(0);
+  // fr3.exe places each root directly at roots[shapeId] regardless of file order,
+  // and treats header words 2..14/16/17 purely as pool-size hints (modded car files
+  // often carry stale totals even when all roots and trailing sections are valid).
+  const indexedRoots = new Array<SceneRoot | undefined>(rootCount);
   for (let i = 0; i < rootCount; i++) {
-    const root = readRoot(reader, i);
-    roots.push(root);
-    const counts = [
-      [2, root.references.length],
-      [3, root.secondaryRecords.length],
-      [4, root.transforms.length],
-      [6, root.boundaries.length],
-      [9, root.declaredInlineChildren],
-      [10, root.declaredChildPairs],
-      [11, root.children.kind === "indirect" ? root.children.references.length : 0],
-      [12, root.preMeshWords.length],
-      [13, root.lodValues.length],
-    ] as const;
-    for (const [word, count] of counts) totals[word] = totals[word]! + count;
+    const root = readRoot(reader, rootCount);
+    if (indexedRoots[root.shapeId] !== undefined) {
+      throw new Error(`Duplicate 3dobjdb.BIN root for shape ${root.shapeId}`);
+    }
+    indexedRoots[root.shapeId] = root;
   }
-  for (const word of countedWords) {
-    if (totals[word] !== header[word]) throw new Error(`3dobjdb.BIN root total does not match header word ${word}`);
-  }
+  const roots = indexedRoots as SceneRoot[];
 
   const animationGroups = readAnimationGroups(reader, header[15]!);
   const boundaryGroupCount = reader.u32();

@@ -57,6 +57,16 @@ export interface AiDriverOptions {
   readonly halfLength?: number;
 }
 
+/** Forward track progress (m/s) above which a slow AI car counts as advancing rather than stalled. */
+const stallProgressRate = 0.25;
+/** Forward-vector rise (sine of pitch, ~5.7°) above which an AI car counts as facing uphill. */
+const climbingSlope = 0.1;
+/** Stall patience for an uphill car inside its lane that is not advancing (e.g. briefly sliding on a loose grid). */
+const climbingStallSeconds = 6;
+/** Uphill feed-forward: throttle per unit grade (sine of pitch) added to the AI pedal, and its upper bound. */
+const uphillPedalGain = 2.5;
+const uphillPedalMax = 0.6;
+
 export function wrapTrackProgress(u: number): number {
   return u - Math.floor(u);
 }
@@ -130,16 +140,21 @@ export class AiDriver {
   private pedal = 0;
   private previousError?: number;
   private blockedTime = 0;
+  private stallTime = 0;
   private reverseTime = 0;
   private reverseSteer = 0;
+  private reverseAttempts = 0;
+  private lastU?: number;
 
   constructor(private readonly line: RacingLine, private readonly options: AiDriverOptions) {
     validateCircuit(line);
   }
 
   reset(): void {
-    this.laneOffset = this.steer = this.pedal = this.blockedTime = this.reverseTime = this.reverseSteer = 0;
+    this.laneOffset = this.steer = this.pedal = this.blockedTime = this.stallTime = this.reverseTime = this.reverseSteer = 0;
+    this.reverseAttempts = 0;
     this.previousError = undefined;
+    this.lastU = undefined;
   }
 
   update(dt: number, frame: AiDriverFrame): CarControlOutput {
@@ -173,7 +188,12 @@ export class AiDriver {
     const halfLength = this.options.halfLength ?? 2.2;
     const clearance = Math.max(0, difficulty.DIFFICULTY_OVERTAKE_CLEARANCE);
     const laneLimit = Math.max(0, look.halfWidth - halfWidth - 0.25);
-    const preferredLane = clamp(look.offset + packSlot * difficulty.DIFFICULTY_LINE_VARIATION, -laneLimit, laneLimit);
+    let preferredLane = clamp(look.offset + packSlot * difficulty.DIFFICULTY_LINE_VARIATION, -laneLimit, laneLimit);
+    // When pushed outside the normal lane boundary (e.g. rubbing a barrier), aim back toward track center.
+    if (laneLimit > 0 && Math.abs(track.lateralOffset) > laneLimit) {
+      const recovery = clamp((Math.abs(track.lateralOffset) - laneLimit) / Math.max(1, halfWidth * 2), 0, 1);
+      preferredLane = lerp(preferredLane, 0, recovery);
+    }
     const obstacles = (frame.obstacles ?? []).map(obstacle => {
       const combinedHalfWidth = halfWidth + (obstacle.halfWidth ?? 1);
       return {
@@ -249,23 +269,63 @@ export class AiDriver {
     this.previousError = error;
     this.steer = lerp(this.steer, clamp(1.6 * error + 0.08 * derivative, -1, 1), -Math.expm1(-10 * elapsed));
 
+    const alignedSpeed = targetSpeed * lerp(1, 0.32, clamp(Math.abs(error) / 1.3, 0, 1));
+    const speedError = alignedSpeed - speed;
+    // Uphill gravity feed-forward: holding a low crawl speed behind traffic or while turning in on a steep grade needs
+    // throttle just to stay put, so a pure speed-error pedal would stall the car and roll it back down the hill.
+    const grade = Math.max(0, car.forward[1]);
+    const holdPedal = alignedSpeed > 0.5 ? clamp(grade * uphillPedalGain, 0, uphillPedalMax) : 0;
+    const requestedPedal = clamp(speedError / (speedError < 0 ? 6 : 10) + (speedError > -2 ? holdPedal : 0), -1, 1);
+    const progressMeters = this.lastU === undefined
+      ? speed * elapsed
+      : trackProgressDelta(this.lastU, track.u) * this.line.length;
+    this.lastU = track.u;
+
     if (this.reverseTime > 0) {
       this.reverseTime = Math.max(0, this.reverseTime - elapsed);
       if (this.reverseTime > 0) return this.reverseControl(powerMultiplier);
+      this.blockedTime = 0;
+      this.stallTime = 0;
     } else {
-      this.blockedTime = (car.blocked || pinnedBehindStopped) && speed < 1.5 ? this.blockedTime + elapsed : 0;
-      if (this.blockedTime > 2) {
+      // A slow car that is still gaining ground (e.g. a heavy car clawing up a steep or loose grid) is not stuck:
+      // backing it up would only roll it down the hill. Low-speed "blocked" flags from the host are timer-based, so
+      // they cannot tell crawling from pinning; forward track progress can.
+      const advancing = elapsed > 0 && progressMeters > stallProgressRate * elapsed;
+      // Facing uphill inside the lane (clear of the barriers) with nothing stopped just ahead: keep driving.
+      const climbing = car.forward[1] > climbingSlope && !pinnedBehindStopped
+        && Math.abs(track.lateralOffset) <= Math.max(laneLimit, 0.5);
+      const holdBlocked = (car.blocked || pinnedBehindStopped) && speed < 1.5 && !advancing;
+      this.blockedTime = holdBlocked ? this.blockedTime + elapsed : advancing ? 0 : Math.max(0, this.blockedTime - elapsed);
+      const wantsForward = requestedPedal > 0.15 && targetSpeed > 2.5;
+      const stalled = wantsForward && !advancing && (
+        speed < 1.8 || (speed < 3.5 && elapsed > 0 && progressMeters < 0.45 * elapsed)
+      );
+      if (stalled) {
+        this.stallTime += elapsed;
+      } else if (speed > 4 || (elapsed > 0 && progressMeters > elapsed)) {
+        this.stallTime = 0;
+        this.reverseAttempts = 0;
+      } else {
+        this.stallTime = Math.max(0, this.stallTime - elapsed * 0.5);
+      }
+      const patience = climbing ? climbingStallSeconds : 2;
+      if (this.blockedTime > patience || this.stallTime > patience) {
         this.blockedTime = 0;
-        this.reverseTime = 1.1;
-        this.reverseSteer = error >= 0 ? -0.65 : 0.65;
+        this.stallTime = 0;
+        this.reverseTime = Math.min(1.8, 1.1 + this.reverseAttempts * 0.25);
+        this.reverseAttempts++;
+        if (Math.abs(error) > 0.15) {
+          this.reverseSteer = error >= 0 ? -0.75 : 0.75;
+        } else if (Math.abs(track.lateralOffset) > 0.5) {
+          this.reverseSteer = track.lateralOffset >= 0 ? 0.7 : -0.7;
+        } else {
+          this.reverseSteer = this.reverseAttempts % 2 === 1 ? -0.65 : 0.65;
+        }
         this.pedal = 0;
         return this.reverseControl(powerMultiplier);
       }
     }
 
-    const alignedSpeed = targetSpeed * lerp(1, 0.32, clamp(Math.abs(error) / 1.3, 0, 1));
-    const speedError = alignedSpeed - speed;
-    const requestedPedal = clamp(speedError / (speedError < 0 ? 6 : 10), -1, 1);
     this.pedal = lerp(this.pedal, requestedPedal, -Math.expm1(-(requestedPedal < this.pedal ? 12 : 5) * elapsed));
     const boost = this.options.mode === "RACING_BOOST" && (frame.boostCharges ?? 0) > 0 && !frame.boostActive
       && speed > 14 && alignedSpeed > speed + 6 && this.pedal > 0.65 && Math.abs(this.steer) < 0.2 && !leader;

@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
-import { buildFontAtlas, layoutText, parseFonts } from "../src/formats/fonts";
+import { buildFontAtlas, layoutText, lookupGlyph, parseFonts, transliterateForFont } from "../src/formats/fonts";
 import { decodePcgEntryRgba, findPcgEntry, parsePcg, resolveUiTextureRef } from "../src/formats/pcg";
 import { lookupTranslation, parseTranslationTable } from "../src/formats/tlate";
 import { collectUiNodes, indexUiTemplates, parseUiScript } from "../src/formats/uiScript";
@@ -237,4 +237,29 @@ test("real Shuffle UI, PCG, font, and translation files parse completely", { ski
   assert.equal(totalBlocks, 201);
   assert.equal(distinctTextures.size, 52);
   assert.ok(path.isAbsolute(DEMO_ROOT));
+
+  // 5. Font fallback transliteration keeps exact glyphs and removes □ boxes across all 12 TLATE languages.
+  const bodyFont = fonts[2]!;
+  assert.equal(lookupGlyph(bodyFont, "É".charCodeAt(0))?.codePoint, "É".charCodeAt(0));
+  assert.equal(lookupGlyph(bodyFont, "ß".charCodeAt(0))?.codePoint, "ß".charCodeAt(0));
+  assert.equal(lookupGlyph(bodyFont, "Ř".charCodeAt(0))?.codePoint, "R".charCodeAt(0));
+  assert.equal(lookupGlyph(bodyFont, "Ł".charCodeAt(0))?.codePoint, "L".charCodeAt(0));
+  assert.equal(transliterateForFont(bodyFont, "LOADING…"), "LOADING...");
+  assert.equal(transliterateForFont(bodyFont, "SZYBKI WYŚCIG"), "SZYBKI WYSCIG");
+  assert.equal(transliterateForFont(bodyFont, "БЫСТРАЯ ГОНКА"), "BYSTRAYA GONKA");
+
+  const tlatePaths = vfs.list("language/").filter((p) => /^language\/tlate_[a-z0-9]+\.dat$/i.test(p));
+  assert.equal(tlatePaths.length, 12);
+  for (const tp of tlatePaths) {
+    const tbl = parseTranslationTable(await vfs.readBytes(tp));
+    for (const value of tbl.entries.values()) {
+      const rendered = transliterateForFont(bodyFont, value);
+      for (let i = 0; i < rendered.length; i++) {
+        const cp = rendered.charCodeAt(i);
+        if (cp === 0x7e || cp === 0x7c || cp === 0x0a || cp === 0x0d || cp === 0x09) continue;
+        const g = lookupGlyph(bodyFont, cp);
+        assert.ok(g && g.codePoint !== 0x25a1, `Unexpected □ fallback for U+${cp.toString(16)} in ${tp}: ${value}`);
+      }
+    }
+  }
 });

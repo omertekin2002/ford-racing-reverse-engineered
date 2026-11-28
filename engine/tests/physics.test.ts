@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import {
-  loadVehicleDatabases, parseRacingLine, parseSurfaceDatabase, parseTrackDatabase, resolveCarConfig,
+  loadVehicleDatabases, parseGameData, parseRacingLine, parseSurfaceDatabase, parseTrackDatabase, resolveCarConfig,
   type Pair, type RacingLine, type ResolvedCarConfig,
 } from "../src/formats/databases";
 import { parse3dObjDb, parseBinInfo, parseXbx, type MeshPartGeometry, type SceneDatabase, type SceneRoot } from "../src/formats/xbx";
@@ -13,6 +13,9 @@ import { resolveBarrierContact, resolveCarCollision, saturateCollisionImpulse } 
 import { TrackSpatial, type XbxModel } from "../src/physics/trackSpatial";
 import { computeMassProperties, engineTorqueAtRpm, steeringTarget, VehiclePhysics } from "../src/physics/vehiclePhysics";
 import { NodeVfs } from "../src/vfs/nodeVfs";
+import { AiDriver, trackProgressDelta } from "../src/game/aiDriver";
+import { RaceManager } from "../src/game/raceManager";
+import { aiControlToDrivingInput, isAiCarBlocked } from "../src/app";
 
 const near = (value: number, expected: number, tolerance = 1e-6) =>
   assert.ok(Math.abs(value - expected) <= tolerance, `expected ${value} ≈ ${expected} (±${tolerance})`);
@@ -403,3 +406,378 @@ test("local parsed track and car stay finite during a ten-second multi-maneuver 
   assert.ok(moved > 10, String(moved));
   assert.ok(groundedFrames > 500, String(groundedFrames));
 });
+
+test("idle cars do not creep with engine roughness, braking respects tyre grip, and ground clearance lifts the body", () => {
+  const roughConfig: ResolvedCarConfig = {
+    ...baseConfig,
+    body: {
+      ...baseConfig.body,
+      masses: [
+        { component: "FRONT", position: [0.8, 0.6, 1.3], mass: 350 },
+        { component: "FRONT", position: [-0.8, 0.6, 1.3], mass: 350 },
+        { component: "REAR", position: [0.8, 0.6, -1.0], mass: 150 },
+        { component: "REAR", position: [-0.8, 0.6, -1.0], mass: 150 },
+      ],
+    },
+    engine: {
+      ...baseConfig.engine,
+      fields: { ...baseConfig.engine.fields, ROUGHNESS: 0.4, TORQUE_MODIFIER: 6 },
+    },
+    brakes: {
+      ...baseConfig.brakes,
+      BRAKE_MAX_FORCE: [30000, 30000],
+      ADDITIONAL_BRAKING: 25000,
+    },
+  };
+  const idling = new VehiclePhysics(roughConfig, flat, { position: [0, 0.05, 0], yaw: 0 });
+  run(idling, 3, {});
+  assert.ok(idling.state.speedMps < 0.1, `expected negligible idle creep, got ${idling.state.speedMps}`);
+
+  // Extreme brake forces remain bounded by tyre friction rather than producing multi-g stops.
+  const braking = new VehiclePhysics(roughConfig, flat, { position: [0, 0.05, 0], yaw: 0 });
+  run(braking, 4, { throttle: 1 });
+  const v0 = braking.state.speedMps;
+  // The traction aid trades launch wheelspin for grip, so this front-heavy, table-less RWD car pulls a little less.
+  assert.ok(v0 > 12, `expected speed > 12 m/s before braking, got ${v0}`);
+  let brakeTime = 0;
+  while (braking.state.speedMps > 1 && brakeTime < 10) {
+    braking.step(1 / 120, { ...idle, brake: 1 });
+    brakeTime += 1 / 120;
+  }
+  const decelG = ((v0 - braking.state.speedMps) / brakeTime) / 9.81;
+  assert.ok(decelG >= 0.4 && decelG <= 1.6, `expected realistic braking g in [0.4, 1.6], got ${decelG}`);
+  assert.ok(braking.state.up[1] > 0.8, `car should remain upright under hard braking, up.y=${braking.state.up[1]}`);
+
+  // Positive CAR_GROUND_CLEARANCE lifts the body above ground instead of slamming it into the floor.
+  const liftedConfig: ResolvedCarConfig = {
+    ...baseConfig,
+    setup: { ...baseConfig.setup, fields: { ...baseConfig.setup.fields, CAR_GROUND_CLEARANCE: [0.12, 0.12] } },
+  };
+  const lifted = new VehiclePhysics(liftedConfig, flat, { position: [0, 0.15, 0], yaw: 0 });
+  run(lifted, 1, {});
+  assert.ok(lifted.state.position[1] > 0.05, `expected positive ride height, got y=${lifted.state.position[1]}`);
+  assert.equal(lifted.state.wheels.filter(w => w.grounded).length, 4);
+});
+
+test("inverted vehicles report flipped state and auto-right after staying upside down", () => {
+  const car = new VehiclePhysics(baseConfig, flat, { position: [0, 0.5, 0], yaw: 0 });
+  assert.equal(car.isFlipped, false);
+  // Flip upside down around Z axis.
+  car.state.orientation = [0, 0, 1, 0];
+  car.state.up = [0, -1, 0];
+  car.state.right = [-1, 0, 0];
+  assert.equal(car.isFlipped, true);
+  run(car, 1.2, {});
+  assert.equal(car.isFlipped, false);
+  assert.ok(car.state.up[1] > 0.9, `expected auto-upright up.y > 0.9, got ${car.state.up[1]}`);
+});
+
+test("representative local cars stay upright, do not creep at idle, and brake within realistic bounds", { skip: !fs.existsSync(demo) }, async () => {
+  const ascii = (file: string) => fs.readFileSync(path.join(demo, "DATA/ASCII", file), "utf8");
+  const db = await loadVehicleDatabases({ readText: async file => fs.readFileSync(path.join(demo, file), "utf8") });
+  const surfaces = parseSurfaceDatabase(ascii("SURFACE.DAT"));
+  const S = 10000;
+  const bigFlat = new TrackSpatial(
+    mesh([[-S, 0, -S], [-S, 0, S], [S, 0, S], [S, 0, -S]], [0, 1, 2, 0, 2, 3]),
+    undefined,
+    openLine,
+    { surfaces, defaultSurfaceName: "TARMAC_ENGLAND" },
+  );
+  for (const id of ["FORD_GT", "GT90", "SHELBY_GR1", "66_GT40", "MODEL_T", "LIGHTNING_SVT", "CHAMP_CAR", "LISTER_LMP", "GT70", "MUSTANG_68"]) {
+    if (!db.cars.has(id.toLowerCase())) continue;
+    const cfg = resolveCarConfig(db, id);
+    const idleCar = new VehiclePhysics(cfg, bigFlat, { position: [0, 0.05, 0], yaw: 0 });
+    run(idleCar, 3, {});
+    assert.ok(idleCar.state.speedMps < 0.2, `${id} idle creep ${idleCar.state.speedMps.toFixed(3)} m/s`);
+
+    const fastCar = new VehiclePhysics(cfg, bigFlat, { position: [0, 0.05, 0], yaw: 0 });
+    let minUp = 1;
+    for (let i = 0; i < 12 * 60; i++) {
+      fastCar.step(1 / 60, { ...idle, throttle: 1, steer: i >= 10 * 60 ? 1 : 0 });
+      minUp = Math.min(minUp, fastCar.state.up[1]);
+    }
+    assert.ok(minUp > 0.5, `${id} flipped during high-speed run/steer (minUp=${minUp.toFixed(2)})`);
+
+    const brkCar = new VehiclePhysics(cfg, bigFlat, { position: [0, 0.05, 0], yaw: 0 });
+    for (let i = 0; i < 6 * 120 && brkCar.state.speedMps < 30; i++) brkCar.step(1 / 120, { ...idle, throttle: 1 });
+    const v0 = brkCar.state.speedMps;
+    let t = 0;
+    let minUpBrk = 1;
+    while (brkCar.state.speedMps > 1 && t < 15) {
+      brkCar.step(1 / 120, { ...idle, brake: 1 });
+      minUpBrk = Math.min(minUpBrk, brkCar.state.up[1]);
+      t += 1 / 120;
+    }
+    const decelG = ((v0 - brkCar.state.speedMps) / t) / 9.81;
+    assert.ok(minUpBrk > 0.5, `${id} flipped under braking (minUp=${minUpBrk.toFixed(2)})`);
+    assert.ok(decelG >= 0.4 && decelG <= 1.6, `${id} braking ${decelG.toFixed(2)}g out of [0.4, 1.6]`);
+  }
+});
+
+const yawDegrees = (car: VehiclePhysics) => Math.atan2(car.state.forward[0], car.state.forward[2]) * 180 / Math.PI;
+
+test("an off-centre CoM and a traction-limited axle still track dead straight at full throttle with zero steering", () => {
+  const offCentre: ResolvedCarConfig = {
+    ...baseConfig,
+    body: {
+      ...baseConfig.body,
+      // 1.5 cm lateral CoM offset and a rear-biased layout with far more torque than the tyres can transmit.
+      masses: baseConfig.body.masses.map(point => ({
+        ...point, position: [point.position[0] + 0.015, point.position[1], point.position[2] - 0.2] as const,
+      })),
+    },
+    engine: { ...baseConfig.engine, fields: { ...baseConfig.engine.fields, TORQUE_MODIFIER: 6 } },
+  };
+  const car = new VehiclePhysics(offCentre, flat, { position: [0, 0.05, 0], yaw: 0 });
+  let maxYaw = 0;
+  for (let i = 0; i < 20 * 120; i++) {
+    car.step(1 / 120, { ...idle, throttle: 1 });
+    maxYaw = Math.max(maxYaw, Math.abs(yawDegrees(car)));
+  }
+  assert.ok(car.state.speedMps > 30, String(car.state.speedMps));
+  assert.ok(maxYaw < 0.25, `yaw drifted ${maxYaw.toFixed(3)}°`);
+  assert.ok(Math.abs(car.state.position[0]) < 0.25, `lateral drift ${car.state.position[0].toFixed(3)} m`);
+  // Without the driving aids the same car lights up the rear tyres and loses the line.
+  const raw = new VehiclePhysics(offCentre, flat, { position: [0, 0.05, 0], yaw: 0, tractionControl: false, stabilityControl: false });
+  let rawYaw = 0;
+  for (let i = 0; i < 20 * 120; i++) {
+    raw.step(1 / 120, { ...idle, throttle: 1 });
+    rawYaw = Math.max(rawYaw, Math.abs(yawDegrees(raw)));
+  }
+  assert.ok(rawYaw > maxYaw, `aids should improve straight-line stability (${rawYaw} vs ${maxYaw})`);
+});
+
+test("automatic gearbox climbs through every gear without hunting and drag calibrates to the rated top speed", () => {
+  const rated: ResolvedCarConfig = {
+    ...baseConfig,
+    car: { ...baseConfig.car, fields: { CAR_APPROXIMATE_TOP_SPEED: 120 } },
+  };
+  const S = 12000;
+  const long = new TrackSpatial(mesh([[-S, 0, -S], [-S, 0, S], [S, 0, S], [S, 0, -S]], [0, 1, 2, 0, 2, 3]), undefined, openLine);
+  const car = new VehiclePhysics(rated, long, { position: [0, 0.05, 0], yaw: 0 });
+  let last = car.state.gear, downshifts = 0, top = 0;
+  for (let i = 0; i < 60 * 120; i++) {
+    car.step(1 / 120, { ...idle, throttle: 1 });
+    if (car.state.gear < last && car.state.speedMps > 5) downshifts++;
+    last = car.state.gear;
+    top = Math.max(top, car.state.speedMph);
+  }
+  assert.equal(downshifts, 0);
+  assert.equal(car.state.gear, 4, `ended in gear ${car.state.gear} at ${car.state.rpm.toFixed(0)} rpm`);
+  assert.ok(top > 120 * 0.9 && top < 120 * 1.08, `top speed ${top.toFixed(1)} mph vs 120 rated`);
+  assert.ok(car.state.rpm < 0.97 * car.state.maxRpm, `parked on the limiter at ${car.state.rpm.toFixed(0)} rpm`);
+});
+
+const slope = (degrees: number, surfaces: ReturnType<typeof parseSurfaceDatabase>, surface: string) => {
+  const t = Math.tan(degrees * Math.PI / 180);
+  return new TrackSpatial(mesh([[-200, -200 * t, -200], [-200, 800 * t, 800], [200, 800 * t, 800], [200, -200 * t, -200]],
+    [0, 1, 2, 0, 2, 3]), undefined, openLine, { surfaces, defaultSurfaceName: surface });
+};
+
+test("installed cars: straight-line stability, top speed, gearbox, braking and steep loose hill starts", { skip: !fs.existsSync(demo) }, async () => {
+  const ascii = (file: string) => fs.readFileSync(path.join(demo, "DATA/ASCII", file), "utf8");
+  const db = await loadVehicleDatabases({ readText: async file => fs.readFileSync(path.join(demo, file), "utf8") });
+  const surfaces = parseSurfaceDatabase(ascii("SURFACE.DAT"));
+  const S = 12000;
+  const road = new TrackSpatial(mesh([[-S, 0, -S], [-S, 0, S], [S, 0, S], [S, 0, -S]], [0, 1, 2, 0, 2, 3]),
+    undefined, openLine, { surfaces, defaultSurfaceName: "TARMAC_ENGLAND" });
+  // QA pass 2 regressions: spinners, slow pullers, gear hunters, limiter-stuck, over-fast and over-braking cars.
+  const cars = ["LISTER_LMP", "EXPLORER_2008", "GT70_PERFORMANCE", "RS200_EVOLUTION", "ESCORT_RS", "TAURUS_STOCK_A",
+    "F250SD", "BOSS_302", "F150_STX", "EQUATOR", "FORD_GT", "MODEL_T"];
+  for (const id of cars) {
+    if (!db.cars.has(id.toLowerCase())) continue;
+    const cfg = resolveCarConfig(db, id);
+    // Expected top speed: the authored rating, or the authored top-gear rev limit when the gearing cannot reach it.
+    const ratios = new Map(cfg.setup.gearRatios.map(({ index, ratio }) => [index, ratio]));
+    const gears = Math.max(...ratios.keys());
+    const drivenTyre = cfg.gearbox.fields.DRIVE_TYPE?.toUpperCase().startsWith("FRONT") ? cfg.frontTyre : cfg.rearTyre;
+    const gearLimitMph = 0.95 * (cfg.engine.fields.MAX_RPM ?? 7000) * Math.PI / 30
+      / Math.abs(ratios.get(gears)! * (ratios.get(0) || 1)) * (drivenTyre.fields.RADIUS ?? 0.32) * 2.236936;
+    const rated = Math.min(cfg.car.fields.CAR_APPROXIMATE_TOP_SPEED ?? 0, gearLimitMph);
+    const car = new VehiclePhysics(cfg, road, { position: [0, 0.05, 0], yaw: 0 });
+    let maxYaw = 0, top = 0, downshifts = 0, last = car.state.gear, minUp = 1;
+    for (let i = 0; i < 45 * 120; i++) {
+      car.step(1 / 120, { ...idle, throttle: 1 });
+      if (i < 20 * 120) maxYaw = Math.max(maxYaw, Math.abs(yawDegrees(car)));
+      if (car.state.gear < last && car.state.speedMps > 5) downshifts++;
+      last = car.state.gear;
+      top = Math.max(top, car.state.speedMph);
+      minUp = Math.min(minUp, car.state.up[1]);
+    }
+    assert.ok(minUp > 0.9, `${id} rolled (up.y ${minUp.toFixed(2)})`);
+    assert.ok(maxYaw < 0.5, `${id} yawed ${maxYaw.toFixed(2)}° in 20 s with zero steering`);
+    assert.equal(downshifts, 0, `${id} hunted gears (${downshifts} full-throttle downshifts)`);
+    // Top gear, unless it is an overdrive that cannot hold the speed (then the lower gear must be off the limiter).
+    assert.ok(car.state.gear === gears || car.state.rpm < 0.94 * car.state.maxRpm,
+      `${id} stuck on the limiter in gear ${car.state.gear}/${gears} at ${car.state.rpm.toFixed(0)} rpm`);
+    assert.ok(top >= 0.85 * rated && top <= 1.1 * rated, `${id} top speed ${top.toFixed(1)} mph vs ${rated} rated`);
+
+    const brk = new VehiclePhysics(cfg, road, { position: [0, 0.05, 0], yaw: 0 });
+    for (let i = 0; i < 20 * 120 && brk.state.speedMps < 30; i++) brk.step(1 / 120, { ...idle, throttle: 1 });
+    const v0 = brk.state.speedMps;
+    let t = 0;
+    while (brk.state.speedMps > 1 && t < 15) {
+      brk.step(1 / 120, { ...idle, brake: 1 });
+      t += 1 / 120;
+    }
+    const decelG = (v0 - brk.state.speedMps) / t / 9.81;
+    assert.ok(decelG >= 0.45 && decelG <= 1.6, `${id} braking ${decelG.toFixed(2)} g`);
+  }
+
+  // 15° gravel grid start (ICECR/WATAF use GRAVEL) from the level grid pose, including a road tyre that authors no
+  // off-road grip (FIESTA_ST) and a front-heavy RWD classic.
+  const hill = slope(15, surfaces, "GRAVEL");
+  for (const id of ["FIESTA_ST", "FOCUS_SVT", "BOSS_302", "FORD_GT", "RS200_EVOLUTION", "EQUATOR"]) {
+    if (!db.cars.has(id.toLowerCase())) continue;
+    const car = new VehiclePhysics(resolveCarConfig(db, id), hill, { position: [0, 0.05, 0], yaw: 0 });
+    let minZ = 0;
+    for (let i = 0; i < 4 * 120; i++) {
+      car.step(1 / 120, { ...idle, throttle: 1 });
+      minZ = Math.min(minZ, car.state.position[2]);
+    }
+    assert.ok(minZ > -1.5, `${id} slid ${(-minZ).toFixed(2)} m back down the grid`);
+    assert.ok(car.state.linearVelocity[2] > 2.5, `${id} only reached ${car.state.linearVelocity[2].toFixed(2)} m/s uphill`);
+  }
+});
+
+async function loadRealTrack(trackId: string) {
+  const ascii = (file: string) => fs.readFileSync(path.join(demo, "DATA/ASCII", file), "utf8");
+  const vfs = await NodeVfs.open(demo);
+  const dir = `3ddata/tracks/${trackId.toLowerCase()}`;
+  const [binInfo, sceneData, meshes, vertices, db] = await Promise.all([
+    vfs.readUnpacked(`${dir}/bininfo.bin`), vfs.readUnpacked(`${dir}/3dobjdb.bin`),
+    vfs.readUnpacked(`${dir}/3dobjs.xbx`), vfs.readUnpacked(`${dir}/3dobjsp.xbx`),
+    loadVehicleDatabases({ readText: async file => fs.readFileSync(path.join(demo, file), "utf8") }),
+  ]);
+  const route = parseRacingLine(ascii(`TRACKS/${trackId.toUpperCase()}.DAT`));
+  const record = parseTrackDatabase(ascii("TRACKS.DAT")).get(trackId.toLowerCase());
+  const track = new TrackSpatial(parseXbx(meshes, vertices), parse3dObjDb(sceneData, parseBinInfo(binInfo)), route,
+    { surfaces: parseSurfaceDatabase(ascii("SURFACE.DAT")), defaultSurfaceName: record?.DEFAULT_TRACK_SURFACE });
+  const ground = (x: number, z: number) => {
+    const p = track.queryProgress(x, z);
+    const h = track.queryGround(x, p.point[1] + 4, z);
+    return h.hit ? h.height : p.point[1];
+  };
+  const race = new RaceManager({
+    line: route, ground, laps: 3, mode: "RACING", startU: 0.02, introSeconds: 1.4,
+    entrants: Array.from({ length: 6 }, (_, i) => ({ id: `c${i}`, carId: "X", isPlayer: i === 0 })),
+  });
+  return { db, route, record, track, grid: race.grid, game: parseGameData(ascii("GAMEDATA.DAT")) };
+}
+
+/** Builds a car on a grid slot and holds it there on the handbrake for a second, as the race intro does. */
+function gridCar(cfg: ResolvedCarConfig, track: TrackSpatial, slot: { position: Vec3; forward: Vec3 }): VehiclePhysics {
+  const yaw = Math.atan2(slot.forward[0], slot.forward[2]);
+  const pose: Vec3 = [slot.position[0], slot.position[1] + 0.05, slot.position[2]];
+  const car = new VehiclePhysics(cfg, track, { position: pose, yaw });
+  for (let i = 0; i < 60; i++) {
+    car.step(1 / 60, { ...idle, throttle: 0.45, brake: 1, handbrake: true });
+    car.setPose(pose, yaw);
+  }
+  return car;
+}
+
+const classicLineup = ["MODEL_T", "MODEL_A", "46_CONVERTIBLE", "49_COUPE", "49_COUPE_MOVIE", "THUNDERBIRD"];
+
+test("rally and off-road tyres reach their rated tarmac top speed (load-proportional rolling resistance)", { skip: !fs.existsSync(demo) }, async () => {
+  const ascii = (file: string) => fs.readFileSync(path.join(demo, "DATA/ASCII", file), "utf8");
+  const db = await loadVehicleDatabases({ readText: async file => fs.readFileSync(path.join(demo, file), "utf8") });
+  const S = 12000;
+  const road = new TrackSpatial(mesh([[-S, 0, -S], [-S, 0, S], [S, 0, S], [S, 0, -S]], [0, 1, 2, 0, 2, 3]),
+    undefined, openLine, { surfaces: parseSurfaceDatabase(ascii("SURFACE.DAT")), defaultSurfaceName: "TARMAC_ENGLAND" });
+  // QA pass 3: these cars author ROLLING_RESISTANCE 0.04–0.08 and topped out at 94–124 mph against 135–192 rated.
+  for (const id of ["RS200", "RS500_RALLY", "ESCORT_RS_RALLY", "GT70_OFFROAD", "FIESTA_RALLYE", "PUMA_RALLY",
+    "ESCORT_RS2000_73_RALLY", "RANCH_1975_OFFROAD"]) {
+    if (!db.cars.has(id.toLowerCase())) continue;
+    const cfg = resolveCarConfig(db, id);
+    assert.ok((cfg.rearTyre.fields.ROLLING_RESISTANCE ?? 0) >= 0.04, `${id} no longer authors a rally tyre`);
+    const ratios = new Map(cfg.setup.gearRatios.map(({ index, ratio }) => [index, ratio]));
+    const gears = Math.max(...ratios.keys());
+    const drivenTyre = cfg.gearbox.fields.DRIVE_TYPE?.toUpperCase().startsWith("FRONT") ? cfg.frontTyre : cfg.rearTyre;
+    const gearLimitMph = 0.95 * (cfg.engine.fields.MAX_RPM ?? 7000) * Math.PI / 30
+      / Math.abs(ratios.get(gears)! * (ratios.get(0) || 1)) * (drivenTyre.fields.RADIUS ?? 0.32) * 2.236936;
+    const rated = Math.min(cfg.car.fields.CAR_APPROXIMATE_TOP_SPEED ?? 0, gearLimitMph);
+    const car = new VehiclePhysics(cfg, road, { position: [0, 0.05, 0], yaw: 0 });
+    let top = 0;
+    for (let i = 0; i < 50 * 60; i++) {
+      car.step(1 / 60, { ...idle, throttle: 1 });
+      top = Math.max(top, car.state.speedMph);
+    }
+    assert.ok(top >= 0.85 * rated && top <= 1.1 * rated, `${id} top speed ${top.toFixed(1)} mph vs ${rated.toFixed(0)} expected`);
+    const parked = new VehiclePhysics(cfg, road, { position: [0, 0.05, 0], yaw: 0 });
+    run(parked, 3, {});
+    assert.ok(parked.state.speedMps < 0.2, `${id} idle creep ${parked.state.speedMps.toFixed(3)} m/s`);
+  }
+});
+
+test("classic cars climb the steep ICECR gravel grid without rolling back", { skip: !fs.existsSync(demo) }, async () => {
+  const { db, track, grid } = await loadRealTrack("ICECR");
+  for (const id of classicLineup) {
+    if (!db.cars.has(id.toLowerCase())) continue;
+    const cfg = resolveCarConfig(db, id);
+    // Slots 2–4 sit on the steepest part of the grid (12–14° of loose gravel).
+    for (const index of [2, 3, 4]) {
+      const slot = grid[index]!;
+      const car = gridCar(cfg, track, slot);
+      const start = [...car.state.position];
+      const along = () => (car.state.position[0] - start[0]!) * slot.forward[0] + (car.state.position[2] - start[2]!) * slot.forward[2];
+      let minAlong = 0, maxPitch = 0;
+      for (let i = 0; i < 8 * 60; i++) {
+        car.step(1 / 60, { ...idle, throttle: 1 });
+        minAlong = Math.min(minAlong, along());
+        maxPitch = Math.max(maxPitch, car.state.forward[1]);
+      }
+      assert.ok(maxPitch > Math.sin(10 * Math.PI / 180), `ICECR slot ${index} is no longer a steep grid`);
+      assert.ok(minAlong > -0.5, `${id} slot ${index} rolled ${(-minAlong).toFixed(2)} m back down the ICECR grid`);
+      assert.ok(along() > 15, `${id} slot ${index} only climbed ${along().toFixed(1)} m in 8 s`);
+      assert.ok(car.state.up[1] > 0.9, `${id} slot ${index} tipped over`);
+    }
+  }
+});
+
+test("the classic lineup races up the PACBF hill and the ICECR/WATAF grids without stalling or reversing", { skip: !fs.existsSync(demo) }, async () => {
+  for (const [trackId, seconds, minDistance] of [["PACBF", 40, 200], ["ICECR", 20, 70], ["WATAF", 20, 70]] as const) {
+    const { db, route, record, track, grid, game } = await loadRealTrack(trackId);
+    const offsets = record?.difficulty.MEDIUM;
+    const trackScales = (offsets ? [0, 1, 2].map(i => clampTrackScale(1 + offsets[i]!)) : [1, 1, 1]) as [number, number, number];
+    const racers = classicLineup.filter(id => db.cars.has(id.toLowerCase())).map((id, index) => {
+      const car = gridCar(resolveCarConfig(db, id), track, grid[index]!);
+      return {
+        id, car, low: 0, reversing: 0,
+        startU: track.queryProgress(car.state.position[0], car.state.position[2]).interpolant,
+        ai: new AiDriver(route, { difficulty: game.difficulty.MEDIUM, trackScales, packSlot: ((index - 1) / 4) * 2 - 1, mode: "RACING" }),
+      };
+    });
+    const lateral = (car: VehiclePhysics) => {
+      const p = track.queryProgress(car.state.position[0], car.state.position[2]);
+      const point = route.points[p.segmentIndex];
+      const flip = point && point.lateral[0] * p.right[0] + point.lateral[2] * p.right[2] < 0 ? -1 : 1;
+      return { u: p.interpolant, lateralOffset: flip * p.lateralOffset, speed: car.state.speedMps };
+    };
+    for (let frame = 0; frame < seconds * 60; frame++) {
+      const views = racers.map(r => lateral(r.car));
+      for (const [i, r] of racers.entries()) {
+        const st = r.car.state;
+        r.low = frame > 60 && st.speedMps < 1.5 ? r.low + 1 / 60 : st.speedMps >= 2 ? 0 : r.low;
+        const out = r.ai.update(1 / 60, {
+          car: { position: st.position, forward: st.forward, rotation: st.orientation, speed: st.speedMps,
+            blocked: isAiCarBlocked(st.lastImpactImpulse, st.speedMps, r.low) },
+          track: views[i]!, obstacles: views.filter((_, k) => k !== i),
+        });
+        if (out.driveDirection < 0) r.reversing++;
+        r.car.step(1 / 60, aiControlToDrivingInput(out, st));
+      }
+      for (let a = 0; a < racers.length; a++) {
+        for (let b = a + 1; b < racers.length; b++) resolveCarCollision(racers[a]!.car, racers[b]!.car);
+      }
+    }
+    for (const r of racers) {
+      const distance = trackProgressDelta(r.startU, lateral(r.car).u) * route.length;
+      assert.equal(r.reversing, 0, `${trackId} ${r.id} reversed for ${(r.reversing / 60).toFixed(1)} s`);
+      // QA pass 3: on PACBF 46_CONVERTIBLE stalled on the segment 8–11 climb and never got past 72 m.
+      assert.ok(distance > minDistance, `${trackId} ${r.id} only covered ${distance.toFixed(0)} m in ${seconds} s`);
+    }
+  }
+});
+
+const clampTrackScale = (value: number) => Math.min(1.5, Math.max(0.5, value));

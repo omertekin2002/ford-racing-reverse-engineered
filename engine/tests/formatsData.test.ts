@@ -350,6 +350,27 @@ test("MPC strict and demo-tolerant modes retain the declared count and reject pa
   assert.equal(index.entries[0]?.stem, "TRACK001");
   assert.equal(index.entries[0]?.metadata[0], 0x7f);
   assert.throws(() => parseMpc(bytes.subarray(0, 67), { allowShortfall: true }), /Partial MPC/);
+
+  // Trailing partial entry with intact NUL-terminated stem is accepted only when explicitly allowed.
+  const partial = parseMpc(bytes.subarray(0, 67), { allowShortfall: true, allowPartialTrailingEntry: true });
+  assert.equal(partial.entries.length, 1);
+  assert.equal(partial.entries[0]?.stem, "TRACK001");
+  assert.equal(partial.shortfall, 6);
+
+  // 128-byte paired VPC speech table (64-byte cue stem + 64-byte file stem).
+  const paired = Buffer.alloc(4 + 2 * 128);
+  paired.writeUInt32LE(2, 0);
+  paired.write("RACE_START_THREE", 4);
+  paired.write("RS01", 4 + 64);
+  paired.write("RACE_START_TWO", 4 + 128);
+  paired.write("RS02", 4 + 128 + 64);
+  const speech = parseMpc(paired);
+  assert.equal(speech.declaredCount, 2);
+  assert.equal(speech.shortfall, 0);
+  assert.deepEqual(
+    speech.entries.map(e => [e.stem, e.fileStem]),
+    [["RACE_START_THREE", "RS01"], ["RACE_START_TWO", "RS02"]],
+  );
 });
 
 import { fileURLToPath } from "node:url";
@@ -444,5 +465,25 @@ test("Shuffle audio text and SPC sound banks parse cleanly", demoOptions, () => 
   for (const file of banks) {
     const bank = parseSpc(fs.readFileSync(path.join(root, file)));
     assert.ok(bank.entries.length > 0, file);
+  }
+  const mpcs = [...listFiles(root, ".mpc"), ...listFiles(root, ".vpc")];
+  assert.ok(mpcs.length >= 6);
+  for (const file of mpcs) {
+    const index = parseMpc(fs.readFileSync(path.join(root, file)), {
+      allowShortfall: true,
+      allowPartialTrailingEntry: true,
+    });
+    assert.ok(index.entries.length > 0, file);
+    if (file.toLowerCase().endsWith("english.vpc") || file.toLowerCase().endsWith("german.vpc")) {
+      assert.equal(index.declaredCount, 227);
+      assert.equal(index.entries.length, 227);
+      assert.equal(index.shortfall, 0);
+      assert.equal(index.entries[0]?.stem, "RACE_START_THREE");
+      assert.equal(index.entries[0]?.fileStem, "RS01");
+    }
+    if (file.toLowerCase().endsWith("ingame.mpc")) {
+      assert.equal(index.entries.length, 29);
+      assert.equal(index.entries.at(-1)?.stem, "SB_RACE3");
+    }
   }
 });

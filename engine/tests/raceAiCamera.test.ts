@@ -135,6 +135,76 @@ test("AI uses boost on a clear fast segment and backs away after sustained barri
   assert.equal(driver.update(1, frame).driveDirection, 1);
 });
 
+test("AI detects wall-pinned stalls even when blocked is false, reverses cleanly, and steers back from road edges", () => {
+  const line = circuit(250);
+  const driver = new AiDriver(line, { difficulty });
+  const pinnedUnflagged = {
+    car: { ...baseCar, blocked: false, speed: 0.1 },
+    track: { u: 0.05, lateralOffset: 6.5 },
+  };
+  // Commanding forward throttle while stationary with blocked: false triggers reverse after > 2 s.
+  let out = driver.update(0.5, pinnedUnflagged);
+  assert.equal(out.driveDirection, 1);
+  assert.ok(out.throttle > 0.2);
+  for (let i = 0; i < 3; i++) out = driver.update(0.5, pinnedUnflagged);
+  assert.equal(out.driveDirection, 1);
+  const reversing = driver.update(0.1, pinnedUnflagged);
+  assert.equal(reversing.driveDirection, -1);
+  assert.ok(reversing.throttle > 0.5 && Math.abs(reversing.steer) >= 0.6);
+  // Resumes forward driving after backing out.
+  const resumed = driver.update(1.2, { car: { ...baseCar, speed: 4 }, track: { u: 0.051, lateralOffset: 3 } });
+  assert.equal(resumed.driveDirection, 1);
+
+  // Scraping along a wall at ~2 m/s with near-zero track progress also triggers reverse recovery.
+  driver.reset();
+  const scraping = {
+    car: { ...baseCar, blocked: false, speed: 2.0 },
+    track: { u: 0.1, lateralOffset: 7.5 },
+  };
+  for (let i = 0; i < 21; i++) out = driver.update(0.1, scraping);
+  assert.equal(out.driveDirection, -1);
+  // Normal forward motion at speed never triggers stall reversal even on repeated snapshots.
+  driver.reset();
+  for (let i = 0; i < 30; i++) out = driver.update(0.1, { car: { ...baseCar, blocked: false, speed: 20 }, track: baseTrack });
+  assert.equal(out.driveDirection, 1);
+});
+
+test("AI keeps climbing a steep or loose grid while it gains ground instead of reversing down the hill", () => {
+  const line = circuit(250);
+  const uphill: Vec3 = [0, Math.sin(15 * Math.PI / 180), Math.cos(15 * Math.PI / 180)];
+  // Crawling up a 15° gravel grid at 0.6 m/s, flagged "blocked" by the host's low-speed timer: never back up.
+  const crawler = new AiDriver(line, { difficulty });
+  let u = 0.01;
+  for (let i = 0; i < 100; i++) {
+    u += 0.6 * 0.1 / line.length;
+    const out = crawler.update(0.1, { car: { ...baseCar, forward: uphill, speed: 0.6, blocked: i >= 10 }, track: { u, lateralOffset: 0 } });
+    assert.equal(out.driveDirection, 1, `reversed after ${(i * 0.1).toFixed(1)} s while advancing uphill`);
+    if (i > 10) assert.ok(out.throttle > 0.5, `throttle ${out.throttle}`);
+  }
+  // Even a flat-road car making slow but steady progress (> 0.25 m/s) is not treated as stalled.
+  const slow = new AiDriver(line, { difficulty });
+  u = 0.2;
+  for (let i = 0; i < 60; i++) {
+    u += 0.4 * 0.1 / line.length;
+    assert.equal(slow.update(0.1, { car: { ...baseCar, speed: 0.4, blocked: true }, track: { u, lateralOffset: 0 } }).driveDirection, 1);
+  }
+  // Uphill inside the lane but momentarily not gaining ground (wheels scrabbling): hold on well past the flat-road
+  // 2 s stall window, and only then try backing out.
+  const scrabbling = new AiDriver(line, { difficulty });
+  const stuck = { car: { ...baseCar, forward: uphill, speed: 0.2, blocked: false }, track: { u: 0.4, lateralOffset: 0.5 } };
+  for (let i = 0; i < 50; i++) assert.equal(scrabbling.update(0.1, stuck).driveDirection, 1, `gave up at ${(i * 0.1).toFixed(1)} s`);
+  let reversed = false;
+  for (let i = 0; i < 20 && !reversed; i++) reversed = scrabbling.update(0.1, stuck).driveDirection === -1;
+  assert.ok(reversed, "a car that never gains ground still recovers eventually");
+  // Pinned against the barrier on a slope (outside the lane) still uses the normal 2 s recovery.
+  const pinned = new AiDriver(line, { difficulty });
+  const wall = { car: { ...baseCar, forward: uphill, speed: 0.1, blocked: true }, track: { u: 0.6, lateralOffset: 7.6 } };
+  let out = pinned.update(1, wall);
+  out = pinned.update(1, wall);
+  assert.equal(out.driveDirection, 1);
+  assert.equal(pinned.update(0.1, wall).driveDirection, -1);
+});
+
 const line = circuit();
 const entrants = [{ id: "p", carId: "roadster", isPlayer: true }, { id: "a", carId: "tourer" }];
 

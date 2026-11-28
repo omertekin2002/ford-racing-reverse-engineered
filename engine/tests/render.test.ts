@@ -203,3 +203,155 @@ test("demo FORDGT, 04LIGHT and ENGAF compile LOD, named parts and textured trian
       }
     }
   });
+
+test("livery selection matches top-byte variants without flag 0x2000 and handles 4+ variants", () => {
+  const part: MeshPartGeometry = {
+    f: 0, g: 0xf0, primaryTexture: 0, vertexCount: 3, stripCount: 1, word8: 0, word12: 0,
+    descriptorExtension: words(), strips: [], indices: Uint16Array.of(0, 1, 2),
+    positions: floats(0, 0, 0, 1, 0, 0, 0, 1, 0), packedAttributes: words(1, 1, 1),
+    normals: floats(0, 0, 1, 0, 0, 1, 0, 0, 1), colors: new Uint8Array(12),
+    uv0: floats(0, 0, 1, 0, 0, 1),
+  };
+  const base: TextureRecord = {
+    kind: "texture", name: "MUSTANG_68B_512", formatClass: 1, storage: "dxt1", flags: 0x00041080,
+    scalar: 1, paletteSelector: 0, colorMetadata: 0, mips: [],
+  };
+  const archive: TextureArchive = {
+    palettes256: [], palettes16: [], supplementaryPalettes256: [],
+    textures: [
+      base,
+      { ...base, flags: 0x01001080 },
+      { ...base, flags: 0x02001080 },
+      { ...base, flags: 0x03001080 },
+      { ...base, flags: 0x04001080 },
+    ],
+  };
+  const names = Object.fromEntries(binInfoTableNames.map(name => [name, []])) as unknown as BinInfo;
+  names.shapes = ["CAR"];
+  names.textureLiveries = ["DEFAULT", "C", "B", "A", "D1"];
+  const scene: SceneDatabase = {
+    version: 18, header: words(), animationGroups: [], boundaryGroups: [], namedRecords: [],
+    roots: [root(0, { meshSlotId: 1 })],
+  };
+  const model = [mesh(0, part), mesh(1, part)];
+  const resolved = names.textureLiveries.map(livery =>
+    compileModelGeometry(model, archive, names, scene, { livery }).batches[0]?.material.textureIndex,
+  );
+  assert.deepEqual(resolved, [0, 1, 2, 3, 4]);
+});
+
+test("livery selection switches textures on cars without 0x2000 flags and Capri trailing liveries",
+  { skip: !existsSync(demoPath) }, async () => {
+    const vfs = await NodeVfs.open(demoPath);
+    const cases = [
+      { dir: "cars/must68c", liveries: ["DEFAULT", "C", "B", "A", "D1"], expectUnique: 5 },
+      { dir: "cars/01escap", liveries: ["DEFAULT", "C"], expectUnique: 2 },
+      { dir: "cars/78cap", liveries: ["DEFAULT", "C", "B", "A"], expectUnique: 4 },
+      { dir: "cars/boss302", liveries: ["DEFAULT", "C", "B", "A", "D1", "A2"], expectUnique: 6 },
+      { dir: "cars/bmwm3gtr", liveries: ["DEFAULT", "A"], expectUnique: 1 },
+      { dir: "cars/champ", liveries: ["DEFAULT", "A"], expectUnique: 1 },
+    ];
+    for (const { dir, liveries, expectUnique } of cases) {
+      if (!vfs.has(`3ddata/${dir}/textures.dxt`)) continue;
+      const read = (file: string) => vfs.readUnpacked(`3ddata/${dir}/${file}`);
+      const [textures, meshData, vertices, info, db] = await Promise.all(
+        ["textures.dxt", "3dobjs.xbx", "3dobjsp.xbx", "bininfo.bin", "3dobjdb.bin"].map(read),
+      );
+      const archive = parseTexturesDxt(textures!);
+      const xbx = parseXbx(meshData!, vertices!);
+      const names = parseBinInfo(info!);
+      const scene = parse3dObjDb(db!, names);
+      const signatures = new Set(liveries.map(livery => {
+        const geometry = compileModelGeometry(xbx, archive, names, scene, { livery });
+        assert.ok(geometry.batches.length > 0, `${dir} (${livery}) produced no batches`);
+        return geometry.batches.map(b => b.material.textureIndex).join(",");
+      }));
+      assert.equal(signatures.size, expectUnique, `${dir}: expected ${expectUnique} distinct livery texture sets`);
+    }
+  });
+
+test("a mesh with both texture stages assigns the authored UVs to each sampler", () => {
+  const part: MeshPartGeometry = {
+    f: 0xc0, g: 0xf0, primaryTexture: 0, vertexCount: 3, stripCount: 1, word8: 0, word12: 0,
+    descriptorExtension: words(1 << 16, 2 << 16), strips: [], indices: Uint16Array.of(0, 1, 2),
+    positions: floats(0, 0, 0, 1, 0, 0, 0, 1, 0), packedAttributes: words(), normals: floats(0, 0, 1, 0, 0, 1, 0, 0, 1),
+    colors: new Uint8Array(12), uv0: floats(0, 0, 1, 0, 0, 1),
+    uv1: floats(2, 3, 4, 5, 6, 7), uv2: floats(0.25, 0.5, 0.5, 0.5, 0.25, 0.75),
+  };
+  const base: TextureRecord = {
+    kind: "texture", name: "Base", formatClass: 1, flags: 0, storage: "dxt1", scalar: 1,
+    paletteSelector: 0, colorMetadata: 0, mips: [],
+  };
+  const archive: TextureArchive = {
+    palettes256: [], palettes16: [], supplementaryPalettes256: [],
+    textures: [base, { ...base, name: "Dark" }, { ...base, name: "Overlay", formatClass: 3, storage: "dxt3" }],
+  };
+  const names = Object.fromEntries(binInfoTableNames.map(name => [name, []])) as unknown as BinInfo;
+  const scene: SceneDatabase = {
+    version: 18, header: words(), animationGroups: [], boundaryGroups: [], namedRecords: [],
+    roots: [root(0, { meshSlotId: 1 })],
+  };
+  const geometry = compileModelGeometry([mesh(0, part), mesh(1, part)], archive, names, scene);
+  const material = geometry.batches[0]?.material;
+  assert.equal(material?.textureIndex, 0);
+  assert.equal(material?.darkTextureIndex, 1);
+  assert.equal(material?.detailTextureIndex, 2);
+  assert.deepEqual(geometry.darkUvs, part.uv1);
+  assert.deepEqual([12, 13, 26, 27, 40, 41].map(index => geometry.vertices[index]), [...part.uv2!]);
+});
+
+test("track overlays retain the base layer and select the 0x40 texture",
+  { skip: !existsSync(demoPath) }, async () => {
+    const vfs = await NodeVfs.open(demoPath);
+    const cases = [
+      { id: "oval2", base: "TARMAC_TRACK2", overlay: "FENCE3", count: 2280 },
+      { id: "oval3", base: "TARMAC_TRACK", overlay: "FENCE_NIGHT", count: 5930 },
+      { id: "pacbf", base: "STREAM_PACIFIC", overlay: "SHADOWS", count: 107 },
+      { id: "pacbr", base: "STREAM_PACIFIC", overlay: "SHADOWS", count: 107 },
+    ];
+    for (const { id, base, overlay, count } of cases) {
+      const { geometry, archive } = await compileTrack(vfs, id);
+      const name = (index: number | null) => index === null ? undefined : archive.textures[index]?.name;
+      const matching = geometry.batches.filter(({ material }) =>
+        name(material.textureIndex) === base && name(material.detailTextureIndex) === overlay);
+      assert.ok(matching.length > 0, id);
+      assert.ok(matching.every(({ material }) => material.pass === "opaque"), id);
+      assert.ok(matching.every(({ material }) => material.darkTextureIndex !== undefined), id);
+      assert.equal(geometry.darkUvs?.length, geometry.vertices.length / 14 * 2, id);
+      assert.ok(geometry.batches.every(({ material }) =>
+        !/^(BLACK256_5|BLACK128|COLOURTEST)/.test(name(material.detailTextureIndex) ?? "")), id);
+      assert.equal(matching.reduce((sum, batch) => sum + batch.indexCount / 3, 0), count, id);
+      if (id.startsWith("pacb")) {
+        assert.ok(geometry.batches.some(({ material }) =>
+          name(material.textureIndex) === "CLIFFBOTTOM" && material.detailTextureIndex === null &&
+          name(material.darkTextureIndex ?? null) === "COLOURTEST03"), id);
+      }
+    }
+  });
+
+test("JUNGA and BAYAF sun glows use additive compositing and preserve scenery triangles",
+  { skip: !existsSync(demoPath) }, async () => {
+    const vfs = await NodeVfs.open(demoPath);
+    for (const [id, indexCount] of [["junga", 271572], ["bayaf", 380397], ["pacbf", 157938], ["oval2", 218127]] as const) {
+      const { geometry, archive } = await compileTrack(vfs, id);
+      assert.equal(geometry.indices.length, indexCount, id);
+      if (id === "junga" || id === "bayaf") {
+        const glows = geometry.batches.filter(({ material }) => material.textureIndex !== null &&
+          archive.textures[material.textureIndex]?.name === "SUNGLOW");
+        assert.ok(glows.length > 0, id);
+        assert.ok(glows.every(({ material }) => material.pass === "alpha" && material.additive), id);
+        assert.ok(geometry.batches.some(({ material }) => material.textureIndex === null && !material.additive), id);
+      }
+    }
+  });
+
+async function compileTrack(vfs: NodeVfs, id: string) {
+  const [textureData, meshData, vertices, info, db] = await Promise.all(
+    ["textures.dxt", "3dobjs.xbx", "3dobjsp.xbx", "bininfo.bin", "3dobjdb.bin"]
+      .map(file => vfs.readUnpacked(`3ddata/tracks/${id}/${file}`)),
+  );
+  const archive = parseTexturesDxt(textureData!);
+  const names = parseBinInfo(info!);
+  const geometry = compileModelGeometry(parseXbx(meshData!, vertices!), archive, names, parse3dObjDb(db!, names));
+  return { geometry, archive };
+}

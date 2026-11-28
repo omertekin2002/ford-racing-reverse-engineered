@@ -45,7 +45,12 @@ export interface RaceStanding {
   readonly carName: string;
   readonly totalSeconds: number | null;
   readonly bestLapSeconds: number | null;
+  /** Finish gap to the winner, or an estimated gap for a racer still running on the lead lap. */
   readonly gapSeconds: number | null;
+  /** False when the racer had not crossed the line when results froze (omitted = finished if `totalSeconds` set). */
+  readonly finished?: boolean;
+  /** Whole laps the unfinished racer still had to complete when results froze. */
+  readonly lapsDown?: number;
 }
 
 export type MenuCommand =
@@ -151,6 +156,7 @@ export class MenuController {
   private carIndex = 0;
   private trackIndex = 0;
   private liveryIndex = 0;
+  private readonly liveryOverrides = new Map<string, readonly string[]>();
   private readonly tracks: readonly MenuTrack[];
   private quickRaceIndex = 0;
   private requestId = 0;
@@ -194,8 +200,29 @@ export class MenuController {
     this.open(this.state);
   }
 
+  /**
+   * Replace the selectable liveries of a car, e.g. collapsing placeholder liveries once its model shows it has
+   * no texture variants. Keeps the current selection in range and refreshes the active scene.
+   */
+  setCarLiveries(carId: string, liveries: readonly string[]): boolean {
+    const car = this.options.cars.find(c => c.id === carId);
+    if (!car || !liveries.length) return false;
+    const current = this.liveryOverrides.get(carId) ?? car.liveries;
+    if (current.length === liveries.length && current.every((l, i) => l === liveries[i])) return false;
+    this.liveryOverrides.set(carId, [...liveries]);
+    if (this.options.cars[this.carIndex]?.id === carId && this.liveryIndex >= liveries.length) this.liveryIndex = 0;
+    this.refreshScene();
+    return true;
+  }
+
+  private carAt(index: number): MenuCar | undefined {
+    const car = this.options.cars[index];
+    const override = car && this.liveryOverrides.get(car.id);
+    return car && override ? { ...car, liveries: override } : car;
+  }
+
   getView(): MenuView {
-    const car = this.options.cars[this.carIndex];
+    const car = this.carAt(this.carIndex);
     const track = this.tracks[this.trackIndex];
     return {
       state: this.state,
@@ -232,6 +259,10 @@ export class MenuController {
     const screen = this.screen;
     if (input.back) {
       this.activate("back");
+      return;
+    }
+    if (this.state === "PAUSE" && frame.driving.pausePressed) {
+      this.activate("resume");
       return;
     }
     if (!screen) return;
@@ -292,7 +323,7 @@ export class MenuController {
       }
       case "previous-livery":
       case "next-livery": {
-        const count = this.options.cars[this.carIndex]?.liveries.length ?? 0;
+        const count = this.carAt(this.carIndex)?.liveries.length ?? 0;
         if (count < 2) return false;
         this.liveryIndex = (this.liveryIndex + (action === "next-livery" ? 1 : -1) + count) % count;
         this.previewCar();
@@ -470,7 +501,9 @@ export class MenuController {
         this.open("RESULTS");
         return true;
       case "RESULTS":
-        this.open("RACE_END");
+        // Esc from the standings table leaves the finished race for the main menu.
+        this.releaseRace();
+        this.open("MAIN_MENU");
         return true;
       default:
         return false;

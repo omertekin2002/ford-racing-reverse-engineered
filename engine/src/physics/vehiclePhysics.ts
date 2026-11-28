@@ -9,6 +9,10 @@ import { TrackSpatial, type TrackProgress, type WorldSphere } from "./trackSpati
 const gravity = 12.7530002594;
 const degree = Math.PI / 180;
 const rpmToRadians = 2 * Math.PI / 60;
+/** Calibrated global tyre grip scale corresponding to fr3.exe's runtime 0x00597484 multiplier. */
+const tyreGripScale = 0.37;
+/** Effective tyre horizontal force height blend toward CoM (suspension roll/pitch center). */
+const tyreRollCenterBlend = 0.45;
 export const MAX_PHYSICS_STEP = 1 / 120;
 
 type WheelTuple<T> = [T, T, T, T];
@@ -142,6 +146,26 @@ interface WheelSetup {
   maximum: number;
   spring: number;
   damper: number;
+  /** Peak of the authored straight-line longitudinal slip curve, as a fraction of longitudinal capacity. */
+  peakLongitudinal: number;
+}
+
+/** Tyre lateral and longitudinal force capacity at a vertical load, surface friction and camber. */
+function tyreCapacity(wheel: WheelSetup, load: number, friction: number, road: boolean, camber = 0) {
+  const tyre = wheel.tyre;
+  const patch = Math.max(0, (tyre.fields.TYRE_PATCH_LENGTH ?? 0.08) * (tyre.fields.WIDTH ?? 0.24)
+    * Math.max(0, 1 - camber * camber) ** 54);
+  const grip = friction * (1 - 0.15 * clamp(patch / 0.1, 0, 1));
+  const roadGrip = tyre.fields.ROAD_MAGIC_GRIP_NUMBER ?? 45;
+  // A few road tyres author OFFROAD_MAGIC_GRIP_NUMBER 0, which would leave the car with no grip at all on gravel or
+  // grass (sliding helplessly down any slope); treat a non-positive value as unspecified.
+  const offroadGrip = tyre.fields.OFFROAD_MAGIC_GRIP_NUMBER ?? roadGrip;
+  const runtimeGrip = road ? roadGrip : offroadGrip > 0 ? offroadGrip : roadGrip * defaultOffroadGripRatio;
+  const loadProxy = Math.max(0, load / gravity + wheel.mass);
+  const capacity = (0.8 + 5.4 * patch) * runtimeGrip * (100 * tyreGripScale)
+    * lookupPairs(tyre.verticalLoad, loadProxy * 0.01, loadProxy * 0.01) * grip;
+  const longCapacity = runtimeGrip > 0 ? capacity * roadGrip / runtimeGrip : 0;
+  return { patch, capacity, longCapacity };
 }
 
 interface WheelContact {
@@ -165,6 +189,8 @@ interface TyreForce {
   slipRatio: number;
   slipAngle: number;
   forwardSpeed: number;
+  /** Peak transmissible longitudinal force at the current load and surface. */
+  tractionLimit: number;
 }
 
 interface WheelRuntime {
@@ -210,7 +236,69 @@ export interface VehiclePhysicsOptions {
   boostTorqueMultiplier?: number;
   position?: Vec3;
   yaw?: number;
+  /**
+   * Traction-control driving aid: bounds driven-wheel slip near the tyre's peak so full throttle never
+   * spins the driven axle up to the limiter (which strips lateral grip and spins the car). Enabled by default.
+   */
+  tractionControl?: boolean;
+  /** Stability (yaw-control) driving aid that damps yaw beyond what the steering requests. Enabled by default. */
+  stabilityControl?: boolean;
 }
+
+/** Driven-wheel slip ratio the traction aid holds, near the authored longitudinal peak (10–20%). */
+const tractionSlipTarget = 0.12;
+/** Share of the weaker driven wheel's peak traction the aid lets the axle use, keeping a lateral-grip reserve. */
+const tractionReserve = 0.85;
+/** Stability aid: yaw-rate damping (1/s) applied to yaw in excess of the steering's kinematic yaw rate. */
+const stabilityYawDamping = 4;
+/** Stability aid: bound on its yaw moment, as a share of weight times half-track (what selective braking can make). */
+const stabilityMomentShare = 0.3;
+/** Typical authored OFFROAD/ROAD magic-grip ratio, used when a tyre leaves its off-road grip unset (0). */
+const defaultOffroadGripRatio = 0.88;
+/** Absolute tread-speed margin (m/s) the traction aid permits so launches and hill starts keep full drive force. */
+const tractionLaunchMargin = 1.2;
+/**
+ * Hill-start aid: on an uphill grade under throttle at low speed, the driven tyres may transmit enough longitudinal
+ * force to climb at this acceleration (in g) on top of the grade, even when their authored grip could not hold the
+ * car on a steep loose grid (classic cars author magic grip ~20 versus ~60 for rally tyres).
+ */
+const hillStartAcceleration = 0.15;
+/** Upper bound on the hill-start aid's longitudinal grip multiplier. */
+const hillStartMaxGrip = 3;
+/** Road speeds (m/s) over which the hill-start aid fades out. */
+const hillStartFadeSpeeds = [5, 10] as const;
+
+/** Surface DRAG of the nominal tarmac (TARMAC_* surfaces author 0.001) used to calibrate top speed. */
+const nominalSurfaceDrag = 0.001;
+
+/**
+ * Rolling resistance of one grounded wheel, in newtons at the tread.
+ *
+ * The tyre's ROLLING_RESISTANCE is a load-proportional coefficient (Crr · Fn): road tyres author 0.001 and the
+ * rally/off-road tyres 0.04–0.08, the range of real knobbly tyres. The surface DRAG (tarmac 0.001, dirt 0.5, gravel
+ * 0.75–2, grass 5) is a separate wheel-spin drag that grows with the cube of the wheel's revolutions per second.
+ * Applying the tyre coefficient through that cubic spin law made rally tyres on tarmac cost 20 kN at 180 mph, far
+ * more than any engine delivers.
+ */
+function wheelRollingResistance(wheel: WheelSetup, load: number, angularSpeed: number, surfaceDrag: number): number {
+  const tyre = Math.max(0, wheel.tyre.fields.ROLLING_RESISTANCE ?? 0.001) * load;
+  const spin = (angularSpeed / (2 * Math.PI)) ** 3 * (Math.max(0, surfaceDrag) * 0.1 + 0.001);
+  return clamp(tyre + spin, 5, 100000);
+}
+/** Auto-shift: rpm ratio, relative to the previous gear's upshift point, below which the box downshifts. */
+const downshiftHysteresis = 0.82;
+/** Auto-shift: minimum time in a gear between automatic shifts (seconds). */
+const autoShiftDwell = 0.6;
+/** Upper bound for automatic upshifts, kept below the 0.97 * MAX_RPM fuel-cut redline. */
+const upshiftRpmLimit = 0.94;
+/** Peak pedal-braking force as a fraction of the tyre's longitudinal capacity. */
+const brakeGripFraction = 1;
+/**
+ * Peak pedal-braking force per unit tyre load. The simulation's gravity is 12.753 m/s², so 1.1 bounds stops at
+ * ~1.5 standard g even for high-grip slicks, matching road-car (~1 g) to race-car (~1.5 g) braking without downforce.
+ */
+const brakeLoadLimit = 1.1;
+const mphToMps = 0.44704;
 
 export class VehiclePhysics implements CollisionBody {
   readonly state: CarPhysicsState;
@@ -233,14 +321,27 @@ export class VehiclePhysics implements CollisionBody {
   private readonly boostTorqueMultiplier: number;
   private readonly groundProbes: readonly Vec3[];
   private readonly collisionSpheres: BodyRecord["collisionSpheres"];
+  private readonly tractionControl: boolean;
+  private readonly stabilityControl: boolean;
+  private readonly drivenRadius: number;
+  /** Aerodynamic drag coefficient applied to the DIMENSIONS frontal area. */
+  readonly dragCoefficient: number;
+  /** Per-gear automatic upshift rpm, indexed by forward gear (index 0 unused). */
+  private readonly upshiftRpm: number[] = [];
+  private autoShiftTimer = 0;
   private clutch = 0;
   private shiftRemaining = 0;
   private handbrakeAmount = 0;
+  /** Hill-start aid multiplier on the driven tyres' longitudinal capacity for the current substep (1 = inactive). */
+  private launchGrip = 1;
+  /** Hill-start aid: hold the wheels against rolling opposite the drive direction (0–1). */
+  private hillHold = 0;
   private boostHeld = false;
   private fuel = 0;
   private fuelOutput = 0;
   private enginePhase = 0;
   private engineLoad = 0;
+  private flippedTime = 0;
 
   constructor(readonly config: ResolvedCarConfig, readonly track: TrackSpatial, options: VehiclePhysicsOptions = {}) {
     this.massProperties = computeMassProperties(config.body, config.setup);
@@ -280,6 +381,7 @@ export class VehiclePhysics implements CollisionBody {
     const spheres = config.body.collisionSpheres.filter(({ radius }) => radius > 0);
     this.collisionSpheres = spheres.length ? spheres : [{ position: [0, height / 2, 0], radius: Math.max(0.1, width / 2) }];
     const setup = config.setup.fields;
+    const lateralCentre = this.massProperties.centerOfMass[0];
     this.wheelSetup = wheelIndices.map((i): WheelSetup => {
       const axle = i < 2 ? 0 : 1;
       const tyre = axle === 0 ? config.frontTyre : config.rearTyre;
@@ -287,18 +389,22 @@ export class VehiclePhysics implements CollisionBody {
       const radius = Math.max(0.05, tyre.fields.RADIUS ?? 0.32);
       // Model wheel anchors are unavailable in ResolvedCarConfig. Use the
       // authored half-track when set and estimate wheelbase from body length.
-      const halfTrack = Math.abs(setup.WHEEL_SPACING?.[axle] ?? 0) || width * 0.38;
+      const halfTrack = Math.abs(setup.WHEEL_SPACING?.[axle] ?? 0) || width * 0.42;
       const spring = Math.max(1, setup.SUSPENSION_MOE?.[axle] ?? 35000);
       const staticCompression = this.massProperties.mass * gravity * natural / (4 * spring);
+      const clearance = setup.CAR_GROUND_CLEARANCE?.[axle] ?? 0;
       return {
-        mount: [halfTrack * (i % 2 === 0 ? -1 : 1),
-          natural + radius - staticCompression + (setup.CAR_GROUND_CLEARANCE?.[axle] ?? 0),
+        // Centre the estimated track on the chassis mass centreline: authored point masses leave millimetre-scale
+        // lateral CoM offsets that would otherwise turn equal left/right drive forces into a constant yaw pull.
+        mount: [lateralCentre + halfTrack * (i % 2 === 0 ? -1 : 1),
+          natural + radius - staticCompression - clearance,
           length * (axle === 0 ? 0.28 : -0.28)],
         tyre, natural, radius, spring,
         mass: Math.max(1, tyre.fields.MASS ?? 30),
         minimum: clamp(Math.abs(setup.SUSPENSION_MIN_EXTENSION?.[axle] ?? 0.55 * natural), 0.02, natural),
         maximum: Math.max(natural, Math.abs(setup.SUSPENSION_MAX_EXTENSION?.[axle] ?? 1.4 * natural)),
         damper: Math.max(0, setup.SUSPENSION_DAMPING?.[axle] ?? 3800),
+        peakLongitudinal: clamp(Math.max(0, ...(tyre.longitudinalSlip?.[0]?.slice(1) ?? [1])) || 1, 0.2, 1),
       };
     }) as WheelTuple<WheelSetup>;
     const [frontBumper, rearBumper] = config.body.fields.BUMPER_HEIGHT ?? [0.08, 0.08];
@@ -309,6 +415,15 @@ export class VehiclePhysics implements CollisionBody {
       ...this.wheelSetup.map(({ mount: [x, , z] }): Vec3 => [x, 0.1, z]),
     ];
     this.wheelRuntime = this.wheelSetup.map(({ natural }) => ({ length: natural, extensionSpeed: 0, lateralForce: 0 })) as WheelTuple<WheelRuntime>;
+    this.tractionControl = options.tractionControl ?? true;
+    this.stabilityControl = options.stabilityControl ?? true;
+    const drivenWheels = wheelIndices.filter(i => this.driveWeights[i] > 0);
+    this.drivenRadius = drivenWheels.length
+      ? drivenWheels.reduce((sum: number, i) => sum + this.wheelSetup[i].radius, 0) / drivenWheels.length
+      : this.wheelSetup[2].radius;
+    for (let gear = 1; gear < this.gearCount; gear++) this.upshiftRpm[gear] = this.computeUpshiftRpm(gear, maxRpm);
+    this.upshiftRpm[this.gearCount] = upshiftRpmLimit * maxRpm;
+    this.dragCoefficient = this.calibrateDrag(maxRpm, width * height);
     this.state = {
       position: [0, 0, 0], orientation: [0, 0, 0, 1], forward: [0, 0, 1], right: [1, 0, 0], up: [0, 1, 0],
       linearVelocity: [0, 0, 0], angularVelocity: [0, 0, 0], speedMps: 0, speedMph: 0, speedKph: 0,
@@ -331,6 +446,7 @@ export class VehiclePhysics implements CollisionBody {
 
   get linearVelocity(): Vec3 { return this.state.linearVelocity; }
   get angularVelocity(): Vec3 { return this.state.angularVelocity; }
+  get isFlipped(): boolean { return this.state.up[1] < 0.35; }
   get centerOfMassWorld(): Vec3 {
     return add(this.state.position, this.toWorld(this.massProperties.centerOfMass));
   }
@@ -385,8 +501,8 @@ export class VehiclePhysics implements CollisionBody {
     state.gear = 1;
     state.throttle = state.brake = state.steerAngleRad = state.lastImpactImpulse = 0;
     state.handbrake = false;
-    this.clutch = this.shiftRemaining = this.handbrakeAmount = this.fuel = this.fuelOutput = 0;
-    this.enginePhase = this.engineLoad = state.inductionPressure = state.turboSpeed = 0;
+    this.clutch = this.shiftRemaining = this.handbrakeAmount = this.fuel = this.fuelOutput = this.autoShiftTimer = 0;
+    this.enginePhase = this.engineLoad = this.flippedTime = state.inductionPressure = state.turboSpeed = 0;
     this.updateSpeed();
     const pose = this.pose(this.rigidState());
     for (const i of wheelIndices) {
@@ -431,9 +547,11 @@ export class VehiclePhysics implements CollisionBody {
       state.boostActive = state.boostTimer > 0;
       this.updateControls(input, h);
       const driveTorque = this.updatePowertrain(h, manualShift === 0);
+      this.updateHillStart();
       const rigid = this.integrateBody(h);
       this.applyPose(rigid);
       this.resolveTrackContacts();
+      this.updateRolloverRecovery(h);
       this.updateWheels(this.pose(this.rigidState()), driveTorque, h);
       state.boostTimer = Math.max(0, state.boostTimer - h);
     }
@@ -447,9 +565,10 @@ export class VehiclePhysics implements CollisionBody {
     const brakeRate = Math.max(0, config.brakes.BRAKE_SPEED ?? 5);
     let throttle = clamp(input.throttle, 0, 1);
     let brake = clamp(input.brake, 0, 1);
-    if (this.automatic && this.shiftRemaining === 0 && state.speedMps < 2 && !input.handbrake) {
-      if (brake > 0.1 && throttle === 0 && state.gear >= 0) this.shift(-1);
-      if (throttle > 0.1 && state.gear < 0) this.shift(1);
+    const forwardSpeed = dot(state.linearVelocity, state.forward);
+    if (this.automatic && this.shiftRemaining === 0 && !input.handbrake) {
+      if (brake > 0.1 && throttle === 0 && state.gear >= 0 && forwardSpeed < 0.5 && state.speedMps < 0.8) this.shift(-1);
+      if (throttle > 0.1 && state.gear < 0 && forwardSpeed > -0.5 && state.speedMps < 0.8) this.shift(1);
     }
     if (this.automatic && state.gear < 0) [throttle, brake] = [brake, throttle];
     const ramp = Math.max(0, config.engine.fields.ACCELERATOR_SPEED ?? 10) * dt;
@@ -497,39 +616,188 @@ export class VehiclePhysics implements CollisionBody {
         : ratio < 0 ? Math.min(frontRpm, rearRpm) : Math.max(frontRpm, rearRpm);
   }
 
-  private autoShift(): void {
+  /** Authored gear ratio times final drive, without the transient boost scaling. */
+  private rawRatio(gear: number): number {
+    if (gear === 0) return 0;
+    return (this.gears.get(gear) ?? (gear === 1 ? 1 : 0)) * this.finalDrive;
+  }
+
+  /** Steady full-throttle engine torque, including forced induction at full boost pressure. */
+  private steadyTorque(rpm: number): number {
+    const engine = this.config.engine.fields;
+    const aspiration = engine.ASPIRATION_TYPE?.toUpperCase();
+    const maxPressure = Math.max(0, engine.MAX_TURBO_PRESSURE ?? 0);
+    const pressure = aspiration === "TURBO" ? maxPressure
+      : aspiration === "SUPER_CHARGER" ? maxPressure * rpm / Math.max(100, engine.MAX_RPM ?? 7000) : 0;
+    return engineTorqueAtRpm(this.config.engine, rpm) * (1 + 0.1 * (engine.NUMBER_OF_TURBOS ?? 0) * pressure);
+  }
+
+  /** Clutch-transferred drive torque at full throttle (the powertrain loses 10% of transfer to engine load). */
+  private steadyTransfer(rpm: number): number {
+    return Math.max(0, Math.min(this.steadyTorque(rpm) / 1.1, this.config.gearbox.fields.CLUTCH_MAX_POWER ?? Infinity));
+  }
+
+  /** Steady full-throttle tractive force in a gear at a road speed, or 0 above the rev limit. */
+  private steadyWheelForce(gear: number, speed: number, rpmLimit: number): number {
+    const ratio = Math.abs(this.rawRatio(gear));
+    const rpm = Math.max(0, speed) / this.drivenRadius * ratio / rpmToRadians;
+    return ratio > 0 && rpm <= rpmLimit ? this.steadyTransfer(Math.max(rpm, this.idleRpm)) * ratio / this.drivenRadius : 0;
+  }
+
+  /** Tyre rolling resistance of all four wheels at a road speed on a nominal tarmac surface, at static load. */
+  private rollingResistance(speed: number): number {
+    const load = this.massProperties.mass * gravity / 4;
+    return this.wheelSetup.reduce((sum, wheel) => sum
+      + wheelRollingResistance(wheel, load, Math.abs(speed) / wheel.radius, nominalSurfaceDrag), 0);
+  }
+
+  /** Flat-road drag plus rolling resistance at a road speed. */
+  private roadResistance(speed: number): number {
+    const [width, height] = this.config.body.fields.DIMENSIONS ?? [2, 1.5, 4];
+    return this.dragCoefficient * 0.6125 * width * height * speed * speed + this.rollingResistance(speed);
+  }
+
+  /**
+   * Acceleration-optimal upshift point: the lowest rpm at which the next gear delivers at least the current
+   * gear's tractive force at the same road speed, bounded below the fuel-cut redline.
+   */
+  private computeUpshiftRpm(gear: number, maxRpm: number): number {
+    const limit = upshiftRpmLimit * maxRpm;
+    const current = Math.abs(this.rawRatio(gear)), next = Math.abs(this.rawRatio(gear + 1));
+    if (!(current > 0 && next > 0 && next < current)) return limit;
+    const k = next / current;
+    for (let rpm = Math.max(this.idleRpm * 1.5, this.derivedRpm * 0.6); rpm < limit; rpm += 25) {
+      if (this.steadyTransfer(rpm * k) * k >= this.steadyTransfer(rpm)) return rpm;
+    }
+    return limit;
+  }
+
+  /**
+   * CAR_APPROXIMATE_TOP_SPEED is authored for every car, while MODEL_CD_FACTOR does not map consistently onto a
+   * drag coefficient (authored values span 0.16–45 for similar bodies). Calibrate the drag coefficient so flat-road
+   * terminal velocity matches the authored top speed, or the authored gearing's top-gear rev limit when that is lower.
+   */
+  private calibrateDrag(maxRpm: number, area: number): number {
+    const fallback = Math.max(0.32, (this.config.body.fields.MODEL_CD_FACTOR ?? 0) * 0.1);
+    const rated = (this.config.car.fields.CAR_APPROXIMATE_TOP_SPEED ?? 0) * mphToMps;
+    const topRatio = Math.abs(this.rawRatio(this.gearCount));
+    if (!(rated > 0) || !(topRatio > 0) || !(area > 0)) return fallback;
+    const rpmLimit = 0.95 * maxRpm;
+    const gearLimited = rpmLimit * rpmToRadians / topRatio * this.drivenRadius;
+    const target = Math.min(rated, gearLimited);
+    let engineForce = 0;
+    for (let gear = 1; gear <= this.gearCount; gear++) {
+      engineForce = Math.max(engineForce, this.steadyWheelForce(gear, target, rpmLimit * 1.001));
+    }
+    // Each driven axle delivers its share of engine thrust up to the traction its tyres (and the traction aid) allow
+    // at static load plus downforce on nominal tarmac.
+    const { mass, centerOfMass } = this.massProperties;
+    const frontZ = this.wheelSetup[0].mount[2], rearZ = this.wheelSetup[2].mount[2];
+    const frontShare = clamp((centerOfMass[2] - rearZ) / (frontZ - rearZ), 0.1, 0.9);
+    const downforce = (this.config.body.fields.MODEL_DOWNFORCE_FACTOR ?? 0) * 0.1 * 0.6125 * area * target * target;
+    let force = 0;
+    for (const axle of [0, 1] as const) {
+      const share = this.driveWeights[axle * 2]! * 2;
+      if (share <= 0) continue;
+      const wheel = this.wheelSetup[axle * 2]!;
+      const load = (mass * gravity * (axle === 0 ? frontShare : 1 - frontShare) + downforce / 2) / 2;
+      const traction = 2 * wheel.peakLongitudinal * tyreCapacity(wheel, load, 0.95, true).longCapacity
+        * (this.tractionControl ? tractionReserve : 1);
+      force += Math.min(engineForce * share, traction);
+    }
+    const aero = force - this.rollingResistance(target);
+    return aero > 0 ? clamp(aero / (0.6125 * area * target * target), 0.12, 4) : fallback;
+  }
+
+  /**
+   * Hill-start aid (part of the traction aid). Under throttle in a drive gear at low road speed on an uphill grade, it
+   * (1) lets the driven tyres transmit enough longitudinal force to climb the grade at hillStartAcceleration, and
+   * (2) holds the wheels against rolling back, like a hill-hold brake. It is inactive on level ground, when
+   * the throttle is released, while braking, and fades out by hillStartFadeSpeeds[1].
+   */
+  private updateHillStart(): void {
+    this.launchGrip = 1;
+    this.hillHold = 0;
+    const { state } = this;
+    const ratio = this.ratio();
+    if (!this.tractionControl || ratio === 0 || state.throttle < 0.1 || state.brake > 0.05 || this.handbrakeAmount > 0) return;
+    const driveSign = Math.sign(ratio);
+    const roadSpeed = dot(state.linearVelocity, state.forward) * driveSign;
+    const [fadeStart, fadeEnd] = hillStartFadeSpeeds;
+    const active = 1 - clamp((Math.abs(roadSpeed) - fadeStart) / (fadeEnd - fadeStart), 0, 1);
+    const grade = state.forward[1] * driveSign;
+    if (active <= 0 || grade <= 0) return;
+    this.hillHold = active;
+    const pose = this.pose(this.rigidState());
+    const contacts = wheelIndices.map(i => this.wheelContact(pose, i)) as WheelTuple<WheelContact>;
+    const loads = this.contactLoads(contacts);
+    // Usable drive force, as the traction aid shares it: each driven axle pushes with its weaker grounded wheel.
+    let available = 0, rolling = 0;
+    for (const axle of [0, 1] as const) {
+      const grounded = (axle === 0 ? [0, 1] as const : [2, 3] as const).filter(i => contacts[i].grounded);
+      for (const i of grounded) {
+        rolling += wheelRollingResistance(this.wheelSetup[i], Math.max(0, loads[i]), 0, contacts[i].rollingDrag);
+      }
+      if (!this.drivenAxles[axle] || !grounded.length) continue;
+      available += grounded.length * Math.min(...grounded.map(i =>
+        tyreCapacity(this.wheelSetup[i], Math.max(0, loads[i]), contacts[i].friction, contacts[i].road).longCapacity));
+    }
+    if (!(available > 0)) return;
+    // Ramp the climb reserve in over the first few degrees so gentle grades barely change.
+    const required = rolling
+      + this.massProperties.mass * gravity * (grade + hillStartAcceleration * clamp(grade / 0.05, 0, 1));
+    this.launchGrip = lerp(1, clamp(required / available, 1, hillStartMaxGrip), active);
+  }
+
+  private autoShift(dt: number): void {
     const { gear, maxRpm, throttle } = this.state;
+    this.autoShiftTimer = Math.max(0, this.autoShiftTimer - dt);
     if (gear === 0) {
       this.shift(1);
       return;
     }
     if (gear < 0 || (this.clutch < 0.99 && !this.state.handbrake)) return;
-    const ratio = this.ratio();
+    const ratio = Math.abs(this.ratio(gear));
     if (ratio <= 0) return;
-    // Use road-coupled RPM (with wheel speed floor) so clutch launch slip never triggers premature 1->2->1 hunting.
-    const coupledRpm = Math.max(0, this.drivenRpm() * ratio);
-    const shiftRpm = Math.min(this.state.rpm, Math.max(coupledRpm, this.idleRpm));
-    const score = (value: number) => engineTorqueAtRpm(this.config.engine, value) * value * 0.00019040366;
-    const current = score(shiftRpm);
-    const previousRpm = shiftRpm * this.ratio(gear - 1) / ratio;
-    const nextRpm = shiftRpm * this.ratio(gear + 1) / ratio;
-    if (gear > 1 && previousRpm < this.derivedRpm * 0.92 && (score(previousRpm) > 1.08 * current || shiftRpm < this.idleRpm * 1.15)) {
-      this.shift(gear - 1);
-    } else if (gear < this.gearCount && throttle > 0.1 &&
-      (shiftRpm > 0.93 * maxRpm || (shiftRpm >= this.derivedRpm && score(nextRpm) > 1.05 * current))) {
-      this.shift(gear + 1);
+    // Shift on road speed, not driven-wheel speed, so launch wheelspin or a locked axle never trips a shift.
+    const roadSpeed = Math.max(0, dot(this.state.linearVelocity, this.state.forward));
+    const rpm = roadSpeed / this.drivenRadius * ratio / rpmToRadians;
+    const lower = Math.abs(this.ratio(gear - 1));
+    if (gear > 1 && lower > ratio) {
+      // Downshift only when the lower gear lands well below its own upshift point (hysteresis prevents hunting).
+      const lowerRpm = rpm * lower / ratio;
+      const stalled = rpm < this.idleRpm * 1.1;
+      if (stalled || (this.autoShiftTimer === 0 && lowerRpm < downshiftHysteresis * this.upshiftRpm[gear - 1]!)) {
+        this.shift(gear - 1);
+        this.autoShiftTimer = autoShiftDwell;
+        return;
+      }
     }
+    if (gear >= this.gearCount || throttle <= 0.1 || this.autoShiftTimer > 0) return;
+    // Driven wheels run slightly ahead of the road under drive; allow that tread slip (but not launch wheelspin)
+    // so the upshift point stays reachable before the driven wheels reach the rev limit.
+    const shiftRpm = Math.min(Math.max(rpm, this.drivenRpm() * ratio), rpm * 1.2);
+    if (shiftRpm < this.upshiftRpm[gear]!) return;
+    // Never upshift into a gear that cannot hold the current road speed against drag (avoids bog/limiter hunting).
+    if (this.steadyWheelForce(gear + 1, roadSpeed, maxRpm) <= this.roadResistance(roadSpeed)) return;
+    this.shift(gear + 1);
+    this.autoShiftTimer = autoShiftDwell;
   }
 
   private updatePowertrain(dt: number, allowAutoShift: boolean): number {
     const { state, config } = this;
     const engine = config.engine.fields;
     const gearbox = config.gearbox.fields;
+    const horizontalSpeed = Math.hypot(state.linearVelocity[0], state.linearVelocity[2]);
     this.shiftRemaining = Math.max(0, this.shiftRemaining - dt);
     if (this.shiftRemaining === 0) {
-      if (allowAutoShift && this.automatic) this.autoShift();
-      if (this.shiftRemaining === 0 && (state.throttle || state.brake || state.speedMps > 0.1)) {
-        this.clutch = Math.min(1, this.clutch + dt / this.shiftDelay);
+      if (allowAutoShift && this.automatic) this.autoShift(dt);
+      if (this.shiftRemaining === 0) {
+        if (state.throttle > 1e-4 || state.brake > 1e-4 || horizontalSpeed > 0.5) {
+          this.clutch = Math.min(1, this.clutch + dt / this.shiftDelay);
+        } else {
+          this.clutch = Math.max(0, this.clutch - dt / this.shiftDelay);
+        }
       }
     }
     const ratio = this.ratio();
@@ -551,8 +819,11 @@ export class VehiclePhysics implements CollisionBody {
     if (rpm > state.redlineRpm && Math.sin(this.enginePhase) < 0.85) this.fuel *= clamp(engine.FUEL_CUTOFF ?? 0.7, 0, 1);
     const roughness = state.gear === -1 ? 0 : engine.ROUGHNESS ?? 0;
     if (roughness > 0) this.enginePhase = (this.enginePhase + rpm * rpmToRadians) % (2000 * Math.PI);
-    this.fuelOutput = clamp(lerp(this.fuelOutput, air > 0 ? this.fuel * 44100 / air : 0, dt * 50)
-      - (1 - throttle) * Math.sin(this.enginePhase * 0.001) * roughness * clamp(1 - rpm / maxRpm, 0, 1), 0, 1);
+    const baseFuel = lerp(this.fuelOutput, air > 0 ? this.fuel * 44100 / air : 0, dt * 50);
+    const roughRipple = throttle > 1e-4
+      ? (1 - throttle) * Math.sin(this.enginePhase * 0.001) * roughness * clamp(1 - rpm / maxRpm, 0, 1)
+      : 0;
+    this.fuelOutput = clamp(baseFuel - roughRipple, 0, 1);
 
     let torque = engineTorqueAtRpm(config.engine, rpm) * (1 + 0.1 * (engine.NUMBER_OF_TURBOS ?? 0) * state.inductionPressure);
     if (torque > 0) torque *= this.fuelOutput * (state.boostActive ? this.boostTorqueMultiplier : 1);
@@ -572,7 +843,8 @@ export class VehiclePhysics implements CollisionBody {
       : clamp(10 * (1 + engagement) * (lerp(free, coupled, engagement) - rpm), -6000, 6000);
     const predicted = rpm + dt * (correction + 60 * torque * (1 - engagement)) / this.flywheel;
     state.rpm = clamp(lerp(predicted, coupled, engagement * dt / this.shiftDelay), this.idleRpm, maxRpm * 1.05);
-    const transfer = Math.min(4 * engagement, 1) * Math.min(torque, gearbox.CLUTCH_MAX_POWER ?? Infinity);
+    const drivenTorque = throttle <= 1e-4 && torque > 0 ? 0 : torque;
+    const transfer = Math.min(4 * engagement, 1) * Math.min(drivenTorque, gearbox.CLUTCH_MAX_POWER ?? Infinity);
     this.engineLoad = Math.max(0, transfer);
     return transfer * ratio;
   }
@@ -669,7 +941,9 @@ export class VehiclePhysics implements CollisionBody {
   }
 
   private tyreForce(pose: Pose, i: WheelIndex, contact: WheelContact, load: number, dt: number): TyreForce {
-    if (!contact.grounded) return { force: zero, longitudinal: 0, lateral: 0, slipRatio: 0, slipAngle: 0, forwardSpeed: 0 };
+    if (!contact.grounded) {
+      return { force: zero, longitudinal: 0, lateral: 0, slipRatio: 0, slipAngle: 0, forwardSpeed: 0, tractionLimit: 0 };
+    }
     const wheel = this.wheelSetup[i];
     const tyre = wheel.tyre;
     const state = this.state.wheels[i];
@@ -688,37 +962,53 @@ export class VehiclePhysics implements CollisionBody {
     const slipAngle = Math.sign(sideSpeed) * angle * blend;
 
     const camber = clamp(dot(normal, cross(pose.up, wheelHeading)), -1, 1);
-    const patch = Math.max(0, (tyre.fields.TYRE_PATCH_LENGTH ?? 0.08) * (tyre.fields.WIDTH ?? 0.24)
-      * Math.max(0, 1 - camber * camber) ** 54);
-    const grip = contact.friction * (1 - 0.15 * clamp(patch / 0.1, 0, 1));
-    const roadGrip = tyre.fields.ROAD_MAGIC_GRIP_NUMBER ?? 45;
-    const runtimeGrip = contact.road ? roadGrip : tyre.fields.OFFROAD_MAGIC_GRIP_NUMBER ?? roadGrip;
-    const loadProxy = Math.max(0, load / gravity + wheel.mass);
-    const capacity = (0.8 + 5.4 * patch) * runtimeGrip * 100
-      * lookupPairs(tyre.verticalLoad, loadProxy * 0.01, loadProxy * 0.01) * grip;
-    const longCapacity = runtimeGrip > 0 ? capacity * roadGrip / runtimeGrip : 0;
+    const { patch, capacity, longCapacity } = tyreCapacity(wheel, load, contact.friction, contact.road, camber);
     const rpm = Math.abs(state.angularVel) / rpmToRadians;
+    const boostLongScale = (this.state.boostActive ? 3 : 1) * (this.drivenAxles[i < 2 ? 0 : 1] ? this.launchGrip : 1);
+    const boostLatScale = this.state.boostActive ? 1.5625 : 1;
     const longitudinalLimit = lerp(combinedSlip(tyre.longitudinalSlip, slip, 0, false),
       combinedSlip(tyre.longitudinalSlip, slip, angle, false), blend)
-      * longCapacity * (this.state.boostActive ? 3 : 1);
+      * longCapacity * boostLongScale;
     const wheelMass = this.wheelEffectiveMass(i);
     const longitudinalConstraint = Math.abs(deviation) / (dt * (1 / wheelMass + this.inverseMass));
-    const longitudinal = Math.sign(deviation) * Math.min(longitudinalConstraint,
-      Math.max(0, lerp(longCapacity * (this.state.boostActive ? 3 : 1), longitudinalLimit, clamp(rpm / 300, 0, 1))));
+    let longitudinal = Math.sign(deviation) * Math.min(longitudinalConstraint,
+      Math.max(0, lerp(longCapacity * boostLongScale, longitudinalLimit, clamp(rpm / 300, 0, 1))));
     const targetLateral = -Math.sign(sideSpeed) * combinedSlip(tyre.lateralSlip, slip, Math.abs(slipAngle), true)
-      * capacity * (this.state.boostActive ? 1.5625 : 1);
+      * capacity * boostLatScale;
     const relaxation = this.config.setup.fields.RELAXATION_LENGTH;
     const previous = this.wheelRuntime[i].lateralForce;
     const relax = Math.min(1, Math.abs(state.angularVel * dt / (2 * Math.PI) * (relaxation ?? 1))
       * (Math.abs(targetLateral) < Math.abs(previous) ? 5 : 1));
-    const lateral = rpm <= 60 ? 0 : relaxation ? lerp(previous, targetLateral, relax) : targetLateral;
+    const lateralConstraint = Math.abs(sideSpeed) / (dt * this.inverseMass * 4);
+    const lockedLateral = Math.abs(sideSpeed) > 1e-4
+      ? -Math.sign(sideSpeed) * Math.min(lateralConstraint,
+        Math.max(Math.abs(targetLateral), capacity * 0.5 * clamp(Math.abs(sideSpeed), 0, 1)))
+      : 0;
+    let lateral = rpm <= 60 ? lockedLateral : relaxation ? lerp(previous, targetLateral, relax) : targetLateral;
+    // Bound combined planar tyre force to the tyre's friction circle.
+    const maxCombined = Math.max(capacity * boostLatScale, longCapacity * boostLongScale);
+    const combinedMag = Math.hypot(longitudinal, lateral);
+    if (maxCombined > 0 && combinedMag > maxCombined) {
+      const shrink = maxCombined / combinedMag;
+      longitudinal *= shrink;
+      lateral *= shrink;
+    }
     const camberForce = -Math.sign(camber) * 0.02 * capacity
       * lookupPairs(tyre.camberThrust, Math.abs(camber) / degree * 0.1, 0);
-    const brake = (this.config.brakes.ADDITIONAL_BRAKING ?? 0) * this.state.brake * 0.25;
-    const additional = Math.sign(forwardSpeed) * Math.min(brake, Math.abs(forwardSpeed) / (dt * this.inverseMass * 4));
+    // Pedal braking is tyre-limited: wheel-brake retardation plus ADDITIONAL_BRAKING never exceeds a fixed share of
+    // the tyre's longitudinal capacity, keeping peak stops near 1.5 g even on high-grip slicks with downforce.
+    const brakeLimit = Math.min(longCapacity * brakeGripFraction, brakeLoadLimit * load);
+    const retarding = longitudinal * forwardSpeed < 0 ? Math.abs(longitudinal) : 0;
+    if (this.state.brake > 0 && retarding > brakeLimit) longitudinal *= brakeLimit / retarding;
+    const rawBrake = (this.config.brakes.ADDITIONAL_BRAKING ?? 0) * this.state.brake * 0.25;
+    const maxExtraBrake = Math.max(0, brakeLimit - Math.min(retarding, brakeLimit));
+    const additional = Math.sign(forwardSpeed) * Math.min(rawBrake, maxExtraBrake,
+      Math.abs(forwardSpeed) / (dt * this.inverseMass * 4));
     return {
       force: add(scale(forward, longitudinal - additional), scale(side, lateral + camberForce)),
       longitudinal, lateral, forwardSpeed, slipRatio: -Math.sign(deviation) * slip / 100, slipAngle,
+      // Mirrors the low-wheel-speed blend above: near standstill the tyre transmits its full capacity.
+      tractionLimit: lerp(1, wheel.peakLongitudinal, clamp(rpm / 300, 0, 1)) * longCapacity * boostLongScale,
     };
   }
 
@@ -728,28 +1018,56 @@ export class VehiclePhysics implements CollisionBody {
     const loads = this.contactLoads(contacts);
     const [width, height] = this.config.body.fields.DIMENSIONS ?? [2, 1.5, 4];
     const speed = Math.hypot(...rigid.velocity);
-    // The authored coefficients are available; the original airfoil force
-    // consumer is unresolved. Use a conventional dynamic-pressure model.
-    const pressureArea = 0.06125 * width * height * speed ** 2;
-    const drag = (this.config.body.fields.MODEL_CD_FACTOR ?? 0) * pressureArea;
-    const downforce = (this.config.body.fields.MODEL_DOWNFORCE_FACTOR ?? 0) * pressureArea;
+    // Conventional dynamic pressure (0.5 * rho * A * v^2 = 0.6125 * A * v^2) with the calibrated drag coefficient.
+    const dynamicPressureArea = 0.6125 * width * height * speed ** 2;
+    const drag = this.dragCoefficient * dynamicPressureArea;
+    const downforce = (this.config.body.fields.MODEL_DOWNFORCE_FACTOR ?? 0) * 0.1 * dynamicPressureArea;
     let force = add([0, -this.massProperties.mass * gravity, 0], scale(pose.up, -downforce));
     if (speed > 1e-9) force = add(force, scale(rigid.velocity, -drag / speed));
     let torque = scale(rigid.momentum, -0.6);
     for (const i of wheelIndices) {
       const contact = contacts[i];
-      const suspension = contact.grounded ? Math.max(0, loads[i]) : Math.min(0, loads[i]);
+      const suspension = contact.grounded ? Math.max(0, loads[i]) : 0;
       const tyre = this.tyreForce(pose, i, contact, suspension, dt);
-      const spring = scale(pose.up, suspension);
+      const spring = scale(contact.normal, suspension);
       force = add(force, add(spring, tyre.force));
+      const tyrePoint: Vec3 = [
+        contact.point[0],
+        lerp(contact.point[1], rigid.center[1], tyreRollCenterBlend),
+        contact.point[2],
+      ];
       torque = add(torque, add(cross(sub(contact.position, rigid.center), spring),
-        cross(sub(contact.point, rigid.center), tyre.force)));
+        cross(sub(tyrePoint, rigid.center), tyre.force)));
     }
+    if (this.stabilityControl) torque = add(torque, this.stabilityTorque(pose, contacts));
     const spin = quatMultiply([...pose.omega, 0], qNormalize(rigid.orientation));
     return {
       velocity: rigid.velocity, acceleration: scale(force, this.inverseMass), torque,
       spin: [spin[0] / 2, spin[1] / 2, spin[2] / 2, spin[3] / 2],
     };
+  }
+
+  /**
+   * Stability aid (ESC): resist only the yaw rate in excess of the steering's kinematic yaw rate, as selective wheel
+   * braking would. It never opposes the yaw the steering asks for (so it adds no understeer), fades out at parking
+   * speeds and in the air, and is bounded by the yaw moment the tyres could realistically develop through braking.
+   */
+  private stabilityTorque(pose: Pose, contacts: WheelTuple<WheelContact>): Vec3 {
+    const grounded = contacts.filter(contact => contact.grounded).length;
+    // A deliberate handbrake slide is the driver's call, so the aid stands down while the handbrake is held.
+    if (grounded < 3 || this.handbrakeAmount > 0) return zero;
+    const forwardSpeed = dot(pose.velocity, pose.forward);
+    const wheelbase = Math.max(0.5, this.wheelSetup[0].mount[2] - this.wheelSetup[2].mount[2]);
+    const reference = forwardSpeed * Math.tan(this.state.steerAngleRad) / wheelbase;
+    const yawRate = dot(pose.omega, pose.up);
+    const excess = yawRate * reference > 0 && Math.abs(reference) > 1e-3
+      ? Math.sign(yawRate) * Math.max(0, Math.abs(yawRate) - Math.abs(reference))
+      : Math.abs(reference) <= 1e-3 ? yawRate : 0;
+    const fade = clamp((Math.abs(forwardSpeed) - 3) / 7, 0, 1);
+    const halfTrack = Math.abs(this.wheelSetup[1].mount[0] - this.wheelSetup[0].mount[0]) / 2;
+    const limit = stabilityMomentShare * this.massProperties.mass * gravity * halfTrack;
+    const moment = clamp(stabilityYawDamping * this.inertia[5]! * excess * fade, -limit, limit);
+    return scale(pose.up, -moment);
   }
 
   private integrateBody(h: number): RigidState {
@@ -778,7 +1096,12 @@ export class VehiclePhysics implements CollisionBody {
       const deepest = contacts.reduce<typeof contacts[number] | undefined>((best, contact) =>
         !best || contact.penetration > best.penetration ? contact : best, undefined);
       if (!deepest) break;
-      state.lastImpactImpulse = Math.max(state.lastImpactImpulse, resolveBarrierContact(this, deepest));
+      // Apply vertical-wall barrier impulses at CoM height so grazing wall contacts
+      // generate realistic yaw and bounce without catapulting the car into a rollover.
+      const barrierContact = Math.abs(deepest.normal[1]) < 0.2
+        ? { ...deepest, point: [deepest.point[0], this.centerOfMassWorld[1], deepest.point[2]] as Vec3 }
+        : deepest;
+      state.lastImpactImpulse = Math.max(state.lastImpactImpulse, resolveBarrierContact(this, barrierContact));
     }
     let deepest = 0;
     let normal: Vec3 = [0, 1, 0], point = state.position;
@@ -795,6 +1118,25 @@ export class VehiclePhysics implements CollisionBody {
     if (deepest > 0) {
       this.state.lastImpactImpulse = Math.max(this.state.lastImpactImpulse, resolveStaticContact(this, point, normal, 0.05, 50000));
       this.translate(scale(normal, deepest));
+    }
+  }
+
+  /** Auto-right the car if it ever remains inverted so it never slides upside down forever. */
+  private updateRolloverRecovery(dt: number): void {
+    const state = this.state;
+    if (state.up[1] < 0.35) {
+      this.flippedTime += dt;
+      if (this.flippedTime >= 1.0) {
+        const [x, y, z] = state.position;
+        const ground = this.track.queryGround(x, y + 1, z);
+        const yaw = Math.atan2(state.forward[0], state.forward[2]);
+        const linearVelocity: Vec3 = [state.linearVelocity[0] * 0.5, 0, state.linearVelocity[2] * 0.5];
+        this.setPose([x, (ground.hit ? ground.height : y) + 0.08, z], yaw);
+        state.linearVelocity = linearVelocity;
+        this.updateSpeed();
+      }
+    } else {
+      this.flippedTime = Math.max(0, this.flippedTime - dt * 2);
     }
   }
 
@@ -815,10 +1157,21 @@ export class VehiclePhysics implements CollisionBody {
       return 0.1 * Math.sign(driveTorque) * clamp(0.005 * diff, -limit, limit);
     };
     const biases = [axialBias(0), axialBias(1)] as const;
+    const tyres = wheelIndices.map(i => this.tyreForce(pose, i, contacts[i], Math.max(0, loads[i]), dt)) as WheelTuple<TyreForce>;
+    // Traction aid: like an open differential, an axle can only push as hard as its less-loaded grounded wheel.
+    // Limiting each driven wheel's drive force to that shared traction keeps left/right thrust equal, so roll-induced
+    // load transfer cannot feed a yaw moment back into the car on a straight.
+    const axleTraction = ([0, 1] as const).map(axle => {
+      const pair = [tyres[axle * 2]!, tyres[axle * 2 + 1]!].filter((_, side) => contacts[axle * 2 + side]!.grounded);
+      if (!pair.length) return Infinity;
+      // Launches and hill starts may use all of it; the lateral reserve matters once the car is really moving.
+      const speed = Math.max(...pair.map(tyre => Math.abs(tyre.forwardSpeed)));
+      return Math.min(...pair.map(tyre => tyre.tractionLimit)) * lerp(1, tractionReserve, clamp((speed - 3) / 7, 0, 1));
+    });
     for (const i of wheelIndices) {
       const wheel = this.wheelSetup[i], runtime = this.wheelRuntime[i], w = state.wheels[i];
       const contact = contacts[i];
-      const tyre = this.tyreForce(pose, i, contact, Math.max(0, loads[i]), dt);
+      const tyre = tyres[i];
       if (contact.grounded) {
         runtime.length = wheel.natural - contact.compression;
         const up = dot(pose.up, contact.normal);
@@ -842,22 +1195,30 @@ export class VehiclePhysics implements CollisionBody {
       const axle = i < 2 ? 0 : 1;
       const driven = this.drivenAxles[axle];
       const left = i % 2 === 0;
-      const drive = driveTorque * this.driveWeights[i] * (1 + (left ? -1 : 1) * biases[axle]) / wheel.radius;
+      const engineDrive = driveTorque * this.driveWeights[i] * (1 + (left ? -1 : 1) * biases[axle]) / wheel.radius;
+      const forwardDrive = engineDrive * (tyre.forwardSpeed || engineDrive) > 0;
+      const drive = this.tractionControl && driven && forwardDrive && contact.grounded
+        ? Math.sign(engineDrive) * Math.min(Math.abs(engineDrive), axleTraction[axle]!)
+        : engineDrive;
       const speed = w.angularVel * wheel.radius;
       const effectiveMass = this.wheelEffectiveMass(i);
-      const rolling = contact.grounded ? clamp((Math.abs(w.angularVel) / (2 * Math.PI)) ** 3
-        * ((wheel.tyre.fields.ROLLING_RESISTANCE ?? 0.001) + contact.rollingDrag * 0.1), 5, 100000) : 0;
+      const rolling = contact.grounded
+        ? wheelRollingResistance(wheel, Math.max(0, loads[i]), Math.abs(w.angularVel), contact.rollingDrag) : 0;
       let free = speed + (drive - tyre.longitudinal) / effectiveMass * dt;
       free -= Math.sign(free) * Math.min(Math.abs(free), rolling / effectiveMass * dt);
 
       const pedal = state.brake * (axle === 0 ? 1 + (left ? -1 : 1) * 0.85 * Math.sin(state.steerAngleRad) : 1);
       const rearHandbrake = axle === 1 && this.handbrakeAmount > 0;
       const pad = config.setup.fields.BRAKE_PAD_FRICTION?.[axle] ?? 1;
-      const brake = Math.max(0, 2 * (brakeForce?.[axle] ?? 3500) * (axle === 0 ? distribution : 1 - distribution)
+      const brake = Math.max(0, 5.2 * (brakeForce?.[axle] ?? 3500) * (axle === 0 ? distribution : 1 - distribution)
         * (brakeRadius?.[axle] ?? 0.24) / wheel.radius * pad * pedal);
       const stop = rearHandbrake ? Math.abs(free) * 0.5 * this.handbrakeAmount
         : Math.min(Math.abs(free), brake / effectiveMass * dt);
       let tread = free - Math.sign(free) * stop;
+      // Hill-start aid: like a hill-hold brake, no wheel may roll against the drive direction while it is active.
+      if (this.hillHold > 0 && contact.grounded && tread * Math.sign(this.ratio()) < 0) {
+        tread *= 1 - this.hillHold;
+      }
 
       if (contact.grounded) {
         const road = tyre.forwardSpeed;
@@ -869,6 +1230,14 @@ export class VehiclePhysics implements CollisionBody {
         }
         if ((gearbox.ANTI_WHEELSKID ?? 0) > 0 && !rearHandbrake && state.brake > 0 && tread * direction < roadSpeed * 0.55) {
           tread = direction * roadSpeed * 0.55;
+        }
+        // Traction aid: hold driven tread speed near peak slip in the drive direction (also while rolling back
+        // on a hill start) so excess torque never spins the axle up and strips its lateral grip.
+        const driveSign = Math.sign(drive);
+        if (this.tractionControl && driven && driveSign !== 0) {
+          const along = road * driveSign;
+          const allowed = along + tractionLaunchMargin + tractionSlipTarget * Math.max(0, along);
+          if (tread * driveSign > allowed) tread = driveSign * allowed;
         }
       } else if (!driven) {
         tread *= 1 - dt;

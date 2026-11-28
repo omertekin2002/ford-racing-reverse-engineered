@@ -187,3 +187,31 @@ export function buildHudViewModel(
     minimap: options.minimap ? projectMinimap(options.minimap) : null,
   };
 }
+
+export interface ResultsRowTimes {
+  readonly totalSeconds: number | null;
+  readonly bestLapSeconds: number | null;
+  readonly gapSeconds: number | null;
+  readonly finished?: boolean;
+  readonly lapsDown?: number;
+}
+
+/**
+ * Format the TIME / BEST columns of a results row. Finished racers show their finish time; unfinished
+ * racers show `+N LAP(S)` when lapped, an estimated `+S.SSs` gap on the lead lap, or `DNF` — never a
+ * borrowed finish time.
+ */
+export function formatResultsRowTimes(row: ResultsRowTimes): { time: string; best: string } {
+  const best = row.bestLapSeconds !== null ? (formatRaceTime(row.bestLapSeconds) ?? "--:--.--") : "--:--.--";
+  const finished = row.finished ?? row.totalSeconds !== null;
+  if (finished && row.totalSeconds !== null) {
+    return { time: formatRaceTime(row.totalSeconds) ?? "--:--.--", best };
+  }
+  const lapsDown = Math.floor(row.lapsDown ?? 0);
+  if (lapsDown >= 1) return { time: `+${lapsDown} ${lapsDown === 1 ? "LAP" : "LAPS"}`, best };
+  if (row.gapSeconds !== null && Number.isFinite(row.gapSeconds) && row.gapSeconds >= 0) {
+    const gap = row.gapSeconds;
+    return { time: gap >= 60 ? `+${formatRaceTime(gap)}` : `+${gap.toFixed(2)}s`, best };
+  }
+  return { time: "DNF", best };
+}

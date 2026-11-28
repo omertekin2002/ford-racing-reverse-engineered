@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { parseTranslationTable } from "../src/formats/tlate";
 import { InputManager, type MenuInput } from "../src/input/inputManager";
-import { buildHudViewModel, formatRaceTime } from "../src/ui/hudModel";
+import { buildHudViewModel, formatRaceTime, formatResultsRowTimes } from "../src/ui/hudModel";
 import {
   MenuController, type MenuAction, type MenuControllerOptions, type RaceSetup,
 } from "../src/ui/menuController";
@@ -223,6 +223,12 @@ test("menu routes input through scenes, launches a car, pauses, resumes and show
   assert.equal(controller.getView().state, "IN_GAME");
   tick({}, true);
   assert.equal(controller.getView().state, "PAUSE");
+  // Pressing P (pausePressed without menu.back) while paused unpauses back to IN_GAME.
+  tick({}, true);
+  assert.deepEqual(controller.drainCommands().at(-1), { type: "ResumeRace" });
+  assert.equal(controller.getView().state, "IN_GAME");
+  tick({}, true);
+  assert.equal(controller.getView().state, "PAUSE");
   controller.activate("options");
   assert.equal(controller.getView().state, "OPTIONS");
   tick({ back: true });
@@ -385,4 +391,66 @@ test("minimap keeps virtual aspect, closes the outline and draws the local marke
     speedUnits: "KPH", speedometerMaxMps: 50, minimap: { ...minimap, course: [course[0]!, course[0]!] },
   });
   assert.equal(degenerate.minimap, null);
+});
+
+test("Esc on RACE_END opens RESULTS and Esc on RESULTS returns to the main menu", () => {
+  const controller = new MenuController(menuOptions({ quickRaces: [preset] }));
+  controller.continueFromStart();
+  controller.activate("quick-race");
+  const launch = controller.drainCommands().at(-1);
+  assert.ok(launch?.type === "LaunchRaceRequest");
+  controller.completeLoad(launch.requestId);
+  controller.finishRace([]);
+  assert.equal(controller.getView().state, "RACE_END");
+  const input = new InputManager();
+  const esc = () => {
+    const frame = input.poll(0);
+    controller.update(1 / 60, { driving: frame.driving, menu: { ...frame.menu, back: true } });
+  };
+  esc();
+  assert.equal(controller.getView().state, "RESULTS");
+  controller.drainCommands();
+  esc();
+  assert.equal(controller.getView().state, "MAIN_MENU");
+  assert.deepEqual(controller.drainCommands().filter(c => c.type === "QuitToMenu"), [{ type: "QuitToMenu" }]);
+});
+
+test("results rows show real finish times only, with lap-down, estimated gap or DNF for unfinished racers", () => {
+  const finished = formatResultsRowTimes({
+    totalSeconds: 272.49, bestLapSeconds: 66.1, gapSeconds: 0, finished: true, lapsDown: 0,
+  });
+  assert.deepEqual(finished, { time: "04:32.49", best: "01:06.10" });
+  assert.equal(formatResultsRowTimes({
+    totalSeconds: null, bestLapSeconds: 70, gapSeconds: 3.456, finished: false, lapsDown: 0,
+  }).time, "+3.46s");
+  assert.equal(formatResultsRowTimes({
+    totalSeconds: null, bestLapSeconds: null, gapSeconds: 75, finished: false, lapsDown: 0,
+  }).time, "+01:15.00");
+  assert.equal(formatResultsRowTimes({
+    totalSeconds: null, bestLapSeconds: null, gapSeconds: null, finished: false, lapsDown: 1,
+  }).time, "+1 LAP");
+  assert.equal(formatResultsRowTimes({
+    totalSeconds: null, bestLapSeconds: null, gapSeconds: null, finished: false, lapsDown: 2,
+  }).time, "+2 LAPS");
+  const dnf = formatResultsRowTimes({ totalSeconds: null, bestLapSeconds: null, gapSeconds: null, finished: false });
+  assert.deepEqual(dnf, { time: "DNF", best: "--:--.--" });
+  // Legacy rows without `finished` stay finished when they carry a time.
+  assert.equal(formatResultsRowTimes({ totalSeconds: 132, bestLapSeconds: 42, gapSeconds: 0 }).time, "02:12.00");
+});
+
+test("setCarLiveries collapses a car's placeholder liveries and keeps the selection in range", () => {
+  const many = { id: "gt", name: "GT", liveries: ["DEFAULT", "A", "B", "C"] };
+  const controller = new MenuController(menuOptions({ cars: [many, car] }));
+  controller.continueFromStart();
+  controller.activate("select-car");
+  assert.equal(controller.activate("next-livery"), true);
+  assert.equal(controller.getView().livery, "A");
+  assert.equal(controller.setCarLiveries("gt", ["DEFAULT"]), true);
+  assert.equal(controller.getView().livery, "DEFAULT");
+  assert.deepEqual(controller.getView().car?.liveries, ["DEFAULT"]);
+  assert.equal(controller.activate("next-livery"), false);
+  assert.equal(controller.setCarLiveries("gt", ["DEFAULT"]), false);
+  assert.equal(controller.setCarLiveries("missing", ["X"]), false);
+  controller.activate("next-car");
+  assert.deepEqual(controller.getView().car?.liveries, ["blue", "green"]);
 });

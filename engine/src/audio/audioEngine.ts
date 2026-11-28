@@ -189,6 +189,8 @@ export class AudioEngine {
   private engineVoices: EngineVoice[] = [];
   private skidSample?: AudioSample;
   private skidVoice?: SampleVoice;
+  private windSample?: AudioSample;
+  private windVoice?: SampleVoice;
   private readonly effects = new Map<Effect, AudioBuffer>();
 
   private readonly unlock = (): void => {
@@ -229,6 +231,7 @@ export class AudioEngine {
         this.graph = this.createGraph(ctx);
         this.replaceEngineVoices();
         this.replaceSkidVoice();
+        this.replaceWindVoice();
         this.applyDrivingState();
       }
       this.removeUnlockListeners();
@@ -279,6 +282,21 @@ export class AudioEngine {
     this.skidSample = sample;
     this.replaceSkidVoice();
     this.applyDrivingState();
+  }
+
+  /**
+   * Looped wind sample (e.g. `ENGINE_SAMPLE_TYPE_WIND` from SND/GEN_ENG.SPC). When present it replaces the
+   * procedural filtered-noise wind; omit it to fall back to the noise voice.
+   */
+  setWindSample(sample?: AudioSample): void {
+    if (this.disposed) return;
+    this.windSample = sample;
+    this.replaceWindVoice();
+    this.applyDrivingState();
+  }
+
+  get hasWindSample(): boolean {
+    return this.windSample !== undefined;
   }
 
   setEffectSample(effect: Effect, buffer?: AudioBuffer): void {
@@ -370,6 +388,8 @@ export class AudioEngine {
     this.bank = undefined;
     this.skidVoice = undefined;
     this.skidSample = undefined;
+    this.windVoice = undefined;
+    this.windSample = undefined;
     this.effects.clear();
     if (ctx && ctx.state !== "closed") {
       await ctx.close().catch(() => undefined);
@@ -442,6 +462,14 @@ export class AudioEngine {
     this.skidVoice = this.skidSample && makeLoop(ctx, graph.skid.filter, this.skidSample);
   }
 
+  private replaceWindVoice(): void {
+    const ctx = this.context;
+    const graph = this.graph;
+    if (!ctx || !graph || ctx.state === "closed") return;
+    if (this.windVoice) retireLoop(this.windVoice, ctx.currentTime);
+    this.windVoice = this.windSample && makeLoop(ctx, graph.buses.sfx, this.windSample);
+  }
+
   private applyDrivingState(): void {
     const ctx = this.context;
     const graph = this.graph;
@@ -480,7 +508,11 @@ export class AudioEngine {
 
     const wind = smoothstep(12, 75, speedMps);
     smooth(graph.wind.filter.frequency, lerp(320, 3400, wind), now);
-    smooth(graph.wind.gain.gain, 0.23 * wind, now);
+    smooth(graph.wind.gain.gain, this.windVoice ? 0 : 0.23 * wind, now);
+    if (this.windVoice) {
+      smooth(this.windVoice.source.playbackRate, lerp(0.85, 1.25, wind), now);
+      smooth(this.windVoice.gain.gain, 0.3 * wind, now);
+    }
 
     const tyre = SURFACES[surface];
     const slip = smoothstep(0.11, 0.92, tyreSlip);
