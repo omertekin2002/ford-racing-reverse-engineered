@@ -222,10 +222,16 @@ function parseByte(token: string, diagnostics: string[]): number {
 }
 
 export function indexUiTemplates(nodes: UiNode[], map = new Map<string, UiNode>()): Map<string, UiNode> {
+  // Index sibling templates before recursing into children so top-level definitions (e.g. COMOBJ.UI's
+  // horizontal MENUBAR) are never overwritten by nested child nodes that reuse the same OBJECT_ID
+  // (e.g. VERTICAL_BOTTOM_BAR's child MENUBAR).
   for (const node of nodes) {
     if (node.objectId) {
-      map.set(node.objectId.toLowerCase(), node);
+      const key = node.objectId.toLowerCase();
+      if (!map.has(key)) map.set(key, node);
     }
+  }
+  for (const node of nodes) {
     indexUiTemplates(node.children, map);
   }
   return map;

@@ -690,7 +690,7 @@ export class SceneRenderer {
 
   private drawFrame(
     view: Mat4, projection: Mat4, track: CompiledModel | ModelInstance | readonly ModelInstance[] | null,
-    cars: readonly CarInstance[], fog: FogConfig, viewport: ViewportRect, canvasHeight: number,
+    cars: readonly CarInstance[], fog: FogConfig, viewport: ViewportRect, canvasHeight: number, sky = true,
   ): void {
     if (this.disposed) throw new Error("Scene renderer has been disposed");
     const gl = this.context.gl;
@@ -738,12 +738,16 @@ export class SceneRenderer {
       gl.disable(gl.CULL_FACE);
       gl.disable(gl.BLEND);
       gl.bindVertexArray(this.emptyVao);
-      gl.useProgram(this.sky.program);
-      gl.uniformMatrix4fv(this.sky.uniforms.inverseViewProjection, false, inverseViewProjection);
-      gl.uniform3f(this.sky.uniforms.camera, ...camera);
-      gl.uniform3f(this.sky.uniforms.horizon, ...horizon);
-      gl.uniform3f(this.sky.uniforms.zenith, ...skyColour);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      // The sky pass paints every pixel of the viewport; overlays (the CAR.UI turntable) skip it so the UI
+      // already drawn underneath stays visible.
+      if (sky) {
+        gl.useProgram(this.sky.program);
+        gl.uniformMatrix4fv(this.sky.uniforms.inverseViewProjection, false, inverseViewProjection);
+        gl.uniform3f(this.sky.uniforms.camera, ...camera);
+        gl.uniform3f(this.sky.uniforms.horizon, ...horizon);
+        gl.uniform3f(this.sky.uniforms.zenith, ...skyColour);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      }
 
       for (const pipeline of [this.world, this.vehicle]) {
         const u = pipeline.uniforms;
@@ -857,8 +861,15 @@ export class SceneRenderer {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
-  /** Render within a normalized UI rectangle, leaving pixels outside the rectangle intact. */
-  renderCarTurntable(carModel: CompiledModel, angleRad: number, viewportRect: ViewportRect, canvasWidth: number, canvasHeight: number): void {
+  /**
+   * Render the car within a normalized UI rectangle over the UI already in the framebuffer: only depth is cleared
+   * in the viewport and no sky/colour pass runs, so the `CAR.PSD` background shows around the car and pixels
+   * outside the rectangle stay intact. `clearColor` restores the old opaque sky-filled box.
+   */
+  renderCarTurntable(
+    carModel: CompiledModel, angleRad: number, viewportRect: ViewportRect, canvasWidth: number, canvasHeight: number,
+    clearColor = false,
+  ): void {
     const rect = {
       x: viewportRect.x * canvasWidth, y: viewportRect.y * canvasHeight,
       width: viewportRect.width * canvasWidth, height: viewportRect.height * canvasHeight,
@@ -879,6 +890,6 @@ export class SceneRenderer {
     rotation[12] = center[0] - rotated[0];
     rotation[14] = center[2] - rotated[2];
     this.drawFrame(view, perspectiveLH(fov, aspect, 0.05, distance + radius * 4), null,
-      [{ model: carModel, transform: rotation, groundY: min[1] }], DEFAULT_FOG, rect, canvasHeight);
+      [{ model: carModel, transform: rotation, groundY: min[1] }], DEFAULT_FOG, rect, canvasHeight, clearColor);
   }
 }

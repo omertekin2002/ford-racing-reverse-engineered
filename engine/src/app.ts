@@ -1,14 +1,16 @@
 import { AudioEngine, type CountdownStep, type EngineLayer, type EngineLayerRole, type TyreSurface } from "./audio/audioEngine.js";
-import { DemoAssets, trackDirectory, type TrackRuntimeData } from "./demoAssets.js";
+import {
+  CODE_SET_UI_TEXTURES, DemoAssets, trackDirectory, type LoadingSprites, type TrackRuntimeData,
+} from "./demoAssets.js";
 import type { EngineSoundRecord, ResolvedCarConfig, TrackRecord } from "./formats/databases.js";
-import { measureTextLine, type ParsedFont } from "./formats/fonts.js";
+import { measureTextLine, type FontAtlas } from "./formats/fonts.js";
 import type { PcgEntry } from "./formats/pcg.js";
 import type { SpcBank, SpcEntry } from "./formats/spc.js";
-import { lookupTranslation } from "./formats/tlate.js";
+import { lookupTranslation, type TranslationTable } from "./formats/tlate.js";
 import { AiDriver, type AiObstacle, type CarControlOutput } from "./game/aiDriver.js";
 import { CameraController, cameraPresetFromDefinition, type CameraMode, type CameraView } from "./game/cameraController.js";
 import { RaceManager, type RaceMode, type RaceObservation, type RacePhase } from "./game/raceManager.js";
-import { InputManager, type DrivingInput, type InputFrame } from "./input/inputManager.js";
+import { InputManager, type DrivingInput, type InputFrame, type MenuInput } from "./input/inputManager.js";
 import { clamp, mat4FromQuatTranslation } from "./math/mat4.js";
 import { resolveCarCollision } from "./physics/collision.js";
 import { TrackSpatial } from "./physics/trackSpatial.js";
@@ -16,14 +18,20 @@ import { VehiclePhysics } from "./physics/vehiclePhysics.js";
 import { GlContext } from "./render/glContext.js";
 import { SceneRenderer, type CarInstance, type CompiledModel, type ViewportRect } from "./render/sceneRenderer.js";
 import {
-  canvasToUiPoint, computeUiViewport, UiBatchBuilder, UiRenderer, type HudState, type UiColor,
+  canvasToUiPoint, drawLoadingScreen, drawUiDrawItems, stepLoadingPhase, UiBatchBuilder, UiRenderer,
+  uiTextMeasurer, type UiItemResources, type UiViewportMode,
 } from "./render/uiRenderer.js";
-import { formatRaceTime, formatResultsRowTimes } from "./ui/hudModel.js";
 import {
-  MenuController, type MenuCar, type MenuCommand, type MenuScene, type MenuSceneAction,
-  type MenuSettings, type MenuState, type MenuTrack, type MenuView, type RaceSetup, type RaceStanding,
+  cameraModeToHudGroup, COUNTDOWN_DURATION, COUNTDOWN_RACE_START_TIME, countdownFrame, formatResultsRowTimes,
+  HUD_LABEL_KEYS, type HudAtlas, type HudLabelKey, type HudModelInput, type HudPoint, type HudVehicle,
+  type LaunchResult, type SpeedUnits,
+} from "./ui/hudModel.js";
+import {
+  MENU_SCREEN_SCRIPTS, MENU_SCREEN_TITLES, MenuController, type MenuCar, type MenuCommand, type MenuScene,
+  type MenuSceneAction, type MenuSelectPage, type MenuSettings, type MenuState, type MenuTrack, type MenuValueKey,
+  type MenuView, type RaceSetup, type RaceStanding,
 } from "./ui/menuController.js";
-import { UiScreenInstance } from "./ui/uiRuntime.js";
+import { UiScreenInstance, type ResolvedUiDrawItem, type UiRect, type UiScreenOptions } from "./ui/uiRuntime.js";
 
 export interface EngineSnapshot {
   status: string;
@@ -70,6 +78,7 @@ interface RacerSlot {
   flippedTimer: number;
 }
 
+
 interface ActiveRace {
   setup: RaceSetup;
   trackId: string;
@@ -81,26 +90,31 @@ interface ActiveRace {
   racers: RacerSlot[];
   camera: CameraController;
   cameraView: CameraView;
-  courseMap: readonly { x: number; z: number }[];
-  lastCountdown?: CountdownStep;
+  courseMap: readonly HudPoint[];
+  /** fr3.exe HUD sprites for the current speed units (`DemoAssets.loadHudAtlas`). */
+  hudAtlas?: HudAtlas;
+  /** Countdown chain step (0..3) whose sound cue already fired. */
+  lastCountdownStep?: number;
+  lastPhase: RacePhase;
+  /** Launch-result banner queued on GO (race time it was queued at). */
+  launchBanner?: { result: LaunchResult; start: number };
+  /** HUD wrong-way flag (`0x52e390`): on the path corridor and heading against it. */
+  playerWrongWay: boolean;
+  /** Player lap bookkeeping for the HUD's LAST row (RaceManager only reports current and best). */
+  playerCompletedLaps: number;
+  playerLapStart: number;
+  playerLastLap?: number;
   finishHoldTimer: number;
   finishedReported: boolean;
+  /** Index of the player's row in the frozen results (RCRES highlight). */
+  resultsPlayerIndex?: number;
 }
 
-const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
-const RACE_MODES: readonly RaceMode[] = ["RACING_BOOST", "RACING"];
-const TURNTABLE_RECT: ViewportRect = { x: 0.04, y: 0.16, width: 0.56, height: 0.62 };
+/** CARDATA physics burns boost for 7 s (`VehiclePhysics` sets `boostTimer = 7`). */
+const BOOST_BURN_SECONDS = 7;
 
-/** Smallest text scale used for labels that must stay legible on narrow (portrait) viewports. */
-export const READABLE_MIN_TEXT_SCALE = 0.6;
-const PANEL_DARK: UiColor = [0.03, 0.06, 0.09, 0.86];
-const PANEL_SCRIM: UiColor = [0.02, 0.04, 0.07, 0.68];
-const PANEL_CARD: UiColor = [0.05, 0.10, 0.15, 0.92];
-const ACCENT: UiColor = [0.99, 0.85, 0.32, 1];
-const CYAN: UiColor = [0.24, 0.86, 0.82, 1];
-const INK: UiColor = [0.91, 0.96, 0.99, 1];
-const MUTED: UiColor = [0.62, 0.73, 0.81, 1];
-const BAR_BG: UiColor = [0.12, 0.19, 0.25, 0.95];
+/** Menus stretch over the whole backbuffer like fr3.exe's drawGraphic (0x421520); the HUD keeps 4:3 ("fit"). */
+const MENU_VIEWPORT: UiViewportMode = "fullscreen";
 
 const EMPTY_DRIVING: DrivingInput = {
   throttle: 0, brake: 0, steer: 0, handbrake: false, boost: false,
@@ -403,53 +417,6 @@ export function pickBoostEntry(entries: readonly SpcEntry[]): SpcEntry | undefin
   return entries.find(e => e.name.toUpperCase().includes("BOOST"));
 }
 
-/** Clamp text scale so single/multi-line UI strings stay inside `maxWidthPx` without overflowing the 640px frame. */
-export function fitTextScale(
-  font: ParsedFont,
-  text: string,
-  maxWidthPx: number,
-  baseScale = 1,
-  minScale = 0.45,
-): number {
-  if (baseScale <= 0 || maxWidthPx <= 0) return baseScale;
-  const lines = text.replace(/\r?\n/g, "|").split("|");
-  let maxLineWidth = 0;
-  for (const line of lines) {
-    maxLineWidth = Math.max(maxLineWidth, measureTextLine(font, line));
-  }
-  if (maxLineWidth <= 0) return baseScale;
-  const needed = maxLineWidth * baseScale;
-  if (needed <= maxWidthPx) return baseScale;
-  return Math.max(minScale, maxWidthPx / maxLineWidth);
-}
-
-/**
- * Fit a label into `maxWidthPx` without shrinking below a readable `minScale`: try each candidate
- * (longest first) and, when even the shortest overflows at `minScale`, truncate it with "...".
- */
-export function fitTextWithEllipsis(
-  font: ParsedFont,
-  candidates: readonly string[],
-  maxWidthPx: number,
-  baseScale = 1,
-  minScale = 0.6,
-): { text: string; scale: number } {
-  const options = candidates.filter(c => c.length > 0);
-  if (!options.length) return { text: "", scale: baseScale };
-  if (baseScale <= 0 || maxWidthPx <= 0) return { text: options[0]!, scale: baseScale };
-  const floor = Math.min(baseScale, Math.max(0.01, minScale));
-  for (const text of options) {
-    const scale = fitTextScale(font, text, maxWidthPx, baseScale, floor);
-    if (measureTextLine(font, text) * scale <= maxWidthPx + 1e-6) return { text, scale };
-  }
-  const last = options[options.length - 1]!;
-  for (let len = last.length - 1; len > 0; len--) {
-    const text = `${last.slice(0, len).trimEnd()}...`;
-    if (measureTextLine(font, text) * floor <= maxWidthPx + 1e-6) return { text, scale: floor };
-  }
-  return { text: "...", scale: floor };
-}
-
 const LANGUAGE_DISPLAY_NAMES: Readonly<Record<string, string>> = {
   EN: "ENGLISH",
   US: "ENGLISH (US)",
@@ -477,18 +444,6 @@ function asError(cause: unknown): Error {
   return cause instanceof Error ? cause : new Error(String(cause));
 }
 
-function normalizeRgba(c: readonly [number, number, number, number]): UiColor {
-  return [c[0] / 255, c[1] / 255, c[2] / 255, c[3] / 255];
-}
-
-function countdownLabelToStep(label: "3" | "2" | "1" | "GO!" | null): CountdownStep | undefined {
-  if (label === "3") return 3;
-  if (label === "2") return 2;
-  if (label === "1") return 1;
-  if (label === "GO!") return "GO";
-  return undefined;
-}
-
 function surfaceToTyreSurface(surfaceName: string): TyreSurface {
   const s = surfaceName.toLowerCase();
   if (s.includes("grass")) return "grass";
@@ -498,20 +453,6 @@ function surfaceToTyreSurface(surfaceName: string): TyreSurface {
   if (s.includes("snow") || s.includes("ice")) return "ice";
   if (s.includes("wet") || s.includes("stream")) return "wet";
   return "asphalt";
-}
-
-function computeCarRatings(cfg: ResolvedCarConfig): NonNullable<MenuCar["ratings"]> {
-  const maxTorque = Math.max(100, ...cfg.engine.torque) * (cfg.engine.fields.TORQUE_MODIFIER ?? 1);
-  const maxRpm = cfg.engine.fields.MAX_RPM ?? 6500;
-  const peakPower = (maxTorque * maxRpm) / 5252000;
-  const totalMass = Math.max(800, cfg.body.masses.reduce((s, m) => s + m.mass, 0) + (cfg.setup.ballast?.mass ?? 0));
-  const grip = ((cfg.frontTyre.fields.ROAD_MAGIC_GRIP_NUMBER ?? 45) + (cfg.rearTyre.fields.ROAD_MAGIC_GRIP_NUMBER ?? 45)) * 0.5;
-  return {
-    speed: clamp((peakPower / 2.2) * 0.65 + (maxRpm / 9000) * 0.35, 0.18, 1),
-    power: clamp(peakPower / 2.3, 0.15, 1),
-    acceleration: clamp((peakPower / (totalMass / 1400)) / 2.0, 0.15, 1),
-    handling: clamp((grip - 25) / 45, 0.2, 1),
-  };
 }
 
 /**
@@ -539,6 +480,1023 @@ function formatTrackDisplayName(assets: DemoAssets, track: TrackRecord): string 
   return localized ?? track.id.replaceAll("_", " ");
 }
 
+/**
+ * CAR.UI rating bars from CARDATA `:CAR_PERFORMANCE SPEED / AGILITY / ACCELERATION / WEIGHT` (0..1, the values
+ * fr3.exe sizes RATING1 with). Cars without them fall back to an estimate from the engine and tyre data.
+ */
+export function computeCarRatings(
+  cfg: Pick<ResolvedCarConfig, "car"> & Partial<Pick<ResolvedCarConfig, "engine" | "body" | "setup" | "frontTyre" | "rearTyre">>,
+): NonNullable<MenuCar["ratings"]> {
+  const perf = new Map(cfg.car.performance.map(p => [p.type.toUpperCase(), p.value]));
+  const rating = (key: string) => {
+    const value = perf.get(key);
+    return value !== undefined && Number.isFinite(value) ? clamp(value, 0, 1) : undefined;
+  };
+  let estimate: { speed: number; power: number; acceleration: number; handling: number } | undefined;
+  if (cfg.engine && cfg.body && cfg.frontTyre && cfg.rearTyre) {
+    const maxTorque = Math.max(100, ...cfg.engine.torque) * (cfg.engine.fields.TORQUE_MODIFIER ?? 1);
+    const maxRpm = cfg.engine.fields.MAX_RPM ?? 6500;
+    const peakPower = (maxTorque * maxRpm) / 5252000;
+    const totalMass = Math.max(800, cfg.body.masses.reduce((s, m) => s + m.mass, 0) + (cfg.setup?.ballast?.mass ?? 0));
+    const grip = ((cfg.frontTyre.fields.ROAD_MAGIC_GRIP_NUMBER ?? 45) + (cfg.rearTyre.fields.ROAD_MAGIC_GRIP_NUMBER ?? 45)) * 0.5;
+    estimate = {
+      speed: clamp((peakPower / 2.2) * 0.65 + (maxRpm / 9000) * 0.35, 0.18, 1),
+      power: clamp(peakPower / 2.3, 0.15, 1),
+      acceleration: clamp((peakPower / (totalMass / 1400)) / 2.0, 0.15, 1),
+      handling: clamp((grip - 25) / 45, 0.2, 1),
+    };
+  }
+  const bhp = perf.get("BHP");
+  const speed = rating("SPEED") ?? estimate?.speed ?? 0.5;
+  const acceleration = rating("ACCELERATION") ?? estimate?.acceleration ?? 0.5;
+  const agility = rating("AGILITY") ?? estimate?.handling ?? 0.5;
+  return {
+    speed,
+    power: bhp !== undefined && Number.isFinite(bhp) ? clamp(bhp / 600, 0, 1) : estimate?.power ?? speed,
+    acceleration,
+    handling: agility,
+    agility,
+    weight: rating("WEIGHT") ?? 0.5,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// Front end: every MenuState opens its authentic `.UI` screen (MENU_SCREEN_SCRIPTS) and is wired the way
+// fr3.exe's ui_*.c modules do it (code-set texts/textures, MENUBAR selection bar, value rows). Nothing synthetic
+// is drawn on top: `drawUiDrawItems` paints exactly what the script resolves to.
+// ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+const PC_ENTER_ICON = "GRAPHICS\\GAME\\COMMON\\PC\\PCENTER.PSD";
+const PC_ESCAPE_ICON = "GRAPHICS\\GAME\\COMMON\\PC\\PCESCAPE.PSD";
+const PC_KEY_C_ICON = "GRAPHICS\\GAME\\COMMON\\PC\\PCKEYC.PSD";
+const CAR_BACKGROUND = "GRAPHICS\\GAME\\BKGNDS\\CAR.PSD";
+const FORD_RACE_LOGO = "GRAPHICS\\GAME\\COMMON\\FORDRACE.PSD";
+/** `GRAPHICS\GAME\COMMON\MODEICON\%s.PSD` per race mode (CMODE.UI buttons, RCRES.UI MODEICON). */
+export const MODE_ICON_TEXTURES: Readonly<Record<RaceMode, string>> = {
+  RACING: "GRAPHICS\\GAME\\COMMON\\MODEICON\\RACING.PSD",
+  RACING_BOOST: "GRAPHICS\\GAME\\COMMON\\MODEICON\\BOOST.PSD",
+};
+/** Race-type names and CMODE.UI descriptions. */
+export const MODE_TEXT_KEYS: Readonly<Record<RaceMode, { name: string; description: string }>> = {
+  RACING: { name: "TXT_GAME_MODE_STANDARD", description: "TXT_GAME_MODE_STANDARD_RACE_DES" },
+  RACING_BOOST: { name: "TXT_GAMEMODE_BOOST", description: "TXT_GAMEMODE_BOOST_DES" },
+};
+/** fr3.exe overrides the MENU_RNG pulse TIME_LENGTH with 0.266667 s (`0x4a2af0`). */
+const MENU_PULSE_SECONDS = 0.266667;
+/** SMARROW is 19×19 and sits 5 px either side of the focused value text (fr3 `ui_funcs.c` `0x4a3360`, gap 5). */
+const ARROW_PX = 19;
+const ARROW_GAP_PX = 5;
+/** Selection-bar icon/pulse nodes fr3 hides on value rows, where the arrows take over (`0x4a3d60` → `0x4a3fbb`). */
+const MENUBAR_ICON_NODES = ["MENUBAR_ICON", "MENUBAR_ICON2", "MENUBAR_PULSE", "MENUBAR_PULSE2"] as const;
+/** fr3 draws disabled rows in RCEND's unfocused grey (VIEW REPLAY: FONT_COLOUR 155,155,155). */
+const DISABLED_TEXT_RGB = [155, 155, 155] as const;
+/**
+ * RCRES.UI layout fr3 sets by code (`ui_rcres.c`, `0x4bf1b0` intro / `0x4bf930` after the first confirm):
+ * the intro shows MODETITLE at y 0.6 and the finishing position (BUTTON1, 0.042 tall) at y 0.652 with the
+ * results list hidden; the first confirm slides them up to 0.419 / 0.47 over 0.2 s and opens LISTBOXBKG at
+ * y 0.51667; the second confirm leaves the screen.
+ */
+export const RCRES_LAYOUT = {
+  intro: { modeTitleY: 0.6, positionY: 0.652 },
+  list: { modeTitleY: 0.419, positionY: 0.47, listY: 0.51667 },
+  positionHeight: 0.042,
+  moveSeconds: 0.2,
+} as const;
+/** AUDIO.UI VOLBAR (168×9) and VOLSLIDE knob (11×20) logical sizes. */
+const VOLBAR_PX = 168;
+const VOLSLIDE_PX = 11;
+/** TRACK.UI HSC best-times nodes (all `TIME_LENGTH 0`) and the instant clip they get instead. */
+export const HSC_TABLE_NODES = [
+  "HSC_TABLE_AREA", "VEHICLE_CLASS_TXT", "NAME_TITLE_TXT", "CAR_TITLE_TXT", "TIME_TITLE_TXT",
+  "NAME_LIST", "CAR_LIST", "TIME_LIST",
+] as const;
+const HSC_INSTANT_SECONDS = 0.001;
+/** Credits LISTBOX scroll speed in screen heights per second [I]. */
+const CREDITS_SCROLL_RATE = 0.06;
+
+/**
+ * Where the CAR.UI turntable renders (normalized full-screen rect): right of RATINGSWINDOW (x ≥ 283 px), below
+ * CARNAME (y ≥ 108 px) and above MATRIXWINDOW's DARKPANEL (y < 288 px). [RE `ui_3d.c` for the exact viewport.]
+ */
+export const CAR_TURNTABLE_RECT: ViewportRect = { x: 0.45, y: 0.22, width: 0.53, height: 0.38 };
+/** Retries a failed lazy UI texture load gets before the key is parked for the session. */
+export const LAZY_UI_TEXTURE_RETRIES = 2;
+
+/** Screen-sized textures (≥ 1024²) are uploaded only for the screen that shows them. */
+export function isLargeUiTexture(entry: Pick<PcgEntry, "storedWidth" | "storedHeight">): boolean {
+  return entry.storedWidth * entry.storedHeight >= 1024 * 1024;
+}
+
+/** The player's driving input for a race mode: boost exists only in RACING_BOOST (standard RACING has no boost HUD). */
+export function playerDrivingInput(mode: RaceMode, driving: DrivingInput): DrivingInput {
+  return mode === "RACING_BOOST" || !driving.boost ? driving : { ...driving, boost: false };
+}
+
+/**
+ * The gap the AI rubber-bands against, or undefined when ROPT.UI CATCH UP is OFF (unset = on, as in quick
+ * races). Undefined rather than 0: `catchupPower` shifts a 0 gap by the car's pack slot, which would still
+ * speed up or slow down every non-centre AI; without a gap `AiDriver` runs at exactly 1× power.
+ */
+export function aiReferenceGap(setup: Pick<RaceSetup, "catchUp">, gap: number): number | undefined {
+  return setup.catchUp === false ? undefined : gap;
+}
+
+/** TRACK.UI track page: the body between the TRACKNAME bar and the BACK row; its left/right half steps the track. */
+export const TRACK_CYCLE_RECT: UiRect = { x: 0, y: 0.22, width: 1, height: 0.6 };
+
+/** A pinned MENUBAR prompt (CAR.UI CARNAME, TRACK.UI TRACKNAME): the text on the bar plus the bar's graphics. */
+function menuBarPromptNodes(textId: string): string[] {
+  return [textId, "MENUBAR", "MENUBAR_ICON", "MENUBAR_PULSE"];
+}
+
+/** LANG.UI BUTTON1..5 and the TLATE tables that back them (first available code wins). */
+const LANGUAGE_BUTTONS: readonly (readonly string[])[] = [["EN", "US"], ["FR"], ["GR", "DE"], ["IT"], ["SP", "ES"]];
+
+const CAR_GROUP_TEXT_ALIASES: Readonly<Record<string, string>> = {
+  CLASSIC: "TXT_CAR_THEME_ROAD_1", MODERN: "TXT_CAR_THEME_ROAD_2", OFFROAD: "TXT_CAR_THEME_OFF_ROAD",
+};
+
+export interface MenuSceneContext {
+  readonly readFile: (path: string) => string | undefined;
+  readonly translation: TranslationTable;
+  /** `DemoAssets.getUiTextureSize`: drives AUTOSIZE and STRETCH_GRAPHIC 0 crops. */
+  readonly getTextureSize?: UiScreenOptions["getTextureSize"];
+  /** fontbase.dat slots (arrow placement measures value text; list rows use their cell height). */
+  readonly fonts?: readonly FontAtlas[];
+  /** Installed TLATE codes (LANG.UI hides languages that are not installed). */
+  readonly languages?: readonly string[];
+  /** All selectable cars, for CAR.UI's FR3_PAGE_COUNTER. */
+  readonly cars?: readonly MenuCar[];
+  /** Mode of the race whose results RCRES.UI shows. */
+  readonly resultsMode?: () => RaceMode | undefined;
+  /** Row of `view.standings` that belongs to the local player. */
+  readonly resultsPlayerIndex?: () => number | undefined;
+}
+
+/** A MenuScene plus a per-frame hook (focus-dependent texts, value arrows, credit scroll). */
+export interface AppMenuScene extends MenuScene {
+  tick?(dt: number, view: MenuView): void;
+  /**
+   * Screen-level input handling that runs before MenuController (pointer in UI space): RCRES's first confirm
+   * reveals the results list, and a click on a visible BACK_ICON / BACK_TEXT acts as Esc.
+   */
+  filterInput?(input: MenuInput): MenuInput;
+  /** In-game options: the screen's own background (fill or texture) is not drawn, so the race shows through. */
+  readonly overRace?: boolean;
+  /** Non-button nodes drawn in the disabled grey (e.g. DISP's SCREEN MODE value). */
+  readonly dimmed?: readonly string[];
+}
+
+export function carGroupLabel(translation: TranslationTable, group: string): string {
+  const key = CAR_GROUP_TEXT_ALIASES[group.toUpperCase()] ?? `TXT_CAR_THEME_${group.toUpperCase()}`;
+  return lookupTranslation(translation, key) ?? group.replaceAll("_", " ");
+}
+
+export function trackGroupLabel(translation: TranslationTable, group: string): string {
+  return lookupTranslation(translation, `TXT_TRACKS_THEME_${group.toUpperCase()}`) ?? group.replaceAll("_", " ");
+}
+
+/** Finishing position as fr3 prints it: TXT_GENERAL_POSITION_<n> + ST/ND/RD/TH. */
+export function formatFinishingPosition(translation: TranslationTable, place: number): string {
+  const n = Math.max(1, Math.trunc(place));
+  const teen = n % 100 >= 11 && n % 100 <= 13;
+  const suffix = teen ? "TH" : (["TH", "ST", "ND", "RD"][n % 10] ?? "TH");
+  const ordinalKey = ["", "1ST", "2ND", "3RD", "4TH", "5TH", "6TH", "7TH", "8TH"][n];
+  const digits = (ordinalKey && lookupTranslation(translation, `TXT_GENERAL_POSITION_${ordinalKey}`)) || String(n);
+  return `${digits}${lookupTranslation(translation, `TXT_GENERAL_POSITION_${suffix}`) ?? suffix}`;
+}
+
+interface ValueRow {
+  /** Focusable row button. */
+  readonly button: string;
+  /** Value text node the arrows bracket. */
+  readonly value?: string;
+  /**
+   * Slider the arrows bracket instead (AUDIO): the drawn bar (`id`, `widthPx` wide in 640-px units) plus its
+   * knob, so the arrows never cover the knob at either end of its travel.
+   */
+  readonly slider?: { id: string; widthPx: number; knob: string };
+}
+
+/**
+ * Place a node at a screen-space position whatever its parent is: `setNodePosition` takes parent units, so
+ * probe the parent's origin and scale first (GMOPT's arrows live in MOVINGWINDOW at y −0.142).
+ */
+export function setNodeScreenPosition(screen: UiScreenInstance, id: string, x: number, y: number): boolean {
+  if (!screen.setNodePosition(id, 0, 0)) return false;
+  const origin = screen.getNodeRect(id);
+  screen.setNodePosition(id, 1, 1);
+  const unit = screen.getNodeRect(id);
+  if (!origin || !unit) return false;
+  const sx = unit.x - origin.x || 1;
+  const sy = unit.y - origin.y || 1;
+  return screen.setNodePosition(id, (x - origin.x) / sx, (y - origin.y) / sy);
+}
+
+/** Where a draw item's single-line text is painted (justified within its text rect), or undefined without text. */
+function drawnTextExtent(item: ResolvedUiDrawItem, fonts?: readonly FontAtlas[]): UiRect | undefined {
+  if (!item.text) return undefined;
+  const font = fonts?.[item.font]?.font;
+  const width = font ? measureTextLine(font, item.text) / 640 : item.text.length * 9 / 640;
+  const h = Math.max(0, Math.min(8, Math.trunc(item.textJustify))) % 3;
+  const x = h === 1 ? item.textRect.x : h === 2 ? item.textRect.x + item.textRect.width - width
+    : item.textRect.x + (item.textRect.width - width) / 2;
+  return { x, y: item.rect.y, width, height: item.rect.height };
+}
+
+function rectContains(rect: UiRect, x: number, y: number): boolean {
+  return rect.width > 0 && rect.height > 0
+    && x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height;
+}
+
+/**
+ * The topmost visible draw item among `ids` under a UI-space point (its rect, or the text it paints: single-line
+ * texts like COLOUR_TEXT overflow their placeholder rects). Used for clickable graphics that are not buttons.
+ */
+export function drawItemAt(
+  screen: UiScreenInstance, ids: readonly string[], x: number, y: number, fonts?: readonly FontAtlas[],
+): string | null {
+  const wanted = new Set(ids.map(id => id.toLowerCase()));
+  const items = screen.getDrawItems();
+  for (let index = items.length - 1; index >= 0; index--) {
+    const item = items[index]!;
+    if (item.listRow || !wanted.has(item.id.toLowerCase())) continue;
+    if (!item.textureRef && item.text === null) continue;
+    const text = drawnTextExtent(item, fonts);
+    if (rectContains(item.rect, x, y) || (text && rectContains(text, x, y))) return item.id;
+  }
+  return null;
+}
+
+/** Value-row arrows: the per-frame placement plus the pointer filter that turns arrow clicks into Left/Right. */
+interface ValueArrows {
+  tick(): void;
+  filterInput(input: MenuInput): MenuInput;
+}
+
+/**
+ * Keep LEFTARROW / RIGHTARROW beside the focused row's value (ROPT/GMOPT/DISP/AUDIO), like fr3's selection bar
+ * (`ui_funcs.c` `0x4a3d60`): on a value row the arrows show and the bar's MENUBAR_ICON/ICON2/PULSE/PULSE2 hide
+ * (so the left arrow never sits on the PCEnter icon); rows without a value (LET'S RACE!!!) show the icon and
+ * hide the arrows. Arrows are re-faded on every focus change. Positions are screen space, converted to the
+ * arrows' parent (GMOPT's MOVINGWINDOW is offset by −0.142).
+ */
+function valueArrowTicker(
+  screen: UiScreenInstance, rows: readonly ValueRow[], fonts?: readonly FontAtlas[], barId = "MENUBAR",
+): ValueArrows {
+  let lastFocus: string | null | undefined;
+  // The arrows sit inside the row buttons' 1.0-wide rects (ROPT's LEFTARROW overlaps LAPS), so they are
+  // tested before the button hit-test: LEFTARROW steps the focused value down, RIGHTARROW up (fr3 0x4a3d60).
+  const filterInput = (input: MenuInput): MenuInput => {
+    if (!input.pointerClicked) return input;
+    const hit = drawItemAt(screen, ["LEFTARROW", "RIGHTARROW"], input.pointerX, input.pointerY);
+    if (!hit) return input;
+    const left = hit.toUpperCase() === "LEFTARROW";
+    return { ...input, pointerClicked: false, left, right: !left };
+  };
+  const tick = () => {
+    const focused = screen.getFocusedId()?.toLowerCase() ?? null;
+    const row = rows.find(r => r.button.toLowerCase() === focused);
+    let anchor: UiRect | undefined;
+    let gap = ARROW_GAP_PX / 640;
+    if (row?.slider) {
+      const bar = screen.getNodeRect(row.slider.id);
+      const knob = screen.getNodeRect(row.slider.knob);
+      if (bar) {
+        // fr3 brackets sliders flush (`0x4a42a0`); include the knob, which overhangs the bar at 0 and 10.
+        const left = Math.min(bar.x, knob?.x ?? bar.x);
+        const right = Math.max(bar.x + row.slider.widthPx / 640, knob ? knob.x + knob.width : -Infinity);
+        const top = Math.min(bar.y, knob?.y ?? bar.y);
+        const bottom = Math.max(bar.y + bar.height, knob ? knob.y + knob.height : -Infinity);
+        anchor = { x: left, y: top, width: right - left, height: bottom - top };
+        gap = 0;
+      }
+    } else if (row?.value) {
+      const item = screen.getDrawItems().find(entry => entry.id.toLowerCase() === row.value!.toLowerCase());
+      if (item) anchor = drawnTextExtent(item, fonts);
+    }
+    screen.setNodeVisible("LEFTARROW", anchor !== undefined);
+    screen.setNodeVisible("RIGHTARROW", anchor !== undefined);
+    for (const id of MENUBAR_ICON_NODES) screen.setNodeVisible(`${barId}/${id}`, anchor === undefined);
+    if (!anchor) {
+      lastFocus = focused;
+      return;
+    }
+    const y = anchor.y + (anchor.height - ARROW_PX / 480) / 2;
+    setNodeScreenPosition(screen, "LEFTARROW", anchor.x - ARROW_PX / 640 - gap, y);
+    setNodeScreenPosition(screen, "RIGHTARROW", anchor.x + anchor.width + gap, y);
+    if (focused !== lastFocus) {
+      screen.restartAnimation("LEFTARROW");
+      screen.restartAnimation("RIGHTARROW");
+      lastFocus = focused;
+    }
+  };
+  return { tick, filterInput };
+}
+
+/**
+ * Park a MENUBAR group on a code-chosen text line instead of following button focus (CARNAME, TRACKNAME and
+ * CMODE's MODENAME use black text on the yellow bar, with the PCEnter icon at the left end) [I].
+ */
+function pinMenuBar(screen: UiScreenInstance, scope: string, x: number, y: number): void {
+  screen.setNodePosition(`${scope}/MENUBAR`, x, y);
+  screen.setNodeTexture(`${scope}/MENUBAR_ICON`, PC_ENTER_ICON);
+  screen.setNodeTimeLength(`${scope}/MENUBAR_PULSE`, MENU_PULSE_SECONDS);
+  screen.setNodeVisible(`${scope}/MENUBAR_PULSE2`, false);
+  screen.setNodeVisible(`${scope}/MENUBAR_ICON2`, false);
+}
+
+/** VERTICAL_BOTTOM_BAR (RES_BOT) stays where the script puts it; only its icon is code-set (PCEnter). */
+function armVerticalBar(screen: UiScreenInstance, scope?: string): void {
+  const prefix = scope ? `${scope}/` : "";
+  screen.setNodeTexture(`${prefix}MENUBAR_ICON`, PC_ENTER_ICON);
+  screen.setNodeTimeLength(`${prefix}MENUBAR_PULSE`, MENU_PULSE_SECONDS);
+}
+
+/** The visible BACK_ICON / BACK_TEXT under a UI-space point, when no button is there. */
+export function backPromptAt(screen: UiScreenInstance, x: number, y: number): string | null {
+  if (screen.hitTest(x, y) !== null) return null;
+  const hit = screen.getDrawItems().find(item => (item.id === "BACK_ICON" || item.id === "BACK_TEXT")
+    && (item.id === "BACK_ICON" ? item.textureRef !== null : item.text !== null)
+    && x >= item.rect.x && x <= item.rect.x + item.rect.width && y >= item.rect.y && y <= item.rect.y + item.rect.height);
+  return hit?.id ?? null;
+}
+
+/** A click on the BACK prompt is Esc (the prompt is a graphic + text, not a UI_TYPE_BUTTON). */
+function clickBack(screen: UiScreenInstance, input: MenuInput): MenuInput {
+  if (!input.pointerClicked || !backPromptAt(screen, input.pointerX, input.pointerY)) return input;
+  return { ...input, pointerClicked: false, back: true };
+}
+
+/**
+ * What `renderMenuUi` paints for a scene: the screen's draw items, minus the screen's own background when the
+ * options run over the race (`overRace`: the root is `CLEAR 0`, so a null texture would paint a white fill),
+ * with disabled rows and `dimmed` nodes in the disabled grey.
+ */
+export function menuDrawItems(scene: AppMenuScene): ResolvedUiDrawItem[] {
+  const screen = scene.screen;
+  const dimmed = new Set((scene.dimmed ?? []).map(id => id.toLowerCase()));
+  const items: ResolvedUiDrawItem[] = [];
+  for (const item of screen.getDrawItems()) {
+    if (scene.overRace && item.id === screen.id) continue;
+    if (item.text !== null && !item.listRow && (!item.enabled || dimmed.has(item.id.toLowerCase()))) {
+      items.push({ ...item, textColor: [...DISABLED_TEXT_RGB, item.textColor[3]] });
+    } else {
+      items.push(item);
+    }
+  }
+  return items;
+}
+
+/**
+ * Build the authentic `.UI` scene for a front-end state, wired like fr3.exe: code-set titles, icons and
+ * backgrounds, the MENUBAR selection bar, value rows driven by `{ adjust }` actions, and page toggling on
+ * CAR.UI / TRACK.UI. Returns undefined for states drawn by code (LOADING, IN_GAME) or missing scripts.
+ * Every scene treats a click on its BACK prompt as Esc.
+ */
+export function buildMenuScene(state: MenuState, view: MenuView, ctx: MenuSceneContext): AppMenuScene | undefined {
+  const scene = buildScreenScene(state, view, ctx);
+  if (!scene) return undefined;
+  const own = scene.filterInput;
+  return { ...scene, filterInput: input => clickBack(scene.screen, own ? own(input) : input) };
+}
+
+function buildScreenScene(state: MenuState, view: MenuView, ctx: MenuSceneContext): AppMenuScene | undefined {
+  const path = MENU_SCREEN_SCRIPTS[state];
+  if (!path || ctx.readFile(path) === undefined) return undefined;
+  const fonts = ctx.fonts;
+  const screen = UiScreenInstance.load(path, {
+    readFile: ctx.readFile,
+    translation: ctx.translation,
+    getTextureSize: ctx.getTextureSize,
+    getFontLineHeight: fonts ? slot => fonts[slot]?.font.descriptor.cellHeight : undefined,
+    measureText: fonts ? uiTextMeasurer(fonts) : undefined,
+  });
+  const tr = (key: string, fallback = key) => lookupTranslation(ctx.translation, key) ?? fallback;
+  const reveal = (id: string, on = true) => {
+    screen.setNodeVisible(id, on);
+    screen.setNodeEnabled(id, on);
+  };
+  // Returning from a sub-screen re-focuses the row that opened it (fr3 keeps the hub's focus on its stack).
+  const returnFocus = (map: Partial<Record<MenuState, string>>) => {
+    const id = view.previousState && map[view.previousState];
+    if (id) screen.setFocus(id);
+  };
+  const title = MENU_SCREEN_TITLES[state];
+  if (title) screen.setNodeText("TITLE", title);
+  screen.setNodeTexture("BACK_ICON", PC_ESCAPE_ICON);
+  // Options opened from PAUSE run over the live race: no background texture or fill (`overRace`), and
+  // IN_GAME_DARK_STRIP (OPTS/AUDIO/DISP) darkens the band behind the rows.
+  const overRace = view.inGameOptions;
+  const applyInGame = () => {
+    if (overRace) screen.setNodeTexture(screen.id, null);
+    screen.setNodeVisible("IN_GAME_DARK_STRIP", overRace);
+  };
+
+  switch (state) {
+    case "START": {
+      screen.setNodeText("BUTTON1", "TXT_START_PRESS_ANY_KEY_PC");
+      // VERSION is filled with the build string by code; the native build has none.
+      screen.setNodeTextRaw("VERSION", null);
+      return { screen, actions: {} };
+    }
+
+    case "MAIN_MENU": {
+      for (const id of ["BUTTON1", "BUTTON2", "BUTTON3", "BUTTON4"]) reveal(id);
+      // MULTIPLAYER stays visible but cannot be selected (no split screen); EXIT TO OS has no browser equivalent.
+      screen.setNodeEnabled("BUTTON3", false);
+      for (const id of ["BUTTON5", "BUTTON6"]) reveal(id, false);
+      screen.setNodeTextRaw("GAME_VERSION_INFO", null);
+      screen.enableSelectionBar();
+      screen.setFocus("BUTTON1");
+      returnFocus({ MODE_SELECT: "BUTTON2", OPTIONS: "BUTTON4" });
+      return {
+        screen,
+        actions: { BUTTON1: "quick-race", BUTTON2: "single-player", BUTTON4: "options" },
+      };
+    }
+
+    case "MODE_SELECT": {
+      const modes: [string, RaceMode][] = [["BUTTON1", "RACING"], ["BUTTON2", "RACING_BOOST"]];
+      for (let i = 1; i <= 17; i++) reveal(`BUTTON${i}`, i <= modes.length);
+      for (const [id, mode] of modes) screen.setNodeTexture(id, MODE_ICON_TEXTURES[mode]);
+      pinMenuBar(screen, screen.id, 0.1392, 0.4521);
+      screen.setFocus(modes.find(([, mode]) => mode === view.raceOptions.mode)?.[0] ?? "BUTTON1");
+      let shown: string | null | undefined;
+      const tick = () => {
+        const focused = screen.getFocusedId();
+        if (focused === shown) return;
+        shown = focused;
+        const mode = modes.find(([id]) => id.toLowerCase() === focused?.toLowerCase())?.[1];
+        screen.setNodeText("MODENAME", mode ? MODE_TEXT_KEYS[mode].name : null);
+        screen.setNodeText("MODEDESC", mode ? MODE_TEXT_KEYS[mode].description : null);
+        for (const id of ["MODENAME", "MODEDESC", "MENUBAR"]) screen.restartAnimation(id);
+      };
+      tick();
+      return {
+        screen,
+        actions: Object.fromEntries(modes.map(([id, mode]) => [id, { raceOptions: { mode }, then: "continue" }])),
+        tick,
+      };
+    }
+
+    case "CAR_SELECT": {
+      screen.setNodeTexture(screen.id, CAR_BACKGROUND);
+      screen.setNodeTexture("GROUPWINDOW/BACK_ICON", PC_ESCAPE_ICON);
+      screen.setNodeTexture("CARINFOWINDOW/BACK_ICON", PC_ESCAPE_ICON);
+      screen.setNodeText("GROUPWINDOW/TITLE", "TXT_TITLE_CAR_THEME");
+      screen.setNodeText("CARINFOWINDOW/TITLE", "TXT_TITLE_CAR_SELECT");
+      screen.setNodeTexture("COLOUR_ICON", PC_KEY_C_ICON);
+      screen.setNodeTextRaw("LOCKEDTEXT", null);
+      screen.setNodeTextRaw("FR3_PAGE_HELPER_TEXT", null);
+      pinMenuBar(screen, "CARNAMEWINDOW", 0.0579, 0.1687);
+      const groups = view.carGroups.slice(0, 8);
+      const actions: Record<string, MenuSceneAction> = {};
+      for (let i = 0; i < 8; i++) {
+        const id = `BUTTON${i + 1}`;
+        const group = groups[i];
+        reveal(id, group !== undefined);
+        if (group === undefined) continue;
+        screen.setNodeTextRaw(id, carGroupLabel(ctx.translation, group));
+        actions[id] = { carGroup: group };
+      }
+      screen.enableSelectionBar({ barId: "GROUPWINDOW/MENUBAR" });
+      let page: MenuSelectPage | undefined;
+      const update = (v: MenuView) => {
+        const groupPage = v.carSelectPage === "GROUP";
+        if (page !== v.carSelectPage) {
+          page = v.carSelectPage;
+          screen.setNodeVisible("GROUPWINDOW", groupPage);
+          for (const id of ["CARNAMEWINDOW", "CARINFOWINDOW", "MATRIXWINDOW"]) screen.setNodeVisible(id, !groupPage);
+          for (const id of groupPage ? ["GROUPWINDOW"] : ["CARNAMEWINDOW", "CARINFOWINDOW", "MATRIXWINDOW"]) {
+            screen.restartAnimation(id);
+          }
+          const index = v.carGroup === undefined ? -1 : groups.indexOf(v.carGroup);
+          if (groupPage && index >= 0) screen.setFocus(`BUTTON${index + 1}`);
+        }
+        const car = v.car;
+        screen.setNodeTextRaw("CARNAME", car?.name ?? "");
+        const ratings = car?.ratings;
+        const bars: [string, number | undefined][] = [
+          ["TOPSPEED", ratings?.speed], ["AGILITY", ratings?.agility ?? ratings?.handling],
+          ["ACCELERATION", ratings?.acceleration], ["WEIGHT", ratings?.weight],
+        ];
+        // RATING1 is STRETCH_GRAPHIC 0: a narrower node crops the 105×15 bar instead of squashing it.
+        for (const [id, value] of bars) screen.setNodeSize(id, clamp(value ?? 0.5, 0, 1), 1);
+        const liveries = (car?.liveries.length ?? 0) > 1;
+        screen.setNodeVisible("COLOUR_ICON", liveries);
+        screen.setNodeVisible("COLOUR_TEXT", liveries);
+        const members = (ctx.cars ?? []).filter(c => v.carGroup === undefined || c.group === v.carGroup);
+        const position = car ? members.findIndex(c => c.id === car.id) : -1;
+        screen.setNodeTextRaw("FR3_PAGE_COUNTER", position >= 0 ? `${position + 1}/${members.length}` : null);
+      };
+      update(view);
+      // The car page has no buttons: its CARNAME bar (PCEnter) continues, the COLOUR prompt (C key) changes the
+      // livery and the left/right half of the turntable steps the car, so a pointer alone can pick a car.
+      const pointerAction = (x: number, y: number): MenuSceneAction | undefined => {
+        if (page !== "ITEM") return undefined;
+        if (drawItemAt(screen, ["COLOUR_ICON", "COLOUR_TEXT"], x, y, fonts)) return "next-livery";
+        if (drawItemAt(screen, menuBarPromptNodes("CARNAME"), x, y, fonts)) return "continue";
+        if (rectContains(CAR_TURNTABLE_RECT, x, y)) {
+          return x < CAR_TURNTABLE_RECT.x + CAR_TURNTABLE_RECT.width / 2 ? "previous-car" : "next-car";
+        }
+        return undefined;
+      };
+      return { screen, actions, update, pointerAction };
+    }
+
+    case "TRACK_SELECT": {
+      screen.setNodeTexture("GROUPWINDOW/BACK_ICON", PC_ESCAPE_ICON);
+      screen.setNodeTexture("TRACKINFOWINDOW/BACK_ICON", PC_ESCAPE_ICON);
+      screen.setNodeText("GROUPWINDOW/TITLE", "TXT_TITLE_TRACK_THEME");
+      screen.setNodeText("TRACKINFOWINDOW/TITLE", "TXT_TITLE_TRACK_SELECT");
+      // UNLOCKTEXT is a white `CLEAR 0` box with the unlock hint, shown by ui_track.c only for locked tracks.
+      // Every installed track is unlocked, so it stays hidden and the HSC best-times table reads cleanly.
+      screen.setNodeTextRaw("UNLOCKTEXT", null);
+      reveal("UNLOCKTEXT", false);
+      pinMenuBar(screen, "TRACKINFOWINDOW", 0.0781, 0.1479);
+      const groups = view.trackGroups.slice(0, 6);
+      const actions: Record<string, MenuSceneAction> = {};
+      for (let i = 0; i < 6; i++) {
+        const id = `BUTTON${i + 1}`;
+        const group = groups[i];
+        reveal(id, group !== undefined);
+        if (group === undefined) continue;
+        screen.setNodeTextRaw(id, trackGroupLabel(ctx.translation, group));
+        actions[id] = { trackGroup: group };
+      }
+      screen.enableSelectionBar({ barId: "GROUPWINDOW/MENUBAR" });
+      // No saved best times yet: the HSC table keeps its headers and empty lists.
+      for (const id of ["NAME_LIST", "CAR_LIST", "TIME_LIST"]) screen.setListItems(id, []);
+      // The HSC table is authored with TIME_LENGTH 0 and *_START colours at alpha 0; ui_track.c restarts it
+      // every 4 s (HSC_TABLE_TIMER) and it shows at once, so a zero-length clip means "already at the end".
+      // The runtime holds such clips at their start colour, so give them an instant (1 ms) clip instead.
+      for (const id of HSC_TABLE_NODES) screen.setNodeTimeLength(id, HSC_INSTANT_SECONDS);
+      let page: MenuSelectPage | undefined;
+      const update = (v: MenuView) => {
+        const groupPage = v.trackSelectPage === "GROUP";
+        if (page !== v.trackSelectPage) {
+          page = v.trackSelectPage;
+          screen.setNodeVisible("GROUPWINDOW", groupPage);
+          for (const id of ["TRACKINFOWINDOW", "HSC_TABLE_AREA", "MATRIXWINDOW"]) screen.setNodeVisible(id, !groupPage);
+          for (const id of groupPage ? ["GROUPWINDOW"] : ["TRACKINFOWINDOW", "HSC_TABLE_AREA"]) screen.restartAnimation(id);
+          const index = v.trackGroup === undefined ? -1 : groups.indexOf(v.trackGroup);
+          if (groupPage && index >= 0) screen.setFocus(`BUTTON${index + 1}`);
+        }
+        screen.setNodeTextRaw("TRACKNAME", v.track?.name ?? "");
+        screen.setNodeTextRaw("VEHICLE_CLASS_TXT", v.car?.group ? carGroupLabel(ctx.translation, v.car.group) : null);
+      };
+      update(view);
+      // TRACK.UI's track page has no buttons either: the TRACKNAME bar continues and a click on the left/right
+      // half of the page body (between the bar and the BACK row) steps the track.
+      const pointerAction = (x: number, y: number): MenuSceneAction | undefined => {
+        if (page !== "ITEM") return undefined;
+        if (drawItemAt(screen, menuBarPromptNodes("TRACKNAME"), x, y, fonts)) return "continue";
+        if (rectContains(TRACK_CYCLE_RECT, x, y)) {
+          return x < TRACK_CYCLE_RECT.x + TRACK_CYCLE_RECT.width / 2 ? "previous-track" : "next-track";
+        }
+        return undefined;
+      };
+      return { screen, actions, update, pointerAction };
+    }
+
+    case "RACE_OPTIONS": {
+      const rows: ValueRow[] = [
+        { button: "LAPS", value: "LAPSNUMBER" }, { button: "OPPS", value: "OPPSNUMBER" },
+        { button: "FIELD", value: "FIELDNUMBER" }, { button: "DIFF", value: "DIFFNUMBER" },
+        { button: "CATCH_UP_BUTTON", value: "CATCH_UP_BUTTONNUMBER" }, { button: "RACE" },
+      ];
+      const update = (v: MenuView) => {
+        const o = v.raceOptions;
+        screen.setNodeTextRaw("LAPSNUMBER", String(o.laps));
+        screen.setNodeTextRaw("OPPSNUMBER", String(o.opponents));
+        screen.setNodeText("FIELDNUMBER", o.fieldType === "MATCH" ? "TXT_RACE_OPTIONS_AI_TYPE_SAME" : "TXT_RACE_OPTIONS_AI_TYPE_MIXED");
+        screen.setNodeText("DIFFNUMBER", `TXT_OPTIONS_GAME_DIFFICULTY_${o.difficulty}`);
+        screen.setNodeText("CATCH_UP_BUTTONNUMBER", o.catchUp ? "TXT_GENERAL_ON" : "TXT_GENERAL_OFF");
+      };
+      update(view);
+      screen.enableSelectionBar();
+      const arrows = valueArrowTicker(screen, rows, fonts);
+      arrows.tick();
+      return {
+        screen,
+        actions: {
+          LAPS: { adjust: "laps" }, OPPS: { adjust: "opponents" }, FIELD: { adjust: "fieldType" },
+          DIFF: { adjust: "difficulty" }, CATCH_UP_BUTTON: { adjust: "catchUp" }, RACE: "launch",
+        },
+        update,
+        tick: arrows.tick,
+        filterInput: arrows.filterInput,
+      };
+    }
+
+    case "OPTIONS": {
+      for (const id of ["BUTTON1", "BUTTON2", "BUTTON3", "BUTTON4", "BUTTON5"]) reveal(id);
+      applyInGame();
+      screen.enableSelectionBar();
+      returnFocus({
+        OPTIONS_GAME: "BUTTON1", OPTIONS_AUDIO: "BUTTON2", OPTIONS_DISPLAY: "BUTTON3", OPTIONS_CONTROLS: "BUTTON4",
+        OPTIONS_CREDITS: "BUTTON5",
+      });
+      return {
+        screen,
+        actions: {
+          BUTTON1: "options-game", BUTTON2: "options-audio", BUTTON3: "options-display",
+          BUTTON4: "options-controls", BUTTON5: "options-credits",
+        },
+        overRace,
+      };
+    }
+
+    case "OPTIONS_AUDIO": {
+      const sliders: [string, MenuValueKey & keyof MenuSettings][] = [
+        ["ENGINE", "engineVolume"], ["SPEECH", "speechVolume"],
+        ["INGAMEMUSIC", "raceMusicVolume"], ["MENUMUSIC", "menuMusicVolume"],
+      ];
+      // AUDIO OUTPUT / SOUNDTRACK share one slot (console/PC variants) and have no browser equivalent.
+      for (const id of ["AUDIOOUTPUT", "AUDIOOUTPUTVALUE", "SOUNDTRACK", "SOUNDTRACKVALUE"]) reveal(id, false);
+      // ui_audio.c only drives the bars (it formats `%s%s`+VALUE for AUDIOOUTPUT/SOUNDTRACK and never names a
+      // `*NUMBER` node), so ENGINENUMBER & co. keep the script's empty text: no digits over the bars.
+      for (const [id] of sliders) screen.setNodeTextRaw(`${id}NUMBER`, null);
+      applyInGame();
+      const update = (v: MenuView) => {
+        for (const [id, key] of sliders) {
+          const value = clamp(Number(v.settings[key]), 0, 1);
+          screen.setNodeSize(`${id}_SLIDER_BAR_VALUE`, value, 1);
+          const areaPx = (screen.getNodeRect(`${id}_SLIDER_BAR`)?.width ?? 0.2798) * 640 || 179;
+          // Keep the slider knob fully inside [0, VOLBAR_PX - VOLSLIDE_PX] so it is never clipped in half at 0.
+          screen.setNodePosition(`${id}_SLIDER_BUTTON`, (value * Math.max(0, VOLBAR_PX - VOLSLIDE_PX)) / areaPx, 0);
+        }
+      };
+      update(view);
+      screen.enableSelectionBar();
+      screen.setFocus("ENGINE");
+      const arrows = valueArrowTicker(screen, sliders.map(([id]) => ({
+        button: id, slider: { id: `${id}_SLIDER_BAR_BKGND`, widthPx: VOLBAR_PX, knob: `${id}_SLIDER_BUTTON` },
+      })), fonts);
+      arrows.tick();
+      // A click along a slider (bar, fill or knob) focuses its row and sets the volume at the clicked point,
+      // snapped to the 10 % steps Left/Right use.
+      const pointerAction = (x: number, y: number): MenuSceneAction | undefined => {
+        for (const [id, key] of sliders) {
+          const parts = [`${id}_SLIDER_BAR_BKGND`, `${id}_SLIDER_BAR_VALUE`, `${id}_SLIDER_BUTTON`];
+          const bar = screen.getNodeRect(`${id}_SLIDER_BAR_BKGND`);
+          const drawn = screen.getDrawItems().some(item => item.id.toLowerCase() === parts[0]!.toLowerCase());
+          if (!bar || !drawn) continue;
+          const area = screen.getNodeRect(`${id}_SLIDER_BAR`);
+          const inArea = area !== undefined && rectContains(area, x, y);
+          if (!inArea && drawItemAt(screen, parts, x, y) === null) continue;
+          screen.setFocus(id);
+          const value = clamp(Math.round(((x - bar.x) / (VOLBAR_PX / 640)) * 10) / 10, 0, 1);
+          return { settings: { [key]: value } };
+        }
+        return undefined;
+      };
+      return {
+        screen,
+        actions: Object.fromEntries(sliders.map(([id, key]) => [id, { adjust: key }])),
+        update,
+        tick: arrows.tick,
+        filterInput: arrows.filterInput,
+        pointerAction,
+        overRace,
+      };
+    }
+
+    case "OPTIONS_GAME": {
+      const rows: ValueRow[] = [{ button: "SAVE", value: "SAVENUMBER" }, { button: "GEARS", value: "GEARSNUMBER" }];
+      screen.setNodeTextRaw("INSTRUCTIONS", null);
+      applyInGame();
+      const update = (v: MenuView) => {
+        screen.setNodeText("SAVENUMBER", v.settings.autosave ? "TXT_GENERAL_ON" : "TXT_GENERAL_OFF");
+        screen.setNodeText("GEARSNUMBER", v.settings.transmission === "AUTO"
+          ? "TXT_OPTIONS_GAME_GEARS_AUTOMATIC" : "TXT_OPTIONS_GAME_GEARS_MANUAL");
+      };
+      update(view);
+      screen.enableSelectionBar({ barId: "MOVINGWINDOW/MENUBAR" });
+      armVerticalBar(screen, "VERTICAL_BOTTOM_BAR");
+      const arrows = valueArrowTicker(screen, rows, fonts, "MOVINGWINDOW/MENUBAR");
+      arrows.tick();
+      return {
+        screen,
+        actions: { SAVE: { adjust: "autosave" }, GEARS: { adjust: "transmission" } },
+        update,
+        tick: arrows.tick,
+        filterInput: arrows.filterInput,
+        overRace,
+      };
+    }
+
+    case "OPTIONS_DISPLAY": {
+      const rows: ValueRow[] = [
+        { button: "SPEEDO", value: "SPEEDONUMBER" }, { button: "TRACKMAP", value: "TRACKMAPNUMBER" },
+        { button: "SCREEN", value: "SCREENNUMBER" },
+      ];
+      applyInGame();
+      // SCREEN MODE is the 16:9 profile option (the native build always uses the 4:3 HUD layout) and
+      // POSITION SCREEN opens POSN.UI, which the native build does not implement: both stay visible, inert.
+      screen.setNodeEnabled("SCREEN", false);
+      screen.setNodeEnabled("POSSCREEN", false);
+      screen.setNodeText("SCREENNUMBER", "TXT_OPTIONS_DISPLAY_SCREEN_MODE_NORMAL");
+      const update = (v: MenuView) => {
+        screen.setNodeText("SPEEDONUMBER", v.settings.speedUnits === "KPH" ? "TXT_GENERAL_KPH" : "TXT_GENERAL_MPH");
+        screen.setNodeText("TRACKMAPNUMBER", v.settings.trackMap ? "TXT_GENERAL_ON" : "TXT_GENERAL_OFF");
+      };
+      update(view);
+      screen.enableSelectionBar();
+      const arrows = valueArrowTicker(screen, rows, fonts);
+      arrows.tick();
+      return {
+        screen,
+        actions: { SPEEDO: { adjust: "speedUnits" }, TRACKMAP: { adjust: "trackMap" } },
+        update,
+        tick: arrows.tick,
+        filterInput: arrows.filterInput,
+        overRace,
+        dimmed: ["SCREENNUMBER"],
+      };
+    }
+
+    case "OPTIONS_CONTROLS": {
+      applyInGame();
+      screen.setNodeText("CONTROLTYPE", "TXT_OPTIONS_CONTROLS_CONTROLLER_TYPE");
+      screen.setNodeText("CONTROLTYPENUMBER", "TXT_OPTIONS_CONTROLS_MAPPING_A");
+      // CTRLS.UI stacks alternates in shared slots: DEVICE over CONTROLTYPE (y 0.1541) and VIBRATION over
+      // SETTINGS (y 0.2646). A single keyboard has no device choice and no vibration, so those alternates (and
+      // the device arrows) are hidden; SETTINGS stays visible but disabled.
+      for (const id of ["DEVICE", "DEVICENUMBER", "DEVICE_HIGHLIGHT_LEFT_ARROW", "DEVICE_HIGHLIGHT_RIGHT_ARROW",
+        "VIBRATION", "VIBRATION_VALUE"]) reveal(id, false);
+      screen.setNodeEnabled("SETTINGS", false);
+      screen.setFocus("MAPPING");
+      screen.enableSelectionBar();
+      // BUTTON MAPPING restores the default key mapping (TXT_OPTIONS_CONTROLS_DEFAULT_BUTTONS).
+      return { screen, actions: { MAPPING: "reset-controls" }, overRace };
+    }
+
+    case "OPTIONS_CREDITS": {
+      applyInGame();
+      const lines = [...ctx.translation.entries]
+        .filter(([key]) => key === "TXT_CREDITS" || key.startsWith("TXT_CREDITS_"))
+        .map(([, text]) => ({ text }));
+      screen.setListItems("LISTBOX", lines);
+      const listTop = screen.getNodeRect("LISTBOX")?.y ?? 0;
+      const lastRow = screen.getDrawItems().filter(item => item.listRow?.listId === "LISTBOX").at(-1);
+      const lineHeight = (fonts?.[1]?.font.descriptor.cellHeight ?? 23) / 480;
+      const contentHeight = lastRow ? (lastRow.rect.y + lastRow.rect.height) - listTop : lines.length * lineHeight;
+      let y = 1;
+      screen.setNodePosition("LISTBOX", 0.0969, y);
+      return {
+        screen,
+        actions: { BUTTON1: "back" },
+        overRace,
+        tick: dt => {
+          y -= dt * CREDITS_SCROLL_RATE;
+          if (y + contentHeight < 0) y = 1;
+          screen.setNodePosition("LISTBOX", 0.0969, y);
+        },
+      };
+    }
+
+    case "OPTIONS_LANGUAGE": {
+      const installed = ctx.languages ?? [];
+      const actions: Record<string, MenuSceneAction> = {};
+      let focus: string | undefined;
+      LANGUAGE_BUTTONS.forEach((codes, i) => {
+        const id = `BUTTON${i + 1}`;
+        const code = codes.find(c => installed.includes(c));
+        reveal(id, code !== undefined);
+        if (!code) return;
+        actions[id] = { settings: { language: code }, then: "back" };
+        if (codes.includes(view.settings.language)) focus = id;
+      });
+      screen.setNodeText("TITLE", "TXT_PC_GAME_LANGUAGE_LANGUAGE_SELECTION");
+      // ui_lang.c gives every BUTTONn a focus callback (`0x4b7280`) that runs the generic selection bar
+      // (`0x4a3d60` → `0x4a2f10`): LANG's MENUBAR (RES_BOT + PCEnter) moves onto the focused language.
+      screen.enableSelectionBar();
+      if (focus) screen.setFocus(focus);
+      applyInGame();
+      return { screen, actions, overRace };
+    }
+
+    case "PAUSE": {
+      // EXITREPLAY replaces RESTART during replays; RULES is for other game modes (its empty slot is authentic).
+      for (const id of ["EXITREPLAY", "RULES"]) reveal(id, false);
+      screen.enableSelectionBar();
+      screen.setFocus("RESUME");
+      returnFocus({ OPTIONS: "OPTIONS" });
+      return {
+        screen,
+        actions: { RESUME: "resume", RESTART: "restart", OPTIONS: "options", RETIRE: "quit" },
+      };
+    }
+
+    case "RESULTS": {
+      const mode = ctx.resultsMode?.() ?? view.raceOptions.mode;
+      screen.setNodeTexture("MODEICON", MODE_ICON_TEXTURES[mode]);
+      screen.setNodeText("MODETITLE", MODE_TEXT_KEYS[mode].name);
+      armVerticalBar(screen, "VERTICAL_BOTTOM_BAR");
+      const update = (v: MenuView) => {
+        const player = ctx.resultsPlayerIndex?.() ?? -1;
+        screen.setNodeTextRaw("BUTTON1", player >= 0 ? formatFinishingPosition(ctx.translation, player + 1) : null);
+        // The player's row uses the highlighted gold (255,249,135) the front end uses for focus.
+        screen.setListItems("LISTBOX1", v.standings.map((row, i) => ({
+          text: `${i + 1}  ${row.carName}`, colour: i === player ? [255, 249, 135, 255] : undefined,
+        })));
+        screen.setListItems("LISTBOX2", v.standings.map((row, i) => ({
+          text: formatResultsRowTimes(row).time, colour: i === player ? [255, 249, 135, 255] : undefined,
+        })));
+      };
+      update(view);
+      // ui_rcres.c lays RCRES out by code, so the script's stacked rows (MODETITLE, BUTTON1 and LISTBOXBKG all
+      // at y 0.4229) never show together: intro = mode title + finishing position, list hidden; the first
+      // confirm slides both up and opens the list; the next confirm continues to RCEND.
+      const { intro, list } = RCRES_LAYOUT;
+      screen.setNodeSize("BUTTON1", 1, RCRES_LAYOUT.positionHeight);
+      screen.setNodePosition("MODETITLE", 0, intro.modeTitleY);
+      screen.setNodePosition("BUTTON1", 0, intro.positionY);
+      screen.setNodePosition("LISTBOXBKG", 0, list.listY);
+      screen.setNodeVisible("LISTBOXBKG", false);
+      let listShown = false;
+      let moveClock = 0;
+      const showList = () => {
+        if (listShown) return;
+        listShown = true;
+        moveClock = 0;
+        screen.setNodeVisible("LISTBOXBKG", true);
+        screen.restartAnimation("LISTBOXBKG");
+      };
+      const tick = (dt: number) => {
+        if (!listShown || moveClock >= RCRES_LAYOUT.moveSeconds) return;
+        moveClock = Math.min(RCRES_LAYOUT.moveSeconds, moveClock + Math.max(0, dt));
+        const t = moveClock / RCRES_LAYOUT.moveSeconds;
+        screen.setNodePosition("MODETITLE", 0, intro.modeTitleY + (list.modeTitleY - intro.modeTitleY) * t);
+        screen.setNodePosition("BUTTON1", 0, intro.positionY + (list.positionY - intro.positionY) * t);
+      };
+      // A click on the position (BUTTON1) or the PCEnter prompt (MENUBAR / its icon / pulse) is a confirm, so
+      // the pointer takes the same two steps as Enter: the first reveals the list, the second continues.
+      const filterInput = (input: MenuInput): MenuInput => {
+        const click = input.pointerClicked && (
+          screen.hitTest(input.pointerX, input.pointerY)?.toLowerCase() === "button1"
+          || drawItemAt(screen, ["MENUBAR", "MENUBAR_ICON", "MENUBAR_PULSE"], input.pointerX, input.pointerY) !== null);
+        const confirmed = input.confirm || click;
+        if (!confirmed) return input;
+        if (!listShown) {
+          showList();
+          return { ...input, confirm: false, pointerClicked: false };
+        }
+        return { ...input, confirm: true, pointerClicked: false };
+      };
+      return { screen, actions: { BUTTON1: "continue" }, update, tick, filterInput };
+    }
+
+    case "RACE_END": {
+      screen.setNodeTexture("FORDLOGO", FORD_RACE_LOGO);
+      // VIEW REPLAY is greyed out (no replay system).
+      screen.setNodeEnabled("REPLAY", false);
+      screen.enableSelectionBar();
+      screen.setFocus("RETRY");
+      return { screen, actions: { RETRY: "restart", EXIT: "quit" } };
+    }
+
+    default:
+      return undefined;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// In-race HUD wiring (HUD_PARITY_SPEC §3–§5): app state → `HudModelInput` for `buildHudDrawList`.
+// ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Countdown chain time (§5.13): the chain starts when COUNTDOWN begins and the race starts on GO's keyframe c
+ * (`COUNTDOWN_RACE_START_TIME`, 2.9 s), so RACING continues the chain until its 3.6 s end.
+ */
+export function raceCountdownTime(phase: RacePhase, phaseElapsed: number): number | undefined {
+  if (phase === "COUNTDOWN") return Math.max(0, phaseElapsed);
+  if (phase === "RACING") {
+    const time = COUNTDOWN_RACE_START_TIME + Math.max(0, phaseElapsed);
+    return time < COUNTDOWN_DURATION ? time : undefined;
+  }
+  return undefined;
+}
+
+/** Countdown sound for a chain step (0x68 "3", 0x69 "2", 0x67 "1", 0x66 "GO"). */
+export function countdownStepSound(step: number): CountdownStep {
+  return ([3, 2, 1, "GO"] as const)[Math.max(0, Math.min(3, Math.trunc(step)))]!;
+}
+
+/**
+ * Launch banner on GO from the player's launch RPM. fr3.exe queues SUPER START / GOOD START / OVER REVS /
+ * SHORT REVS from `0x50d19e`; its thresholds are not decoded [RE], so these bands are an approximation:
+ * ≥92 % of MAX_RPM over-revs, 70–92 % super, 50–70 % good, 30–50 % short, and no banner when idling.
+ */
+export function classifyLaunch(rpm: number, maxRpm: number): LaunchResult | undefined {
+  if (!(maxRpm > 0) || !Number.isFinite(rpm)) return undefined;
+  const ratio = rpm / maxRpm;
+  if (ratio >= 0.92) return "over";
+  if (ratio >= 0.7) return "super";
+  if (ratio >= 0.5) return "good";
+  if (ratio >= 0.3) return "short";
+  return undefined;
+}
+
+/** HUD wrong-way test (`0x52e390`): within 25 units of the path corridor and heading against it (dot < −0.2). */
+export function isHudWrongWay(
+  lateralOffset: number, halfWidth: number,
+  pathForward: readonly [number, number, number], carForward: readonly [number, number, number],
+): boolean {
+  if (!(Math.abs(lateralOffset) - halfWidth < 25)) return false;
+  const length = Math.hypot(pathForward[0], pathForward[2]) * Math.hypot(carForward[0], carForward[2]);
+  if (!(length > 0)) return false;
+  return (pathForward[0] * carForward[0] + pathForward[2] * carForward[2]) / length < -0.2;
+}
+
+/** Translated HUD labels (`TXT_INRACE_*`). */
+export function hudLabels(translation: TranslationTable): Partial<Record<HudLabelKey, string>> {
+  const labels: Partial<Record<HudLabelKey, string>> = {};
+  for (const [label, key] of Object.entries(HUD_LABEL_KEYS) as [HudLabelKey, string][]) {
+    const text = lookupTranslation(translation, key);
+    if (text !== undefined) labels[label] = text;
+  }
+  return labels;
+}
+
+export interface RaceHudSource {
+  readonly speedMps: number;
+  readonly rpm: number;
+  /** Engine MAX_RPM (ENGDATA). */
+  readonly maxRpm: number;
+  readonly gear: number;
+  readonly units: SpeedUnits;
+  /** CARDATA CAR_APPROXIMATE_TOP_SPEED (MPH). */
+  readonly approxTopSpeedMph: number;
+  /** Camera that drew this frame (INTRO hides the HUD) and the selected forward camera (for LOOK_BACK). */
+  readonly cameraMode: CameraMode;
+  readonly forwardCameraMode: CameraMode;
+  readonly position: number;
+  readonly participants: number;
+  readonly lap: number;
+  readonly laps: number;
+  readonly currentLapSeconds: number;
+  readonly lastLapSeconds?: number;
+  readonly bestLapSeconds?: number;
+  readonly mode: RaceMode;
+  readonly boostActive: boolean;
+  /** Seconds of boost left while burning. */
+  readonly boostTimer: number;
+  readonly boostCharges: number;
+  readonly wrongWay: boolean;
+  readonly phase: RacePhase;
+  readonly phaseElapsed: number;
+  readonly launchBanner?: { result: LaunchResult; time: number };
+  readonly mapEnabled: boolean;
+  readonly course: readonly HudPoint[];
+  readonly cars: readonly HudVehicle[];
+  readonly labels?: Partial<Record<HudLabelKey, string>>;
+}
+
+/** Assemble the authentic HUD input (§7.4): no total time, needle on MAX_RPM, boost bar only in RACING_BOOST. */
+export function buildRaceHudInput(source: RaceHudSource): HudModelInput {
+  const input: HudModelInput = {
+    speedMps: source.speedMps,
+    rpm: source.rpm,
+    maxRpm: source.maxRpm,
+    gear: source.gear,
+    units: source.units,
+    approxTopSpeedMph: source.approxTopSpeedMph,
+    cameraGroup: cameraModeToHudGroup(source.cameraMode, cameraModeToHudGroup(source.forwardCameraMode)),
+    position: source.position,
+    participants: source.participants,
+    lap: source.lap,
+    laps: source.laps,
+    currentLapSeconds: source.currentLapSeconds,
+    lastLapSeconds: source.lastLapSeconds,
+    bestLapSeconds: source.bestLapSeconds,
+    mode: source.mode,
+    wrongWay: source.wrongWay,
+    countdownTime: raceCountdownTime(source.phase, source.phaseElapsed),
+    launchBanner: source.launchBanner,
+    map: { enabled: source.mapEnabled, course: source.course, cars: source.cars, localPlayers: 1 },
+    labels: source.labels,
+  };
+  if (source.mode === "RACING_BOOST") {
+    input.boost = {
+      active: source.boostActive,
+      elapsedFraction: source.boostActive ? clamp(1 - source.boostTimer / BOOST_BURN_SECONDS, 0, 1) : 0,
+      // The native physics refills whole charges per lap; there is no partial 0..7 energy meter.
+      energy: 0,
+      charges: clamp(Math.trunc(source.boostCharges), 0, 2),
+    };
+  }
+  return input;
+}
+
+/** Spread `count` picks evenly over `pool` (keeps a MIX field varied instead of the first cars in CARDATA). */
+export function pickSpread<T>(pool: readonly T[], count: number): T[] {
+  const n = Math.max(0, Math.min(pool.length, Math.trunc(count)));
+  return Array.from({ length: n }, (_, k) => pool[Math.floor((k + 0.5) * pool.length / n)]!);
+}
+
 /** Complete playable WebGL2 Ford Racing 3 runtime (menus, 3D turntable, multi-track races, HUD, audio). */
 export class FordRacing3App {
   private readonly gl: GlContext;
@@ -549,10 +1507,21 @@ export class FordRacing3App {
   private readonly menu: MenuController;
   private readonly view: Window;
   private readonly previousTabIndex: string | null;
+  private readonly uiResources: UiItemResources;
+  /** Lazy UI texture loads in flight, or given up on after {@link LAZY_UI_TEXTURE_RETRIES} retries. */
+  private readonly pendingUiTextures = new Set<string>();
+  /** Failed attempts per lazily loaded UI texture key. */
+  private readonly uiTextureFailures = new Map<string, number>();
+  /** Large (≥1024²) screen textures uploaded for the open screen; released when a screen stops using them. */
+  private uploadedScreenTextures = new Set<PcgEntry>();
+  private activeScene?: AppMenuScene;
+  private loadingSprites?: LoadingSprites;
+  private loadingPhase = 0;
 
-  private readonly pcgCache = new Map<string, PcgEntry | null>();
   private readonly carConfigs = new Map<string, ResolvedCarConfig>();
   private readonly compiledModels = new Map<string, CompiledModel>();
+  /** In-flight `getOrCompileModel` work per model key, so concurrent callers share one GPU compile. */
+  private readonly pendingModels = new Map<string, Promise<CompiledModel>>();
 
   private turntableModel?: CompiledModel;
   private turntableKey = "";
@@ -567,6 +1536,12 @@ export class FordRacing3App {
   private loadedEngineBankKey = "";
   private engineBankRequestSeq = 0;
   private genEngineBank?: Promise<SpcBank | null>;
+  private hudAtlasErrorReported = false;
+  /** Bumped by every `ensureHudAtlas` call: only the latest unit request may attach its atlas. */
+  private hudAtlasRequestSeq = 0;
+  /** The HUD atlas whose sprites are on the GPU. */
+  private uploadedHudAtlas?: HudAtlas;
+  private hudLabelCache?: { table: TranslationTable; labels: Partial<Record<HudLabelKey, string>> };
   private readonly tickErrors = new TickErrorGuard();
   private errorRecoveryArmed = false;
 
@@ -576,8 +1551,6 @@ export class FordRacing3App {
   private fps = 0;
   private status = "Initializing engine";
   private disposed = false;
-
-  private overlayButtons: { rect: ViewportRect; label: string; active?: boolean; onClick: () => void }[] = [];
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -597,6 +1570,11 @@ export class FordRacing3App {
     }
     this.audio = new AudioEngine({ unlockTarget: canvas });
     this.setMuted(options.sound === false);
+    this.uiResources = {
+      texture: key => this.resolveUiTexture(key),
+      font: slot => assets.fonts[slot],
+      onMissingTexture: key => this.requestUiTexture(key),
+    };
 
     for (const cfg of assets.installedCars) {
       this.carConfigs.set(cfg.car.id, cfg);
@@ -606,12 +1584,14 @@ export class FordRacing3App {
       id: cfg.car.id,
       name: formatCarDisplayName(assets, cfg),
       liveries: cfg.car.liveries.map(l => l.type),
+      group: cfg.car.fields.CAR_GROUP_TYPE,
       ratings: computeCarRatings(cfg),
     }));
 
     const menuTracks: MenuTrack[] = assets.installedTracks.map(track => ({
       id: track.id,
       name: formatTrackDisplayName(assets, track),
+      group: track.TRACK_GROUP_TYPE,
     }));
     const installedTrackIds = new Set(assets.installedTracks.map(t => t.id.toLowerCase()));
 
@@ -638,6 +1618,17 @@ export class FordRacing3App {
       })
       .filter(p => this.carConfigs.has(p.carId));
 
+    const sceneContext: MenuSceneContext = {
+      readFile: assets.readUiScript,
+      get translation() { return assets.translation; },
+      getTextureSize: assets.getUiTextureSize,
+      fonts: assets.fonts,
+      languages: assets.languages,
+      cars: menuCars,
+      resultsMode: () => this.activeRace?.setup.mode,
+      resultsPlayerIndex: () => this.activeRace?.resultsPlayerIndex,
+    };
+
     this.menu = new MenuController({
       cars: menuCars,
       trackId: assets.defaultTrackId,
@@ -645,7 +1636,12 @@ export class FordRacing3App {
       quickRaces,
       languages: assets.languages,
       input: this.input,
-      createScene: (state, viewState) => this.buildScene(state, viewState),
+      createScene: (state, viewState) => {
+        const scene = buildMenuScene(state, viewState, sceneContext);
+        this.activeScene = scene;
+        this.uploadScreenTextures(scene?.screen);
+        return scene;
+      },
     });
 
     this.previousTabIndex = canvas.getAttribute("tabindex");
@@ -653,18 +1649,33 @@ export class FordRacing3App {
     canvas.addEventListener("webglcontextlost", this.onContextLost);
   }
 
+  /**
+   * Resolve every texture the front end can show (all MENU_SCREEN_SCRIPTS plus the code-set textures of table
+   * B-T) and the loading-screen sprites up front, so no menu or loading graphic pops in lazily.
+   */
   async prepare(): Promise<void> {
     if (!this.assets.installedCars.length) throw new Error("No installed car models were found");
     this.setStatus("Loading interface graphics");
-    await this.preloadCoreSprites();
+    const scripts = Object.values(MENU_SCREEN_SCRIPTS).filter((path): path is string => path !== null);
+    const [, loading] = await Promise.allSettled([
+      this.assets.preloadUiTextures(scripts, CODE_SET_UI_TEXTURES),
+      this.assets.loadLoadingSprites(),
+    ]);
+    if (loading?.status === "fulfilled") {
+      this.loadingSprites = loading.value;
+      this.ui.preloadTextures([loading.value.load, loading.value.bar, loading.value.bar2]);
+    }
+    if (this.disposed) return;
     this.applySettings(this.menu.getView().settings);
+    // Re-open the current screen now that AUTOSIZE / STRETCH_GRAPHIC 0 sizes are known and textures resolve.
+    this.menu.rebuildScene();
     this.setStatus("Press any key or click to start");
   }
 
   start(): void {
     if (this.disposed || this.frame !== undefined || this.gl.gl.isContextLost()) return;
     this.input.attach(this.view, this.canvas);
-    this.view.addEventListener("keydown", this.onTrackSelectKeyDown);
+    this.view.addEventListener("keydown", this.onMenuHotkey);
     this.canvas.focus();
     this.frame = this.view.requestAnimationFrame(this.tick);
   }
@@ -674,7 +1685,7 @@ export class FordRacing3App {
     this.frame = undefined;
     this.lastTime = undefined;
     this.fps = 0;
-    this.view.removeEventListener("keydown", this.onTrackSelectKeyDown);
+    this.view.removeEventListener("keydown", this.onMenuHotkey);
     this.input.detach();
   }
 
@@ -710,14 +1721,16 @@ export class FordRacing3App {
   launchCarRace(carId?: string): void {
     this.resumeAfterError();
     if (this.menu.getView().state === "START") this.menu.continueFromStart();
-    if (carId && this.carConfigs.has(carId)) {
-      const idx = this.assets.installedCars.findIndex(c => c.car.id === carId);
-      if (idx >= 0) {
-        if (this.menu.getView().state !== "CAR_SELECT") this.menu.activate("select-car");
-        for (let i = 0; i < this.assets.installedCars.length; i++) {
-          if (this.menu.getView().car?.id === carId) break;
-          this.menu.activate("next-car");
-        }
+    const target = carId && this.carConfigs.has(carId) ? carId : undefined;
+    if (target) {
+      if (this.menu.getView().state !== "CAR_SELECT") this.menu.activate("select-car");
+      const group = this.carConfigs.get(target)!.car.fields.CAR_GROUP_TYPE;
+      // Cars step within their CAR.UI class, so pick the class first.
+      for (let i = 0; i < 16 && this.menu.getView().car?.group !== group; i++) {
+        if (!this.menu.activate("next-car-group")) break;
+      }
+      for (let i = 0; i < this.assets.installedCars.length && this.menu.getView().car?.id !== target; i++) {
+        if (!this.menu.activate("next-car")) break;
       }
     }
     if (this.menu.getView().state === "CAR_SELECT") this.menu.activate("launch");
@@ -777,12 +1790,16 @@ export class FordRacing3App {
     this.disposed = true;
     this.loadRequestSeq++;
     this.turntableRequest++;
+    this.hudAtlasRequestSeq++;
     this.stop();
     this.canvas.removeEventListener("webglcontextlost", this.onContextLost);
     this.disarmErrorRecovery();
     if (this.previousTabIndex === null) this.canvas.removeAttribute("tabindex");
     for (const model of this.compiledModels.values()) model.dispose();
     this.compiledModels.clear();
+    this.pendingModels.clear();
+    this.pendingUiTextures.clear();
+    this.uploadedScreenTextures.clear();
     for (const model of this.trackModelCache.values()) model.dispose();
     this.trackModelCache.clear();
     this.trackSpatialCache.clear();
@@ -802,75 +1819,119 @@ export class FordRacing3App {
   private syncStatusForState(prev: MenuState, next: MenuState): void {
     if (prev === next) return;
     const view = this.menu.getView();
-    switch (next) {
-      case "MAIN_MENU":
-        this.setStatus("Main menu");
-        break;
-      case "CAR_SELECT":
-        this.setStatus(view.car ? `Select Car: ${view.car.name}` : "Select Car");
-        break;
-      case "OPTIONS":
-        this.setStatus("Options");
-        break;
-      case "PAUSE":
-        this.setStatus("Paused");
-        break;
-      case "RACE_END":
-      case "RESULTS":
-        this.setStatus("Race finished");
-        break;
-      default:
-        break;
-    }
+    const status: Partial<Record<MenuState, string>> = {
+      MAIN_MENU: "Main menu",
+      MODE_SELECT: "Select race type",
+      CAR_SELECT: view.car ? `Select Car: ${view.car.name}` : "Select Car",
+      TRACK_SELECT: view.track ? `Select Track: ${view.track.name}` : "Select Track",
+      RACE_OPTIONS: "Race settings",
+      OPTIONS: "Options",
+      OPTIONS_GAME: "Game options",
+      OPTIONS_AUDIO: "Audio options",
+      OPTIONS_DISPLAY: "Display options",
+      OPTIONS_CONTROLS: "Control options",
+      OPTIONS_CREDITS: "Credits",
+      OPTIONS_LANGUAGE: "Language",
+      PAUSE: "Paused",
+      RESULTS: "Race finished",
+      RACE_END: "Race finished",
+    };
+    const text = status[next];
+    if (text) this.setStatus(text);
   }
 
-  private readonly onTrackSelectKeyDown = (event: KeyboardEvent): void => {
-    if (this.disposed || this.menu.getView().state !== "CAR_SELECT") return;
-    if (event.code === "BracketLeft" || event.code === "PageUp") {
-      event.preventDefault();
-      this.menu.activate("previous-track");
-      this.processCommands();
-    } else if (event.code === "BracketRight" || event.code === "PageDown") {
-      event.preventDefault();
-      this.menu.activate("next-track");
-      this.processCommands();
+  /**
+   * Keys fr3's screens read directly: CAR.UI's COLOUR_ICON is the C key (livery; L too), `[`/`]` and PageUp/Down
+   * step the track from Car Select, and L opens LANG.UI from the options hub (OPTS.UI has no language button).
+   */
+  private readonly onMenuHotkey = (event: KeyboardEvent): void => {
+    if (this.disposed) return;
+    const state = this.menu.getView().state;
+    let action: Parameters<MenuController["activate"]>[0] | undefined;
+    if (state === "CAR_SELECT") {
+      if (event.code === "BracketLeft" || event.code === "PageUp") action = "previous-track";
+      else if (event.code === "BracketRight" || event.code === "PageDown") action = "next-track";
+      else if (event.code === "KeyC" || event.code === "KeyL") action = "next-livery";
+    } else if (state === "OPTIONS" && event.code === "KeyL") {
+      action = "options-language";
     }
+    if (!action) return;
+    event.preventDefault();
+    this.menu.activate(action);
+    this.processCommands();
   };
 
   private readonly onContextLost = (): void => {
     this.loadRequestSeq++;
+    this.turntableRequest++;
+    this.hudAtlasRequestSeq++;
     this.stop();
     this.setStatus("WebGL2 context lost");
     this.options.onError?.(new Error("WebGL2 context lost. Press Restart to reload."));
   };
 
-  private async preloadCoreSprites(): Promise<void> {
-    const refs = [
-      "GRAPHICS\\GAME\\STARTUS.PSD",
-      "GRAPHICS\\GAME\\BKGNDS\\GAMEF.PSD",
-      "GRAPHICS\\GAME\\BKGNDS\\FORD.PSD",
-      "GRAPHICS\\GAME\\BKGNDS\\49.PSD",
-      "GRAPHICS\\GAME\\COMMON\\PAUSE.PSD",
-      "GRAPHICS\\GAME\\COMMON\\RES_TOP.PSD",
-      "GRAPHICS\\GAME\\COMMON\\LAUREL.PSD",
-      "GRAPHICS\\GAME\\COMMON\\CHEQFLAG.PSD",
-      "GRAPHICS\\GAME\\COMMON\\FORDRACE.PSD",
-      "GRAPHICS\\GAME\\COMMON\\TITLEBAR.PSD",
-    ];
-    await Promise.all(refs.map(ref => this.cachePcg(ref)));
+  /** Return a loaded UI texture and track large (≥1024²) entries drawn by the open screen for later release. */
+  private resolveUiTexture(registeredKey: string): PcgEntry | undefined {
+    const entry = this.assets.getLoadedUiTexture(registeredKey);
+    if (entry && isLargeUiTexture(entry)) this.uploadedScreenTextures.add(entry);
+    return entry;
   }
 
-  private async cachePcg(texturePath: string): Promise<PcgEntry | null> {
-    const key = texturePath.toLowerCase();
-    if (this.pcgCache.has(key)) return this.pcgCache.get(key) ?? null;
-    try {
-      const entry = (await this.assets.getPcgEntry(texturePath)) ?? null;
-      this.pcgCache.set(key, entry);
-      return entry;
-    } catch {
-      this.pcgCache.set(key, null);
-      return null;
-    }
+  /**
+   * Lazy fallback for a texture nothing preloaded (e.g. a code-set texture outside table B-T, or an AUTOSIZE
+   * node whose size is still unknown). A failed fetch/decode frees the key for up to
+   * {@link LAZY_UI_TEXTURE_RETRIES} retries, then the key stays parked so a broken asset never refetches every
+   * frame. Large (≥ 1024²) textures upload only while a screen referencing them is still open, and join
+   * that screen's large set so the next screen change releases them.
+   */
+  private requestUiTexture(registeredKey: string): void {
+    if (this.pendingUiTextures.has(registeredKey) || this.disposed) return;
+    this.pendingUiTextures.add(registeredKey);
+    const screen = this.menu.screen;
+    const fail = () => {
+      const failures = (this.uiTextureFailures.get(registeredKey) ?? 0) + 1;
+      this.uiTextureFailures.set(registeredKey, failures);
+      if (failures <= LAZY_UI_TEXTURE_RETRIES) this.pendingUiTextures.delete(registeredKey);
+    };
+    void this.assets.getPcgEntry(registeredKey).then(entry => {
+      if (this.disposed) return;
+      if (!entry) {
+        fail();
+        return;
+      }
+      this.pendingUiTextures.delete(registeredKey);
+      this.uiTextureFailures.delete(registeredKey);
+      if (this.gl.gl.isContextLost()) return;
+      if (isLargeUiTexture(entry)) {
+        const current = this.menu.screen;
+        const stillNeeded = current !== undefined && (
+          current === screen
+          || current.getTextureRefs().some(ref => ref.registeredKey === registeredKey)
+        );
+        if (!stillNeeded) return;
+        this.uploadedScreenTextures.add(entry);
+      }
+      this.ui.preloadTextures([entry]);
+    }, () => {
+      if (!this.disposed) fail();
+    });
+  }
+
+  /** Lazy-load the visible textures the open screen cannot size yet (AUTOSIZE nodes are skipped until then). */
+  private requestPendingScreenTextures(screen: UiScreenInstance): void {
+    for (const target of screen.getPendingTextureRefs()) this.requestUiTexture(target.registeredKey);
+  }
+
+  /** Upload a screen's textures as it opens (no first-draw hitch) and free big backgrounds it no longer uses. */
+  private uploadScreenTextures(screen: UiScreenInstance | undefined): void {
+    if (this.disposed) return;
+    const entries = (screen?.getTextureRefs() ?? [])
+      .map(ref => this.assets.getLoadedUiTexture(ref.registeredKey))
+      .filter((entry): entry is PcgEntry => entry !== undefined);
+    this.ui.preloadTextures(entries);
+    const large = new Set(entries.filter(isLargeUiTexture));
+    for (const entry of this.uploadedScreenTextures) if (!large.has(entry)) this.ui.releaseTexture(entry);
+    this.uploadedScreenTextures = large;
   }
 
   private async loadSharedAudioOnce(): Promise<void> {
@@ -1034,105 +2095,44 @@ export class FordRacing3App {
     }
   }
 
-  private buildScene(state: MenuState, view: MenuView): MenuScene | undefined {
-    const loadScript = (path: string) => UiScreenInstance.load(path, {
-      readFile: this.assets.readUiScript,
-      translation: this.assets.translation,
-      viewport: { width: 640, height: 480 },
-    });
-
-    if (state === "START") {
-      const screen = loadScript("UI/START.UI");
-      const pressKey = lookupTranslation(this.assets.translation, "TXT_PRESS_ANY_KEY") ?? "PRESS ANY KEY";
-      screen.setNodeTextRaw("BUTTON1", pressKey);
-      screen.setNodeTextRaw("VERSION", "NATIVE WEBGL2 ENGINE");
-      return { screen, actions: {} };
-    }
-
-    if (state === "MAIN_MENU") {
-      const screen = loadScript("UI/GAMEF.UI");
-      const labels: [string, string, MenuSceneAction][] = [
-        ["BUTTON1", "TXT_MENU_BUTTON_QUICKRACE", "quick-race"],
-        ["BUTTON2", "TXT_MENU_BUTTON_SINGLE_PLAYER", "select-car"],
-        ["BUTTON3", "TXT_MENU_BUTTON_OPTIONS", "options"],
-      ];
-      const actions: Record<string, MenuSceneAction> = {};
-      for (const id of ["BUTTON1", "BUTTON2", "BUTTON3", "BUTTON4", "BUTTON5", "BUTTON6", "BACK_ICON", "BACK_TEXT"]) {
-        screen.setNodeVisible(id, false);
-        screen.setNodeEnabled(id, false);
-      }
-      for (const [id, textKey, action] of labels) {
-        screen.setNodeVisible(id, true);
-        screen.setNodeEnabled(id, true);
-        screen.setNodeText(id, textKey);
-        actions[id] = action;
-      }
-      screen.setFocus("BUTTON1");
-      return { screen, actions };
-    }
-
-    if (state === "PAUSE") {
-      const screen = loadScript("UI/PAUSE.UI");
-      for (const hide of ["EXITREPLAY", "RULES"]) {
-        screen.setNodeVisible(hide, false);
-        screen.setNodeEnabled(hide, false);
-      }
-      screen.setFocus("RESUME");
-      return {
-        screen,
-        actions: {
-          RESUME: "resume",
-          RESTART: "restart",
-          OPTIONS: "options",
-          RETIRE: "quit",
-          EXIT: "quit",
-        },
-      };
-    }
-
-    if (state === "OPTIONS") {
-      const screen = loadScript("UI/OPTS.UI");
-      for (const id of ["BUTTON1", "BUTTON2", "BUTTON3", "BUTTON4", "BUTTON5"]) {
-        screen.setNodeVisible(id, false);
-        screen.setNodeEnabled(id, false);
-      }
-      return { screen, actions: {} };
-    }
-
-    if (state === "CAR_SELECT") {
-      const screen = loadScript("UI/CAR.UI");
-      screen.setNodeTextRaw("CARNAME", view.car?.name ?? "");
-      return {
-        screen,
-        actions: {},
-        update: next => screen.setNodeTextRaw("CARNAME", next.car?.name ?? ""),
-      };
-    }
-
-    if (state === "RESULTS" || state === "RACE_END") {
-      const screen = loadScript("UI/RCRES.UI");
-      return { screen, actions: {} };
-    }
-
-    return undefined;
-  }
-
-  private async getOrCompileModel(dir: string, livery?: string): Promise<CompiledModel> {
+  /**
+   * The compiled model for a shape folder + livery. Concurrent callers (turntable and race load, or two race
+   * slots with the same car) share one in-flight compile, and nothing compiles after `dispose()` or a lost
+   * context.
+   */
+  private getOrCompileModel(dir: string, livery?: string): Promise<CompiledModel> {
     const key = `${dir.toLowerCase()}::${(livery ?? "").toLowerCase()}`;
     const existing = this.compiledModels.get(key);
-    if (existing && !existing.isDisposed) return existing;
-    const bundle = await this.assets.load3dBundle(dir);
-    const compiled = this.scene.compileModel(bundle.xbx, bundle.textures, bundle.binInfo, bundle.scene, { livery });
-    this.compiledModels.set(key, compiled);
-    return compiled;
+    if (existing && !existing.isDisposed) return Promise.resolve(existing);
+    const inFlight = this.pendingModels.get(key);
+    if (inFlight) return inFlight;
+    const pending = (async () => {
+      const bundle = await this.assets.load3dBundle(dir);
+      if (this.disposed || this.gl.gl.isContextLost()) throw new Error("Model compile cancelled: the engine was disposed or lost its WebGL context");
+      const cached = this.compiledModels.get(key);
+      if (cached && !cached.isDisposed) return cached;
+      const compiled = this.scene.compileModel(bundle.xbx, bundle.textures, bundle.binInfo, bundle.scene, { livery });
+      this.compiledModels.set(key, compiled);
+      return compiled;
+    })();
+    this.pendingModels.set(key, pending);
+    const settle = () => {
+      if (this.pendingModels.get(key) === pending) this.pendingModels.delete(key);
+    };
+    pending.then(settle, settle);
+    return pending;
   }
 
   private async loadTurntableCar(carId: string, livery?: string): Promise<void> {
+    // Every request supersedes the one in flight, including a return to the car already shown (A -> B -> A).
+    const req = ++this.turntableRequest;
     const cfg = this.carConfigs.get(carId);
     if (!cfg || this.disposed || this.gl.gl.isContextLost()) return;
     const key = `${cfg.shapeFolder}::${livery ?? ""}`;
-    if (key === this.turntableKey && this.turntableModel && !this.turntableModel.isDisposed) return;
-    const req = ++this.turntableRequest;
+    if (key === this.turntableKey && this.turntableModel && !this.turntableModel.isDisposed) {
+      this.setStatus(`Select Car: ${formatCarDisplayName(this.assets, cfg)}`);
+      return;
+    }
     this.setStatus(`Loading ${formatCarDisplayName(this.assets, cfg)}`);
     try {
       const model = await this.getOrCompileModel(cfg.shapeFolder, livery);
@@ -1154,14 +2154,81 @@ export class FordRacing3App {
 
   private applySettings(settings: Readonly<MenuSettings>): void {
     this.audio.setVolume("master", settings.masterVolume);
-    this.audio.setVolume("sfx", settings.sfxVolume);
+    // AUDIO.UI "ENGINE / EFFECTS" drives both the engine and the effects buses.
+    this.audio.setVolume("sfx", settings.sfxVolume * settings.engineVolume);
     this.audio.setVolume("engine", settings.engineVolume);
     if (settings.language !== this.assets.language && this.assets.languages.includes(settings.language)) {
       this.assets.setLanguage(settings.language);
       this.menu.rebuildScene();
     }
-    if (this.activeRace) {
-      this.activeRace.racers[0]!.physics.automatic = settings.transmission === "AUTO";
+    const race = this.activeRace;
+    if (race) {
+      race.racers[0]!.physics.automatic = settings.transmission === "AUTO";
+      void this.ensureHudAtlas(race, settings.speedUnits);
+    }
+  }
+
+  /**
+   * Attach the fr3.exe HUD atlas for the chosen units (MPH / KPH speedo numerals). Every call bumps
+   * `hudAtlasRequestSeq`, even when `units` is already attached, so a slower earlier request (MPH -> KPH -> MPH)
+   * can never attach a stale atlas. The swap shares the common collections and frees only the old
+   * unit-specific dial sprites.
+   */
+  private async ensureHudAtlas(race: ActiveRace, units: SpeedUnits): Promise<void> {
+    const req = ++this.hudAtlasRequestSeq;
+    if (race.hudAtlas?.units === units) return;
+    const { atlas, error } = await this.loadHudAtlasResult(units);
+    if (!this.isCurrentHudAtlasRequest(req, units) || this.activeRace !== race) return;
+    if (error) {
+      this.reportHudAtlasError(error);
+      return;
+    }
+    if (!atlas) return;
+    this.attachHudAtlas(race, atlas);
+  }
+
+  private isCurrentHudAtlasRequest(req: number, units: SpeedUnits): boolean {
+    return req === this.hudAtlasRequestSeq && !this.disposed && !this.gl.gl.isContextLost()
+      && this.menu.getView().settings.speedUnits === units;
+  }
+
+  private reportHudAtlasError(cause: unknown): void {
+    if (this.hudAtlasErrorReported) return;
+    this.hudAtlasErrorReported = true;
+    this.options.onError?.(asError(cause));
+  }
+
+  /**
+   * Upload `next`'s sprites and release the GPU textures of the previously uploaded atlas that `next` does not
+   * share (DemoAssets caches the GENERIC / PANEL / REV / NUMBERS / MISC entries, so only the MPH or KPH dial
+   * sprites differ between units).
+   */
+  private swapHudAtlas(next: HudAtlas): void {
+    const keep = new Set(next.sprites.values());
+    this.ui.preloadTextures(keep);
+    const previous = this.uploadedHudAtlas;
+    if (previous && previous !== next) {
+      for (const sprite of previous.sprites.values()) if (!keep.has(sprite)) this.ui.releaseTexture(sprite);
+    }
+    this.uploadedHudAtlas = next;
+  }
+
+  private attachHudAtlas(race: ActiveRace, atlas: HudAtlas): void {
+    try {
+      this.swapHudAtlas(atlas);
+      race.hudAtlas = atlas;
+    } catch (cause) {
+      race.hudAtlas = undefined;
+      if (!this.disposed && !this.gl.gl.isContextLost()) this.reportHudAtlasError(cause);
+    }
+  }
+
+  /** Resolve (not upload) the HUD atlas for `units`, capturing any error so callers decide if it is still current. */
+  private async loadHudAtlasResult(units: SpeedUnits): Promise<{ atlas?: HudAtlas; error?: Error }> {
+    try {
+      return { atlas: await this.assets.loadHudAtlas(units) };
+    } catch (cause) {
+      return { error: asError(cause) };
     }
   }
 
@@ -1198,11 +2265,32 @@ export class FordRacing3App {
         this.activeRace?.camera.nextMode();
         break;
       case "QuitToMenu":
+        // Invalidate in-flight loadRace / HUD atlas requests (Esc on LOADING) so nothing stale attaches or errors.
+        this.loadRequestSeq++;
+        this.hudAtlasRequestSeq++;
         this.activeRace = undefined;
         this.audio.update({ rpm: 0, speedMps: 0, tyreSlip: 0 });
         this.setStatus("Main menu");
         break;
     }
+  }
+
+  /** ROPT.UI OPPS / FIELD: the opponent field (preset ids first, then a MIX spread or same-class MATCH cars). */
+  private pickOpponents(setup: RaceSetup, player: ResolvedCarConfig): string[] {
+    const count = clamp(Math.trunc(setup.opponents ?? 5), 0, 5);
+    const preset = (setup.opponentIds ?? []).filter(id => this.carConfigs.has(id) && id !== player.car.id);
+    const others = this.assets.installedCars.map(c => c.car.id).filter(id => id !== player.car.id && !preset.includes(id));
+    const group = player.car.fields.CAR_GROUP_TYPE;
+    const sameClass = others.filter(id => this.carConfigs.get(id)!.car.fields.CAR_GROUP_TYPE === group);
+    const missing = Math.max(0, count - preset.length);
+    let fill: string[];
+    if (setup.fieldType === "MATCH") {
+      fill = pickSpread(sameClass, missing);
+      if (fill.length < missing) fill.push(...pickSpread(others.filter(id => !sameClass.includes(id)), missing - fill.length));
+    } else {
+      fill = pickSpread(others, missing);
+    }
+    return [...preset, ...fill].slice(0, count);
   }
 
   private async loadRace(requestId: number, setup: RaceSetup): Promise<void> {
@@ -1213,10 +2301,18 @@ export class FordRacing3App {
     const trackName = trackRecord ? formatTrackDisplayName(this.assets, trackRecord) : trackId;
     this.setStatus(`Loading ${trackName} track and cars...`);
     this.menu.setLoadProgress(requestId, 0.08);
+    let prepared: {
+      activeRace: ActiveRace;
+      hudUnits: SpeedUnits;
+      hudResult: { atlas?: HudAtlas; error?: Error };
+      playerCfg: ResolvedCarConfig;
+    };
     try {
-      const [trackBundle, trackData] = await Promise.all([
+      const hudUnits = this.menu.getView().settings.speedUnits;
+      const [trackBundle, trackData, hudResult] = await Promise.all([
         this.assets.load3dBundle(trackDirectory(trackId)),
         this.assets.loadTrackData(trackId),
+        this.loadHudAtlasResult(hudUnits),
       ]);
       if (seq !== this.loadRequestSeq || this.disposed) return;
       this.menu.setLoadProgress(requestId, 0.35);
@@ -1240,15 +2336,7 @@ export class FordRacing3App {
       this.menu.setLoadProgress(requestId, 0.52);
 
       const playerCfg = this.carConfigs.get(setup.carId) ?? this.assets.installedCars[0]!;
-      const opponentPool = (setup.opponentIds ?? []).filter(id => this.carConfigs.has(id));
-      const fallbackPool = this.assets.installedCars
-        .map(c => c.car.id)
-        .filter(id => id !== playerCfg.car.id);
-      const opponentIds: string[] = [];
-      for (const id of [...opponentPool, ...fallbackPool]) {
-        if (opponentIds.length >= 5) break;
-        opponentIds.push(id);
-      }
+      const opponentIds = this.pickOpponents(setup, playerCfg);
 
       const lineupCfgs = [playerCfg, ...opponentIds.map(id => this.carConfigs.get(id)!)];
       const models: CompiledModel[] = [];
@@ -1282,6 +2370,8 @@ export class FordRacing3App {
         ground,
         startU: 0.02,
         introSeconds: 1.4,
+        // The fr3 countdown chain (§5.13) starts the race on GO's keyframe c, 2.9 s after "3" appears.
+        countdownStepSeconds: COUNTDOWN_RACE_START_TIME / 3,
       });
 
       const difficulty = this.assets.tables.game.difficulty[setup.difficulty];
@@ -1336,9 +2426,10 @@ export class FordRacing3App {
         phase: race.phase,
         phaseElapsed: race.phaseElapsed,
       });
+      // Minimap course = the AI path / racing-line X/Z points (§5.12).
       const courseMap = racingLine.points.map(pt => ({ x: pt.position[0], z: pt.position[2] }));
 
-      this.activeRace = {
+      const activeRace: ActiveRace = {
         setup: { ...setup, trackId },
         trackId,
         trackName,
@@ -1350,21 +2441,41 @@ export class FordRacing3App {
         camera,
         cameraView,
         courseMap,
+        hudAtlas: undefined,
+        lastPhase: race.phase,
+        playerWrongWay: false,
+        playerCompletedLaps: 0,
+        playerLapStart: 0,
         finishHoldTimer: 0,
         finishedReported: false,
       };
       this.menu.setLoadProgress(requestId, 1);
-      this.menu.completeLoad(requestId);
-      void this.loadSharedAudioOnce();
-      void this.loadEngineBankForCar(playerCfg);
-      this.setStatus(formatRacingStatus(formatCarDisplayName(this.assets, playerCfg), trackName));
+      prepared = { activeRace, hudUnits, hudResult, playerCfg };
     } catch (cause) {
-      if (seq !== this.loadRequestSeq) return;
+      if (seq !== this.loadRequestSeq || this.disposed) return;
       const err = asError(cause);
-      this.menu.failLoad(requestId, err.message);
+      if (!this.menu.failLoad(requestId, err.message)) return;
       this.setStatus(`Load failed: ${err.message}`);
       this.options.onError?.(err);
+      return;
     }
+
+    // Only a load that is still current (not cancelled by Esc / a newer launch / dispose) and that the menu
+    // accepts becomes the active race; nothing is attached, played or reported for a stale one.
+    if (seq !== this.loadRequestSeq || this.disposed || !this.menu.completeLoad(requestId)) return;
+    this.activeRace = prepared.activeRace;
+    const units = this.menu.getView().settings.speedUnits;
+    if (prepared.hudResult.atlas?.units === units && !this.gl.gl.isContextLost()) {
+      this.hudAtlasRequestSeq++;
+      this.attachHudAtlas(prepared.activeRace, prepared.hudResult.atlas);
+    } else if (prepared.hudResult.error && prepared.hudUnits === units) {
+      if (!this.gl.gl.isContextLost()) this.reportHudAtlasError(prepared.hudResult.error);
+    } else if (!this.gl.gl.isContextLost()) {
+      void this.ensureHudAtlas(prepared.activeRace, units);
+    }
+    void this.loadSharedAudioOnce();
+    void this.loadEngineBankForCar(prepared.playerCfg);
+    this.setStatus(formatRacingStatus(formatCarDisplayName(this.assets, prepared.playerCfg), trackName));
   }
 
   private readonly tick = (now: number): void => {
@@ -1440,66 +2551,25 @@ export class FordRacing3App {
     this.start();
   }
 
+  /** Every front-end state runs through `MenuController.update` (focus, left/right values, confirm, back, pointer). */
   private stepMenu(dt: number, frame: InputFrame): void {
-    const view = this.menu.getView();
-    if (view.state === "CAR_SELECT") {
+    const before = this.menu.getView();
+    if (before.state === "CAR_SELECT" && before.carSelectPage === "ITEM") {
       this.turntableAngle = (this.turntableAngle + dt * 0.6) % (2 * Math.PI);
     }
+    // fr3 advances the loading chaser by 1/60 per frame (0x4b7400).
+    if (before.state === "LOADING") this.loadingPhase = stepLoadingPhase(this.loadingPhase);
 
     const gl = this.gl.gl;
     const [uiPointerX, uiPointerY] = canvasToUiPoint(
-      frame.menu.pointerX,
-      frame.menu.pointerY,
-      gl.drawingBufferWidth,
-      gl.drawingBufferHeight,
+      frame.menu.pointerX, frame.menu.pointerY, gl.drawingBufferWidth, gl.drawingBufferHeight, MENU_VIEWPORT,
     );
-    const uiFrame: InputFrame = {
-      driving: frame.driving,
-      menu: { ...frame.menu, pointerX: uiPointerX, pointerY: uiPointerY },
-    };
-
-    if (uiFrame.menu.pointerClicked && this.overlayButtons.length > 0) {
-      const px = uiFrame.menu.pointerX;
-      const py = uiFrame.menu.pointerY;
-      for (const btn of this.overlayButtons) {
-        if (px >= btn.rect.x && px <= btn.rect.x + btn.rect.width && py >= btn.rect.y && py <= btn.rect.y + btn.rect.height) {
-          btn.onClick();
-          this.audio.playMenu("confirm");
-          this.processCommands();
-          return;
-        }
-      }
-    }
-
-    if (view.state === "CAR_SELECT") {
-      if (uiFrame.menu.left) this.menu.activate("previous-car");
-      else if (uiFrame.menu.right) this.menu.activate("next-car");
-      else if (uiFrame.menu.up) this.menu.activate("previous-livery");
-      else if (uiFrame.menu.down) this.menu.activate("next-livery");
-      else if (uiFrame.menu.confirm) this.menu.activate("launch");
-      else if (uiFrame.menu.back) this.menu.activate("back");
-      this.processCommands();
-      return;
-    }
-
-    if (view.state === "OPTIONS") {
-      if (uiFrame.menu.back) {
-        this.menu.activate("back");
-        this.processCommands();
-      }
-      return;
-    }
-
-    if (view.state === "RESULTS" || view.state === "RACE_END") {
-      if (uiFrame.menu.confirm) this.menu.activate("restart");
-      // Esc follows MenuController.back(): RACE_END -> RESULTS, RESULTS -> main menu.
-      else if (uiFrame.menu.back) this.menu.activate("back");
-      this.processCommands();
-      return;
-    }
-
-    this.menu.update(dt, uiFrame);
+    let menuInput: MenuInput = { ...frame.menu, pointerX: uiPointerX, pointerY: uiPointerY };
+    const scene = this.currentScene();
+    if (scene?.filterInput) menuInput = scene.filterInput(menuInput);
+    this.menu.update(dt, { driving: frame.driving, menu: menuInput });
     this.processCommands();
+    this.activeScene?.tick?.(dt, this.menu.getView());
   }
 
   private stepRace(dt: number, driving: DrivingInput): void {
@@ -1541,7 +2611,7 @@ export class FordRacing3App {
           handbrake: true,
         };
       } else if (r.isPlayer && active.race.phase !== "FINISHED") {
-        ctrl = driving;
+        ctrl = playerDrivingInput(active.setup.mode, driving);
       } else {
         if (!r.isPlayer) {
           const flipped = updateAiFlippedTimer(r.flippedTimer, st.up[1], dt);
@@ -1565,7 +2635,8 @@ export class FordRacing3App {
         const obstacles: AiObstacle[] = tracks
           .filter((_, idx) => idx !== i)
           .map(o => ({ u: o.u, lateralOffset: o.lateralOffset, speed: o.speed }));
-        const referenceGap = ((standing?.progress ?? 0) - playerProgressTotal) * racingLine.length;
+        const referenceGap = aiReferenceGap(active.setup,
+          ((standing?.progress ?? 0) - playerProgressTotal) * racingLine.length);
         const aiOut = ai.update(dt, {
           car: {
             position: curState.position,
@@ -1607,6 +2678,9 @@ export class FordRacing3App {
 
       const after = r.physics.state;
       const prog = active.spatial.queryProgress(after.position[0], after.position[2]);
+      if (r.isPlayer) {
+        active.playerWrongWay = isHudWrongWay(prog.lateralOffset, prog.halfWidth, prog.forward, after.forward);
+      }
       observations.push({
         id: r.id,
         car: { position: after.position, forward: after.forward, rotation: after.orientation, speed: after.speedMps },
@@ -1627,11 +2701,21 @@ export class FordRacing3App {
 
     active.race.update(dt, observations);
 
-    const step = countdownLabelToStep(active.race.countdownLabel);
-    if (step !== active.lastCountdown && step !== undefined) {
-      active.lastCountdown = step;
-      this.audio.playCountdown(step);
+    // Countdown sounds fire at each chain step's keyframe a (0x68 / 0x69 / 0x67 / 0x66).
+    const countdownTime = raceCountdownTime(active.race.phase, active.race.phaseElapsed);
+    const countdown = countdownTime === undefined ? null : countdownFrame(countdownTime);
+    if (countdown && countdown.step !== active.lastCountdownStep) {
+      active.lastCountdownStep = countdown.step;
+      this.audio.playCountdown(countdownStepSound(countdown.step));
     }
+
+    const ps = playerSlot.physics.state;
+    // GO: classify the launch from the revs the player held on the line (colpan banner, §5.14).
+    if (active.race.phase === "RACING" && active.lastPhase !== "RACING" && active.lastPhase !== "FINISHED") {
+      const result = classifyLaunch(ps.rpm, playerSlot.config.engine.fields.MAX_RPM ?? ps.maxRpm);
+      if (result) active.launchBanner = { result, start: active.race.elapsedRaceTime };
+    }
+    active.lastPhase = active.race.phase;
 
     for (const s of active.race.standings) {
       const slot = active.racers.find(r => r.id === s.id);
@@ -1641,9 +2725,19 @@ export class FordRacing3App {
           slot.physics.replenishBoost(s.completedLaps, active.setup.laps);
         }
       }
+      if (s.isPlayer) {
+        // LAST lap row: the finish crossing time minus the previous lap start.
+        if (s.completedLaps > active.playerCompletedLaps) {
+          const lapStart = s.finishTime ?? active.race.elapsedRaceTime - s.lapTime;
+          active.playerLastLap = lapStart - active.playerLapStart;
+          active.playerLapStart = lapStart;
+          active.playerCompletedLaps = s.completedLaps;
+        } else if (s.lapTime > 0) {
+          active.playerLapStart = active.race.elapsedRaceTime - s.lapTime;
+        }
+      }
     }
 
-    const ps = playerSlot.physics.state;
     if (ps.gear !== playerSlot.lastGear && mobile) {
       this.audio.playGearShift();
     }
@@ -1688,6 +2782,7 @@ export class FordRacing3App {
           const s = standings[i]!;
           return active.racers.find(r => r.id === s.id)?.carName ?? s.carId;
         });
+        active.resultsPlayerIndex = standings.findIndex(s => s.isPlayer);
         this.menu.finishRace(resultRows);
         this.audio.update({ rpm: 0, speedMps: 0, tyreSlip: 0 });
         this.setStatus("Race finished");
@@ -1702,22 +2797,27 @@ export class FordRacing3App {
     if (!width || !height || gl.isContextLost()) return;
 
     const view = this.menu.getView();
-    const inRaceRender = this.activeRace !== undefined
-      && (view.state === "IN_GAME" || view.state === "PAUSE" || view.state === "RESULTS" || view.state === "RACE_END");
+    const race = this.activeRace;
+    // PAUSE, RCRES, RCEND and in-game OPTS have no background: the race shows through.
+    const raceUnderneath = race !== undefined && (view.state === "IN_GAME" || view.state === "PAUSE"
+      || view.state === "RESULTS" || view.state === "RACE_END" || view.inGameOptions);
 
-    if (inRaceRender && this.activeRace) {
-      this.renderRace3d(this.activeRace, width, height);
+    if (raceUnderneath) {
+      this.renderRace3d(race, width, height);
     } else {
       gl.viewport(0, 0, width, height);
-      gl.clearColor(0.03, 0.05, 0.08, 1);
+      gl.clearColor(0, 0, 0, 1);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     }
 
-    if (view.state === "IN_GAME" && this.activeRace) {
-      this.renderRaceHud(this.activeRace, view.settings, width, height);
+    if (view.state === "IN_GAME" && race) {
+      this.renderRaceHud(race, view.settings, width, height);
       return;
     }
-
+    if (view.state === "LOADING") {
+      this.renderLoadingScreen(view, width, height);
+      return;
+    }
     this.renderMenuUi(view, width, height);
   }
 
@@ -1759,315 +2859,87 @@ export class FordRacing3App {
     const ps = player.physics.state;
     const standings = active.race.standings;
     const playerStanding = standings.find(s => s.isPlayer) ?? standings[0]!;
-
-    const hudState: HudState = {
+    const banner = active.launchBanner;
+    const input = buildRaceHudInput({
       speedMps: ps.speedMps,
-      speedUnit: settings.speedUnits,
       rpm: ps.rpm,
-      redlineRpm: ps.redlineRpm,
+      maxRpm: player.config.engine.fields.MAX_RPM ?? ps.maxRpm,
       gear: ps.gear,
-      boost: ps.boostActive ? ps.boostTimer / 7 : 0,
-      boostCharges: ps.boostCharges,
-      maxBoostCharges: 2,
+      units: settings.speedUnits,
+      approxTopSpeedMph: player.config.car.fields.CAR_APPROXIMATE_TOP_SPEED ?? 150,
+      cameraMode: active.cameraView.modeName,
+      forwardCameraMode: active.camera.mode,
       position: playerStanding.place,
       participants: active.racers.length,
       lap: playerStanding.lap,
       laps: active.setup.laps,
-      lapTime: playerStanding.lapTime,
-      bestTime: playerStanding.bestLapTime ?? undefined,
-      totalTime: active.race.elapsedRaceTime,
-      countdown: countdownLabelToStep(active.race.countdownLabel),
-      wrongWay: playerStanding.wrongWay,
-      map: {
-        course: active.courseMap,
-        player: { x: ps.position[0], z: ps.position[2] },
-        opponents: active.racers.slice(1).map(r => ({ x: r.physics.state.position[0], z: r.physics.state.position[2] })),
-      },
-    };
-
-    const bodyFont = this.assets.fonts[2] ?? this.assets.fonts[0]!;
-    const displayFont = this.assets.fonts[4] ?? this.assets.fonts[0]!;
-    this.ui.renderHud(hudState, width, height, { body: bodyFont, display: displayFont });
-  }
-
-  private renderMenuUi(view: MenuView, width: number, height: number): void {
-    const vp = computeUiViewport(width, height);
-    const batch = new UiBatchBuilder(vp.width || width, vp.height || height);
+      currentLapSeconds: playerStanding.lapTime,
+      lastLapSeconds: active.playerLastLap,
+      bestLapSeconds: playerStanding.bestLapTime ?? undefined,
+      mode: active.setup.mode,
+      boostActive: ps.boostActive,
+      boostTimer: ps.boostTimer,
+      boostCharges: ps.boostCharges,
+      wrongWay: active.playerWrongWay,
+      phase: active.race.phase,
+      phaseElapsed: active.race.phaseElapsed,
+      launchBanner: banner && { result: banner.result, time: active.race.elapsedRaceTime - banner.start },
+      mapEnabled: settings.trackMap,
+      course: active.courseMap,
+      cars: active.racers.map(r => ({
+        id: r.id, x: r.physics.state.position[0], z: r.physics.state.position[2], local: r.isPlayer, active: true,
+      })),
+      labels: this.currentHudLabels(),
+    });
     const fonts = this.assets.fonts;
-    const fontFor = (slot: number) => fonts[slot] ?? fonts[2] ?? fonts[0]!;
-    this.overlayButtons = [];
+    // HUD labels are font 2; the HUD keeps the 4:3 layout table 0 ("fit") so dials stay round.
+    this.ui.renderHud(input, width, height, { body: fonts[2] ?? fonts[0]!, display: fonts[4] },
+      { atlas: active.hudAtlas }, "fit");
+  }
 
-    if (view.state === "PAUSE" || view.state === "RESULTS" || view.state === "RACE_END") {
-      batch.solidQuad({ x: 0, y: 0, width: 1, height: 1 }, PANEL_SCRIM);
+  /** `TXT_INRACE_*` labels for the active language (re-read only when the language changes). */
+  private currentHudLabels(): Partial<Record<HudLabelKey, string>> {
+    const table = this.assets.translation;
+    if (this.hudLabelCache?.table !== table) this.hudLabelCache = { table, labels: hudLabels(table) };
+    return this.hudLabelCache.labels;
+  }
+
+  /** LOADING (fr3.exe 0x4b7400): full-screen LOAD, the 9-segment chaser and the right-aligned caption only. */
+  private renderLoadingScreen(view: MenuView, width: number, height: number): void {
+    const sprites = this.loadingSprites;
+    const font = this.assets.fonts[2];
+    const batch = new UiBatchBuilder(width, height);
+    const caption = view.loadingError ?? lookupTranslation(this.assets.translation, "TXT_GENERAL_LOADING") ?? "LOADING";
+    if (sprites) {
+      drawLoadingScreen(batch, sprites, this.loadingPhase, { text: caption, font });
+    } else if (font) {
+      batch.text({ x: 0, y: 0.856, width: 0.948437, height: 29 / 480 }, font, caption, { justify: 2 });
     }
+    this.ui.render(batch.build(), width, height, MENU_VIEWPORT);
+  }
 
-    const activeScreen = this.menu.screen;
-    if (activeScreen) {
-      const items = activeScreen.getDrawItems();
-      for (const item of items) {
-        if (item.textureRef) {
-          const entry = this.pcgCache.get(item.textureRef.registeredKey)
-            ?? this.pcgCache.get(item.textureRef.registeredKey.replaceAll("/", "\\"));
-          if (entry) {
-            batch.graphic(item.rect, entry, {
-              colour: normalizeRgba(item.color),
-              flipGraphic: item.flip,
-            });
-          } else {
-            void this.cachePcg(item.textureRef.registeredKey);
-          }
-        }
-        if (item.text) {
-          const font = fontFor(item.font);
-          let color = normalizeRgba(item.textColor);
-          if (view.state === "START" && item.id === "BUTTON1") {
-            const pulse = 0.55 + 0.45 * Math.sin(this.clock * 4);
-            color = [color[0], color[1], color[2], color[3] * pulse];
-          }
-          if (item.highlighted && item.buttonId && view.state !== "START") {
-            batch.solidQuad(
-              { x: item.rect.x, y: item.rect.y, width: Math.min(item.rect.width, 1 - item.rect.x), height: item.rect.height },
-              [0.08, 0.22, 0.34, 0.72],
-            );
-          }
-          const textX = item.rect.x + item.justifyOffset[0];
-          const maxWidthNorm = !item.wordWrap && textX >= 0 && textX < 0.985
-            ? Math.min(item.rect.width, Math.max(0.05, 0.985 - textX))
-            : item.rect.width;
-          const fittedScale = item.wordWrap
-            ? 1
-            : fitTextScale(font.font, item.text, maxWidthNorm * 640, 1);
-          batch.text(
-            {
-              x: textX,
-              y: item.rect.y + item.justifyOffset[1],
-              width: item.textJustify % 3 === 1 ? maxWidthNorm : item.rect.width,
-              height: item.rect.height,
-            },
-            font,
-            item.text,
-            {
-              justify: item.textJustify,
-              wordWrap: item.wordWrap,
-              colour: color,
-              scale: fittedScale,
-              shadow: true,
-            },
-          );
-        }
-      }
+  /** The AppMenuScene behind `menu.screen` (undefined while a state has no scene). */
+  private currentScene(): AppMenuScene | undefined {
+    const scene = this.activeScene;
+    return scene && scene.screen === this.menu.screen ? scene : undefined;
+  }
+
+  /**
+   * Paint the active `.UI` screen as resolved (fills, textures, text; `menuDrawItems` drops the background of
+   * in-game options and greys disabled rows). CAR.UI then draws the 3D turntable over CAR.PSD: the UI batch
+   * (background first) is flushed before `renderCarTurntable`, which only clears depth in its viewport.
+   */
+  private renderMenuUi(view: MenuView, width: number, height: number): void {
+    const screen = this.menu.screen;
+    if (!screen) return;
+    const batch = new UiBatchBuilder(width, height);
+    const scene = this.currentScene();
+    drawUiDrawItems(batch, scene ? menuDrawItems(scene) : screen.getDrawItems(), this.uiResources);
+    this.requestPendingScreenTextures(screen);
+    this.ui.render(batch.build(), width, height, MENU_VIEWPORT);
+    if (view.state === "CAR_SELECT" && view.carSelectPage === "ITEM"
+      && this.turntableModel && !this.turntableModel.isDisposed) {
+      this.scene.renderCarTurntable(this.turntableModel, this.turntableAngle, CAR_TURNTABLE_RECT, width, height);
     }
-
-    if (view.state === "CAR_SELECT") {
-      this.ui.render(batch.build(), width, height);
-      batch.clear();
-      if (this.turntableModel && !this.turntableModel.isDisposed) {
-        const turntableCanvasRect: ViewportRect = {
-          x: (vp.x + TURNTABLE_RECT.x * vp.width) / width,
-          y: (vp.y + TURNTABLE_RECT.y * vp.height) / height,
-          width: (TURNTABLE_RECT.width * vp.width) / width,
-          height: (TURNTABLE_RECT.height * vp.height) / height,
-        };
-        this.scene.renderCarTurntable(this.turntableModel, this.turntableAngle, turntableCanvasRect, width, height);
-      }
-      this.drawCarSelectOverlay(batch, view);
-    } else if (view.state === "OPTIONS") {
-      this.drawOptionsOverlay(batch, view);
-    } else if (view.state === "LOADING") {
-      this.drawLoadingOverlay(batch, view);
-    } else if (view.state === "RESULTS" || view.state === "RACE_END") {
-      this.drawResultsOverlay(batch, view);
-    }
-
-    this.ui.render(batch.build(), width, height);
-  }
-
-  private addButton(
-    batch: UiBatchBuilder,
-    rect: ViewportRect,
-    label: string,
-    onClick: () => void,
-    scale: number,
-    accent = false,
-    /** Shorter fallbacks; when given, the label keeps a readable minimum scale and truncates with "...". */
-    fallbackLabels?: readonly string[],
-  ): void {
-    const font = this.assets.fonts[2] ?? this.assets.fonts[0]!;
-    const maxWidthPx = Math.max(8, (rect.width - 0.012) * 640);
-    let fittedScale: number;
-    let shown = label;
-    if (fallbackLabels) {
-      const fitted = fitTextWithEllipsis(font.font, [label, ...fallbackLabels], maxWidthPx, scale, READABLE_MIN_TEXT_SCALE);
-      shown = fitted.text;
-      fittedScale = fitted.scale;
-    } else {
-      fittedScale = fitTextScale(font.font, label, maxWidthPx, scale);
-    }
-    batch.solidQuad(rect, accent ? [0.14, 0.46, 0.34, 0.94] : [0.08, 0.15, 0.22, 0.92]);
-    batch.text(rect, font, shown, {
-      justify: 0,
-      colour: accent ? ACCENT : INK,
-      scale: fittedScale,
-      shadow: true,
-    });
-    this.overlayButtons.push({ rect, label, active: accent, onClick });
-  }
-
-  private drawCarSelectOverlay(batch: UiBatchBuilder, view: MenuView): void {
-    const fTitle = this.assets.fonts[3] ?? this.assets.fonts[0]!;
-    const fBody = this.assets.fonts[2] ?? this.assets.fonts[0]!;
-    const s = 0.78;
-
-    batch.solidQuad({ x: 0, y: 0, width: 1, height: 0.11 }, PANEL_DARK);
-    const carTitle = view.car?.name ?? "SELECT CAR";
-    batch.text({ x: 0.03, y: 0.02, width: 0.37, height: 0.07 }, fTitle, carTitle, {
-      justify: 1, colour: ACCENT, scale: fitTextScale(fTitle.font, carTitle, 0.37 * 640, s * 1.15),
-    });
-    const trackName = view.track?.name ?? this.assets.defaultTrackId;
-    const trackLabels = view.track
-      ? [`TRACK: ${view.track.name} (${view.track.id})`, `TRACK: ${view.track.name}`, view.track.name]
-      : [`TRACK: ${trackName}`, trackName];
-    this.addButton(batch, { x: 0.41, y: 0.02, width: 0.05, height: 0.07 }, "<", () => {
-      this.menu.activate("previous-track");
-    }, s * 0.85);
-    this.addButton(batch, { x: 0.465, y: 0.02, width: 0.445, height: 0.07 }, trackLabels[0]!, () => {
-      this.menu.activate("next-track");
-    }, s * 0.8, false, trackLabels.slice(1));
-    this.addButton(batch, { x: 0.915, y: 0.02, width: 0.05, height: 0.07 }, ">", () => {
-      this.menu.activate("next-track");
-    }, s * 0.85);
-
-    const px = 0.63;
-    const pw = 0.33;
-    batch.solidQuad({ x: px, y: 0.15, width: pw, height: 0.68 }, PANEL_CARD);
-    const ratings = view.car?.ratings ?? { speed: 0.5, power: 0.5, acceleration: 0.5, handling: 0.5 };
-    const statRows: [string, number][] = [
-      ["TOP SPEED", ratings.speed],
-      ["POWER", ratings.power],
-      ["ACCEL", ratings.acceleration],
-      ["HANDLING", ratings.handling],
-    ];
-    statRows.forEach(([label, val], idx) => {
-      const y = 0.18 + idx * 0.075;
-      batch.text({ x: px + 0.02, y, width: pw - 0.04, height: 0.03 }, fBody, label, {
-        justify: 1, colour: MUTED, scale: s * 0.8,
-      });
-      batch.solidQuad({ x: px + 0.02, y: y + 0.032, width: pw - 0.04, height: 0.022 }, BAR_BG);
-      batch.solidQuad({ x: px + 0.02, y: y + 0.032, width: (pw - 0.04) * clamp(val, 0.05, 1), height: 0.022 }, CYAN);
-    });
-
-    const { difficulty, laps, mode } = view.raceOptions;
-    const tx = view.settings.transmission;
-    this.addButton(batch, { x: px + 0.02, y: 0.50, width: pw - 0.04, height: 0.055 }, `MODE: ${mode.replace("_", " ")}`, () => {
-      const next = RACE_MODES[(RACE_MODES.indexOf(mode) + 1) % RACE_MODES.length]!;
-      this.menu.updateRaceOptions({ mode: next });
-    }, s * 0.85);
-    this.addButton(batch, { x: px + 0.02, y: 0.565, width: pw - 0.04, height: 0.055 }, `DIFFICULTY: ${difficulty}`, () => {
-      const next = DIFFICULTIES[(DIFFICULTIES.indexOf(difficulty) + 1) % DIFFICULTIES.length]!;
-      this.menu.updateRaceOptions({ difficulty: next });
-    }, s * 0.85);
-    this.addButton(batch, { x: px + 0.02, y: 0.63, width: pw - 0.04, height: 0.055 }, `LAPS: ${laps}`, () => {
-      this.menu.updateRaceOptions({ laps: laps >= 9 ? 1 : laps + 1 });
-    }, s * 0.85);
-    this.addButton(batch, { x: px + 0.02, y: 0.695, width: pw - 0.04, height: 0.055 }, `GEARS: ${tx}`, () => {
-      this.menu.updateSettings({ transmission: tx === "AUTO" ? "MANUAL" : "AUTO" });
-    }, s * 0.85);
-    this.addButton(batch, { x: px + 0.02, y: 0.76, width: pw - 0.04, height: 0.055 }, `LIVERY: ${view.livery ?? "DEFAULT"}`, () => {
-      this.menu.activate("next-livery");
-    }, s * 0.85);
-
-    this.addButton(batch, { x: 0.04, y: 0.86, width: 0.14, height: 0.08 }, "< PREV CAR", () => this.menu.activate("previous-car"), s * 0.9);
-    this.addButton(batch, { x: 0.20, y: 0.86, width: 0.14, height: 0.08 }, "NEXT CAR >", () => this.menu.activate("next-car"), s * 0.9);
-    this.addButton(batch, { x: 0.36, y: 0.86, width: 0.14, height: 0.08 }, "BACK", () => this.menu.activate("back"), s * 0.9);
-    this.addButton(batch, { x: 0.63, y: 0.86, width: 0.33, height: 0.08 }, "START RACE (ENTER)", () => this.menu.activate("launch"), s * 1.0, true);
-  }
-
-  private drawOptionsOverlay(batch: UiBatchBuilder, view: MenuView): void {
-    const fTitle = this.assets.fonts[3] ?? this.assets.fonts[0]!;
-    const s = 0.80;
-    const st = view.settings;
-    batch.solidQuad({ x: 0.16, y: 0.14, width: 0.68, height: 0.72 }, PANEL_CARD);
-    batch.text({ x: 0.20, y: 0.17, width: 0.60, height: 0.07 }, fTitle, "OPTIONS", {
-      justify: 0, colour: ACCENT, scale: s * 1.15,
-    });
-
-    this.addButton(batch, { x: 0.22, y: 0.27, width: 0.56, height: 0.07 }, `SPEED UNITS: ${st.speedUnits}`, () => {
-      this.menu.updateSettings({ speedUnits: st.speedUnits === "MPH" ? "KPH" : "MPH" });
-    }, s * 0.9);
-    this.addButton(batch, { x: 0.22, y: 0.36, width: 0.56, height: 0.07 }, `TRANSMISSION: ${st.transmission}`, () => {
-      this.menu.updateSettings({ transmission: st.transmission === "AUTO" ? "MANUAL" : "AUTO" });
-    }, s * 0.9);
-    this.addButton(batch, { x: 0.22, y: 0.45, width: 0.56, height: 0.07 }, `SOUND: ${this.audio.muted ? "OFF" : "ON"} (${Math.round(st.masterVolume * 100)}%)`, () => {
-      this.setMuted(!this.audio.muted);
-    }, s * 0.9);
-    this.addButton(batch, { x: 0.22, y: 0.54, width: 0.56, height: 0.07 }, `LANGUAGE: ${formatLanguageDisplayName(st.language)}`, () => {
-      const langs = this.assets.languages;
-      const next = langs[(langs.indexOf(st.language) + 1) % langs.length] ?? "EN";
-      this.menu.updateSettings({ language: next });
-    }, s * 0.9);
-    this.addButton(batch, { x: 0.30, y: 0.72, width: 0.40, height: 0.08 }, "BACK (ESC)", () => this.menu.activate("back"), s * 0.95, true);
-  }
-
-  private drawLoadingOverlay(batch: UiBatchBuilder, view: MenuView): void {
-    const fTitle = this.assets.fonts[3] ?? this.assets.fonts[0]!;
-    const fBody = this.assets.fonts[2] ?? this.assets.fonts[0]!;
-    const s = 0.82;
-    batch.solidQuad({ x: 0.14, y: 0.34, width: 0.72, height: 0.30 }, PANEL_CARD);
-    batch.text({ x: 0.18, y: 0.38, width: 0.64, height: 0.07 }, fTitle, "LOADING RACE...", {
-      justify: 0, colour: ACCENT, scale: s * 1.1,
-    });
-    batch.solidQuad({ x: 0.20, y: 0.49, width: 0.60, height: 0.045 }, BAR_BG);
-    batch.solidQuad({ x: 0.20, y: 0.49, width: 0.60 * clamp(view.progress, 0.02, 1), height: 0.045 }, CYAN);
-    const statusText = view.loadingError ?? this.status;
-    batch.text({ x: 0.18, y: 0.56, width: 0.64, height: 0.05 }, fBody, statusText, {
-      justify: 0, colour: INK, scale: fitTextScale(fBody.font, statusText, 0.62 * 640, s * 0.85),
-    });
-  }
-
-  private drawResultsOverlay(batch: UiBatchBuilder, view: MenuView): void {
-    const fTitle = this.assets.fonts[3] ?? this.assets.fonts[0]!;
-    const fBody = this.assets.fonts[2] ?? this.assets.fonts[0]!;
-    const s = 0.78;
-
-    batch.solidQuad({ x: 0.10, y: 0.10, width: 0.80, height: 0.78 }, PANEL_CARD);
-    const resultsTitle = `RACE RESULTS - ${this.activeRace?.trackName ?? this.assets.defaultTrackId}`;
-    batch.text({ x: 0.14, y: 0.13, width: 0.72, height: 0.07 }, fTitle, resultsTitle, {
-      justify: 0, colour: ACCENT, scale: fitTextScale(fTitle.font, resultsTitle, 0.70 * 640, s * 1.15),
-    });
-
-    // Columns: POS | CAR | TIME | BEST (all in 0..1 UI space, inside the 0.14..0.86 card).
-    const cols = {
-      pos: { x: 0.15, width: 0.06 },
-      car: { x: 0.22, width: 0.33 },
-      time: { x: 0.56, width: 0.14 },
-      best: { x: 0.71, width: 0.14 },
-    } as const;
-    const headerY = 0.205;
-    const cell = (col: { x: number; width: number }, y: number, height: number, text: string,
-      justify: 0 | 1 | 2, colour: UiColor, base: number) => {
-      batch.text({ x: col.x, y, width: col.width, height }, fBody, text, {
-        justify, colour, scale: fitTextScale(fBody.font, text, (col.width - 0.008) * 640, base, 0.5),
-      });
-    };
-    cell(cols.pos, headerY, 0.03, "POS", 1, MUTED, s * 0.7);
-    cell(cols.car, headerY, 0.03, "CAR", 1, MUTED, s * 0.7);
-    cell(cols.time, headerY, 0.03, "TIME", 2, MUTED, s * 0.7);
-    cell(cols.best, headerY, 0.03, "BEST", 2, MUTED, s * 0.7);
-
-    view.standings.slice(0, 6).forEach((row, idx) => {
-      const y = 0.24 + idx * 0.072;
-      const h = 0.06;
-      batch.solidQuad({ x: 0.14, y, width: 0.72, height: h }, idx === 0 ? [0.14, 0.27, 0.22, 0.9] : [0.06, 0.11, 0.16, 0.88]);
-      const { time, best } = formatResultsRowTimes(row);
-      const finished = row.finished ?? row.totalSeconds !== null;
-      cell(cols.pos, y, h, `${idx + 1}`, 1, idx === 0 ? ACCENT : INK, s * 0.88);
-      cell(cols.car, y, h, row.carName, 1, idx === 0 ? ACCENT : INK, s * 0.88);
-      cell(cols.time, y, h, time, 2, finished ? CYAN : MUTED, s * 0.82);
-      cell(cols.best, y, h, best, 2, CYAN, s * 0.82);
-    });
-
-    this.addButton(batch, { x: 0.14, y: 0.76, width: 0.22, height: 0.08 }, "RETRY RACE", () => this.menu.activate("restart"), s * 0.9, true);
-    this.addButton(batch, { x: 0.39, y: 0.76, width: 0.22, height: 0.08 }, "NEXT QUICK RACE", () => this.menu.activate("quick-race"), s * 0.85);
-    this.addButton(batch, { x: 0.64, y: 0.76, width: 0.22, height: 0.08 }, "MAIN MENU", () => this.menu.activate("quit"), s * 0.9);
   }
 }
